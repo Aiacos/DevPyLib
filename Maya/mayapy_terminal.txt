@@ -1,0 +1,7 @@
+sudo open /Applications/Autodesk/maya2016/Maya\ Terminal.term
+export PYTHONPATH=$PYTHONPATH:/Users/lorenzoargentieri/Dropbox/3D/Maya/DevPyLib
+mayapy
+import sys
+'/Users/lorenzoargentieri/Dropbox/3D/Maya/DevPyLib' in sys.path
+import minspect
+minspect
