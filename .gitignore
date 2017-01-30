@@ -10,3 +10,5 @@
 .idea/modules.xml
 
 Python/\.idea/
+
+\.idea/vcs\.xml
