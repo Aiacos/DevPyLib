@@ -1,13 +1,23 @@
 import pymel.core as pm
+from utils import *
 
-head_jnt = pm.ls(sl=True)[0]
-head_t = pm.xform(q=True, t=True)
-pm.pickWalk(d='down')
-tail_jnt = pm.ls(sl=True)[0]
-tail_t = pm.xform(q=True, t=True)
+n_twist_joint = 3
+joint_selection=pm.ls(sl=True, type='joint', dag=True)
 
-head_loc = pm.spaceLocator(p=head_t)
-tail_loc = pm.spaceLocator(p=tail_t)
-distance = pm.distanceDimension(head_loc, tail_loc)
+## Put all joints from selection in a variable
+head_jnt = joint_selection[0]
+tail_jnt = joint_selection[1]
 
-print distance
+distance = util.getDistance(head_jnt, tail_jnt)
+
+twist_jnt_grp = pm.group(name=head_jnt.name() + '_twist' + '_grp')
+joint_list = []
+for i in range(0, n_twist_joint):
+    joint_name = head_jnt.name() + '_twist' + str(i+1)
+    new_joint_name = pm.insertJoint(head_jnt.name())
+    new_joint = pm.PyNode(str(new_joint_name))
+
+    joint_list.append(new_joint)
+    pm.move((i+1)*distance,0,0, new_joint, relative=True, worldSpaceDistance=True)
+    pm.parent(tail_jnt, head_jnt)
+    pm.parent(joint_list[i], twist_jnt_grp)
