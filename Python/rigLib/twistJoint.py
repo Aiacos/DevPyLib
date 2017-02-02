@@ -1,5 +1,5 @@
 import pymel.core as pm
-from utils import *
+import utils
 
 
 def make_twist_joints(joint_selection=pm.ls(sl=True, type='joint', dag=True), n_twist_joint=3):
@@ -14,7 +14,7 @@ def make_twist_joints(joint_selection=pm.ls(sl=True, type='joint', dag=True), n_
     head_jnt = joint_selection[0]
     tail_jnt = joint_selection[1]
 
-    distance = util.get_distance(head_jnt, tail_jnt)
+    distance = utils.util.get_distance(head_jnt, tail_jnt)
 
     pm.parent(tail_jnt.name(), world=True)
     twist_jnt_grp = pm.group(name=head_jnt.name() + '_twist' + '_grp')
