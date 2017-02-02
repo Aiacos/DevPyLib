@@ -12,3 +12,5 @@
 Python/\.idea/
 
 \.idea/vcs\.xml
+
+*.pyc

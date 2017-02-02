@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from qtshim import QtGui, QtCore, Signal
+#from qtshim import QtGui, QtCore, Signal
 
 
 def createPV(ikHandle_selection=pm.ls(sl=True)):
@@ -88,29 +88,6 @@ def getJointDistance(ikHandle_selection=pm.ls(sl=True)):
     #distance = pm.distanceDimension(loc0, loc1)
     pm.delete(constraint0, constraint1, loc0, loc1)
     return distance
-
-
-class qtMainWindow_poleVector(QtGui.QDialog):
-    def __init__(self, parent=None):
-        super(qtMainWindow_poleVector, self).__init__(parent)
-        self.browser = QtGui.QTextBrowser()
-        self.lineedit = QtGui.QLineEdit("Type Expression")
-        self.lineedit.selectAll()
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.browser)
-        layout.addWidget(self.lineedit)
-        self.setLayout(layout)
-        self.lineedit.setFocus()
-        self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
-        self.setWindowTitle("Calcola")
-
-    def updateUi(self):
-        try:
-            text = unicode(self.lineedit.text())
-            self.browser.append("%s = <b>%s</b>" % (text, eval(text)))
-        except:
-            self.browser.append("<font color=red>%s is invalid!</font>" % text)
-
 
 def connect_poleVector(ikHandle):
     # string $testObject[] = `ls -sl`;
