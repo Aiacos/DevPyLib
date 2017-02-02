@@ -1,7 +1,6 @@
 import sys
 import maya.cmds as cmds
 
-
 libDir = '/Users/lorenzoargentieri/Dropbox/3D/Maya/Script_DEF/DevPyLib/Python'
 port = ':5000'
 
