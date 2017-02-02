@@ -43,4 +43,5 @@ def addGammaCorrect():
         #connectGamma(node)
         connectGammaPM(node)
 
-addGammaCorrect()
+if __name__ == "__main__":
+    addGammaCorrect()
