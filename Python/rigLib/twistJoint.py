@@ -1,5 +1,5 @@
 import pymel.core as pm
-import rigLib
+import utils
 
 
 def make_twist_joints(joint_selection=pm.ls(sl=True, type='joint', dag=True), n_twist_joint=3):
