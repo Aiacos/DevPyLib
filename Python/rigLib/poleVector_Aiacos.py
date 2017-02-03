@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+import rigLib
 #from qtshim import QtGui, QtCore, Signal
 
 
@@ -123,6 +124,7 @@ def main_poleVector():
         print connect_poleVector(ikHandle)
 
 main_poleVector()
+rigLib.base.colorControl.color_control(controls=pm.ls('*_pv*'))
 ## instance a GUI
 #app = QtGui.QApplication.instance()
 #poleVector_form = qtMainWindow_poleVector()
