@@ -66,7 +66,7 @@ def createPV(ikHandle_selection=pm.ls(sl=True)):
 
 def getJointDistance(ikHandle_selection=pm.ls(sl=True)):
     '''
-    Return the lenght og ikHandle
+    Return the lenght of ikHandle
     :param ikHandle_selection: select an ikHandle
     :return: Return the lenght og ikHandle
     '''
@@ -123,8 +123,9 @@ def main_poleVector():
     for ikHandle in selectedObj:
         print connect_poleVector(ikHandle)
 
-main_poleVector()
-rigLib.base.colorControl.color_control(controls=pm.ls('*_pv*'))
+if __name__ == "__main__":
+    main_poleVector()
+    rigLib.base.colorControl.color_control(controls=pm.ls('*_pv*'))
 ## instance a GUI
 #app = QtGui.QApplication.instance()
 #poleVector_form = qtMainWindow_poleVector()
