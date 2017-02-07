@@ -1,6 +1,7 @@
 import pymel.core as pm
 import shaderLib.base.shader
 
+
 def create_plane(width=10, lengthratio=0.2):
     nurbs_plane = pm.nurbsPlane(name='flexiPlane_surface',
                                 width=width,
@@ -13,7 +14,7 @@ def create_plane(width=10, lengthratio=0.2):
 
 
 # si puo saltare
-def create_lambret(geo, color=(0.067,0.737,0.749), transparency=(0.75,0.75,0.75)):
+def create_lambret(geo, color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
     """
     Create base lamber shader
     :param geo: list of geo to apply shader
@@ -43,9 +44,9 @@ def ctrl_square(name=None, pos=None):
     if not pos:
         pos = [0, 0, 0]
     fp_cnt = pm.curve(d=1,
-                       p=[(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1), (-1, 0, 1)],
-                       k=[0, 1, 2, 3, 4],
-                       n=name)
+                      p=[(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1), (-1, 0, 1)],
+                      k=[0, 1, 2, 3, 4],
+                      n=name)
     fp_cnt.overrideEnabled.set(1)
     fp_cnt.overrideColor.set(17)
     pm.move(pos, rpr=True)
@@ -90,29 +91,28 @@ def flexiplain():
     nurbs_plane = create_plane()[0]
 
     # Assign Material
-    create_lambret(nurbs_plane)
+    create_lambret(nurbs_plane, color=(0.067, 0.737, 0.749), transparency=(0.75, 0.75, 0.75))
 
     # Create Follicles
     flc_name = 'flexiPlane'
-    v = 0.1 #1/width
+    v = 0.1  # 1/width
     flcs = []
-    how_many_flc = 5 #width/2
+    how_many_flc = 5  # width/2
     for i in range(0, how_many_flc):
-        ofoll = create_follicle(nurbs_plane, flc_name+str(i)+'_flc', v, 0.5)
+        ofoll = create_follicle(nurbs_plane, flc_name + str(i) + '_flc', v, 0.5)
         flcs.append(ofoll)
-        v += 0.2 #(1/width)*2
+        v += 0.2  # (1/width)*2
 
     # Group Follicles
     grp_name = 'flexiPlane_flcs_grp'
     flc_grp = pm.group(flcs, name=grp_name)
 
-
     # creates flexiPlane controls curves at each end
-    ctrl_a = ctrl_square(name='%s_a_ctrl' % (flc_name), pos=[-5, 0, 0])
+    ctrl_a = ctrl_square(name='%s_a_ctrl' % flc_name, pos=[-5, 0, 0])
     ctrl_ashape = ctrl_a.getShape()
     pm.rename(ctrl_ashape, '%sShape' % ctrl_a)
 
-    ctrl_b = ctrl_square(name='%s_b_ctrl' % (flc_name), pos=[5, 0, 0])
+    ctrl_b = ctrl_square(name='%s_b_ctrl' % flc_name, pos=[5, 0, 0])
     cnt_bshape = ctrl_b.getShape()
     pm.rename(cnt_bshape, '%sShape' % ctrl_b)
 
