@@ -1,5 +1,5 @@
 import pymel.core as pm
-
+import shaderLib.base.shader
 
 def create_plane(width=10, lengthratio=0.2):
     nurbs_plane = pm.nurbsPlane(name='flexiPlane_surface',
@@ -13,9 +13,21 @@ def create_plane(width=10, lengthratio=0.2):
 
 
 # si puo saltare
-def create_lambret(color=1, trasparency=0.75):
+def create_lambret(geo, color=(0.067,0.737,0.749), transparency=(0.75,0.75,0.75)):
+    """
+    Create base lamber shader
+    :param geo: list of geo to apply shader
+    :param color: es: (0,1,0)
+    :param transparency: es: (0,1,0)
+    :return: none
+    """
     name = 'flexiPlane_surface_material01'
-    #lambert = pm.
+    shader = shaderLib.base.shader.build_lambert(shaderType='lambert',
+                                                 shaderName=name,
+                                                 color=color,
+                                                 transparency=transparency)
+    pm.select(geo)
+    pm.hyperShade(assign=shader)
 
 
 # function to create control curves
@@ -76,7 +88,9 @@ def create_follicle(onurbs, name, upos=0.0, vpos=0.0):
 
 def flexiplain():
     nurbs_plane = create_plane()[0]
-    #assegna lambert al surface
+
+    # Assign Material
+    create_lambret(nurbs_plane)
 
     # Create Follicles
     flc_name = 'flexiPlane'
