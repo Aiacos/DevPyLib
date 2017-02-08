@@ -2,14 +2,15 @@ import pymel.core as pm
 import shaderLib.base.shader
 
 
-def create_plane(width=10, lengthratio=0.2):
+def create_plane(name, width=10, lengthratio=0.2):
     """
     Create NURBS plane
+    :param name: string
     :param width:
     :param lengthratio:
     :return:
     """
-    nurbs_plane = pm.nurbsPlane(name='flexiPlane_surface',
+    nurbs_plane = pm.nurbsPlane(name=name,
                                 width=width,
                                 lengthRatio=lengthratio,
                                 patchesU=width / 2,
@@ -105,7 +106,8 @@ def flexiplane():
     Build FlexiPlane
     :return: FlexiPlane group node
     """
-    nurbs_plane = create_plane()[0]
+    surface_suffix = '_surface'
+    nurbs_plane = create_plane('flexiPlane' + surface_suffix)[0]
 
     # Assign Material
     create_lambret(nurbs_plane, color=(0.067, 0.737, 0.749), transparency=(0.75, 0.75, 0.75))
@@ -134,6 +136,16 @@ def flexiplane():
     pm.rename(cnt_bshape, '%sShape' % ctrl_b)
 
     pm.select(cl=True)
+
+    # creates flexiPlane blendshape     #  blendshape suffix: _bShp_
+    fp_bshp = pm.duplicate(nurbs_plane, n=nurbs_plane.name() + '_bShp')[0]
+    pm.move(0, 0, -5, fp_bshp)
+
+    fps_bshp_node = pm.blendShape(fp_bshp, nurbs_plane,
+                                  n=nurbs_plane.name().replace(surface_suffix,'_bShpNode' + surface_suffix))[0]
+    pm.setAttr('%s.%s' % (fps_bshp_node, fp_bshp), 1)
+    pm.rename('tweak1', nurbs_plane.name().replace(surface_suffix, '_bShp' + surface_suffix + '_tweak01'))
+
 
 
 if __name__ == "__main__":
