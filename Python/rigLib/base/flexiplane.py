@@ -142,10 +142,9 @@ def flexiplane():
     pm.move(0, 0, -5, fp_bshp)
 
     fps_bshp_node = pm.blendShape(fp_bshp, nurbs_plane,
-                                  n=nurbs_plane.name().replace(surface_suffix,'_bShpNode' + surface_suffix))[0]
+                                  n=nurbs_plane.name().replace(surface_suffix, '_bShpNode' + surface_suffix))[0]
     pm.setAttr('%s.%s' % (fps_bshp_node, fp_bshp), 1)
     pm.rename('tweak1', nurbs_plane.name().replace(surface_suffix, '_bShp' + surface_suffix + '_tweak01'))
-
 
 
 if __name__ == "__main__":
