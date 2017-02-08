@@ -2,6 +2,14 @@ import pymel.core as pm
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5,0.5,0.5), transparency=(0.0,0.0,0.0)):
+    """
+    Build basic lambert Shader
+    :param shaderType: type (string)
+    :param shaderName: name (string)
+    :param color: es. (0.5,0.5,0.5)
+    :param transparency: es. (0.5,0.5,0.5)
+    :return: shader node
+    """
     # create a shader
     shader = pm.shadingNode(shaderType, asShader=True, name=shaderName)
 
@@ -16,6 +24,15 @@ def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5,0.5,
     return shader
 
 
+def assign_shader(geo, shader):
+    """
+    Assign Shader to selected objects
+    :param geo: geometry list (list)
+    :param shader: shader name (string)
+    :return:
+    """
+    pm.select(geo)
+    pm.hyperShade(assign=shader)
+
 if __name__ == "__main__":
     print build_lambert()
-

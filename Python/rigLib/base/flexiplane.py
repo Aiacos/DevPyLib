@@ -3,6 +3,12 @@ import shaderLib.base.shader
 
 
 def create_plane(width=10, lengthratio=0.2):
+    """
+    Create NURBS plane
+    :param width:
+    :param lengthratio:
+    :return:
+    """
     nurbs_plane = pm.nurbsPlane(name='flexiPlane_surface',
                                 width=width,
                                 lengthRatio=lengthratio,
@@ -27,8 +33,7 @@ def create_lambret(geo, color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
                                                  shaderName=name,
                                                  color=color,
                                                  transparency=transparency)
-    pm.select(geo)
-    pm.hyperShade(assign=shader)
+    shaderLib.base.shader.assign_shader(geo, shader)
 
 
 # function to create control curves
@@ -58,6 +63,14 @@ def ctrl_square(name=None, pos=None):
 
 # function for creating and attaching follicles to flexiplane surface
 def create_follicle(onurbs, name, upos=0.0, vpos=0.0):
+    """
+    Create follicle
+    :param onurbs: node object
+    :param name: string
+    :param upos: real
+    :param vpos: real
+    :return:
+    """
     # manually place and connect a follicle onto a nurbs surface.
     if onurbs.type() == 'transform':
         onurbs = onurbs.getShape()
@@ -87,7 +100,11 @@ def create_follicle(onurbs, name, upos=0.0, vpos=0.0):
     return ofoll
 
 
-def flexiplain():
+def flexiplane():
+    """
+    Build FlexiPlane
+    :return: FlexiPlane group node
+    """
     nurbs_plane = create_plane()[0]
 
     # Assign Material
@@ -120,4 +137,4 @@ def flexiplain():
 
 
 if __name__ == "__main__":
-    flexiplain()
+    flexiplane()
