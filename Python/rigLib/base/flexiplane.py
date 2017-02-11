@@ -101,6 +101,64 @@ def create_follicle(onurbs, name, upos=0.0, vpos=0.0):
     return ofoll
 
 
+# funtion to create cluster
+def make_cluster(target,
+                 name=None,
+                 origin=0,
+                 pos_x=0,
+                 pos_y=0,
+                 pos_z=0):
+    """
+    creates a cluster on targeted cvs
+    :param target: affect cvs
+    :param name: name for cluster
+    :param origin: integer value for cluster originX
+    :param pos_x: integer for x value for move
+    :param pos_y: integer for y value for move
+    :param pos_z: integer for z value for move
+    :return: new cluster
+    """
+    cl = pm.cluster(target,
+                    rel=1,
+                    en=1.0,
+                    n=name)
+    if origin != 0:
+        cl[1].originX.set(origin)
+        pm.move(pos_x, pos_y, pos_z, cl[1].scalePivot, cl[1].rotatePivot)
+    else:
+        pass
+    return cl
+
+
+def cluster_curve(curve, name):
+    """
+    adds clusters to 3 cv curve
+    :param curve: curve node to be affected
+    :param name: string for cluster names
+    :param settings: dictionary that holds node number
+    :return: new clusters
+    """
+    cl_a = make_cluster(target=curve.cv[0:1],
+                        name='%s_cl_a01' % name,
+                        origin=-6,
+                        pos_x=-5,
+                        pos_z=-5)
+
+    cl_b = make_cluster(target=curve.cv[1:2],
+                        name='%s_cl_b01' % name,
+                        origin=6,
+                        pos_x=5,
+                        pos_z=-5)
+
+    cl_mid = make_cluster(target=curve.cv[1],
+                          name='%s_cl_mid01' % name)
+
+    # redistributes cluster weight
+    pm.percent(cl_a[0], curve.cv[1], v=0.5)
+    pm.percent(cl_b[0], curve.cv[1], v=0.5)
+    return cl_a, cl_b, cl_mid
+
+
 def flexiplane():
     """
     Build FlexiPlane
@@ -145,6 +203,28 @@ def flexiplane():
                                   n=nurbs_plane.name().replace(surface_suffix, '_bShpNode' + surface_suffix))[0]
     pm.setAttr('%s.%s' % (fps_bshp_node, fp_bshp), 1)
     pm.rename('tweak1', nurbs_plane.name().replace(surface_suffix, '_bShp' + surface_suffix + '_tweak01'))
+
+    # creates curve for wire deformer
+    fp_curve = pm.curve(d=2,
+                        p=[(-5, 0, -5), (0, 0, -5), (5, 0, -5)],
+                        k=[0, 0, 1, 1],
+                        n=nurbs_plane.name().replace(surface_suffix, '_wire' + surface_suffix))
+    cl_a, cl_b, cl_mid = cluster_curve(fp_curve, nurbs_plane.name())
+
+    # skins wire to blendshape
+    fp_wire = pm.wire(fp_bshp,
+                      w=fp_curve,
+                      gw=False,
+                      en=1,
+                      ce=0,
+                      li=0,
+                      n=nurbs_plane.name().replace(surface_suffix, '_wreAttrs' + surface_suffix))
+    fp_wire[0].dropoffDistance[0].set(20)
+    hist = pm.listHistory(nurbs_plane)
+    tweaks = [t for t in hist if 'tweak' in t.nodeName()]
+    pm.rename(tweaks[2], nurbs_plane.name().replace(surface_suffix, '_cl_cluster_tweak'))
+    pm.rename(tweaks[0], nurbs_plane.name() + '_wreAttrs_tweak')
+    pm.rename(tweaks[1], nurbs_plane.name() + '_extra_tweak')
 
 
 if __name__ == "__main__":
