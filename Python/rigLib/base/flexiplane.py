@@ -1,5 +1,7 @@
 import pymel.core as pm
 import shaderLib.base.shader
+from shaderLib.base import shader
+from rigLib.utils import util
 
 
 def create_plane(name, width=10, lengthratio=0.2):
@@ -30,11 +32,26 @@ def create_lambret(geo, color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
     :return: none
     """
     name = 'flexiPlane_surface_material01'
-    shader = shaderLib.base.shader.build_lambert(shaderType='lambert',
-                                                 shaderName=name,
-                                                 color=color,
-                                                 transparency=transparency)
-    shaderLib.base.shader.assign_shader(geo, shader)
+    my_shader = shader.build_lambert(shaderType='lambert',
+                                     shaderName=name,
+                                     color=color,
+                                     transparency=transparency)
+    shader.assign_shader(geo, my_shader)
+
+
+def create_surfaceshader(geo, color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
+    """
+    Create base lamber shader
+    :param geo: list of geo to apply shader
+    :param color: es: (0,1,0)
+    :param transparency: es: (0,1,0)
+    :return: none
+    """
+    name = 'flexiPlane_surface_material01'
+    my_shader = shader.build_surfaceshader(shaderType='surfaceShader',
+                                           shaderName=name,
+                                           color=color)
+    shader.assign_shader(geo, my_shader)
 
 
 # function to create control curves
@@ -159,6 +176,25 @@ def cluster_curve(curve, name):
     return cl_a, cl_b, cl_mid
 
 
+def flexiplane_mid_ctrl(name=None):
+    """
+    Create Mid Control
+    :param name:
+    :param color:
+    :return:
+    """
+    if not name:
+        name = '_mid_ctrl'
+
+    mid_ctrl = pm.polySphere(n=name, r=0.3, sx=8, sy=8, ax=(0.0, 1.0, 0.0), ch=False)[0]
+    # cc_shp = cc.getShape()
+    # cc_shp.overrideEnabled.set(1)
+    # cc_shp.overrideColor.set(color)
+    create_surfaceshader(mid_ctrl, color=(1.0, 1.0, 0.0))
+
+    return mid_ctrl
+
+
 def flexiplane():
     """
     Build FlexiPlane
@@ -225,6 +261,39 @@ def flexiplane():
     pm.rename(tweaks[2], nurbs_plane.name().replace(surface_suffix, '_cl_cluster_tweak'))
     pm.rename(tweaks[0], nurbs_plane.name() + '_wreAttrs_tweak')
     pm.rename(tweaks[1], nurbs_plane.name() + '_extra_tweak')
+
+    # group clusters
+    cl_grp = pm.group(cl_a[1], cl_b[1], cl_mid[1], n=nurbs_plane.name().replace(surface_suffix, '_cls_grp'))
+    util.lock_and_hide_all(cl_grp)
+
+    # creates mid control
+    ctrl_mid = flexiplane_mid_ctrl(name=nurbs_plane.name() + '_mid_ctrl')
+    ctrl_mid_grp = pm.group(ctrl_mid, n=nurbs_plane.name() + '_mid_ctrl_grp')
+    pm.pointConstraint(ctrl_a, ctrl_b, ctrl_mid_grp, o=[0, 0, 0], w=1)
+
+    # groups controls together and locks and hides group attributes
+    ctrl_grp = pm.group(ctrl_a, ctrl_b, ctrl_mid_grp, n=nurbs_plane.name() + '_ctrl_grp')
+    util.lock_and_hide_all(ctrl_grp)
+
+    # connecting translate attrs of control curves for to the clusters
+    connect = ctrl_a.t >> cl_a[1].t
+    connect = ctrl_b.t >> cl_b[1].t
+    connect = ctrl_mid.t >> cl_mid[1].t
+
+
+    # # ToDo: twist
+    # # create and place twist deformer
+    # pmc.select(fp_bshp)
+    # fp_twist = pmc.nonLinear(type='twist', lowBound=-1, highBound=1)
+    # # displays warning: pymel.core.general : could not create desired mfn. Defaulting MfnDependencyNode.
+    # # doesn't seem to affect anything though
+    # pmc.rename(fp_twist[0], '%stwistAttr_surface_%i' % (fp_name, settings['num']))
+    # pmc.rename(fp_twist[1], '%stwist_%i_Handle' % (fp_name, settings['num']))
+    # fp_twist[1].rz.set(90)
+    #
+    # # connect start and end angle to their respective control
+    # connect = cnt_b.rx >> fp_twist[0].startAngle
+    # connect = cnt_a.rx >> fp_twist[0].endAngle
 
 
 if __name__ == "__main__":

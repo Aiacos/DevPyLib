@@ -23,3 +23,20 @@ def get_distance(obj1, obj2):
     # distance = pm.distanceDimension(loc0, loc1)
     pm.delete(constraint0, constraint1, loc0, loc1)
     return distance
+
+
+# function to lock and hide attributes
+def lock_and_hide_all(node):
+    """
+    lock and hide all transform attributes of selected node
+    :param node: node to be affected
+    """
+    node.tx.set(l=1, k=0, cb=0)
+    node.ty.set(l=1, k=0, cb=0)
+    node.tz.set(l=1, k=0, cb=0)
+    node.rx.set(l=1, k=0, cb=0)
+    node.ry.set(l=1, k=0, cb=0)
+    node.rz.set(l=1, k=0, cb=0)
+    node.sx.set(l=1, k=0, cb=0)
+    node.sy.set(l=1, k=0, cb=0)
+    node.sz.set(l=1, k=0, cb=0)
