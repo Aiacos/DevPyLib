@@ -40,3 +40,18 @@ def lock_and_hide_all(node):
     node.sx.set(l=1, k=0, cb=0)
     node.sy.set(l=1, k=0, cb=0)
     node.sz.set(l=1, k=0, cb=0)
+
+
+# function to make surface not render
+def no_render(tgt):
+    """
+    makes selected node non-renderable
+    :param tgt: node to be affected
+    """
+    tgt.castsShadows.set(0)
+    tgt.receiveShadows.set(0)
+    tgt.motionBlur.set(0)
+    tgt.primaryVisibility.set(0)
+    tgt.smoothShading.set(0)
+    tgt.visibleInReflections.set(0)
+    tgt.visibleInRefractions.set(0)
