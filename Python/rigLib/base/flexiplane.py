@@ -284,7 +284,7 @@ def flexiplane(index=''):
 
     print fp_surf.name().replace(surface_suffix, '_bShpNode' + surface_suffix) + index
     fps_bshp_node = pm.blendShape(fp_bshp, fp_surf,#flexiPlane_bShpNode_surface01
-                                  n=fp_surf.name().replace(surface_suffix, '_bShpNode' + surface_suffix) + index)[0]
+                                  n=fp_surf.name().replace(surface_suffix, 'bShpNode' + surface_suffix) + index)[0]
     pm.setAttr('%s.%s' % (fps_bshp_node, fp_bshp), 1)
     pm.rename('tweak1', fp_surf.name().replace(surface_suffix, '_bShp' + surface_suffix + '_tweak') + index)
 
