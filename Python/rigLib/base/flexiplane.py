@@ -29,7 +29,7 @@ def create_lambret(geo, color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
     :param transparency: es: (0,1,0)
     :return: none
     """
-    name = 'flexiPlane_surface_material01'
+    name = 'flexiPlane_lambert_material01'
     my_shader = shader.build_lambert(shaderType='lambert',
                                      shaderName=name,
                                      color=color,
@@ -72,7 +72,8 @@ def ctrl_square(name=None, pos=None):
     pm.move(pos, rpr=True)
     pm.scale(0.5, 0.5, 0.5, r=True)
     pm.makeIdentity(t=1, r=1, s=1, a=True)
-    pm.xform(roo='xzy')
+    #pm.xform(roo='xzy')
+    fp_cnt.rotateOrder.set('xzy')
     return fp_cnt
 
 
@@ -285,6 +286,18 @@ def flexiplane():
     pm.setAttr('%s.%s' % (fps_bshp_node, fp_bshp), 1)
     pm.rename('tweak1', fp_surf.name().replace(surface_suffix, '_bShp' + surface_suffix + '_tweak01'))
 
+    # create and place twist deformer
+    pm.select(fp_bshp)
+    fp_twist = pm.nonLinear(type='twist', lowBound=-1, highBound=1)
+    # displays warning: pymel.core.general : could not create desired mfn. Defaulting MfnDependencyNode.
+    # doesn't seem to affect anything though
+    pm.rename(fp_twist[0], fp_surf.name() + '_twistAttrs')# + index
+    pm.rename(fp_twist[1], fp_surf.name() + '_twist')# + index
+    fp_twist[1].rz.set(90)
+    # connect start and end angle to their respective control
+    connect = ctrl_b.rx >> fp_twist[0].startAngle
+    connect = ctrl_a.rx >> fp_twist[0].endAngle
+
     # creates curve for wire deformer
     fp_curve = pm.curve(d=2,
                         p=[(-5, 0, -5), (0, 0, -5), (5, 0, -5)],
@@ -339,7 +352,8 @@ def flexiplane():
     # creates global move group and extraNodes
     fp_gm_grp = pm.group(fp_surf, ctrl_grp, n=fp_surf.name() + '_globalMove')
     fp_xnodes_grp = pm.group(flc_grp, fp_bshp, fp_wire, 'flexiPlane_wire_surfaceBaseWire', cl_grp,
-                             n=fp_surf.name() + 'extraNodes')  # fp_twist[1],
+                             n=fp_surf.name() + '_extraNodes')  # fp_twist[1], -ok # + index
+    pm.parent(fp_twist, fp_xnodes_grp)
 
     # scale constrains follicles to global move group
     for follicle in flcs:
@@ -353,20 +367,15 @@ def flexiplane():
     pm.parent(fp_gm_cnt, fp_grp)
     pm.parent(fp_gm_grp, fp_gm_cnt)
 
+    # joints placement
+    jnts = []
+    for i in range(0, len(flcs)):
+        posx = round(flcs[i].getParent().translateX.get(), 4)
+        jnt = pm.joint(p=(posx, 0, 0), rad=0.5, n=fp_surf.name() + str(i) + '_bind' + '_jnt')
+        # parent joint under follicle
+        pm.parent(jnt, flcs[i].getParent())
 
-        # # ToDo: twist, no render
-        # # create and place twist deformer
-        # pm.select(fp_bshp)
-        # fp_twist = pm.nonLinear(type='twist', lowBound=-1, highBound=1)
-        # # displays warning: pymel.core.general : could not create desired mfn. Defaulting MfnDependencyNode.
-        # # doesn't seem to affect anything though
-        # pm.rename(fp_twist[0], '%stwistAttr_surface_%i' % (fp_surf.name(), settings['num']))
-        # pm.rename(fp_twist[1], '%stwist_%i_Handle' % (fp_surf.name(), settings['num']))
-        # fp_twist[1].rz.set(90)
-        #
-        # # connect start and end angle to their respective control
-        # connect = ctrl_b.rx >> fp_twist[0].startAngle
-        # connect = ctrl_a.rx >> fp_twist[0].endAngle
+
 
 
 if __name__ == "__main__":
