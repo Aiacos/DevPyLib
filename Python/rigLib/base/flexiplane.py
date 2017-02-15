@@ -461,9 +461,4 @@ class Flexiplane():
 
 if __name__ == "__main__":
     fp1 = Flexiplane()
-    fp1.test()
-    fp2 = Flexiplane('L_')
-    fp2.test()
-    fp2.safe_delete()
-    fp3 = Flexiplane('R_')
-    fp3.test()
+
