@@ -5,7 +5,11 @@ from rigLib.utils import util
 
 
 class Flexiplane():
-    """Manage flexiplane"""
+    """
+    Manage flexiplane
+    :usage init: objName = Flexiplane(prefix='')
+    :usage delete: del objName
+    """
 
     # creates static variable containing default name
     SETTINGS_DEFAULT = {
