@@ -7,10 +7,10 @@ from rigLib.utils import util
 fp = 'flexiPlane_'
 sur = 'surface_'
 YELLOW = 17
-SETTINGS_DEFAULT = {
-    'prefix': 'char',
-    'num': 1,
-}
+# SETTINGS_DEFAULT = {
+#     'prefix': 'char',
+#     'num': 1,
+# }
 
 
 def create_plane(name, width=10, lengthratio=0.2):
@@ -73,17 +73,17 @@ def ctrl_square(name=None, pos=None):
         name = 'flexiPlane_ctrl'
     if not pos:
         pos = [0, 0, 0]
-    fp_cnt = pm.curve(d=1,
+    fp_ctrl = pm.curve(d=1,
                       p=[(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1), (-1, 0, 1)],
                       k=[0, 1, 2, 3, 4],
                       n=name)
-    fp_cnt.overrideEnabled.set(1)
-    fp_cnt.overrideColor.set(17)
+    fp_ctrl.overrideEnabled.set(1)
+    fp_ctrl.overrideColor.set(17)
     pm.move(pos, rpr=True)
     pm.scale(0.5, 0.5, 0.5, r=True)
     pm.makeIdentity(t=1, r=1, s=1, a=True)
-    fp_cnt.rotateOrder.set('xzy')
-    return fp_cnt
+    fp_ctrl.rotateOrder.set('xzy')
+    return fp_ctrl
 
 
 # function for creating and attaching follicles to flexiplane surface
@@ -209,7 +209,7 @@ def global_ctrl(name='ctrl', settings=SETTINGS_DEFAULT):
     :return: control curve
     """
     # creates primary global control curve
-    glb_cnt = pm.circle(c=[0, 0, -2],
+    glb_ctrl = pm.circle(c=[0, 0, -2],
                         sw=360,
                         r=0.3,
                         nr=[0, 1, 0],
@@ -217,14 +217,14 @@ def global_ctrl(name='ctrl', settings=SETTINGS_DEFAULT):
                         n='%sglobal_%i' % (name, settings['num']))[0]
     # grab its shape and recolors it
 
-    glb_cntshape = glb_cnt.getShape()
-    glb_cntshape.overrideEnabled.set(1)
-    glb_cntshape.overrideColor.set(17)
+    glb_ctrlshape = glb_ctrl.getShape()
+    glb_ctrlshape.overrideEnabled.set(1)
+    glb_ctrlshape.overrideColor.set(17)
     # adds the volume label and an enable attribute
     pm.addAttr(ln='_',
                at='enum',
                en='volume:')
-    glb_cnt._.set(e=True,
+    glb_ctrl._.set(e=True,
                   cb=True)
     pm.addAttr(ln='enable',
                sn='en',
@@ -232,27 +232,27 @@ def global_ctrl(name='ctrl', settings=SETTINGS_DEFAULT):
                k=True,
                h=False)
     # create secondary control curve
-    glb_cnt_b = pm.circle(c=[0, 0, 2],
+    glb_ctrl_b = pm.circle(c=[0, 0, 2],
                           sw=360,
                           r=0.3,
                           nr=[0, 1, 0],
                           ch=0,
                           n='%sglobal_b_%i' % (name, settings['num']))[0]
     # grabs it's shape recolors it
-    glb_cnt_bshape = glb_cnt_b.getShape()
-    glb_cnt_bshape.overrideEnabled.set(1)
-    glb_cnt_bshape.overrideColor.set(17)
+    glb_ctrl_bshape = glb_ctrl_b.getShape()
+    glb_ctrl_bshape.overrideEnabled.set(1)
+    glb_ctrl_bshape.overrideColor.set(17)
     # parents the shapeNode of secondary curve the primary curve
-    pm.parent(glb_cnt_bshape,
-              glb_cnt,
+    pm.parent(glb_ctrl_bshape,
+              glb_ctrl,
               r=True,
               s=True)
     # deletes empty transformNode
-    pm.delete(glb_cnt_b)
+    pm.delete(glb_ctrl_b)
     # return primary control transformNode
-    pm.select(glb_cnt,
+    pm.select(glb_ctrl,
               r=True)
-    return glb_cnt
+    return glb_ctrl
 
 
 def flexiplane(settings=SETTINGS_DEFAULT):
@@ -262,7 +262,7 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     :return: FlexiPlane group node
     """
 
-    fp_name = '%s_flexiPlane_' % settings['prefix']
+    fp_name = '%sflexiPlane_' % settings['prefix']
 
     fp_surf = create_plane('%s%s_%i' % (fp_name, sur, settings['num']))[0]
 
@@ -288,8 +288,8 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     pm.rename(ctrl_ashape, '%sShape' % ctrl_a)
 
     ctrl_b = ctrl_square(name='%sctrl_b_%i' % (fp_name, settings['num']), pos=[5, 0, 0])
-    cnt_bshape = ctrl_b.getShape()
-    pm.rename(cnt_bshape, '%sShape' % ctrl_b)
+    ctrl_bshape = ctrl_b.getShape()
+    pm.rename(ctrl_bshape, '%sShape' % ctrl_b)
 
     pm.select(cl=True)
 
@@ -321,16 +321,8 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     connect = ctrl_a.rx >> fp_twist[0].endAngle
 
     # skins wire to blendshape
-    fp_wire = pm.wire(fp_bshp,
-                      w=fp_curve,
-                      gw=False,
-                      en=1,
-                      ce=0,
-                      li=0,
+    fp_wire = pm.wire(fp_bshp, w=fp_curve, gw=False, en=1, ce=0, li=0, #dds=(0, 20),
                       n='%swireAttrs_%s%i' % (fp_name, sur, settings['num']))
-    print 'TEST: '
-    print fp_wire
-    print fp_wire[0]
     fp_wire[0].dropoffDistance[0].set(20)
     hist = pm.listHistory(fp_surf)
     tweaks = [t for t in hist if 'tweak' in t.nodeName()]
@@ -379,7 +371,7 @@ def flexiplane(settings=SETTINGS_DEFAULT):
         pm.scaleConstraint(fp_gm_grp, mparent)
 
     # creates global move control
-    fp_gm_ctrl = global_ctrl(name='%scnt_' % fp_name, settings=settings)
+    fp_gm_ctrl = global_ctrl(name='%sctrl_' % fp_name, settings=settings)
 
     # moves global control into flexiPlane group then parent global move group to global move control.
     pm.parent(fp_gm_ctrl, fp_grp)
@@ -389,7 +381,7 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     jnts = []
     for i in range(0, len(flcs)):
         posx = round(flcs[i].getParent().translateX.get(), 4)
-        jnt = pm.joint(p=(posx, 0, 0), rad=0.5, n='%sbind_%s_%i' % (fp_name, letters[i+26], settings['num']))
+        jnt = pm.joint(p=(posx, 0, 0), rad=0.5, n='%sbind_%s_%i' % (fp_name, letters[i + 26], settings['num']))
         jnts.append(jnt)
         # parent joint under follicle
         pm.parent(jnt, flcs[i].getParent())
@@ -419,7 +411,7 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     fp_div_vol.operation.set(2)
     fp_div_vol.input1X.set(1)
 
-    # creates a conditionNode for global_cnt enable attr
+    # creates a conditionNode for global_ctrl enable attr
     fp_cond = pm.createNode('condition', n='%scond_volume_%i' % (fp_name, settings['num']))
     fp_cond.secondTerm.set(1)
 
@@ -446,8 +438,31 @@ def flexiplane(settings=SETTINGS_DEFAULT):
     return fp_gm_ctrl
 
 
-    # ToDo: index, utility methd
+class Flexiplane():
+    """Manage flexiplane"""
+
+    # creates variable containing default name
+    SETTINGS_DEFAULT = {
+        'prefix': 'M_', # char
+        'num': 1,
+    }
+
+    def __init__(self, prefix=''):
+        Flexiplane.SETTINGS_DEFAULT['prefix'] = prefix
+        flexiplane(settings=Flexiplane.SETTINGS_DEFAULT)
+        Flexiplane.SETTINGS_DEFAULT['num'] += 1
+
+    def __del__(self):
+        pass
+
+    def test(self):
+        print Flexiplane.SETTINGS_DEFAULT['prefix']
+        print Flexiplane.SETTINGS_DEFAULT['num']
 
 
 if __name__ == "__main__":
-    flexiplane()
+    fp4 = Flexiplane()
+    fp4.test()
+    fp5 = Flexiplane('L_')
+    fp5.test()
+    #flexiplane()
