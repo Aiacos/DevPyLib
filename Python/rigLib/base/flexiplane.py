@@ -26,9 +26,6 @@ class Flexiplane():
         Flexiplane.SETTINGS_DEFAULT['num'] += 1
         self.flexiplane(settings=Flexiplane.SETTINGS_DEFAULT)
 
-    def __del__(self):
-        print self.safe_delete()
-
     def safe_delete(self):
         """
         deletes curve info node then flexiplane group node
