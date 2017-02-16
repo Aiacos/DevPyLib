@@ -1,3 +1,5 @@
+__author__ = 'Lorenzo Argentieri'
+
 import os
 import glob
 import pymel.core as pm

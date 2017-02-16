@@ -1,3 +1,5 @@
+__author__ = 'Lorenzo Argentieri'
+
 import pymel.core as pmc
 import maya.cmds as cmds
 

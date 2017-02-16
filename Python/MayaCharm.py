@@ -1,3 +1,5 @@
+__author__ = 'Lorenzo Argentieri'
+
 import sys
 import maya.cmds as cmds
 

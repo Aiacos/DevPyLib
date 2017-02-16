@@ -1,4 +1,4 @@
-__author__ = 'Lorenzo'
+__author__ = 'Lorenzo Argentieri'
 
 import maya.cmds as cmds
 
