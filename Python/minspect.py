@@ -27,7 +27,7 @@ def info(obj):
 #syspath()
 
 test = pmc.polySphere()
-info(test)
+info(test[0])
 
 ################################################
 
