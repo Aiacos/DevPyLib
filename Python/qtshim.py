@@ -2,6 +2,7 @@
 Provides a common interface between PyQt4 and PySide.
 """
 
+# ORIGINAL
 try:
     from PySide import QtCore, QtGui
     import shiboken
