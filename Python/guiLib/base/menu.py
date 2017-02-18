@@ -21,7 +21,9 @@ class Menu():
         :param fn: pointer to function (es. def x(); y=x; y() <- this call x())
         :return:
         """
-        self.item.append(pm.menuItem(item_name, parent=self.lib_menu.name(), command=fn.__name__+'()'))
+        current_item = pm.menuItem(item_name, parent=self.lib_menu.name(), command=fn.__name__+'()')
+        self.item.append(current_item)
+        return current_item
 
 
 def print_text():
