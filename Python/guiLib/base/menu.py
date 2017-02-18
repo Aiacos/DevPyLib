@@ -2,7 +2,6 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 import maya
-from inspect import *
 
 
 class Menu():
