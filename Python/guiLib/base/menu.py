@@ -25,6 +25,8 @@ class Menu():
         self.item.append(current_item)
         return current_item
 
+    # ToDo: submenu
+
 
 def print_text():
     print 'hello test'
