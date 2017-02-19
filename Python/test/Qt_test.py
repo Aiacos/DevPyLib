@@ -6,17 +6,11 @@ from math import *
 __author__ = 'lorenzoargentieri'
 
 
-# app = QtGui.QApplication(sys.argv)
-# window = QtGui.QMainWindow
-# container = QtGui.QWidget()
-#
-# button = QtGui.QPushButton("Cliccami!",container)
-#
-# container.resize(320, 240)
-# container.setWindowTitle("Mi Scappa la Cacca!")
-# container.show()
-#
-# sys.exit(app.exec_())
+# WORKING BASIC TEST
+# app = QtWidgets.QApplication.instance()
+# button = QtWidgets.QPushButton("Hello World")
+# button.show()
+# app.exec_()
 
 class Form(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -40,9 +34,7 @@ class Form(QtWidgets.QDialog):
             self.browser.append("<font color=red>%s is invalid!</font>" % text)
 
 
-
 app = QtWidgets.QApplication.instance()
 form = Form()
 form.show()
 app.exec_()
-
