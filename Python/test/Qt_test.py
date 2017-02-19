@@ -1,5 +1,5 @@
 from __future__ import division
-from PySide import QtCore, QtGui
+from Qt import QtCore, QtWidgets
 import sys
 from math import *
 
@@ -18,18 +18,18 @@ __author__ = 'lorenzoargentieri'
 #
 # sys.exit(app.exec_())
 
-class Form(QtGui.QDialog):
+class Form(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
-        self.browser = QtGui.QTextBrowser()
-        self.lineedit = QtGui.QLineEdit("Type Expression")
+        self.browser = QtWidgets.QTextBrowser()
+        self.lineedit = QtWidgets.QLineEdit("Type Expression")
         self.lineedit.selectAll()
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.browser)
         layout.addWidget(self.lineedit)
         self.setLayout(layout)
         self.lineedit.setFocus()
-        self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
+        self.connect(self.lineedit, QtCore.Signal("returnPressed()"), self.updateUi)
         self.setWindowTitle("Calcola")
 
     def updateUi(self):
@@ -41,7 +41,7 @@ class Form(QtGui.QDialog):
 
 
 
-app = QtGui.QApplication.instance()
+app = QtWidgets.QApplication.instance()
 form = Form()
 form.show()
 app.exec_()
