@@ -83,27 +83,24 @@ class Shader():
         pm.hyperShade(assign=self.shader)
 
     def connect_texture(self, file_node, slot_name, color=True, normal=False):
-        try:
-            if color and (not normal):
-                pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
-            elif (not color) and (not normal):
-                file_node.alphaIsLuminance.set(True)
-                pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name))
-            else:
-                # create bump_node
-                self.bump_node = pm.shadingNode("bump2d", asUtility=True)
-                self.bump_node.bumpInterp.set(1)
-                self.bump_node.aiFlipR.set(0)
-                self.bump_node.aiFlipG.set(0)
+        if color and (not normal):
+            pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
+        elif (not color) and (not normal):
+            file_node.alphaIsLuminance.set(True)
+            pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name))
+        else:
+            # create bump_node
+            self.bump_node = pm.shadingNode("bump2d", asUtility=True)
+            self.bump_node.bumpInterp.set(1)
+            self.bump_node.aiFlipR.set(0)
+            self.bump_node.aiFlipG.set(0)
 
-                # connect file_node to bump_node
-                file_node.alphaIsLuminance.set(True)
-                pm.connectAttr(file_node.outAlpha,  self.bump_node.bumpValue)
+            # connect file_node to bump_node
+            file_node.alphaIsLuminance.set(True)
+            pm.connectAttr(file_node.outAlpha,  self.bump_node.bumpValue)
 
-                # connect bump_node to shader
-                pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
-        except:
-            pass
+            # connect bump_node to shader
+            pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
 
 
 class aiStandard_shader(Shader):
@@ -113,7 +110,7 @@ class aiStandard_shader(Shader):
         self.shader = Shader.get_shader(self)
         self.shader.specularFresnel.set(True)
 
-        print file_node.outColor
+        print file_node['diffuse'].outColor
         # connect texture
         self.makeAiStandard(file_node)
 
@@ -126,13 +123,35 @@ class aiStandard_shader(Shader):
         connect_fresnel = Shader.connect_texture
         connect_normal = Shader.connect_texture
 
-        connect_diffuse(self, file_node, slot_name='color', color=True, normal=False)
-        connect_backlighting(self, file_node, slot_name='Kb', color=False, normal=False)
-        connect_specularColor(self, file_node, slot_name='KsColor', color=True, normal=False)
-        connect_specularWeight(self, file_node, slot_name='Ks', color=False, normal=False)
-        connect_specularRoughness(self, file_node, slot_name='specularRoughness', color=False, normal=False)
-        connect_fresnel(self, file_node, slot_name='Ksn', color=False, normal=False)
-        connect_normal(self, file_node, slot_name='normalCamera', color=True, normal=True)
+        try:
+            connect_diffuse(self, file_node['diffuse'], slot_name='color', color=True, normal=False)
+        except:
+            pass
+        try:
+            connect_backlighting(self, file_node['backlight'], slot_name='Kb', color=False, normal=False)
+        except:
+            pass
+        try:
+            connect_specularColor(self, file_node['specularColor'], slot_name='KsColor', color=True, normal=False)
+        except:
+            pass
+        try:
+            connect_specularWeight(self, file_node['specularWeight'], slot_name='Ks', color=False, normal=False)
+        except:
+            pass
+        try:
+            connect_specularRoughness(self, file_node['specularRoughness'], slot_name='specularRoughness', color=False, normal=False)
+        except:
+            pass
+        try:
+            connect_fresnel(self, file_node['fresnel'], slot_name='Ksn', color=False, normal=False)
+        except:
+            pass
+        try:
+            connect_normal(self, file_node['normal'], slot_name='normalCamera', color=True, normal=True)
+        except:
+            pass
+
 
 
 if __name__ == "__main__":
@@ -141,5 +160,6 @@ if __name__ == "__main__":
     mfile_node.colorSpace.set('Raw')
     # pm.setAttr(file_node + '.fileTextureName', '_path', type='string')
     mfile_node.fileTextureName.set('gooool')
+    tex = {'diffuse': mfile_node}
 
-    sh = aiStandard_shader(shader_name='testShader', file_node=mfile_node)
+    sh = aiStandard_shader(shader_name='testShader', file_node=tex)
