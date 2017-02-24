@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+from rigLib.utils import config
 from shaderLib.base import texture
 
 
@@ -126,31 +127,31 @@ class aiStandard_shader(Shader):
         connect_normal = Shader.connect_normal
 
         try:
-            connect_diffuse(self, file_node['Diffuse'], slot_name='color')
+            connect_diffuse(self, file_node[config.diffuse], slot_name='color')
         except:
             pass
         try:
-            connect_backlighting(self, file_node['backlight'], slot_name='Kb')
+            connect_backlighting(self, file_node[config.backlight], slot_name='Kb')
         except:
             pass
         try:
-            connect_specularColor(self, file_node['Specular'], slot_name='KsColor')
+            connect_specularColor(self, file_node[config.specularColor], slot_name='KsColor')
         except:
             pass
         try:
-            connect_specularWeight(self, file_node['specularWeight'], slot_name='Ks')
+            connect_specularWeight(self, file_node[config.specularWeight], slot_name='Ks')
         except:
             self.shader.Ks.set(0.8)
         try:
-            connect_specularRoughness(self, file_node['Roughness'], slot_name='specularRoughness')
+            connect_specularRoughness(self, file_node[config.specularRoughness], slot_name='specularRoughness')
         except:
             pass
         try:
-            connect_fresnel(self, file_node['f0'], slot_name='Ksn')
+            connect_fresnel(self, file_node[config.fresnel], slot_name='Ksn')
         except:
             self.shader.Ksn.set(0.04)
         try:
-            connect_normal(self, file_node['Normal'], slot_name='normalCamera')
+            connect_normal(self, file_node[config.normal], slot_name='normalCamera')
         except:
             pass
 
