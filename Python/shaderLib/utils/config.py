@@ -4,6 +4,9 @@ diffuse = 'Diffuse'
 backlight = 'backlight'
 specularColor = 'Specular'
 specularWeight = 'specularWeight'
-specularRoughness = 'Roughness'
+specularRoughness = 'specularRoughness'
 fresnel = 'f0'
 normal = 'Normal'
+height = 'Height'
+
+# channel_list = (diffuse, backlight, specularColor, specularWeight, specularRoughness, fresnel, normal, height)

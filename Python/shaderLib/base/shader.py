@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from rigLib.utils import config
+from shaderLib.utils import config
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
@@ -60,6 +60,9 @@ def assign_shader(geo, shader):
 
 
 class Shader():
+    """
+    Create general Shader
+    """
     def __init__(self, shader_name, shader_type='aiStandard'):
         # create a shader
         self.shader_name = shader_name
@@ -107,14 +110,23 @@ class Shader():
 
 
 class aiStandard_shader(Shader):
-    def __init__(self, shader_name, file_node, shader_type='aiStandard'):
+    """
+    Create aiStandard shader
+    """
+    def __init__(self, shader_name, file_node_dict, shader_type='aiStandard'):
+        """
+        Create aiStandard shader
+        :param shader_name: Geo or Texture set (String)
+        :param file_node_dict: file node (instance)
+        :param shader_type:
+        """
         # init base class
         Shader.__init__(self, shader_name, shader_type=shader_type)
         self.shader = Shader.get_shader(self)
         self.shader.specularFresnel.set(True)
 
         # connect texture
-        self.makeAiStandard(file_node)
+        self.makeAiStandard(file_node_dict)
 
     def makeAiStandard(self, file_node):
         connect_diffuse = Shader.connect_texture
@@ -164,4 +176,4 @@ if __name__ == "__main__":
     mfile_node.fileTextureName.set('gooool')
     tex = {'Normal': mfile_node}
 
-    sh = aiStandard_shader(shader_name='testShader', file_node=tex)
+    sh = aiStandard_shader(shader_name='testShader', file_node_dict=tex)
