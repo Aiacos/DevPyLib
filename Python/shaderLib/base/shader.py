@@ -2,7 +2,6 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from rigLib.utils import config
-from shaderLib.base import texture
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):

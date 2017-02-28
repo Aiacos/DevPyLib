@@ -3,15 +3,16 @@ __author__ = 'Lorenzo Argentieri'
 from rigLib.utils import config
 import pymel.core as pm
 import os
-import glob
 
 
 class TextureFileNode():
-    def __init__(self, single_place_node=True):
+    def __init__(self, path, filename, single_place_node=True):
         if single_place_node:
             self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
         else:
             self.place_node = False
+
+        self.connect_file_node(path=path, name=filename)
 
     def connect_placement(self, place_node, file_node):
         pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)
@@ -73,16 +74,21 @@ class TextureFile():
     def __init__(self, path, filename):
         self.path = path
         self.filename = filename
+        self.mesh = ''
+        self.texture_set = ''
+        self.channel = ''
+        self.ext = ''
         self.udim = '<UDIM>'
+
         self._partition()
 
     def _partition(self):
         name, self.texture_set, self.ext = self.filename.split('.')
         self.mesh, sep, self.channel = name.rpartition('_')
         # dict = {'channel': path}
-        #self.texture_list.append()
+        # self.texture_list.append()
 
-    def get_channels(self): # ToDO
+    def get_channels(self):  # ToDO
         if self.texture_set.isdigit():
             return self.mesh, self.channel, self.udim, self.ext
         else:
@@ -94,12 +100,15 @@ class TextureFileManager():
     Search all texture in surcefolder
     """
 
-    def __init__(self, dirname, ext='exr'):
+    def __init__(self, dirname=pm.workspace(q=True, dir=True) + '/sourceimages/', ext='exr'):
         self.texture_dict_list = []
         self.ext = ext
         self.path = dirname
         self.fileList = self.search_in_directory(dirname, ext)
-        self.build_dict()
+        self.tex_list = []
+
+        self.texture_dict = self.build_dict()
+        self.filenode_dict = {}
 
     def search_in_directory(self, dirname, ext):
         ext = ext.lower()
@@ -109,24 +118,40 @@ class TextureFileManager():
                 texList.append(file)
         return texList
 
-    def build_dict(self): #ToDo
+    def build_dict(self):
         geo_dict = {}
         channel_dict = {}
+        material_dict = {}
+
         for tex_name in self.fileList:
             tex = TextureFile(self.path, tex_name)
-            channel_dict[tex.channel] = tex_name
-            geo_dict[tex.mesh] = channel_dict
-            self.texture_dict_list.append(geo_dict)
+            geo_dict[tex.mesh] = {}
+            material_dict[tex.texture_set] = {}
+            channel_dict[tex.channel] = {}
 
-        for item in self.texture_dict_list:
-            print item
+            self.tex_list.append(tex)
 
+        # build dictionary
+        d = {}
+        for geo_key in geo_dict.keys():
+            d[geo_key] = {}
+            for textureset_key in material_dict.keys():
+                d[geo_key][textureset_key] = {}
+                for channel_key in channel_dict.keys():
+                    d[geo_key][textureset_key][channel_key] = {}
+
+        for texture in self.tex_list:
+            if texture.texture_set.isdigit():
+                d[texture.mesh][texture.mesh + '_udim'][texture.channel] = texture.filename
+            else:
+                d[texture.mesh][texture.texture_set][texture.channel] = texture.filename
+        print d
+
+        #return self.texture_dict_list
+        return d
 
     def get_path(self):
         return self.path
-
-    def get_file_list(self):
-        return self.fileList
 
 
 if __name__ == "__main__":
