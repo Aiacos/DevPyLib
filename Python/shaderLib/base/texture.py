@@ -176,7 +176,6 @@ class TextureFileManager():
             if texture.texture_set.isdigit():
                 d[texture.mesh][texture.mesh + '_udim'][texture.channel] = texture.filename
             else:
-                print texture.channel
                 d[texture.mesh][texture.texture_set][texture.channel] = texture.filename
         return d
 

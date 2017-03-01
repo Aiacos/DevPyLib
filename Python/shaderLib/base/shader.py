@@ -85,9 +85,12 @@ class Shader():
         pm.select(geo)
         pm.hyperShade(assign=self.shader)
 
-    def connect_texture(self, file_node, slot_name):
+    def connect_color_texture(self, file_node, slot_name):
         pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
 
+    def connect_luminance_texture(self, file_node, slot_name):
+        file_node.alphaIsLuminance.set(True)
+        pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name))
 
     def connect_fresnel(self, file_node, slot_name):
         file_node.alphaIsLuminance.set(True)
@@ -129,11 +132,11 @@ class aiStandard_shader(Shader):
         self.makeAiStandard(file_node_dict)
 
     def makeAiStandard(self, file_node):
-        connect_diffuse = Shader.connect_texture
-        connect_backlighting = Shader.connect_texture
-        connect_specularColor = Shader.connect_texture
-        connect_specularWeight = Shader.connect_texture
-        connect_specularRoughness = Shader.connect_texture
+        connect_diffuse = Shader.connect_color_texture
+        connect_backlighting = Shader.connect_luminance_texture
+        connect_specularColor = Shader.connect_color_texture
+        connect_specularWeight = Shader.connect_luminance_texture
+        connect_specularRoughness = Shader.connect_luminance_texture
         connect_fresnel = Shader.connect_fresnel
         connect_normal = Shader.connect_normal
 
