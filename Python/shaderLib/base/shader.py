@@ -193,7 +193,7 @@ class TextureShader():
                                          filename=textureset_dict[texture_channel],
                                          single_place_node=self.place_node)
             self.filenode_dict[texture_channel] = fn.filenode
-        print self.filenode_dict
+
         aiStandard_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
 

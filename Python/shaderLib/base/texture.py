@@ -52,12 +52,14 @@ class TextureFileNode():
         :param alphaIsLuminance:
         :return: File Node object
         """
+
+        tex_name, texture_set, ext = name.split('.')
+
         # creation node
-        file_node = pm.shadingNode("file", name=name + '_tex', asTexture=True, isColorManaged=True)
+        file_node = pm.shadingNode("file", name=tex_name + '_tex', asTexture=True, isColorManaged=True)
         file_node.fileTextureName.set(path + '/' + name)
 
         # uvTilingMode -- UDIM -> 3
-        tex_name, texture_set, ext = name.split('.')
         if texture_set.isdigit():
             file_node.uvTilingMode.set(3)
 
