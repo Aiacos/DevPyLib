@@ -71,7 +71,7 @@ class TextureFileNode():
         else:
             file_node.alphaIsLuminance.set(False)
 
-        # connection node
+        # Gamma
         if (self.texture_recongition.channel == config.diffuse
             or self.texture_recongition.channel == config.specularColor):
             file_node.colorSpace.set('sRGB')
