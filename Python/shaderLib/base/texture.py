@@ -4,6 +4,7 @@ import os
 import pymel.core as pm
 from shaderLib.utils import config
 
+
 class TextureFileNode():
     def __init__(self, path, filename, single_place_node=None):
         """
@@ -88,9 +89,6 @@ class TextureFileNode():
         return file_node
 
 
-
-
-
 class TextureFile():  # ToDo: move in util?
     """
     $mesh_Diffuse.$textureSet.$ext
@@ -121,7 +119,7 @@ class TextureFile():  # ToDo: move in util?
         # dict = {'channel': path}
         # self.texture_list.append()
 
-    def get_channels(self):  # ToDO
+    def get_channels(self):
         if self.texture_set.isdigit():
             return self.mesh, self.channel, self.udim, self.ext
         else:
