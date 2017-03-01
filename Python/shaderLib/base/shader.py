@@ -64,6 +64,7 @@ class Shader():
     """
     Create general Shader
     """
+
     def __init__(self, shader_name, shader_type='aiStandard'):
         # create a shader
         self.shader_name = shader_name
@@ -106,17 +107,17 @@ class Shader():
 
         # connect file_node to bump_node
         file_node.alphaIsLuminance.set(True)
-        pm.connectAttr(file_node.outAlpha,  self.bump_node.bumpValue)
+        pm.connectAttr(file_node.outAlpha, self.bump_node.bumpValue)
 
         # connect bump_node to shader
         pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
-
 
 
 class aiStandard_shader(Shader):
     """
     Create aiStandard shader
     """
+
     def __init__(self, shader_name, file_node_dict, shader_type='aiStandard'):
         """
         Create aiStandard shader
@@ -170,7 +171,8 @@ class aiStandard_shader(Shader):
         except:
             pass
 
-class TextureShader():  # ToDo: move in shader maker
+
+class TextureShader():
     def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         """
         Create Shader and Connect it with all associated texture
@@ -188,11 +190,12 @@ class TextureShader():  # ToDo: move in shader maker
 
         for texture_channel in textureset_dict:
             fn = texture.TextureFileNode(path=texture_path,
-                                 filename=textureset_dict[texture_channel],
-                                 single_place_node=self.place_node)
+                                         filename=textureset_dict[texture_channel],
+                                         single_place_node=self.place_node)
             self.filenode_dict[texture_channel] = fn.filenode
         print self.filenode_dict
         aiStandard_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
+
 
 if __name__ == "__main__":
     path = '/Users/lorenzoargentieri/Desktop/testTexture'
