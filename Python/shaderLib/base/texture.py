@@ -1,14 +1,17 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
-
 import pymel.core as pm
 from shaderLib.utils import config
-from shaderLib.base import shader
-
 
 class TextureFileNode():
     def __init__(self, path, filename, single_place_node=None):
+        """
+        Create File Node and connect it with Place Node
+        :param path:
+        :param filename:
+        :param single_place_node:
+        """
         self.texture_recongition = TextureFile(path=path, filename=filename)
 
         if single_place_node is None:
@@ -39,6 +42,15 @@ class TextureFileNode():
         pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
 
     def connect_file_node(self, path, name, single_place_node, gammaCorrect=True, alphaIsLuminance=True):
+        """
+        Connect place node to file node
+        :param path:
+        :param name:
+        :param single_place_node:
+        :param gammaCorrect:
+        :param alphaIsLuminance:
+        :return: File Node object
+        """
         # creation node
         file_node = pm.shadingNode("file", name=name + '_tex', asTexture=True, isColorManaged=True)
         file_node.fileTextureName.set(path + '/' + name)
@@ -76,22 +88,7 @@ class TextureFileNode():
         return file_node
 
 
-class TextureShader():  # ToDo: move in shader maker
-    def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
-        self.filenode_dict = {}
 
-        if single_place_node:
-            self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
-        else:
-            self.place_node = None
-
-        for texture_channel in textureset_dict:
-            fn = TextureFileNode(path=texture_path,
-                                 filename=textureset_dict[texture_channel],
-                                 single_place_node=self.place_node)
-            self.filenode_dict[texture_channel] = fn.filenode
-        print self.filenode_dict
-        shader.aiStandard_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
 
 class TextureFile():  # ToDo: move in util?
@@ -100,6 +97,11 @@ class TextureFile():  # ToDo: move in util?
     """
 
     def __init__(self, path, filename):
+        """
+        Recongize texture name pattern
+        :param path: path of texture
+        :param filename: texture filename
+        """
         self.path = path
         self.filename = filename
         self.mesh = ''
@@ -132,14 +134,18 @@ class TextureFileManager():
     """
 
     def __init__(self, dirname=pm.workspace(q=True, dir=True) + '/sourceimages/', ext='exr'):
-        self.texture_dict_list = []
+        """
+        Search all texture in surceimages and place it in a dictionary sorted by geo, channel and texture_set
+        ($mesh_Diffuse.$textureSet.$ext)
+        :param dirname: source folder
+        :param ext: extension
+        :return texture_dict: dictionary
+        """
         self.ext = ext
         self.path = dirname
         self.fileList = self.search_in_directory(dirname, ext)
         self.tex_list = []
-
         self.texture_dict = self.build_dict()
-        self.filenode_dict = {}
 
     def search_in_directory(self, dirname, ext):
         ext = ext.lower()
@@ -185,7 +191,5 @@ class TextureFileManager():
 
 if __name__ == "__main__":
     path = '/Users/lorenzoargentieri/Desktop/testTexture'
-    tx = TextureFileManager(dirname=path)
-    texdict = tx.texture_dict['Skull']
-    shaderdict = texdict['Skull']
-    ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
+    test_dict = TextureFileManager(dirname=path)
+    print test_dict.texture_dict

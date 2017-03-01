@@ -2,6 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from shaderLib.utils import config
+from shaderLib.base import texture
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
@@ -169,14 +170,33 @@ class aiStandard_shader(Shader):
         except:
             pass
 
+class TextureShader():  # ToDo: move in shader maker
+    def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
+        """
+        Create Shader and Connect it with all associated texture
+        :param texture_path: path to textures
+        :param geo_name: Geometry name
+        :param textureset_dict: material IDs used in Substance Painter or UDIM
+        :param single_place_node: (bool)
+        """
+        self.filenode_dict = {}
 
+        if single_place_node:
+            self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
+        else:
+            self.place_node = None
+
+        for texture_channel in textureset_dict:
+            fn = texture.TextureFileNode(path=texture_path,
+                                 filename=textureset_dict[texture_channel],
+                                 single_place_node=self.place_node)
+            self.filenode_dict[texture_channel] = fn.filenode
+        print self.filenode_dict
+        aiStandard_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
 if __name__ == "__main__":
-
-    mfile_node = pm.shadingNode("file", name='test', asTexture=True, isColorManaged=True)
-    mfile_node.colorSpace.set('Raw')
-    # pm.setAttr(file_node + '.fileTextureName', '_path', type='string')
-    mfile_node.fileTextureName.set('gooool')
-    tex = {'Normal': mfile_node}
-
-    sh = aiStandard_shader(shader_name='testShader', file_node_dict=tex)
+    path = '/Users/lorenzoargentieri/Desktop/testTexture'
+    tx = texture.TextureFileManager(dirname=path)
+    texdict = tx.texture_dict['Skull']
+    shaderdict = texdict['Skull']
+    ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
