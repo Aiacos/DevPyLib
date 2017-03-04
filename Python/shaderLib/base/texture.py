@@ -163,7 +163,10 @@ class TextureFileManager():
         for tex_name in self.fileList:
             tex = TextureFile(self.path, tex_name)
             geo_dict[tex.mesh] = {}
-            material_dict[tex.texture_set] = {}
+            if tex.texture_set.isdigit():
+                material_dict['UDIM'] = {}
+            else:
+                material_dict[tex.texture_set] = {}
             channel_dict[tex.channel] = {}
 
             self.tex_list.append(tex)
@@ -173,16 +176,29 @@ class TextureFileManager():
         for geo_key in geo_dict.keys():
             d[geo_key] = {}
             for textureset_key in material_dict.keys():
-                d[geo_key][textureset_key] = {}
+                if textureset_key.isdigit():
+                    d[geo_key]['UDIM'] = {}
+                else:
+                    d[geo_key][textureset_key] = {}
                 for channel_key in channel_dict.keys():
                     d[geo_key][textureset_key][channel_key] = {}
 
         for texture in self.tex_list:
 
             if texture.texture_set.isdigit():
-                d[texture.mesh][texture.mesh + '_udim'][texture.channel] = texture.filename
+                d[texture.mesh]['UDIM'][texture.channel] = texture.filename
             else:
                 d[texture.mesh][texture.texture_set][texture.channel] = texture.filename
+
+        # clean up dict
+        for geo_key in geo_dict.keys():
+            for textureset_key in material_dict.keys():
+                if d[geo_key][textureset_key]['Diffuse'] == {}:
+                    try:
+                        d[geo_key].pop(textureset_key)
+                    except:
+                        pass
+
         return d
 
     def get_path(self):
