@@ -102,8 +102,8 @@ class Shader():
         # create bump_node
         self.bump_node = pm.shadingNode("bump2d", asUtility=True)
         self.bump_node.bumpInterp.set(1)
-        # self.bump_node.aiFlipR.set(0)
-        # self.bump_node.aiFlipG.set(0)
+        self.bump_node.aiFlipR.set(0)
+        self.bump_node.aiFlipG.set(0)
 
         # connect file_node to bump_node
         file_node.alphaIsLuminance.set(True)
