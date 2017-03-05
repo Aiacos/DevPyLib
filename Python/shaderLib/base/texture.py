@@ -20,7 +20,11 @@ class TextureFileNode():
         else:
             self.place_node = single_place_node  # pm.shadingNode('place2dTexture', asUtility=True)
 
-        self.filenode = self.connect_file_node(path=path, name=filename, single_place_node=single_place_node)
+        # file node name
+        file_name_filenode = self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' + \
+                             self.texture_recongition.texture_set + '.' + self.texture_recongition.ext
+
+        self.filenode = self.connect_file_node(path=path, name=file_name_filenode, single_place_node=single_place_node)
 
     def connect_placement(self, place_node, file_node):
         pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)

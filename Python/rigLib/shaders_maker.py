@@ -18,13 +18,13 @@ class ShadersManager():
                 if texture_set.isdigit():
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     shader.TextureShader(texture_path=self.file_manager.path,
-                                         geo_name=texture_set,
+                                         geo_name=geo_key,
                                          textureset_dict=textureset_dict)
                     break
                 else:
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     shader.TextureShader(texture_path=self.file_manager.path,
-                                         geo_name=texture_set,
+                                         geo_name=geo_key,
                                          textureset_dict=textureset_dict)
 
 if __name__ == "__main__":
