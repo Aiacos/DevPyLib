@@ -196,16 +196,17 @@ class PxrSurface_shader(Shader):
 
     def makePxrSurface(self, pxrtexture_node):
         connect_diffuse = self.connect_color_texture
-        connect_specularFaceColor = self.connect_color_texture
+        connect_specularFaceColor = self.connect_facecolor
         connect_specularRoughness = self.connect_luminance_texture
         connect_normal = self.connect_normal
+        connect_emission = self.connect_color_texture
 
         try:
             connect_diffuse(pxrtexture_node[config.diffuse], slot_name='diffuseColor')
         except:
             pass
         try:
-            connect_specularFaceColor(pxrtexture_node[config.specularColor], slot_name='specularFaceColor')
+            connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularFaceColor')
         except:
             pass
         try:
@@ -214,6 +215,11 @@ class PxrSurface_shader(Shader):
             pass
         try:
             connect_normal(pxrtexture_node[config.normal], slot_name='bumpNormal')
+        except:
+            pass
+        try:
+            connect_emission(pxrtexture_node[config.emission], slot_name='glowColor')
+            # ToDo: rgb to luminance in gain
         except:
             pass
 
@@ -231,6 +237,15 @@ class PxrSurface_shader(Shader):
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
         pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
         print 'connect normal'
+
+    def connect_facecolor(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
+        # multiplyDivide
+        self.multiplydivide = pm.shadingNode("multiplyDivide", asUtility=True)
+
+        pm.connectAttr(pxrtexture_node.resultRGB, self.multiplydivide.input1)
+        pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.multiplydivide.input2)
+
+        pm.connectAttr(self.multiplydivide.output, '%s.%s' % (self.shader, slot_name))
 
 
 class TextureShader():
