@@ -178,7 +178,7 @@ class PxrSurface_shader(Shader):
     Create PxrSurface shader
     """
 
-    def __init__(self, shader_name, file_node_dict, shader_type='PxrSurface'):
+    def __init__(self, shader_name, file_node_dict, shader_type='PxrSurface', use_pxrtexture=True):
         """
         Create PxrSurface shader
         :param shader_name: Geo or Texture set (String)
@@ -192,14 +192,21 @@ class PxrSurface_shader(Shader):
         # init faceColor
         self.shader.specularEdgeColor.set((1.0, 1.0, 1.0))
         # connect texture
-        self.makePxrSurface(file_node_dict)
+        self.makePxrSurface(file_node_dict, use_pxrtexture)
 
-    def makePxrSurface(self, pxrtexture_node):
-        connect_diffuse = self.connect_color_texture
-        connect_specularFaceColor = self.connect_facecolor
-        connect_specularRoughness = self.connect_luminance_texture
-        connect_normal = self.connect_normal
-        connect_emission = self.connect_color_texture
+    def makePxrSurface(self, pxrtexture_node, use_pxrtexture):
+        if use_pxrtexture:
+            connect_diffuse = self.connect_color_pxrtexture
+            connect_specularFaceColor = self.connect_facecolor_pxrblend
+            connect_specularRoughness = self.connect_luminance_pxrtexture
+            connect_normal = self.connect_pxrnormal
+            connect_emission = self.connect_color_pxrtexture
+        else:
+            connect_diffuse = self.connect_color_texture
+            connect_specularFaceColor = self.connect_facecolor_multiplydivide
+            connect_specularRoughness = self.connect_luminance_texture
+            connect_normal = self.connect_normal
+            connect_emission = self.connect_color_texture
 
         try:
             connect_diffuse(pxrtexture_node[config.diffuse], slot_name='diffuseColor')
@@ -223,29 +230,39 @@ class PxrSurface_shader(Shader):
         except:
             pass
 
-    def connect_color_texture(self, pxrtexture_node, slot_name):
+    def connect_color_pxrtexture(self, pxrtexture_node, slot_name):
         print pxrtexture_node.resultRGB
         pm.connectAttr(pxrtexture_node.resultRGB, '%s.%s' % (self.shader, slot_name))
         print 'connect color'
 
-    def connect_luminance_texture(self, pxrtexture_node, slot_name):
+    def connect_luminance_pxrtexture(self, pxrtexture_node, slot_name):
         pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
         print 'connect luminance'
 
-    def connect_normal(self, pxrtexture_node, slot_name):
+    def connect_pxrnormal(self, pxrtexture_node, slot_name):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
         pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
         print 'connect normal'
 
-    def connect_facecolor(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
+    def connect_facecolor_multiplydivide(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # multiplyDivide
         self.multiplydivide = pm.shadingNode("multiplyDivide", asUtility=True)
 
-        pm.connectAttr(pxrtexture_node.resultRGB, self.multiplydivide.input1)
-        pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.multiplydivide.input2)
+        pm.connectAttr(pxrtexture_node.outColor, self.multiplydivide.input1)
+        pm.connectAttr(pxrtexture_metallic_node.outColor, self.multiplydivide.input2)
 
         pm.connectAttr(self.multiplydivide.output, '%s.%s' % (self.shader, slot_name))
+
+    def connect_facecolor_pxrblend(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
+        # blend
+        self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
+        self.pxrblend.operation.set(18)
+
+        pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
+        pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.pxrblend.bottomRGB)
+
+        pm.connectAttr(self.pxrblend.resultRGB, '%s.%s' % (self.shader, slot_name))
 
 
 class TextureShader():
@@ -283,13 +300,27 @@ class TextureShader():
 
         aiStandard_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
-    def build_pxrSurface(self, texture_path, geo_name, textureset_dict):
-        for texture_channel in textureset_dict:
-            fn = texture.TexturePxrTexture(path=texture_path,
-                                           filename=textureset_dict[texture_channel])
-            self.filenode_dict[texture_channel] = fn.filenode
+    def build_pxrSurface(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
+        if pxrTextureNode:
+            for texture_channel in textureset_dict:
+                fn = texture.TexturePxrTexture(path=texture_path,
+                                               filename=textureset_dict[texture_channel])
+                self.filenode_dict[texture_channel] = fn.filenode
 
-        PxrSurface_shader(shader_name=geo_name, file_node_dict=self.filenode_dict)
+            PxrSurface_shader(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
+        else:
+            if single_place_node:
+                self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
+            else:
+                self.place_node = None
+
+            for texture_channel in textureset_dict:
+                fn = texture.TextureFileNode(path=texture_path,
+                                             filename=textureset_dict[texture_channel],
+                                             single_place_node=self.place_node)
+                self.filenode_dict[texture_channel] = fn.filenode
+
+            PxrSurface_shader(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
 
 
 if __name__ == "__main__":
