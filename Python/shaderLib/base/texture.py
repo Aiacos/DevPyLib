@@ -1,17 +1,30 @@
 __author__ = 'Lorenzo Argentieri'
 
-from rigLib.utils import config
 import pymel.core as pm
-import os
-import glob
+from shaderLib.utils import file
+from shaderLib.utils import config
 
 
 class TextureFileNode():
-    def __init__(self, single_place_node=True):
-        if single_place_node:
-            self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
-        else:
+    def __init__(self, path, filename, single_place_node=None):
+        """
+        Create File Node and connect it with Place Node
+        :param path:
+        :param filename:
+        :param single_place_node:
+        """
+        self.texture_recongition = file.TextureFile(path=path, filename=filename)
+
+        if single_place_node is None:
             self.place_node = False
+        else:
+            self.place_node = single_place_node  # pm.shadingNode('place2dTexture', asUtility=True)
+
+        # file node name
+        file_name_filenode = self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' + \
+                             self.texture_recongition.texture_set + '.' + self.texture_recongition.ext
+
+        self.filenode = self.connect_file_node(path=path, name=file_name_filenode, single_place_node=single_place_node)
 
     def connect_placement(self, place_node, file_node):
         pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)
@@ -33,102 +46,100 @@ class TextureFileNode():
         pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node)
         pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
 
-    def connect_file_node(self, path, name, gammaCorrect=True, alphaIsLuminance=True, single_place_node=True):
+    def connect_file_node(self, path, name, single_place_node, gammaCorrect=True, alphaIsLuminance=True):
+        """
+        Connect place node to file node
+        :param path:
+        :param name:
+        :param single_place_node:
+        :param gammaCorrect:
+        :param alphaIsLuminance:
+        :return: File Node object
+        """
+
+        tex_name, texture_set, ext = name.split('.')
+
         # creation node
-        file_node = pm.shadingNode("file", name=name + '_tex', asTexture=True, isColorManaged=True)
+        file_node = pm.shadingNode("file", name=tex_name + '_tex', asTexture=True, isColorManaged=True)
         file_node.fileTextureName.set(path + '/' + name)
 
         # uvTilingMode -- UDIM -> 3
-        tex_name, texture_set, ext = name.split('.')
         if texture_set.isdigit():
             file_node.uvTilingMode.set(3)
 
         # alphaIsLuminance
-        if alphaIsLuminance:
+        if (self.texture_recongition.channel == config.backlight
+            or self.texture_recongition.channel == config.specularWeight
+            or self.texture_recongition.channel == config.specularRoughness
+            or self.texture_recongition.channel == config.fresnel
+            or self.texture_recongition.channel == config.normal
+            or self.texture_recongition.channel == config.height):
             file_node.alphaIsLuminance.set(True)
         else:
             file_node.alphaIsLuminance.set(False)
 
-        # connection node
-        if gammaCorrect:
+        # Gamma
+        if (self.texture_recongition.channel == config.diffuse
+            or self.texture_recongition.channel == config.specularColor):
             file_node.colorSpace.set('sRGB')
         else:
             file_node.colorSpace.set('Raw')
 
         # place node connect
-        if single_place_node:
-            self.connect_placement(single_place_node, file_node)
+        if single_place_node is None:
+            multi_place_node = pm.shadingNode('place2dTexture', asUtility=True)
+            self.connect_placement(multi_place_node, file_node)
         else:
-            place_node_normal = pm.shadingNode('place2dTexture', asUtility=True)
-            self.connect_placement(place_node_normal, file_node)
+            self.connect_placement(self.place_node, file_node)
 
         return file_node
 
-
-class TextureFile():
-    """
-    $mesh_Diffuse.$textureSet.$ext
-    """
-
+class TexturePxrTexture():
     def __init__(self, path, filename):
-        self.path = path
-        self.filename = filename
-        self.udim = '<UDIM>'
-        self._partition()
+        """
+        Create pxrTexture Node
+        :param path:
+        :param filename:
+        """
+        self.texture_recongition = file.TextureFile(path=path, filename=filename)
 
-    def _partition(self):
-        name, self.texture_set, self.ext = self.filename.split('.')
-        self.mesh, sep, self.channel = name.rpartition('_')
-        # dict = {'channel': path}
-        #self.texture_list.append()
+        # file node name
+        file_name_filenode = self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' + \
+                             self.texture_recongition.texture_set + '.' + self.texture_recongition.ext
 
-    def get_channels(self): # ToDO
-        if self.texture_set.isdigit():
-            return self.mesh, self.channel, self.udim, self.ext
+        self.filenode = self.connect_file_node(path=path, name=file_name_filenode)
+
+    def connect_file_node(self, path, name, linearize=True, artistic=True):
+        """
+        Connect place node to file node
+        :param path:
+        :param name:
+        :param linearize:
+        :param artistic:
+        :return: pxrTexture Node object
+        """
+
+        tex_name, texture_set, ext = name.split('.')
+
+        # creation node
+        pxrtexture_node = pm.shadingNode("PxrTexture", name=tex_name + '_tex', asTexture=True)
+        pxrtexture_node.filename.set(path + '/' + name)
+
+        # uvTilingMode -- UDIM -> 3
+        if texture_set.isdigit():
+            pxrtexture_node.filename.set(path + '/' + tex_name + '.' + '_MAPID_' + '.' + ext)
+            pxrtexture_node.atlasStyle.set(1)
         else:
-            return self.mesh, self.channel, self.texture_set, self.ext
+            pxrtexture_node.filename.set(path + '/' + name)
+
+        # Gamma
+        if (self.texture_recongition.channel == config.diffuse
+            or self.texture_recongition.channel == config.specularColor):
+            pxrtexture_node.linearize.set(True)
+        else:
+            pxrtexture_node.linearize.set(False)
+
+        return pxrtexture_node
 
 
-class TextureFileManager():
-    """
-    Search all texture in surcefolder
-    """
 
-    def __init__(self, dirname, ext='exr'):
-        self.texture_dict_list = []
-        self.ext = ext
-        self.path = dirname
-        self.fileList = self.search_in_directory(dirname, ext)
-        self.build_dict()
-
-    def search_in_directory(self, dirname, ext):
-        ext = ext.lower()
-        texList = []
-        for file in os.listdir(dirname):
-            if file.endswith(ext):
-                texList.append(file)
-        return texList
-
-    def build_dict(self): #ToDo
-        geo_dict = {}
-        channel_dict = {}
-        for tex_name in self.fileList:
-            tex = TextureFile(self.path, tex_name)
-            channel_dict[tex.channel] = tex_name
-            geo_dict[tex.mesh] = channel_dict
-            self.texture_dict_list.append(geo_dict)
-
-        for item in self.texture_dict_list:
-            print item
-
-
-    def get_path(self):
-        return self.path
-
-    def get_file_list(self):
-        return self.fileList
-
-
-if __name__ == "__main__":
-    path = '/Users/lorenzoargentieri/Desktop/testTexture'
-    tx = TextureFileManager(dirname=path)
