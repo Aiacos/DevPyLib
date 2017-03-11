@@ -233,7 +233,6 @@ class PxrSurface_shader(Shader):
             pass
 
     def connect_color_pxrtexture(self, pxrtexture_node, slot_name):
-        print pxrtexture_node.resultRGB
         pm.connectAttr(pxrtexture_node.resultRGB, '%s.%s' % (self.shader, slot_name))
 
     def connect_luminance_pxrtexture(self, pxrtexture_node, slot_name):
@@ -275,8 +274,8 @@ class TextureShader():
         """
         self.filenode_dict = {}
         # See active Renderer
+        # renderManRIS, arnold
         self.renderer = pm.getAttr('defaultRenderGlobals.currentRenderer')
-        print self.renderer  # renderManRIS, arnold
 
         if self.renderer == 'arnold':
             self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
@@ -331,4 +330,4 @@ if __name__ == "__main__":
     shaderdict = texdict['Skull']
     ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
 
-#ToDo: gui for signle shader maker main
+#ToDo: gui for signle shader maker main passing geo name
