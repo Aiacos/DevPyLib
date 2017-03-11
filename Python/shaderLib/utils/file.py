@@ -45,7 +45,7 @@ class TextureFileManager():
     Search all texture in surcefolder
     """
 
-    def __init__(self, dirname=pm.workspace(q=True, dir=True) + '/sourceimages/', ext='exr'):
+    def __init__(self, dirname=pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/', ext='exr'):
         """
         Search all texture in surceimages and place it in a dictionary sorted by geo, channel and texture_set
         ($mesh_Diffuse.$textureSet.$ext)
@@ -64,6 +64,7 @@ class TextureFileManager():
         texList = []
         for file in os.listdir(dirname):
             if file.endswith(ext):
+                print file
                 texList.append(file)
         return texList
 
@@ -118,6 +119,6 @@ class TextureFileManager():
 
 
 if __name__ == "__main__":
-    path = '/Users/lorenzoargentieri/Desktop/testTexture'
-    test_dict = TextureFileManager(dirname=path)
+    path = 'testPath'
+    test_dict = TextureFileManager() #PATH
     print test_dict.texture_dict

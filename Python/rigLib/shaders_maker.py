@@ -6,7 +6,7 @@ from shaderLib.base import shader
 
 
 class ShadersManager():
-    def __init__(self, path):
+    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/')):
         self.file_manager = file.TextureFileManager(dirname=path)
         self.texture_dict = self.file_manager.texture_dict
 
@@ -29,4 +29,4 @@ class ShadersManager():
                                          textureset_dict=textureset_dict)
 
 if __name__ == "__main__":
-    shm = ShadersManager(path='/Users/lorenzoargentieri/Desktop/testTexture')
+    shm = ShadersManager()
