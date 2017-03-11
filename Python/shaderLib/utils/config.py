@@ -8,5 +8,5 @@ specularRoughness = 'Roughness'
 fresnel = 'f0'
 normal = 'Normal'
 height = 'Height'
-
-# channel_list = (diffuse, backlight, specularColor, specularWeight, specularRoughness, fresnel, normal, height)
+metallic = 'Metallic'
+emission = 'Emissive'
