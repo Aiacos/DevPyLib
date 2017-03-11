@@ -235,17 +235,14 @@ class PxrSurface_shader(Shader):
     def connect_color_pxrtexture(self, pxrtexture_node, slot_name):
         print pxrtexture_node.resultRGB
         pm.connectAttr(pxrtexture_node.resultRGB, '%s.%s' % (self.shader, slot_name))
-        print 'connect color'
 
     def connect_luminance_pxrtexture(self, pxrtexture_node, slot_name):
         pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
-        print 'connect luminance'
 
     def connect_pxrnormal(self, pxrtexture_node, slot_name):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
         pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
-        print 'connect normal'
 
     def connect_facecolor_multiplydivide(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # multiplyDivide
@@ -333,3 +330,5 @@ if __name__ == "__main__":
     texdict = tx.texture_dict['Skull']
     shaderdict = texdict['Skull']
     ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
+
+#ToDo: gui for signle shader maker main

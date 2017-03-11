@@ -64,7 +64,6 @@ class TextureFileManager():
         texList = []
         for file in os.listdir(dirname):
             if file.endswith(ext):
-                print file
                 texList.append(file)
         return texList
 
@@ -111,7 +110,6 @@ class TextureFileManager():
                         d[geo_key].pop(textureset_key)
                     except:
                         pass
-        print d
         return d
 
     def get_path(self):

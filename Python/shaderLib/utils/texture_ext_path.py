@@ -33,7 +33,7 @@ def changeExtension(filename,newExtension):
     return prefix + newExtension
 
 
-def replace_ext(file_name_attribute, ext=new_ext, file_type=file_node_type):
+def replace_ext(ext=new_ext, file_name_attribute=fileTextureAttribute, file_type=file_node_type):
     """
     Replace all file extension in a given list
     :param file_node_type: 'file' or 'PxrTexture'
@@ -51,7 +51,7 @@ def replace_ext(file_name_attribute, ext=new_ext, file_type=file_node_type):
         new_tex = changeExtension(texture_filename, ext)
         pm.setAttr(f + file_name_attribute, new_tex, type="string")
 
-def replace_path(file_name_attribute, path,file_type=file_node_type):
+def replace_path(path, file_name_attribute=fileTextureAttribute, file_type=file_node_type):
     """
     Replace all file path in a given list
     :param file_node_type: 'file' or 'PxrTexture'

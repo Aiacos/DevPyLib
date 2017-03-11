@@ -15,7 +15,6 @@ class ShadersManager():
 
             # check if is UDIM or, for all texture set
             for texture_set in self.texture_dict[geo_key].keys():
-                print 'tesxtureset is digit: '+ texture_set
                 if texture_set == 'UDIM':
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     shader.TextureShader(texture_path=self.file_manager.path,
