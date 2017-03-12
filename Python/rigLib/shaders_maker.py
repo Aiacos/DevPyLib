@@ -2,6 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from shaderLib.utils import file
+from shaderLib.utils import texture_ext_path
 from shaderLib.base import shader
 
 
@@ -26,6 +27,8 @@ class ShadersManager():
                     shader.TextureShader(texture_path=self.file_manager.path,
                                          geo_name=texture_set,
                                          textureset_dict=textureset_dict)
+        # set tx or tex file format
+        texture_ext_path.replace_ext()
 
 if __name__ == "__main__":
     shm = ShadersManager()

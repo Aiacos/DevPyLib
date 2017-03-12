@@ -3,9 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from shaderLib.utils import config
 from shaderLib.utils import file
-from shaderLib.utils import texture_ext_path
 from shaderLib.base import texture
-
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
@@ -240,6 +238,7 @@ class PxrSurface_shader(Shader):
 
     def connect_pxrnormal(self, pxrtexture_node, slot_name):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
+        self.pxrnormalmap_node.invertBump.set(True)
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
         pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
 
@@ -283,8 +282,6 @@ class TextureShader():
             self.build_pxrSurface(texture_path, geo_name, textureset_dict)
         else:
             print 'No valid active render engine'
-        # set tx or tex file format
-        texture_ext_path.replace_ext()
 
     def build_aiStandard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         if single_place_node:
