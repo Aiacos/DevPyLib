@@ -1,8 +1,8 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from shaderLib.utils import file
-from shaderLib.utils import config
+from mayaLib.shaderLib.utils import file
+from mayaLib.shaderLib.utils import config
 
 
 class TextureFileNode():

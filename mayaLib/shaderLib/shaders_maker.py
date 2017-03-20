@@ -1,9 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from shaderLib.utils import file
-from shaderLib.utils import texture_ext_path
-from shaderLib.base import shader
+from mayaLib.shaderLib.utils import file
+from mayaLib.shaderLib.utils import texture_ext_path
+from mayaLib.shaderLib.base import shader
 
 
 class ShadersManager():
@@ -29,6 +29,7 @@ class ShadersManager():
                                          textureset_dict=textureset_dict)
         # set tx or tex file format
         texture_ext_path.replace_ext()
+
 
 if __name__ == "__main__":
     shm = ShadersManager()

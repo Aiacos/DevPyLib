@@ -1,9 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from shaderLib.utils import config
-from shaderLib.utils import file
-from shaderLib.base import texture
+from mayaLib.shaderLib.utils import config
+from mayaLib.shaderLib.utils import file
+from mayaLib.shaderLib.base import texture
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):

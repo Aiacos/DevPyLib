@@ -2,8 +2,8 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from string import letters
-from shaderLib.base import shader
-from rigLib.utils import util
+from mayaLib.shaderLib.base import shader
+from mayaLib.rigLib.utils import util
 
 
 class Flexiplane():

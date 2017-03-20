@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 diffuse = 'Diffuse'
-backlight = 'backlight'
+# backlight = 'Backlight'
 specularColor = 'Specular'
 specularWeight = 'specularWeight'
 specularRoughness = 'Roughness'
