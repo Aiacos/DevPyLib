@@ -8,6 +8,8 @@ from mayaLib.shaderLib.base import shader
 
 class ShadersManager():
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/')):
+        # See active Renderer
+        self.render_engine = pm.getAttr('defaultRenderGlobals.currentRenderer')
         self.file_manager = file.TextureFileManager(dirname=path)
         self.texture_dict = self.file_manager.texture_dict
 
@@ -27,8 +29,10 @@ class ShadersManager():
                     shader.TextureShader(texture_path=self.file_manager.path,
                                          geo_name=texture_set,
                                          textureset_dict=textureset_dict)
-        # set tx or tex file format
-        texture_ext_path.replace_ext()
+
+        if self.render_engine != 'arnold':
+            # set tx or tex file format
+            texture_ext_path.replace_ext()
 
 
 if __name__ == "__main__":

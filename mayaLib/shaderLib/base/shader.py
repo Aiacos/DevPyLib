@@ -189,6 +189,8 @@ class PxrSurface_shader(Shader):
         Shader.__init__(self, shader_name, shader_type=shader_type)
         self.shader = Shader.get_shader(self)
 
+        # init Specular model type
+        self.shader.specularModelType.set(1)
         # init faceColor
         self.shader.specularEdgeColor.set((1.0, 1.0, 1.0))
         # connect texture
