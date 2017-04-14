@@ -2,7 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from string import letters
-from mayaLib.shaderLib.base import shader
+from mayaLib.shaderLib.base import shader_base
 from mayaLib.rigLib.utils import util
 
 
@@ -76,11 +76,11 @@ class Flexiplane():
         :return: none
         """
         name = 'flexiPlane_lambert_material01'
-        my_shader = shader.build_lambert(shaderType='lambert',
-                                         shaderName=name,
-                                         color=color,
-                                         transparency=transparency)
-        shader.assign_shader(geo, my_shader)
+        my_shader = shader_base.build_lambert(shaderType='lambert',
+                                              shaderName=name,
+                                              color=color,
+                                              transparency=transparency)
+        shader_base.assign_shader(geo, my_shader)
 
     def create_surfaceshader(self, geo, color=(0.5, 0.5, 0.5)):
         """
@@ -90,10 +90,10 @@ class Flexiplane():
         :return: none
         """
         name = 'flexiPlane_surface_material01'
-        my_shader = shader.build_surfaceshader(shaderType='surfaceShader',
-                                               shaderName=name,
-                                               color=color)
-        shader.assign_shader(geo, my_shader)
+        my_shader = shader_base.build_surfaceshader(shaderType='surfaceShader',
+                                                    shaderName=name,
+                                                    color=color)
+        shader_base.assign_shader(geo, my_shader)
 
     # function to create control curves
     def ctrl_square(self, name=None, pos=None):

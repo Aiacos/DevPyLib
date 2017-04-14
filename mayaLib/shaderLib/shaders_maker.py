@@ -3,7 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from mayaLib.shaderLib.utils import file
 from mayaLib.shaderLib.utils import texture_ext_path
-from mayaLib.shaderLib.base import shader
+from mayaLib.shaderLib import shader
 
 
 class ShadersManager():
@@ -21,14 +21,14 @@ class ShadersManager():
                 if texture_set == 'UDIM':
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     shader.TextureShader(texture_path=self.file_manager.path,
-                                         geo_name=geo_key,
-                                         textureset_dict=textureset_dict)
+                                              geo_name=geo_key,
+                                              textureset_dict=textureset_dict)
                     break
                 else:
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     shader.TextureShader(texture_path=self.file_manager.path,
-                                         geo_name=texture_set,
-                                         textureset_dict=textureset_dict)
+                                              geo_name=texture_set,
+                                              textureset_dict=textureset_dict)
 
         if self.render_engine != 'arnold':
             # set tx or tex file format
@@ -36,4 +36,5 @@ class ShadersManager():
 
 
 if __name__ == "__main__":
+    print 'ok'
     shm = ShadersManager()
