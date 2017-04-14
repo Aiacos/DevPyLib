@@ -1,5 +1,6 @@
-from pymel import core as pm
+__author__ = 'Lorenzo Argentieri'
 
+from pymel import core as pm
 from mayaLib.shaderLib.base import texture
 from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
 from mayaLib.shaderLib.base.renderamn import PxrSurface_shaderBase
