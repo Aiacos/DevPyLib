@@ -1,3 +1,4 @@
+import mayaLib.pipelineLib
 import mayaLib.guiLib
 import mayaLib.rigLib
 import mayaLib.shaderLib
