@@ -16,7 +16,7 @@ def make_twist_joints(joint_selection=pm.ls(sl=True, type='joint', dag=True), n_
     head_jnt = joint_selection[0]
     tail_jnt = joint_selection[1]
 
-    distance = rigLib.utils.util.get_distance(head_jnt, tail_jnt) / (n_twist_joint+1)
+    distance = mayaLib.rigLib.utils.util.get_distance(head_jnt, tail_jnt) / (n_twist_joint+1)
 
     pm.parent(tail_jnt.name(), world=True)
     twist_jnt_grp = pm.group(name=head_jnt.name() + '_twist' + '_grp')
@@ -38,6 +38,7 @@ def make_twist_joints(joint_selection=pm.ls(sl=True, type='joint', dag=True), n_
         pm.parent(joint_list[i], twist_jnt_grp)
 
     pm.parent(tail_jnt, head_jnt)
+    pm.parentConstraint(head_jnt, twist_jnt_grp, mo=True)
 
 
 if __name__ == "__main__":
