@@ -30,9 +30,13 @@ class ShadersManager():
                                               geo_name=texture_set,
                                               textureset_dict=textureset_dict)
 
-        if self.render_engine != 'arnold':
-            # set tx or tex file format
-            texture_ext_path.replace_ext()
+        # set tx or tex file format
+        if self.render_engine == 'arnold':
+            # for arnold should be default, conversion is done by Maya
+            #texture_ext_path.replace_ext(ext='.tx')
+            pass
+        elif self.render_engine == 'renderManRIS':
+            texture_ext_path.replace_ext(ext='.tex', file_name_attribute='.filename', file_type='PxrTexture')
 
 
 if __name__ == "__main__":
