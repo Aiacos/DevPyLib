@@ -70,7 +70,7 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_luminance_pxrtexture(self, pxrtexture_node, slot_name):
         pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
 
-    def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=False):
+    def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=True):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
         self.pxrnormalmap_node.invertBump.set(directx_normal)
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
