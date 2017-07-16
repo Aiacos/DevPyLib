@@ -70,11 +70,18 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_luminance_pxrtexture(self, pxrtexture_node, slot_name):
         pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
 
-    def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=True):
+    def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=True, adjustNormal=True):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
         self.pxrnormalmap_node.invertBump.set(directx_normal)
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
-        pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
+
+        if not adjustNormal:
+            pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
+        else:
+            self.pxradjustnormal_node = pm.shadingNode("PxrAdjustNormal", asTexture=True)
+            pm.connectAttr(self.pxrnormalmap_node.resultN, self.pxradjustnormal_node.inputNormal)
+            pm.connectAttr(self.pxradjustnormal_node.resultN, '%s.%s' % (self.shader, slot_name))
+
 
     def connect_facecolor_multiplydivide(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # multiplyDivide

@@ -7,10 +7,10 @@ from mayaLib.shaderLib import shader
 
 
 class ShadersManager():
-    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/')):
+    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr'):
         # See active Renderer
         self.render_engine = pm.getAttr('defaultRenderGlobals.currentRenderer')
-        self.file_manager = file.TextureFileManager(dirname=path)
+        self.file_manager = file.TextureFileManager(dirname=path, ext=ext)
         self.texture_dict = self.file_manager.texture_dict
 
         # for all geo
@@ -40,5 +40,4 @@ class ShadersManager():
 
 
 if __name__ == "__main__":
-    print 'ok'
     shm = ShadersManager()
