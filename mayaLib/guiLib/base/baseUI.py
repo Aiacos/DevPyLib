@@ -61,9 +61,24 @@ class FunctionUI(QtWidgets.QWidget):
 
         #self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
         self.setWindowTitle(func.__name__)
+        self.toggleDefaultParameter(defaultvisible=False)
 
 
+    def toggleDefaultParameter(self, defaultvisible=False):
+        counter = 0
+        for arg in self.args:
+            if defaultvisible:
+                #show
+                if arg[1]:
+                    self.label_list[counter].show()
+                    self.lineedit_list[counter].show()
+            else:
+                #hide
+                if arg[1]:
+                    self.label_list[counter].hide()
+                    self.lineedit_list[counter].hide()
 
+            counter = counter + 1
 
     def getParameterList(self):
         args = self.sig.args
