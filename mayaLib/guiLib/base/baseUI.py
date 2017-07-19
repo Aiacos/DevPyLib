@@ -2,8 +2,10 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 import inspect
+import ast
 import mayaLib.pipelineLib.docs as doc
 from mayaLib.guiLib.Qt import QtCore, QtWidgets
+
 
 def test(a, b, c, d='ciao', e='stronzo', f=1):
     """
@@ -16,7 +18,8 @@ def test(a, b, c, d='ciao', e='stronzo', f=1):
     :param f:
     :return:
     """
-    pass
+    print a,b,c,d,e,f
+
 
 class Prova():
     def __init__(self, ciccia, pupu=2048):
@@ -25,10 +28,12 @@ class Prova():
     def motodo(self):
         print 'test method'
 
+
 class FunctionUI(QtWidgets.QWidget):
     def __init__(self, func, parent=None):
         super(FunctionUI, self).__init__(parent)
 
+        self.function = func
         self.sig = inspect.getargspec(func)
 
         self.layout = QtWidgets.QGridLayout()
@@ -59,26 +64,12 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.doclabel, row, 1)
         self.setLayout(self.layout)
 
-        #self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
+        # self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
         self.setWindowTitle(func.__name__)
+
+        #test
         self.toggleDefaultParameter(defaultvisible=False)
-
-
-    def toggleDefaultParameter(self, defaultvisible=False):
-        counter = 0
-        for arg in self.args:
-            if defaultvisible:
-                #show
-                if arg[1]:
-                    self.label_list[counter].show()
-                    self.lineedit_list[counter].show()
-            else:
-                #hide
-                if arg[1]:
-                    self.label_list[counter].hide()
-                    self.lineedit_list[counter].hide()
-
-            counter = counter + 1
+        self.execFunction()
 
     def getParameterList(self):
         args = self.sig.args
@@ -105,7 +96,44 @@ class FunctionUI(QtWidgets.QWidget):
 
         return argspairs
 
+    # SLOTS
+    def toggleDefaultParameter(self, defaultvisible=False):
+        counter = 0
+        for arg in self.args:
+            if defaultvisible:
+                # show
+                if arg[1]:
+                    self.label_list[counter].show()
+                    self.lineedit_list[counter].show()
+            else:
+                # hide
+                if arg[1]:
+                    self.label_list[counter].hide()
+                    self.lineedit_list[counter].hide()
 
+            counter = counter + 1
+
+    def execFunction(self):
+        param_list = []
+
+        for param in self.lineedit_list:
+            value = param.text()
+            if value.replace('.','',1).isdigit():
+                value = ast.literal_eval(value)
+                param_list.append(value)
+            elif value == 'True':
+                value = True
+                param_list.append(value)
+            elif value == 'False':
+                value = False
+                param_list.append(value)
+            else:
+                param_list.append(value)
+
+        self.wrapper(param_list)
+
+    def wrapper(self, args):
+        self.function(*args)
 
 
 if __name__ == "__main__":
@@ -115,4 +143,4 @@ if __name__ == "__main__":
     # app.exec_()
     t = FunctionUI(test)
     t.show()
-    #print t.getParameterList()
+    # print t.getParameterList()
