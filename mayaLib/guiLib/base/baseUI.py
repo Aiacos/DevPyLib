@@ -62,6 +62,8 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.execButton = QtWidgets.QPushButton("Execute")
         self.advancedCheckBox = QtWidgets.QCheckBox("Advanced")
+        self.advancedCheckBox.setChecked(False)
+        self.toggleDefaultParameter(False)
         self.layout.addWidget(self.execButton, row, 1)
         self.layout.addWidget(self.advancedCheckBox, row, 0)
 
