@@ -60,16 +60,20 @@ class FunctionUI(QtWidgets.QWidget):
 
             row = row + 1
 
+        self.execButton = QtWidgets.QPushButton("Execute")
+        self.advancedCheckBox = QtWidgets.QCheckBox("Advanced")
+        self.layout.addWidget(self.execButton, row, 1)
+        self.layout.addWidget(self.advancedCheckBox, row, 0)
+
         self.doclabel = QtWidgets.QLabel(doc.getDocs(func))
-        self.layout.addWidget(self.doclabel, row, 1)
+        self.layout.addWidget(self.doclabel, row+1, 1)
         self.setLayout(self.layout)
 
-        # self.connect(self.lineedit, QtCore.SIGNAL("returnPressed()"), self.updateUi)
-        self.setWindowTitle(func.__name__)
+        #self.connect(self.execButton, QtCore.Signal("clicked()"), self.execFunction) # Deprecated
+        self.execButton.clicked.connect(self.execFunction)
+        self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
-        #test
-        self.toggleDefaultParameter(defaultvisible=False)
-        self.execFunction()
+        self.setWindowTitle(func.__name__)
 
     def getParameterList(self):
         args = self.sig.args
@@ -143,4 +147,3 @@ if __name__ == "__main__":
     # app.exec_()
     t = FunctionUI(test)
     t.show()
-    # print t.getParameterList()
