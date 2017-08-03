@@ -18,7 +18,7 @@ def test(a, b, c, d='ciao', e='stronzo', f=1):
     :param f:
     :return:
     """
-    print a,b,c,d,e,f
+    print a, b, c, d, e, f
 
 
 class Prova():
@@ -68,10 +68,10 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.advancedCheckBox, row, 0)
 
         self.doclabel = QtWidgets.QLabel(doc.getDocs(func))
-        self.layout.addWidget(self.doclabel, row+1, 1)
+        self.layout.addWidget(self.doclabel, row + 1, 1)
         self.setLayout(self.layout)
 
-        #self.connect(self.execButton, QtCore.Signal("clicked()"), self.execFunction) # Deprecated
+        # self.connect(self.execButton, QtCore.Signal("clicked()"), self.execFunction) # Deprecated
         self.execButton.clicked.connect(self.execFunction)
         self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
@@ -124,7 +124,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         for param in self.lineedit_list:
             value = param.text()
-            if value.replace('.','',1).isdigit():
+            if value.replace('.', '', 1).isdigit():
                 value = ast.literal_eval(value)
                 param_list.append(value)
             elif value == 'True':

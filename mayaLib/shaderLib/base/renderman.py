@@ -95,9 +95,10 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_facecolor_pxrblend(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # blend
         self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
-        self.pxrblend.operation.set(18)
+        self.pxrblend.operation.set(19)#18 multiply
 
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
-        pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.pxrblend.bottomRGB)
+        pm.connectAttr(pxrtexture_metallic_node.resultR, self.pxrblend.topA)
+        pm.setAttr(self.pxrblend.bottomRGB, 0.039, 0.039, 0.039, type="double3")
 
         pm.connectAttr(self.pxrblend.resultRGB, '%s.%s' % (self.shader, slot_name))
