@@ -4,7 +4,7 @@ import pymel.core as pm
 import maya.mel as mel
 
 class BaseFluid():
-    def __init__(self, fluidName=''):
+    def __init__(self, fluidName='', baseRes=32):
         if fluidName != '':
             self.fluidEmitString = 'fluidEmitter -pos 0 0 0 -type omni  -name \\"' + fluidName + '#\\" -der 1 -her 1 -fer 1 -fdr 2 -r 100.0 -cye none -cyi 1 -mxd 1 -mnd 0 ;'
         else:
@@ -26,6 +26,33 @@ class BaseFluid():
         print '/////////////////'
         print self.fluidEmit
         print self.fluidShape
+
+        self.setupFluidShape(baseRes)
+
+    def setupFluidShape(self, baseRes=32):
+        # Base Resolution
+        self.fluidShape.baseResolution.set(baseRes)
+
+        # Boundary
+        self.fluidShape.boundaryX.set(0)
+        self.fluidShape.boundaryY.set(2)
+        self.fluidShape.boundaryZ.set(0)
+
+        # Solver
+        self.fluidShape.highDetailSolve.set(3)
+        self.fluidShape.substeps.set(2)
+        self.fluidShape.solverQuality.set(254)
+
+        # Resize
+        self.fluidShape.autoResize.set(1)
+        self.fluidShape.maxResolution.set(baseRes**2)
+        self.fluidShape.autoResizeMargin.set(4)
+
+        # Lighting
+        self.fluidShape.selfShadowing.set(1)
+
+    def setupEmitter():
+        pass
 
 
 if __name__ == '__main__':
