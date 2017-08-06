@@ -7,7 +7,7 @@ class BaseFluid():
     """
     Create Fluid Container and Emitter
     """
-    
+
     def __init__(self, fluidName='', baseRes=32):
         # Create Fluid Container and Emitter
         if fluidName != '':
@@ -29,6 +29,9 @@ class BaseFluid():
 
         # Setup
         self.setupFluidShape(baseRes)
+
+        # Return Shape and Emitter
+        return self.fluidShape, self.fluidEmit
 
     def setupFluidShape(self, baseRes=32):
         # Base Resolution
