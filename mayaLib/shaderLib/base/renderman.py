@@ -82,7 +82,6 @@ class PxrSurface_shaderBase(Shader_base):
             pm.connectAttr(self.pxrnormalmap_node.resultN, self.pxradjustnormal_node.inputNormal)
             pm.connectAttr(self.pxradjustnormal_node.resultN, '%s.%s' % (self.shader, slot_name))
 
-
     def connect_facecolor_multiplydivide(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # multiplyDivide
         self.multiplydivide = pm.shadingNode("multiplyDivide", asUtility=True)
