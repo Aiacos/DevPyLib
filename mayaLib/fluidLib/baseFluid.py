@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-
+import maya.mel as mel
 
 class BaseFluid():
     def __init__(self, fluidName=''):
