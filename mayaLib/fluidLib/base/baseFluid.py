@@ -12,10 +12,10 @@ class BaseFluid():
     Create Fluid Container and Emitter
     """
 
-    def __init__(self, fluidName='', baseRes=32):
+    def __init__(self, fluidName='', baseRes=32, emitObj=None):
         # Create Fluid Container and Emitter
         cont = mayaLib.fluidLib.base.baseContainer.FluidContainer()
-        emit = mayaLib.fluidLib.base.baseEmitter.FlEmitter()
+        emit = mayaLib.fluidLib.base.baseEmitter.FlEmitter(obj=emitObj)
 
         self.fluidShape = cont.getContainer()[0]
         self.fluidEmit = emit.getEmitter()[0]
