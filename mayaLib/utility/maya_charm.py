@@ -4,7 +4,7 @@ import sys
 import maya.cmds as cmds
 
 libDir = '/Users/lorenzoargentieri/Dropbox/3D/Maya/Script_DEF/DevPyLib'
-port = ':5000'
+port = ':7005'
 libName = 'mayaLib'
 
 # # Wing IDE
@@ -23,4 +23,6 @@ if not libDir in sys.path:
     sys.path.append(libDir)
 else:
     reload(__import__(libName))
-    print 'Module: "' + libName + '" reloaded'
+    print 'Module: "' + libName + '" reloaded!'
+
+
