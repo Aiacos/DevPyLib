@@ -4,7 +4,12 @@ import pymel.core as pm
 import maya.mel as mel
 
 class BaseFluid():
+    """
+    Create Fluid Container and Emitter
+    """
+    
     def __init__(self, fluidName='', baseRes=32):
+        # Create Fluid Container and Emitter
         if fluidName != '':
             self.fluidEmitString = 'fluidEmitter -pos 0 0 0 -type omni  -name \\"' + fluidName + '#\\" -der 1 -her 1 -fer 1 -fdr 2 -r 100.0 -cye none -cyi 1 -mxd 1 -mnd 0 ;'
         else:
@@ -19,14 +24,10 @@ class BaseFluid():
             self.fluidEmit_list = pm.ls('fluidEmitter?')
             self.fluidShape_list = pm.ls('fluidShape?')
 
-        print self.fluidEmit_list
         self.fluidEmit = self.fluidEmit_list[-1]
         self.fluidShape = self.fluidShape_list[-1]
 
-        print '/////////////////'
-        print self.fluidEmit
-        print self.fluidShape
-
+        # Setup
         self.setupFluidShape(baseRes)
 
     def setupFluidShape(self, baseRes=32):
