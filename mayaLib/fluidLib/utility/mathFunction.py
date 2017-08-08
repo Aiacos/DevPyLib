@@ -18,3 +18,9 @@ def laplaceDistribution(x, beta=0.5, mu=0.5):
     core = -1 * (tmp / beta)
     y = (math.e * core) / (2 * beta)
     return y
+
+def laplaceDistribution2(x, beta=0.5, mu=5):
+    x = x * 10
+    core = math.e ** (-1 * abs(x - mu)/beta)
+    y = core / (2 * beta)
+    return y
