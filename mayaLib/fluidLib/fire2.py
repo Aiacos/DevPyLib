@@ -5,7 +5,6 @@ import numpy as np
 
 from mayaLib.fluidLib.base.baseFluid import BaseFluid
 from mayaLib.fluidLib.utility import mathFunction
-from mayaLib.fluidLib.utility import densityColor
 
 class Fire(BaseFluid):
     """
@@ -24,6 +23,7 @@ class Fire(BaseFluid):
         self.setVelocity()
         self.setTurbolence()
         self.setTemperature()
+        self.setFuel()
 
         # Shading
         self.setShading()
@@ -31,55 +31,54 @@ class Fire(BaseFluid):
         pm.select(self.fluidContainer)
 
     def setDensity(self):
-        self.fluidContainer.densityBuoyancy.set(2.5)
-        self.fluidContainer.densityDissipation.set(2.5)
-
-        self.fluidContainer.densityTension.set(0.01)
-        self.fluidContainer.tensionForce.set(0.05)
-        self.fluidContainer.densityGradientForce.set(15)
-
+        self.fluidContainer.densityDissipation.set(1)
 
     def setVelocity(self):
-        self.fluidContainer.velocitySwirl.set(2.5)
+        self.fluidContainer.velocitySwirl.set(6)
 
     def setTurbolence(self):
-        self.fluidContainer.turbulenceStrength.set(0.25)
-        self.fluidContainer.turbulenceFrequency.set(0.5)
-        self.fluidContainer.turbulenceSpeed.set(0.65)
+        pass
 
     def setTemperature(self):
-        self.fluidContainer.temperatureScale.set(2)
-        self.fluidContainer.buoyancy.set(15)
-        self.fluidContainer.temperatureDissipation.set(2.5)
-        self.fluidContainer.temperatureDiffusion.set(0.01)
-        self.fluidContainer.temperatureTurbulence.set(2.5)
-        self.fluidContainer.temperatureNoise.set(0.25)
+        self.fluidContainer.temperatureScale.set(2.5)
+        self.fluidContainer.buoyancy.set(100)
+        self.fluidContainer.temperatureDissipation.set(4)
+        self.fluidContainer.temperatureDiffusion.set(0)
+        self.fluidContainer.temperatureTurbulence.set(1)
+
+    def setFuel(self):
+        self.fluidContainer.reactionSpeed.set(1)
+        self.fluidContainer.maxReactionTemp.set(0.01)
+        self.fluidContainer.lightReleased.set(1)
 
     def setShading(self):
         self.fluidContainer.transparency.set(0.5, 0.5, 0.5, type="double3")
         self.fluidContainer.glowIntensity.set(0.075)
 
         # Density Color
-        dr, dg, db = densityColor.smokeColor()
-        self.fluidContainer.color[0].color_Color.set(dr, dg, db, type="double3")
+        self.fluidContainer.color[0].color_Position.set(0)
+        self.fluidContainer.color[0].color_Color.set(0.005, 0.005, 0.005, type="double3")
+
+        self.fluidContainer.color[1].color_Position(1)
+        self.fluidContainer.color[1].color_Color.set(0.5, 0.5, 0.5, type="double3")
+
         self.fluidContainer.colorInput.set(5)
 
         # Temperature Color
-        self.fluidContainer.incandescence[0].incandescence_Position.set(0.5)
+        self.fluidContainer.incandescence[0].incandescence_Position.set(0.8)
         self.fluidContainer.incandescence[0].incandescence_Color.set(0, 0, 0, type="double3")
 
-        self.fluidContainer.incandescence[1].incandescence_Position.set(0.75)
+        self.fluidContainer.incandescence[1].incandescence_Position.set(0.815)
         self.fluidContainer.incandescence[1].incandescence_Color.set(0.896, 0.201495, 0, type="double3")
 
         self.fluidContainer.incandescence[2].incandescence_Position.set(1)
         self.fluidContainer.incandescence[2].incandescence_Color.set(2.5, 1.666667, 0.5, type="double3")
 
-        self.fluidContainer.incandescenceInputBias.set(0.8)
+        self.fluidContainer.incandescenceInputBias.set(0.9)
 
         # Opacity
-        self.fluidContainer.opacityInput.set(5) # density
+        self.fluidContainer.opacityInput.set(6)
         self.opacityGraph()
-        self.fluidContainer.opacityInputBias.set(0.5)
 
     def opacityGraph(self, sampling=20):
         step = 1.0/sampling
