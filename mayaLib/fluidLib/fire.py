@@ -67,19 +67,22 @@ class Fire(BaseFluid):
         # Temperature Color
         self.fluidContainer.incandescence[0].incandescence_Position.set(0.5)
         self.fluidContainer.incandescence[0].incandescence_Color.set(0, 0, 0, type="double3")
+        self.fluidContainer.incandescence[0].incandescence_Interp.set(3)
 
         self.fluidContainer.incandescence[1].incandescence_Position.set(0.75)
         self.fluidContainer.incandescence[1].incandescence_Color.set(0.896, 0.201495, 0, type="double3")
+        self.fluidContainer.incandescence[1].incandescence_Interp.set(3)
 
         self.fluidContainer.incandescence[2].incandescence_Position.set(1)
         self.fluidContainer.incandescence[2].incandescence_Color.set(2.5, 1.666667, 0.5, type="double3")
+        self.fluidContainer.incandescence[2].incandescence_Interp.set(3)
 
         self.fluidContainer.incandescenceInputBias.set(0.8)
 
         # Opacity
         self.fluidContainer.opacityInput.set(5) # density
         self.opacityGraph()
-        self.fluidContainer.opacityInputBias.set(0.5)
+        self.fluidContainer.opacityInputBias.set(0.35)
 
     def opacityGraph(self, sampling=20):
         step = 1.0/sampling
