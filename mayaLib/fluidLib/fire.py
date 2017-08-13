@@ -19,6 +19,12 @@ class Fire(BaseFluid):
         self.fluidContainer.temperatureMethod.set(2)
         self.fluidContainer.fuelMethod.set(2)
 
+        # Update Dynamic Simulation
+        self.fluidContainer.viscosity.set(0.005)
+        self.fluidContainer.velocityDamp.set(0.01)
+        self.fluidContainer.simulationRateScale.set(2)
+        self.fluidContainer.emitInSubsteps.set(1)
+
         # Parameter
         self.setDensity()
         self.setVelocity()

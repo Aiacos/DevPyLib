@@ -7,7 +7,7 @@ from mayaLib.fluidLib.base.baseFluid import BaseFluid
 from mayaLib.fluidLib.utility import mathFunction
 from mayaLib.fluidLib.utility import densityColor
 
-class Fire(BaseFluid):
+class Explosion(BaseFluid):
     """
     Explosion Preset
     """
@@ -23,11 +23,13 @@ class Fire(BaseFluid):
 
         self.setEmitter()
 
+        # Update Dynamic Simulation
+        self.fluidContainer.velocityDamp.set(0.025)
+        self.fluidContainer.simulationRateScale.set(2.5)
+
         # Add Temperature and Fuel
         self.fluidContainer.temperatureMethod.set(2)
         self.fluidContainer.fuelMethod.set(2)
-
-        self.fluidContainer.velocityDamp.set(0.025)
 
         # Parameter
         self.setDensity()
@@ -158,4 +160,4 @@ class Fire(BaseFluid):
 
 
 if __name__ == '__main__':
-    fire = Fire()
+    explosion = Explosion()
