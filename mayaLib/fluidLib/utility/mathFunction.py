@@ -3,9 +3,9 @@ __author__ = 'Lorenzo Argentieri'
 import math
 
 
-def repartFunction(x, l=5):
+def repartFunction(x, l=15):
     e = math.e
-    y = 1 - e ^ (-1 * (l * x))
+    y = 1 - e ** (-1 * (l * x))
     return y
 
 

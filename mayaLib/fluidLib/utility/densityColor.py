@@ -7,7 +7,7 @@ def smokeColor():
     return r, g, b
 
 def explosionSmokeColor():
-    r = 0.016
-    g = 0.016
-    b = 0.016
+    r = 0.07
+    g = 0.07
+    b = 0.07
     return r, g, b
