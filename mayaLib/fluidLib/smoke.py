@@ -9,7 +9,7 @@ from mayaLib.fluidLib.utility import densityColor
 
 class WispySmoke(BaseFluid):
     """
-    Smoke Preset
+    Wispy Smoke Preset
     """
 
     def __init__(self, fluidName='', baseRes=32, emitObj=None):
@@ -93,6 +93,84 @@ class WispySmoke(BaseFluid):
         self.fluidContainer.opacity[4].opacity_FloatValue.set(0)
         self.fluidContainer.opacity[4].opacity_Interp.set(3)
 
+class ThickSmoke(BaseFluid):
+    """
+    Thick Smoke Preset
+    """
+
+    def __init__(self, fluidName='', baseRes=32, emitObj=None):
+        BaseFluid.__init__(self, fluidName=fluidName, baseRes=baseRes, emitObj=emitObj)
+        self.fluidContainer = BaseFluid.getFluidShape(self)
+        self.fluidEmitter = BaseFluid.getFluidEmitter(self)
+
+        self.setEmitter()
+
+        # Update Dynamic Simulation
+        self.fluidContainer.viscosity.set(0.005)
+        self.fluidContainer.velocityDamp.set(0.025)
+        self.fluidContainer.emitInSubsteps.set(1)
+
+        # Parameter
+        self.setDensity()
+        self.setVelocity()
+        self.setTurbolence()
+
+        # Shading
+        self.setShading()
+
+        pm.select(self.fluidContainer)
+
+    def setEmitter(self):
+        self.fluidEmitter.fluidDensityEmission.set(6)
+        self.fluidEmitter.turbulence.set(8)
+        self.fluidEmitter.turbulenceSpeed.set(0.25)
+        self.fluidEmitter.detailTurbulence.set(1)
+
+    def setDensity(self):
+        self.fluidContainer.densityScale.set(0.5)
+        self.fluidContainer.densityBuoyancy.set(10)
+        self.fluidContainer.densityDissipation.set(0.2)
+        self.fluidContainer.densityPressure.set(1.25)
+        self.fluidContainer.densityPressureThreshold.set(0.1)
+        self.fluidContainer.densityNoise.set(0.1)
+
+        self.fluidContainer.densityTension.set(0.010)
+        self.fluidContainer.tensionForce.set(0.05)
+        self.fluidContainer.densityGradientForce.set(35)
+
+
+    def setVelocity(self):
+        self.fluidContainer.velocitySwirl.set(6)
+        self.fluidContainer.velocityNoise.set(1)
+
+    def setTurbolence(self):
+        self.fluidContainer.turbulenceStrength.set(0.35)
+        self.fluidContainer.turbulenceFrequency.set(0.5)
+        self.fluidContainer.turbulenceSpeed.set(0.5)
+
+    def setShading(self):
+        self.fluidContainer.transparency.set(0.380057, 0.380057, 0.380057, type="double3")
+        self.fluidContainer.edgeDropoff.set(0)
+
+        # Density Color
+        dr, dg, db = densityColor.wispySmokeColor()
+        self.fluidContainer.color[0].color_Color.set(dr, dg, db, type="double3")
+        self.fluidContainer.colorInput.set(0) # Constant
+
+        # Opacity
+        self.fluidContainer.opacityInput.set(5) # density
+        self.opacityGraph()
+        self.fluidContainer.opacityInputBias.set(0.4)
+
+    def opacityGraph(self, sampling=20):
+        step = 1.0/sampling
+        for i in np.arange(0.0, 1.0 + step, step):
+            y = mathFunction.repartFunction(i, l=15)
+            self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
+            self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)
+            self.fluidContainer.opacity[int(i * sampling)].opacity_Interp.set(1)
+
 
 if __name__ == '__main__':
-    smoke = WispySmoke()
+    wsmoke = WispySmoke()
+    tsmoke = ThickSmoke()
