@@ -18,8 +18,9 @@ class Explosion(BaseFluid):
         self.fluidEmitter = BaseFluid.getFluidEmitter(self)
 
         # Update Emitter Type
-        self.fluidEmitter.emitterType.set(4)
-        self.fluidEmitter.volumeShape.set(1)
+        if emitObj == None:
+            self.fluidEmitter.emitterType.set(4)
+            self.fluidEmitter.volumeShape.set(1)
 
         self.setEmitter()
 
