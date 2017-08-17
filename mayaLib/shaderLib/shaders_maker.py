@@ -7,7 +7,7 @@ from mayaLib.shaderLib import shader
 
 
 class ShadersManager():
-    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr'):
+    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr', autoAssingShader=True):
         # See active Renderer
         self.render_engine = pm.getAttr('defaultRenderGlobals.currentRenderer')
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)
@@ -15,20 +15,26 @@ class ShadersManager():
 
         # for all geo
         for geo_key in self.texture_dict.keys():
-
             # check if is UDIM or, for all texture set
             for texture_set in self.texture_dict[geo_key].keys():
                 if texture_set == 'UDIM':
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    shader.TextureShader(texture_path=self.file_manager.path,
-                                              geo_name=geo_key,
-                                              textureset_dict=textureset_dict)
+                    currentShader = shader.TextureShader(texture_path=self.file_manager.path,
+                                                              geo_name=geo_key,
+                                                              textureset_dict=textureset_dict)
+
+                    if autoAssingShader:
+                        currentShader.getShader().assign_shader(geo_key)
+
                     break
                 else:
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    shader.TextureShader(texture_path=self.file_manager.path,
-                                              geo_name=texture_set,
-                                              textureset_dict=textureset_dict)
+                    currentShader = shader.TextureShader(texture_path=self.file_manager.path,
+                                                              geo_name=texture_set,
+                                                              textureset_dict=textureset_dict)
+
+                    if autoAssingShader:
+                        currentShader.getShader().assign_shader(geo_key)
 
         # set tx or tex file format
         if self.render_engine == 'arnold':

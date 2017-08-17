@@ -21,9 +21,9 @@ class TextureShader():
         self.renderer = pm.getAttr('defaultRenderGlobals.currentRenderer')
 
         if self.renderer == 'arnold':
-            self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
+            self.shader = self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
         elif self.renderer == 'renderManRIS':
-            self.build_pxrSurface(texture_path, geo_name, textureset_dict)
+            self.shader = self.build_pxrSurface(texture_path, geo_name, textureset_dict)
         else:
             print 'No valid active render engine'
 
@@ -39,7 +39,7 @@ class TextureShader():
                                          single_place_node=self.place_node)
             self.filenode_dict[texture_channel] = fn.filenode
 
-        aiStandard_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
+        return aiStandard_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def build_pxrSurface(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
         if pxrTextureNode:
@@ -48,7 +48,7 @@ class TextureShader():
                                                filename=textureset_dict[texture_channel])
                 self.filenode_dict[texture_channel] = fn.filenode
 
-            PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
+            return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
         else:
             if single_place_node:
                 self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
@@ -61,7 +61,10 @@ class TextureShader():
                                              single_place_node=self.place_node)
                 self.filenode_dict[texture_channel] = fn.filenode
 
-            PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
+            return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
+
+    def getShader(self):
+        return self.shader
 
 if __name__ == "__main__":
     path = '/Users/lorenzoargentieri/Desktop/testTexture'
