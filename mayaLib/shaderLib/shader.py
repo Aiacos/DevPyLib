@@ -42,26 +42,12 @@ class TextureShader():
         return aiStandard_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def build_pxrSurface(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
-        if pxrTextureNode:
-            for texture_channel in textureset_dict:
-                fn = texture.TexturePxrTexture(path=texture_path,
-                                               filename=textureset_dict[texture_channel])
-                self.filenode_dict[texture_channel] = fn.filenode
+        for texture_channel in textureset_dict:
+            fn = texture.TexturePxrTexture(path=texture_path,
+                                           filename=textureset_dict[texture_channel])
+            self.filenode_dict[texture_channel] = fn.filenode
 
-            return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
-        else:
-            if single_place_node:
-                self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
-            else:
-                self.place_node = None
-
-            for texture_channel in textureset_dict:
-                fn = texture.TextureFileNode(path=texture_path,
-                                             filename=textureset_dict[texture_channel],
-                                             single_place_node=self.place_node)
-                self.filenode_dict[texture_channel] = fn.filenode
-
-            return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict, use_pxrtexture=pxrTextureNode)
+        return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def getShader(self):
         return self.shader

@@ -10,7 +10,7 @@ class PxrSurface_shaderBase(Shader_base):
     Create PxrSurface shader
     """
 
-    def __init__(self, shader_name, file_node_dict, shader_type='PxrSurface', use_pxrtexture=True):
+    def __init__(self, shader_name, file_node_dict, shader_type='PxrSurface', physicalSpecular=True):
         """
         Create PxrSurface shader
         :param shader_name: Geo or Texture set (String)
@@ -22,32 +22,36 @@ class PxrSurface_shaderBase(Shader_base):
         self.shader = Shader_base.get_shader(self)
 
         # init Specular model type
-        self.shader.specularModelType.set(1)
+        if physicalSpecular:
+            self.shader.specularFresnelMode.set(1)
+        else:
+            self.shader.specularFresnelMode.set(0)
         # init faceColor
         self.shader.specularEdgeColor.set((1.0, 1.0, 1.0))
         # connect texture
-        self.makePxrSurface(file_node_dict, use_pxrtexture)
+        self.makePxrSurface(file_node_dict, physicalSpecular)
 
-    def makePxrSurface(self, pxrtexture_node, use_pxrtexture):
-        if use_pxrtexture:
-            connect_diffuse = self.connect_color_pxrtexture
-            connect_specularFaceColor = self.connect_facecolor_pxrblend
-            connect_specularRoughness = self.connect_luminance_pxrtexture
-            connect_normal = self.connect_pxrnormal
-            connect_emission = self.connect_color_pxrtexture
+    def makePxrSurface(self, pxrtexture_node, physicalSpecular):
+        connect_diffuse = self.connect_color_pxrtexture
+
+        if physicalSpecular:
+            connect_specularFaceColor = self.connect_physical_specular
         else:
-            connect_diffuse = self.connect_color_texture
-            connect_specularFaceColor = self.connect_facecolor_multiplydivide
-            connect_specularRoughness = self.connect_luminance_texture
-            connect_normal = self.connect_normal
-            connect_emission = self.connect_color_texture
+            connect_specularFaceColor = self.connect_artistic_specular
+
+        connect_specularRoughness = self.connect_luminance_pxrtexture
+        connect_normal = self.connect_pxrnormal
+        connect_emission = self.connect_color_pxrtexture
 
         try:
             connect_diffuse(pxrtexture_node[config.diffuse], slot_name='diffuseColor')
         except:
             pass
         try:
-            connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularFaceColor')
+            if physicalSpecular:
+                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularExtinctionCoeff')
+            else:
+                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularFaceColor')
         except:
             pass
         try:
@@ -82,19 +86,21 @@ class PxrSurface_shaderBase(Shader_base):
             pm.connectAttr(self.pxrnormalmap_node.resultN, self.pxradjustnormal_node.inputNormal)
             pm.connectAttr(self.pxradjustnormal_node.resultN, '%s.%s' % (self.shader, slot_name))
 
-    def connect_facecolor_multiplydivide(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
-        # multiplyDivide
-        self.multiplydivide = pm.shadingNode("multiplyDivide", asUtility=True)
-
-        pm.connectAttr(pxrtexture_node.outColor, self.multiplydivide.input1)
-        pm.connectAttr(pxrtexture_metallic_node.outColor, self.multiplydivide.input2)
-
-        pm.connectAttr(self.multiplydivide.output, '%s.%s' % (self.shader, slot_name))
-
-    def connect_facecolor_pxrblend(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
+    def connect_physical_specular(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # blend
         self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
-        self.pxrblend.operation.set(19)#18 multiply
+        self.pxrblend.operation.set(18)# 18 multiply
+
+        pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
+        pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.pxrblend.bottomRGB)
+
+        pm.connectAttr(self.pxrblend.resultRGB, '%s.%s' % (self.shader, slot_name))
+        print 'PYSHICAL BUILTTTTTTTTTTTTTTTTTT'
+
+    def connect_artistic_specular(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
+        # blend
+        self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
+        self.pxrblend.operation.set(19)# 19 normal
 
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
         pm.connectAttr(pxrtexture_metallic_node.resultR, self.pxrblend.topA)
