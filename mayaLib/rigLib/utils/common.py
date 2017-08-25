@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+import maya.mel as mel
 
 
 def centerPivot(obj, targetPivot=None):
@@ -17,3 +18,7 @@ def freezeTranform(obj):
 
 def deleteHistory(obj):
     pm.delete(obj, ch=True)
+
+def deleteNonDeformerHistory(obj):
+    pm.select(obj)
+    mel.eval('doBakeNonDefHistory( 1, {"prePost" });')

@@ -3,6 +3,19 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 
+def getDriverDrivenFromConstraint(constraint):
+    driver = pm.listConnections(constraint+'.target[0].targetParentMatrix', destination=False)
+    driven = pm.listConnections(constraint, source=False)[0]
+
+    return driver, driven
+
+def moveShape(source, destination):
+    pn = pm.PyNode
+    if isinstance(source, pn):
+        pm.parent(source, destination[0], r=True, s=True)
+    else:
+        pm.parent(pm.PyNode(source[0]).getShape(), destination, r=True, s=True)
+
 def get_distance(obj1, obj2):
     """
     Return distance between two objects
@@ -43,6 +56,21 @@ def lock_and_hide_all(node):
     node.sy.set(l=1, k=0, cb=0)
     node.sz.set(l=1, k=0, cb=0)
 
+# function to unlock and unhide attributes
+def unlock_and_unhide_all(node):
+    """
+    unlock and unhide all transform attributes of selected node
+    :param node: node to be affected
+    """
+    node.tx.set(l=0, k=1, cb=0)
+    node.ty.set(l=0, k=1, cb=0)
+    node.tz.set(l=0, k=1, cb=0)
+    node.rx.set(l=0, k=1, cb=0)
+    node.ry.set(l=0, k=1, cb=0)
+    node.rz.set(l=0, k=1, cb=0)
+    node.sx.set(l=0, k=1, cb=0)
+    node.sy.set(l=0, k=1, cb=0)
+    node.sz.set(l=0, k=1, cb=0)
 
 # function to make surface not render
 def no_render(tgt):
