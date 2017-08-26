@@ -40,7 +40,7 @@ class PxrStyleCtrl():
                 self.deleteVertex(joint=joint, newShape=ctrlShape)
 
                 # delete non deformer history
-                # common.deleteNonDeformerHistory(ctrlShape)
+                common.deleteNonDeformerHistory(ctrlShape)
 
         print 'DONE!'
 
@@ -72,6 +72,19 @@ class PxrStyleCtrl():
         pm.connectAttr(transformGeo.outputGeometry, newShape.inMesh, f=True)
 
     def deleteVertex(self, joint, newShape, threshold=0.45):
+        verts = []
+        for x in range(pm.polyEvaluate(newShape, v=1)):
+            v = pm.skinPercent(self.skin, '%s.vtx[%d]' % (newShape, x), transform=joint, q=1)
+            if v > threshold:
+                verts.append('%s.vtx[%d]' % (newShape, x))
+        pm.select(verts)
+
+        faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)
+        pm.select(faces)
+        util.invertSelection()
+        pm.polyDelFacet()
+
+    def deleteVertex_OLD(self, joint, newShape, threshold=0.45):
         deleteVert_list = []
 
         vert_list, values = self.skin.getPointsAffectedByInfluence(joint)
