@@ -21,4 +21,4 @@ def deleteHistory(obj):
 
 def deleteNonDeformerHistory(obj):
     pm.select(obj)
-    mel.eval('doBakeNonDefHistory( 1, {"prePost" });')
+    mel.eval('doBakeNonDefHistory( 1, {"pre" });')

@@ -29,7 +29,7 @@ class PxrStyleCtrl():
                 pm.delete(emptyTransform)
 
                 # connect control shape to skinCluster
-                self.connectSkinCluster(ctrlShape)
+                self.connectSkinCluster(ctrlShape, ctrl)
 
                 # delete faces in the new shape based on selected joint
                 self.deleteVertex(joint=joint, newShape=ctrlShape)
@@ -54,14 +54,17 @@ class PxrStyleCtrl():
     def moveShapeAndbackUp(self, source, destination):
         # Remove and backUp oldShape
         oldShape = destination[0].getShape()
-        # pm.parent(oldShape, self.shapeGrp, r=True, s=True)
-        pm.delete(oldShape)
+        pm.parent(oldShape, self.shapeGrp, r=True, s=True)
+        #pm.delete(oldShape)
 
         # Replace Shape
         util.moveShape(source=source, destination=destination)
 
-    def connectSkinCluster(self, newShape):
-        pm.connectAttr(self.skin.outputGeometry[0], newShape.inMesh, f=True)
+    def connectSkinCluster(self, newShape, ctrl):
+        transformGeo = pm.createNode("transformGeometry")
+        pm.connectAttr(self.skin.outputGeometry[0], transformGeo.inputGeometry, f=True)
+        pm.connectAttr(ctrl[0].worldInverseMatrix[0], transformGeo.transform, f=True)
+        pm.connectAttr(transformGeo.outputGeometry, newShape.inMesh, f=True)
 
     def deleteVertex(self, joint, newShape, threshold=0.45):
         deleteVert_list = []
