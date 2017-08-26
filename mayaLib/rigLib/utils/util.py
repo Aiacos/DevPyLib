@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+import maya.mel as mel
 
 
 def getDriverDrivenFromConstraint(constraint):
@@ -85,3 +86,6 @@ def no_render(tgt):
     tgt.smoothShading.set(0)
     tgt.visibleInReflections.set(0)
     tgt.visibleInRefractions.set(0)
+
+def invertSelection():
+    mel.eval('InvertSelection;')

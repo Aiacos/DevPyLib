@@ -11,11 +11,16 @@ class PxrStyleCtrl():
     """
 
     def __init__(self, obj=pm.ls(sl=True)):
+        # Create backup Group
         self.shapeGrp = pm.group(n='oldShape_GRP', em=True)
+        self.shapeGrp.visibility.set(0)
+
+        # Get Shape and skin from Object
         shape = obj[0].getShape()
         skinCluster = pm.listConnections(shape + '.inMesh', destination=False)
-
         self.skin = pm.PyNode(skinCluster[0])
+
+        # Get joint influence of the skin
         influnces = self.skin.getInfluence(q=True)  # influences is joint
         for joint in influnces:
             constraint = pm.listRelatives(joint, children=True, type='constraint')
@@ -35,7 +40,7 @@ class PxrStyleCtrl():
                 self.deleteVertex(joint=joint, newShape=ctrlShape)
 
                 # delete non deformer history
-                common.deleteNonDeformerHistory(ctrlShape)
+                # common.deleteNonDeformerHistory(ctrlShape)
 
         print 'DONE!'
 
@@ -55,7 +60,7 @@ class PxrStyleCtrl():
         # Remove and backUp oldShape
         oldShape = destination[0].getShape()
         pm.parent(oldShape, self.shapeGrp, r=True, s=True)
-        #pm.delete(oldShape)
+        # pm.delete(oldShape)
 
         # Replace Shape
         util.moveShape(source=source, destination=destination)
@@ -76,14 +81,15 @@ class PxrStyleCtrl():
         for vtxs in vert_list:
             vtxs = pm.PyNode(vtxs)
             for vert in vtxs:
-                if values[index] < threshold:
+                if values[index] > threshold:
                     shapeVertex = newShape.vtx[index]
                     deleteVert_list.append(shapeVertex)
                 index += 1
 
         faces = pm.polyListComponentConversion(deleteVert_list, fromVertex=True, toFace=True)
         pm.select(faces)
-        pm.polyDelFacet()
+        util.invertSelection()
+        pm.polyDelFacet(ch=False)
 
 
 if __name__ == "__main__":
