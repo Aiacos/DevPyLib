@@ -81,10 +81,9 @@ class PxrStyleCtrl():
                     deleteVert_list.append(shapeVertex)
                 index += 1
 
-        print 'SHAPE TO DELETE: ', newShape, deleteVert_list
-        #faces = pm.polyListComponentConversion(deleteVert_list, fromVertex=True, toFace=True)
-        #pm.select(faces)
-        #pm.polyDelFacet()
+        faces = pm.polyListComponentConversion(deleteVert_list, fromVertex=True, toFace=True)
+        pm.select(faces)
+        pm.polyDelFacet()
 
 
 if __name__ == "__main__":
