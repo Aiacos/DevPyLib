@@ -6,7 +6,7 @@ import numpy as np
 from mayaLib.fluidLib.base.baseFluid import BaseFluid
 from mayaLib.fluidLib.utility import mathFunction
 
-class Fire(BaseFluid):
+class FireSmoke(BaseFluid):
     """
     Fire Preset
     """
@@ -59,7 +59,7 @@ class Fire(BaseFluid):
         self.fluidContainer.color[0].color_Position.set(0)
         self.fluidContainer.color[0].color_Color.set(0.005, 0.005, 0.005, type="double3")
 
-        self.fluidContainer.color[1].color_Position(1)
+        self.fluidContainer.color[1].color_Position.set(1)
         self.fluidContainer.color[1].color_Color.set(0.5, 0.5, 0.5, type="double3")
 
         self.fluidContainer.colorInput.set(5)
@@ -90,4 +90,4 @@ class Fire(BaseFluid):
 
 
 if __name__ == '__main__':
-    fire = Fire()
+    fire = FireSmoke()
