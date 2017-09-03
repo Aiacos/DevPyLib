@@ -40,7 +40,9 @@ class FireSmoke(BaseFluid):
         self.fluidContainer.velocitySwirl.set(6)
 
     def setTurbolence(self):
-        pass
+        self.fluidContainer.turbulenceStrength.set(0.025)
+        self.fluidContainer.turbulenceFrequency.set(0.5)
+        self.fluidContainer.turbulenceSpeed.set(0.65)
 
     def setTemperature(self):
         self.fluidContainer.temperatureScale.set(2.5)
