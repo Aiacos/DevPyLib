@@ -32,6 +32,9 @@ class FireSmoke(BaseFluid):
 
     def setDensity(self):
         self.fluidContainer.densityDissipation.set(1)
+        self.fluidContainer.densityTension.set(0.01)
+        self.fluidContainer.tensionForce.set(0.05)
+        self.fluidContainer.densityGradientForce.set(15)
 
     def setVelocity(self):
         self.fluidContainer.velocitySwirl.set(6)
@@ -52,7 +55,7 @@ class FireSmoke(BaseFluid):
         self.fluidContainer.lightReleased.set(1)
 
     def setShading(self):
-        self.fluidContainer.transparency.set(0.35, 0.35, 0.35, type="double3")
+        self.fluidContainer.transparency.set(0.5, 0.5, 0.5, type="double3")
         self.fluidContainer.glowIntensity.set(0.075)
 
         # Density Color
@@ -61,7 +64,7 @@ class FireSmoke(BaseFluid):
 
         self.fluidContainer.color[1].color_Position.set(1)
         self.fluidContainer.color[1].color_Color.set(0.5, 0.5, 0.5, type="double3")
-
+        self.fluidContainer.colorInputBias.set(1)
         self.fluidContainer.colorInput.set(5)
 
         # Temperature Color
