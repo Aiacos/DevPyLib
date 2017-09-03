@@ -52,7 +52,7 @@ class FireSmoke(BaseFluid):
         self.fluidContainer.lightReleased.set(1)
 
     def setShading(self):
-        self.fluidContainer.transparency.set(0.5, 0.5, 0.5, type="double3")
+        self.fluidContainer.transparency.set(0.35, 0.35, 0.35, type="double3")
         self.fluidContainer.glowIntensity.set(0.075)
 
         # Density Color
@@ -77,13 +77,14 @@ class FireSmoke(BaseFluid):
         self.fluidContainer.incandescenceInputBias.set(0.9)
 
         # Opacity
-        self.fluidContainer.opacityInput.set(6)
+        self.fluidContainer.opacityInput.set(6) # 5 Density / 6 Temperature
         self.opacityGraph()
+        self.fluidContainer.opacityInputBias.set(0.35)
 
     def opacityGraph(self, sampling=20):
-        step = 1.0/sampling
+        step = 1.0 / sampling
         for i in np.arange(0.0, 1.0 + step, step):
-            y = mathFunction.laplaceDistribution2(i)
+            y = mathFunction.repartFunction(i, l=15)
             self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
             self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)
             self.fluidContainer.opacity[int(i * sampling)].opacity_Interp.set(1)
