@@ -42,8 +42,23 @@ class IKFKSwitch():
         pm.delete(pm.orientConstraint(self.joint3, self.joint3FKCtrl))
 
 
+def ikHandleSearch():
+    ikHandleList = pm.ls(type='ikHandle')
+    handleLocator = pm.spaceLocator(n='ikHandleCtrl_LOC')
+    util.lock_and_hide_all(handleLocator)
+
+    for handle in ikHandleList:
+        # add attribute on locator control
+        pm.addAttr(handleLocator, ln=handle, k=True, at='enum', en='FK=0:IK=1:')
+        # intance switch class
+
+        # add event
+        # pm.evalDeferred("pm.deleteUI(button)")
+
+
 if __name__ == "__main__":
-    classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
+    ikHandleSearch()
+    # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
     # classeProva.toIK()
-    classeProva.toFK()
+    # classeProva.toFK()
 
