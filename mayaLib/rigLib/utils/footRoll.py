@@ -59,8 +59,8 @@ class FootRool():
 
         # move Toe Tap Group Pivot to Middle Ball
         index = int(round(len(self.toeIkHandleList)/2.0))-1
-        midBallJnt = self.toeIkHandleList[index]
-        common.centerPivot(self.tippyToeGrp, midBallJnt)
+        midToeJnt = self.toeIkHandleList[index]
+        common.centerPivot(self.tippyToeGrp, midToeJnt)
 
 
 if __name__ == "__main__":
