@@ -10,14 +10,14 @@ class FootRool():
 
         self.ballIkHandleList = []
         self.toeIkHandleList= []
-        self.ankleIkHandle = pm.ikHandle( n=self.side+'ankle', sj=hipJnt, ee=ankleJnt)[0]
+        self.ankleIkHandle = pm.ikHandle( n=self.side+'ankle_IKH', sj=hipJnt, ee=ankleJnt)[0]
 
         for ballJnt in ballJntList:
-            tmpBallIkHandle = pm.ikHandle( n=self.side+'ball', sj=ankleJnt, ee=ballJnt)[0]
+            tmpBallIkHandle = pm.ikHandle( n=self.side+'ball_IKH', sj=ankleJnt, ee=ballJnt)[0]
             self.ballIkHandleList.append(tmpBallIkHandle)
 
         for toeJnt, ballJnt in zip(toeJntList, ballJntList):
-            tmpToeIkHandle = pm.ikHandle(n=self.side+'toe', sj=ballJnt, ee=toeJnt)[0]
+            tmpToeIkHandle = pm.ikHandle(n=self.side+'toe_IKH', sj=ballJnt, ee=toeJnt)[0]
             self.toeIkHandleList.append(tmpToeIkHandle)
 
         # set temporarily ON Sticky
