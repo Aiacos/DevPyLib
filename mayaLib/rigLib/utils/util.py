@@ -10,6 +10,11 @@ def getDriverDrivenFromConstraint(constraint):
 
     return driver, driven
 
+def getSide(obj):
+    pass
+    side = ''
+    return side
+
 def moveShape(source, destination):
     pn = pm.PyNode
     if isinstance(source, pn):
