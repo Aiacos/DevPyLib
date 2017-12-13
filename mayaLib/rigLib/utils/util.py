@@ -15,6 +15,26 @@ def getSide(obj):
     side = ''
     return side
 
+def makeCurvesDynamic(curve, grpName='dynamicSystem_GRP'):
+    pm.select(curve)
+    mel.eval('makeCurvesDynamic 2 { "1", "0", "1", "1", "0"};')
+
+    dynamicObj_list = pm.ls('hairSystem*', 'nucleus*')
+    if pm.objExists(grpName):
+        pm.parent(dynamicObj_list, grpName)
+    else:
+        pm.group(dynamicObj_list, n=grpName)
+
+    outputGrp = pm.ls('hairSystem*OutputCurves')[0]
+    follicleGrp = pm.ls('hairSystem*Follicles')[0]
+    outputCurve = pm.listRelatives(outputGrp, children=True)[0]
+
+    # disable inheritTransform on follicle
+    follicle = pm.listRelatives(follicleGrp, children=True)[0]
+    pm.setAttr(follicle + '.inheritsTransform', 0)
+
+    return outputCurve, grpName, follicleGrp
+
 def moveShape(source, destination):
     pn = pm.PyNode
     if isinstance(source, pn):
