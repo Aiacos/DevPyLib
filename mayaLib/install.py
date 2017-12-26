@@ -11,9 +11,10 @@ import urllib
 
 
 class InstallLibrary(QObject):
-    def __init__(self, devMode=True, parent=None):
+    def __init__(self, devMode=False, parent=None):
         super(InstallLibrary, self).__init__(parent)
 
+        self.devMode = devMode
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
         self.mayaScriptPath = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/'
@@ -22,7 +23,6 @@ class InstallLibrary(QObject):
             self.libDir = self.homeUser + '/Dropbox/3D/Maya/Script_DEF/DevPyLib'
         else:
             self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
-
 
         self.port = ':7005'
         self.libName = 'mayaLib'
@@ -71,7 +71,8 @@ else:
             print 'ERROR: Directory not exist!'
 
     def install(self):
-        self.download()
+        if not self.devMode:
+            self.download()
         self.installInMayaUserSetup()
 
     def uninstall(self):
@@ -86,7 +87,6 @@ else:
 
                 f = open(filePath, 'w')
                 script = script.replace(self.installCommand, '')
-                print script
                 f.write(script)
                 f.close()
 
@@ -101,7 +101,7 @@ else:
         progress_size = int(count * block_size)
         speed = int(progress_size / (1024 * duration))
         percent = int(count * block_size * 100 / total_size)
-        sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed" %
+        sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed\n" %
                          (percent, progress_size / (1024 * 1024), speed, duration))
         sys.stdout.flush()
 
@@ -115,7 +115,6 @@ else:
         # download
         urllib.urlretrieve(self.libUrl, self.mayaScriptPath + zipFilename, self.reporthook)
 
-
         # unzip
         unzip_cmd = cd_cmd + 'unzip ' + zipFilename
         os.system(unzip_cmd)
@@ -127,13 +126,14 @@ else:
     def delete(self):
         cd_cmd = 'cd ' + self.mayaScriptPath + ' && '
         # remove
-        rm_cmd = cd_cmd + 'rm -R DevPyLib-master'
-        os.system(rm_cmd)
+        if os.path.isdir(self.mayaScriptPath + 'DevPyLib-master'):
+            rm_cmd = cd_cmd + 'rm -R DevPyLib-master'
+            os.system(rm_cmd)
 
 class InstallWindow(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, devMode=False, parent=None):
         super(InstallWindow, self).__init__(parent)
-        self.libManager = InstallLibrary()
+        self.libManager = InstallLibrary(devMode=devMode)
 
         self.layout = QGridLayout()
         self.setLayout(self.layout)
@@ -158,15 +158,14 @@ class InstallWindow(QWidget):
         self.installDirLineEdit.setText(QFileDialog.getExistingDirectory(self, "Select Directory"))
 
     def installLib(self):
-        print 'install clicked'
         self.libManager.install()
 
 
 
-def main():
+def main(devMode=False):
     app = QApplication(sys.argv)
 
-    w = InstallWindow()
+    w = InstallWindow(devMode=devMode)
     w.show()
 
     sys.exit(app.exec_())
