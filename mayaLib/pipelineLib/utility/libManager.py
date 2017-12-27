@@ -11,22 +11,27 @@ import urllib
 
 
 class InstallLibrary(QObject):
-    def __init__(self, devMode=True, parent=None):
+    def __init__(self, devMode=False, parent=None):
         super(InstallLibrary, self).__init__(parent)
 
-        self.devMode = devMode
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
         self.mayaScriptPath = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/'
+
+        self.port = ':7005'
+        self.libName = 'mayaLib'
+
+        self.updateDevMode(devMode)
+
+
+    def updateDevMode(self, devMode=False):
+        #
+        self.devMode = devMode
 
         if devMode:
             self.libDir = self.homeUser + '/Dropbox/3D/Maya/Script_DEF/DevPyLib'
         else:
             self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
-
-
-        self.port = ':7005'
-        self.libName = 'mayaLib'
 
         self.installCommand = \
 """
