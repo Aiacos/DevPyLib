@@ -75,6 +75,7 @@ else:
             print 'ERROR: Directory not exist!'
 
     def install(self):
+        self.uninstall()
         if not self.devMode:
             self.download()
         self.installInMayaUserSetup()
@@ -160,6 +161,10 @@ class InstallWindow(QWidget):
         self.installButton = QPushButton('Install')
         self.layout.addWidget(self.installButton, 1, 2)
 
+        # status label
+        self.statusLabel = QLabel('')
+        self.layout.addWidget(self.statusLabel, 2, 0)
+
         self.installDirButton.clicked.connect(self.selectFile)
         self.installButton.clicked.connect(self.installLib)
         self.devModeCheckBox.stateChanged.connect(self.libManager.updateDevMode)
@@ -169,6 +174,7 @@ class InstallWindow(QWidget):
 
     def installLib(self):
         self.libManager.install()
+        self.statusLabel.setText('Installation Complete!')
 
 
 

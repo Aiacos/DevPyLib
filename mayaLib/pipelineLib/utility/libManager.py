@@ -76,6 +76,7 @@ else:
             print 'ERROR: Directory not exist!'
 
     def install(self):
+        self.uninstall()
         if not self.devMode:
             self.download()
         self.installInMayaUserSetup()
