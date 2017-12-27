@@ -25,7 +25,6 @@ class InstallLibrary(QObject):
 
 
     def updateDevMode(self, devMode=False):
-        #
         self.devMode = devMode
 
         if devMode:
@@ -152,12 +151,18 @@ class InstallWindow(QWidget):
         self.layout.addWidget(self.installDirLineEdit, 0, 1)
         self.layout.addWidget(self.installDirButton, 0, 2)
 
+        # devMode checkBox
+        self.devModeCheckBox = QCheckBox("Developer Mode")
+        self.devModeCheckBox.setChecked(False)
+        self.layout.addWidget(self.devModeCheckBox, 1, 1)
+
         # install button
         self.installButton = QPushButton('Install')
         self.layout.addWidget(self.installButton, 1, 2)
 
         self.installDirButton.clicked.connect(self.selectFile)
         self.installButton.clicked.connect(self.installLib)
+        self.devModeCheckBox.stateChanged.connect(self.libManager.updateDevMode)
 
     def selectFile(self):
         self.installDirLineEdit.setText(QFileDialog.getExistingDirectory(self, "Select Directory"))

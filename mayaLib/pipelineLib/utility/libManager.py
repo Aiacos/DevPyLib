@@ -25,7 +25,6 @@ class InstallLibrary(QObject):
 
 
     def updateDevMode(self, devMode=False):
-        #
         self.devMode = devMode
 
         if devMode:
