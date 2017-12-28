@@ -1,14 +1,22 @@
 __author__ = 'Lorenzo Argentieri'
 
-import mayaLib.guiLib.utils.pyQtMayaWindow as qtmw
 from mayaLib.utility.Qt import QtCore, QtWidgets
+from shiboken2 import wrapInstance
+import maya.OpenMayaUI as omui
+from maya import mel
 
 
-class MainMenu(QtWidgets.QMainWindow):
-    def __init__(self, parent=qtmw.getMayaMainWindow()):
+class MainMenu(QtWidgets.QWidget):
+    def __init__(self, menuName='MayaLib', parent=None):
         super(MainMenu, self).__init__(parent)
-        self.menubar = self.menuBar()
-        fileMenu = self.menubar.addMenu('&File')
+
+        widgetStr = mel.eval('string $tempString = $gMainWindow')
+        ptr = omui.MQtUtil.findControl(widgetStr)
+        menuWidget = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        self.mayaMenu = menuWidget.menuBar()
+
+
+        self.libMenu = self.mayaMenu.addMenu(menuName)
 
         self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
