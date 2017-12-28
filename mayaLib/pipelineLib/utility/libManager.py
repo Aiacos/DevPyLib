@@ -54,7 +54,7 @@ import time
 from pymel.all import *
 import mayaLib.guiLib.mainMenu as mm
 
-def myfunc():
+def startupLib():
     tmpWindow = mel.eval('string $tempString = $gMainWindow')
     while tmpWindow != 'MayaWindow':
         time.sleep(1)
@@ -63,7 +63,7 @@ def myfunc():
     mm.MainMenu()
     
 
-mayautils.executeDeferred(myfunc)
+mayautils.executeDeferred(startupLib)
 """
 
     def installInMayaUserSetup(self):
