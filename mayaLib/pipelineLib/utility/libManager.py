@@ -48,8 +48,11 @@ if not libDir in sys.path:
     __import__(libName)
 else:
     reload(__import__(libName))
+    
+# init lib    
+import mayaLib.guiLib.mainMenu as mm
+mm.MainMenu()
 """
-    #####
 
     def installInMayaUserSetup(self):
         userSetup_path = self.mayaScriptPath
