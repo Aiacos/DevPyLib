@@ -7,7 +7,7 @@ from maya import mel
 
 
 class MainMenu(QtWidgets.QWidget):
-    def __init__(self, menuName='mayaLib', parent=None):
+    def __init__(self, menuName='MayaLib', parent=None):
         super(MainMenu, self).__init__(parent)
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
