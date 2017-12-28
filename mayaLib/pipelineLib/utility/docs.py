@@ -2,7 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import inspect
 import pkgutil
-import mayaLib as mLib
+#import mayaLib as mLib
 
 
 def getDocs(element, advanced=True):
@@ -20,7 +20,7 @@ class readDocstring():
     Read Documentation in docstring
     """
 
-    root_package = mLib
+    root_package = ''
 
     def __init__(self):
         self.package_list = self.listAllPackage()

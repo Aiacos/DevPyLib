@@ -1,10 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import inspect
 import ast
-import mayaLib.pipelineLib.docs as doc
-from mayaLib.guiLib.Qt import QtCore, QtWidgets
+import mayaLib.pipelineLib.utility.docs as doc
+from mayaLib.utility.Qt import QtCore, QtWidgets
 
 
 def test(a, b, c, d='ciao', e='stronzo', f=1):

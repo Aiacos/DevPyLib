@@ -4,16 +4,12 @@ import sys
 import os.path
 import os
 import time
-from PyQt4.QtGui import QWidget, QApplication
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+import pip
 import urllib
 
 
-class InstallLibrary(QObject):
-    def __init__(self, devMode=False, parent=None):
-        super(InstallLibrary, self).__init__(parent)
-
+class InstallLibrary():
+    def __init__(self, devMode=False):
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
         self.mayaScriptPath = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/'
@@ -138,46 +134,6 @@ else:
             rm_cmd = cd_cmd + 'rm -R DevPyLib-master'
             os.system(rm_cmd)
 
-class InstallWindow(QWidget):
-    def __init__(self, parent=None):
-        super(InstallWindow, self).__init__(parent)
-        self.libManager = InstallLibrary()
-
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
-        self.setWindowTitle('Install Maya Library')
-
-        # browse install path
-        self.installDirLabel = QLabel('Install Directory')
-        self.installDirLineEdit = QLineEdit(self.libManager.mayaScriptPath)
-        self.installDirButton = QPushButton('Select Folder')
-        self.layout.addWidget(self.installDirLabel, 0, 0)
-        self.layout.addWidget(self.installDirLineEdit, 0, 1)
-        self.layout.addWidget(self.installDirButton, 0, 2)
-
-        # install button
-        self.installButton = QPushButton('Install')
-        self.layout.addWidget(self.installButton, 1, 2)
-
-        self.installDirButton.clicked.connect(self.selectFile)
-        self.installButton.clicked.connect(self.installLib)
-
-    def selectFile(self):
-        self.installDirLineEdit.setText(QFileDialog.getExistingDirectory(self, "Select Directory"))
-
-    def installLib(self):
-        self.libManager.install()
-
-
-
-def main():
-    app = QApplication(sys.argv)
-
-    w = InstallWindow()
-    w.show()
-
-    sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
-    main()
+    pass

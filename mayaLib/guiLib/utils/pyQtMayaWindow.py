@@ -2,14 +2,14 @@ __author__ = 'Lorenzo Argentieri'
 
 #from PyQt4 import QtCore
 #from PyQt4 import QtGui
-from mayaLib.guiLib.Qt import QtCore, QtWidgets
-import sip
+from mayaLib.utility.Qt import QtCore, QtWidgets
+from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 
 
 def getMayaMainWindow():
     accessMainWindow = omui.MQtUtil.mainWindow()
-    return sip.wrapinstance(long(accessMainWindow), QtCore.QObject)
+    return wrapInstance(long(accessMainWindow), QtWidgets.QMainWindow)
 
 class PyQtMayaWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=getMayaMainWindow(), uniqueHandle='PyQtWindow'):
@@ -25,4 +25,4 @@ class PyQtMayaWindow(QtWidgets.QMainWindow):
         pass
 
 if __name__ == "__main__":
-    pass
+    PyQtMayaWindow()

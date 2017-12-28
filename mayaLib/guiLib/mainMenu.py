@@ -1,21 +1,21 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
-import mayaLib.guiLib.base.menu as menu
-import mayaLib.pipelineLib.docs as doc
-from mayaLib.guiLib.Qt import QtCore, QtWidgets
+import mayaLib.guiLib.utils.pyQtMayaWindow as qtmw
+from mayaLib.utility.Qt import QtCore, QtWidgets
 
 
-class MainMenu(QtCore.QObject, menu.Menu):
-    def __init__(self, func, parent=None):
+class MainMenu(QtWidgets.QMainWindow):
+    def __init__(self, parent=qtmw.getMayaMainWindow()):
         super(MainMenu, self).__init__(parent)
-        menu.Menu.__init__(menu_name='mayaLib')
-        self.parent = menu.Menu.gMainWindow
+        self.menubar = self.menuBar()
+        fileMenu = self.menubar.addMenu('&File')
 
-
+        self.layout = QtWidgets.QGridLayout()
+        self.setLayout(self.layout)
 
         # search bar
         self.searchLineEdit = QtWidgets.QLineEdit()
+        self.layout.addWidget(self.searchLineEdit)
 
         # update Button
         #self.updateButton = QtWidgets.QPushButton()
@@ -23,6 +23,8 @@ class MainMenu(QtCore.QObject, menu.Menu):
         # reload Button
         #self.reloadButton = QtWidgets.QPushButton()
 
+def print_text():
+    print 'hello'
 
 if __name__ == "__main__":
     menuPanel = MainMenu()

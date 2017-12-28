@@ -3,6 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import sys
 import os.path
 import os
+import pip
 import time
 from PyQt4.QtGui import QWidget, QApplication
 from PyQt4.QtCore import *
@@ -134,6 +135,7 @@ else:
         if os.path.isdir(self.mayaScriptPath + 'DevPyLib-master'):
             rm_cmd = cd_cmd + 'rm -R DevPyLib-master'
             os.system(rm_cmd)
+
 
 class InstallWindow(QWidget):
     def __init__(self, devMode=False, parent=None):
