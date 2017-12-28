@@ -28,9 +28,9 @@ class MainMenu(QtWidgets.QWidget):
     def __init__(self, menuName='MayaLib', parent=None):
         super(MainMenu, self).__init__(parent)
 
-        wAction = QtWidgets.QWidgetAction(self)
-        libWindow = MenuLibWidget() # ql
-        wAction.setDefaultWidget(libWindow)
+        self.wAction = QtWidgets.QWidgetAction(self)
+        self.libWindow = MenuLibWidget() # ql
+        self.wAction.setDefaultWidget(self.libWindow)
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
         ptr = omui.MQtUtil.findControl(widgetStr)
@@ -38,11 +38,8 @@ class MainMenu(QtWidgets.QWidget):
         self.mayaMenu = menuWidget.menuBar()
         self.libMenu = self.mayaMenu.addMenu(menuName)
 
-        self.libMenu.addAction(wAction)
+        self.libMenu.addAction(self.wAction)
 
-
-def print_text():
-    print 'hello'
 
 if __name__ == "__main__":
     menuPanel = MainMenu()
