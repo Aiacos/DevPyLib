@@ -49,6 +49,7 @@ else:
     reload(__import__(libName))
     
 cmds.loadPlugin( '""" + self.libDir + '/' + self.libName + '/MayaLib.py' + """' )
+cmds.MayaLib()
 """
 
     def installInMayaUserSetup(self):

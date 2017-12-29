@@ -1,29 +1,56 @@
 __author__ = 'Lorenzo Argentieri'
 
-from maya import OpenMayaMPx
+
+import sys
 import maya.cmds as cmds
+import maya.api.OpenMaya as om
 import mayaLib.guiLib.mainMenu as mm
 
 
-class MayaLibPlugin(OpenMayaMPx.MPxCommand):
-    def doIt(self, *args, **kwargs):
-        self.lib = mm.MainMenu()
+def maya_useNewAPI():
+    """
+    The presence of this function tells Maya that the plugin produces, and
+    expects to be passed, objects created using the Maya Python API 2.0.
+    """
+    pass
 
-def create_plugin():
-    return OpenMayaMPx.asMPxPtr(MayaLibPlugin())
 
-plugin_name = 'MayaLib'
+# command
+class MayaLibPlugin(om.MPxCommand):
+    kPluginCmdName = 'MayaLib'
 
-def _toplugin(mobject):
-    return OpenMayaMPx.MFnPlugin(mobject, 'Lorenzo Argentieri', '0.01')
+    def __init__(self):
+        om.MPxCommand.__init__(self)
 
-def initializePlugin(mobject):
-    plugin = _toplugin(mobject)
-    def register():
-        import pymel.core as pmc
-        plugin.registerCommand(plugin_name, create_plugin)
-    cmds.evalDeferred(register)
+    @staticmethod
+    def cmdCreator():
+        return MayaLibPlugin()
 
-def uninitializePlugin(mobject):
-    plugin = _toplugin(mobject)
-    plugin.deregisterCommand(plugin_name)
+    def doIt(self, args):
+        mm.MainMenu()
+
+
+# Initialize the plug-in
+def initializePlugin(plugin):
+    pluginFn = om.MFnPlugin(plugin, 'Lorenzo Argentieri', '1.0')
+    try:
+        pluginFn.registerCommand(
+            MayaLibPlugin.kPluginCmdName, MayaLibPlugin.cmdCreator
+        )
+    except:
+        sys.stderr.write(
+            "Failed to register command: %s\n" % MayaLibPlugin.kPluginCmdName
+        )
+        raise
+
+
+# Uninitialize the plug-in
+def uninitializePlugin(plugin):
+    pluginFn = om.MFnPlugin(plugin)
+    try:
+        pluginFn.deregisterCommand(MayaLibPlugin.kPluginCmdName)
+    except:
+        sys.stderr.write(
+            "Failed to unregister command: %s\n" % MayaLibPlugin.kPluginCmdName
+        )
+        raise

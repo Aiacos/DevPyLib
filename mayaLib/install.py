@@ -36,6 +36,7 @@ class InstallLibrary(QObject):
 # Install mayaLib
 import sys
 import maya.cmds as cmds
+import maya.utils
 
 libDir = '""" + self.libDir + """'
 port = '""" + self.port + """'
@@ -53,6 +54,7 @@ else:
     reload(__import__(libName))
 
 cmds.loadPlugin( '""" + self.libDir + '/' + self.libName + '/MayaLib.py' + """' )
+cmds.MayaLib()
 """
 
     def installInMayaUserSetup(self):
