@@ -3,9 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import sys
 import os.path
 import os
-import pip
 import time
-from PyQt4.QtGui import QWidget, QApplication
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import urllib
@@ -54,21 +52,7 @@ if not libDir in sys.path:
 else:
     reload(__import__(libName))
 
-# init lib    
-import time
-from pymel.all import *
-import mayaLib.guiLib.mainMenu as mm
-
-def startupLib():
-    tmpWindow = mel.eval('string $tempString = $gMainWindow')
-    while tmpWindow != 'MayaWindow':
-        time.sleep(1)
-        tmpWindow = mel.eval('string $tempString = $gMainWindow')
-        
-    mm.MainMenu()
-    
-
-mayautils.executeDeferred(startupLib)
+cmds.loadPlugin( '""" + self.libDir + '/' + self.libName + '/MayaLib.py' + """' )
 """
 
     def installInMayaUserSetup(self):
