@@ -23,6 +23,8 @@ class MenuLibWidget(QtWidgets.QWidget):
         # reload Button
         #self.reloadButton = QtWidgets.QPushButton()
 
+        self.show()
+
 
 class MainMenu(QtWidgets.QWidget):
     def __init__(self, menuName='MayaLib', parent=None):

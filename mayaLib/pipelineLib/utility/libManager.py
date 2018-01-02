@@ -5,6 +5,7 @@ import os.path
 import os
 import time
 import urllib
+import mayaLib.installCmd as installCmd
 
 
 class InstallLibrary():
@@ -27,30 +28,7 @@ class InstallLibrary():
         else:
             self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
 
-        self.installCommand = \
-"""
-# Install mayaLib
-import sys
-import maya.cmds as cmds
-
-libDir = '""" + self.libDir + """'
-port = '""" + self.port + """'
-libName = '""" + self.libName + """'
-
-# Open Maya port
-if not cmds.commandPort(port, q=True):
-    cmds.commandPort(n=port)
-
-# Add develpment PATH
-if not libDir in sys.path:
-    sys.path.append(libDir)
-    __import__(libName)
-else:
-    reload(__import__(libName))
-    
-cmds.loadPlugin( '""" + self.libDir + '/' + self.libName + '/MayaLib.py' + """' )
-cmds.MayaLib()
-"""
+        self.installCommand = self.installCommand = installCmd.buildInstallCmd(self.libDir, self.libName, self.port)
 
     def installInMayaUserSetup(self):
         userSetup_path = self.mayaScriptPath

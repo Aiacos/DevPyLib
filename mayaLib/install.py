@@ -7,6 +7,7 @@ import time
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import urllib
+import installCmd
 
 
 class InstallLibrary(QObject):
@@ -31,31 +32,7 @@ class InstallLibrary(QObject):
         else:
             self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
 
-        self.installCommand = \
-"""
-# Install mayaLib
-import sys
-import maya.cmds as cmds
-import maya.utils
-
-libDir = '""" + self.libDir + """'
-port = '""" + self.port + """'
-libName = '""" + self.libName + """'
-
-# Open Maya port
-if not cmds.commandPort(port, q=True):
-    cmds.commandPort(n=port)
-
-# Add develpment PATH
-if not libDir in sys.path:
-    sys.path.append(libDir)
-    __import__(libName)
-else:
-    reload(__import__(libName))
-
-cmds.loadPlugin( '""" + self.libDir + '/' + self.libName + '/MayaLib.py' + """' )
-cmds.MayaLib()
-"""
+        self.installCommand = installCmd.buildInstallCmd(self.libDir, self.libName, self.port)
 
     def installInMayaUserSetup(self):
         userSetup_path = self.mayaScriptPath
@@ -144,6 +121,7 @@ class InstallWindow(QWidget):
         super(InstallWindow, self).__init__(parent)
         self.libManager = InstallLibrary(devMode=devMode)
 
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.layout = QGridLayout()
         self.setLayout(self.layout)
         self.setWindowTitle('Install Maya Library')
