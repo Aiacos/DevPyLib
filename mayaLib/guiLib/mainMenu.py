@@ -11,25 +11,27 @@ class MenuLibWidget(QtWidgets.QWidget):
         super(MenuLibWidget, self).__init__(parent)
 
         # set layout
-        self.layout = QtWidgets.QGridLayout()
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addStretch(1)
         self.setLayout(self.layout)
 
         # add menu
         self.mainMenu = self.addMenuBar()
-        self.layout.addWidget(self.mainMenu, 0, 0)
+        self.layout.addWidget(self.mainMenu)
 
         # search bar
         self.searchLineEdit = QtWidgets.QLineEdit()
-        self.layout.addWidget(self.searchLineEdit, 1, 0)
+        self.layout.addWidget(self.searchLineEdit)
 
         # update Button
         self.updateButton = self.addIconButton('update', libPath + '/mayaLib/icons/update.png')
-        self.reloadButton = self.addIconButton('update', libPath + '/mayaLib/icons/reload.png')
-        self.layout.addWidget(self.updateButton, 2, 0)
-        self.layout.addWidget(self.reloadButton, 2, 1)
+        self.reloadButton = self.addIconButton('reload', libPath + '/mayaLib/icons/reload.png')
 
-        # reload Button
-        #self.reloadButton = QtWidgets.QPushButton()
+        self.buttonLayout = QtWidgets.QHBoxLayout()
+        self.buttonLayout.addWidget(self.updateButton)
+        self.buttonLayout.addWidget(self.reloadButton)
+        #self.layout.addlayout(self.buttonLayout)
+
 
         self.show()
 
@@ -79,4 +81,4 @@ class MainMenu(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
-    menuPanel = MainMenu()
+    menuPanel = MainMenu('/Users/lorenzo/Dropbox/3D/Maya/Script_DEF/DevPyLib')
