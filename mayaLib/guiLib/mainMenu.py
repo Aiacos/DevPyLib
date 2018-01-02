@@ -27,9 +27,9 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.updateButton = self.addIconButton('update', libPath + '/mayaLib/icons/update.png')
         self.reloadButton = self.addIconButton('reload', libPath + '/mayaLib/icons/reload.png')
 
-        self.buttonLayout = QtWidgets.QHBoxLayout()
-        self.buttonLayout.addWidget(self.updateButton)
-        self.buttonLayout.addWidget(self.reloadButton)
+        self.layout.addWidget(self.reloadButton)
+        self.layout.addWidget(self.updateButton)
+        # self.buttonLayout = QtWidgets.QHBoxLayout()
         #self.layout.addlayout(self.buttonLayout)
 
 
@@ -60,6 +60,11 @@ class MenuLibWidget(QtWidgets.QWidget):
         #extractAction.triggered.connect(self.close_application)
 
         return extractAction
+
+    def addFuncButton(self):
+        index = self.layout.count()
+        self.layout.insertWidget(index-1, self.reloadButton)
+
 
 
 
