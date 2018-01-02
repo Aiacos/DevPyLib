@@ -26,7 +26,7 @@ else:
     reload(__import__(libName))
 
 import mayaLib.guiLib.mainMenu as mm
-cmds.evalDeferred('libMenu = mm.MainMenu()')
+cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
 """
 
     return installCommand
