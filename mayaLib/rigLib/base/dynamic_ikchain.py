@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import util, common
 
 
 class IkDynamicChain():
@@ -17,7 +17,7 @@ class IkDynamicChain():
         self.ctrlLocator = pm.spaceLocator(n=name + 'Ctrl_LOC')
         # group ik and dynamicSystem
         self.chainGrp = pm.group(self.ctrlLocator, ikhandle[0], self.systemGrp, n=name + '_GRP')
-        util.centerPivot(self.chainGrp, startJnt)
+        common.centerPivot(self.chainGrp, startJnt)
 
         pm.parent(startJnt, self.chainGrp)
         # return ctrlLocator, chainGrp
