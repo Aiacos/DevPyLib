@@ -22,11 +22,13 @@ class StructureManager():
         print 'Module list: ', self.module_list
 
         # Testing
-        #print self.module_list
+        impTest = __import__(self.module_list[0][0])
+        mod2 = self.listSubPackages(impTest)
+        print mod2
 
     def listAllPackage(self):
         package_list = []
-        for p in pkgutil.iter_modules(self.root_package.__path__):
+        for p in pkgutil.walk_packages(self.root_package.__path__):
             package_list.append(p[1])
 
         return  package_list
@@ -42,7 +44,9 @@ class StructureManager():
     def listModules(self, package):
         module_list = []
         package_name = self.root_package.__name__ + '.' + package
-        module_list.append(self.explore_package(package_name))
+        modules_list = self.explore_package(package_name)
+        if len(modules_list) != 0:
+            module_list.append(modules_list)
 
         return module_list
 
@@ -53,7 +57,7 @@ class StructureManager():
             package_name = self.root_package.__name__ + '.' + package
             modules_list = self.explore_package(package_name)
             if len(modules_list) != 0:
-                module_list.append(self.explore_package(package_name))
+                module_list.append(modules_list)
 
         return module_list
 
