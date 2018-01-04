@@ -21,11 +21,13 @@ class StructureManager():
         self.module_list = self.listAllModule()
         print 'Module list: ', self.module_list
 
+        self.subPackage_list = self.listSubPackages(self.module_list[0][0])
+        print 'subPackage list: ', self.subPackage_list
+
+        self.class_list = self.getAllClass(self.subPackage_list[0])
+        print 'class list: ', self.class_list[0]
+
         # Testing
-        mod2 = self.listSubPackages(self.module_list[0][0])
-        print mod2
-        print 'Classes ------'
-        print mod2[0]
         #print self.explore_package(mod2[0])
 
     def listAllPackage(self):
@@ -39,7 +41,7 @@ class StructureManager():
         package_list = []
         package = __import__(package_str, fromlist=[''])
         for p in pkgutil.iter_modules(package.__path__):
-            package_list.append(p[1])
+            package_list.append(package_str + '.' + p[1])
 
         return  package_list
 
@@ -63,9 +65,10 @@ class StructureManager():
 
         return module_list
 
-    def getAllClass(self, module):
+    def getAllClass(self, module_str):
+        module = __import__(module_str, fromlist=[''])
         class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
-        return class_list
+        return class_list[0]
 
     def getAllMethod(self, module):
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
