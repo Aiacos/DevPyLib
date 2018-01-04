@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
-from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
+#from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
+from PySide2 import QtCore, QtWidgets, QtGui
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 from maya import mel
@@ -12,7 +13,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addStretch(1)
+        #self.layout.addStretch(1)
         self.setLayout(self.layout)
 
         # add menu
@@ -23,14 +24,20 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.searchLineEdit = QtWidgets.QLineEdit()
         self.layout.addWidget(self.searchLineEdit)
 
+        # Docs Label
+        self.docLabel = QtWidgets.QLabel()
+        self.docLabel.setStyleSheet("background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
+        self.layout.addWidget(self.docLabel)
+        self.docLabel.setText('Test')
+
         # update Button
         self.updateButton = self.addIconButton('update', libPath + '/mayaLib/icons/update.png')
         self.reloadButton = self.addIconButton('reload', libPath + '/mayaLib/icons/reload.png')
 
-        self.layout.addWidget(self.reloadButton)
-        self.layout.addWidget(self.updateButton)
-        # self.buttonLayout = QtWidgets.QHBoxLayout()
-        #self.layout.addlayout(self.buttonLayout)
+        self.buttonLayout = QtWidgets.QHBoxLayout()
+        self.buttonLayout.addWidget(self.reloadButton)
+        self.buttonLayout.addWidget(self.updateButton)
+        self.layout.addLayout(self.buttonLayout)
 
 
         self.show()
