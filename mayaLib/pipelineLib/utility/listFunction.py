@@ -14,21 +14,61 @@ class StructureManager():
 
     def __init__(self, lib):
         self.root_package = lib
+        self.structLib = {}
 
+        # Main Packages
         self.package_list = self.listAllPackage()
-        print 'Package list: ', self.package_list
+        #print 'Package list: ', self.package_list
+        for pack in self.package_list[1:]:
+            self.structLib[pack] = {}
 
-        self.module_list = self.listAllModule()
-        print 'Module list: ', self.module_list
+        # Packages
+        for key in self.structLib.iterkeys():
+            pack_list = self.listModules(key)
+            if len(pack_list) != 0:
+                for pack in pack_list[0]:
+                    mod = pack.split('.')
+                    self.structLib[mod[-2]][mod[-1]] = pack
 
-        self.subPackage_list = self.listSubPackages(self.module_list[0][0])
-        print 'subPackage list: ', self.subPackage_list
+                    # Sub Packages
+                    if mod[-1] == 'base' or mod[-1] == 'utility' or mod[-1] == 'utils':
+                        subMod_list = self.explore_package(pack)
+                        for subMod in subMod_list:
+                            subModNameSplit = subMod.split('.')
+                            self.structLib[subModNameSplit[-3]][subModNameSplit[-2]] = {subModNameSplit[-1]: subMod}
 
-        self.class_list = self.getAllClass(self.subPackage_list[0])
-        print 'class list: ', self.class_list[0]
+
+        ##################
+        # self.package_list = self.listAllPackage()
+        # print 'Package list: ', self.package_list
+
+        # self.module_list = self.listAllModule()
+        # print 'Module list: ', self.module_list
+        #
+        # self.subPackage_list = self.listSubPackages(self.module_list[0][0])
+        # print 'subPackage list: ', self.subPackage_list
+        #
+        # self.class_list = self.getAllClass(self.subPackage_list[0])
+        # print 'class list: ', self.class_list[0]
 
         # Testing
-        #print self.explore_package(mod2[0])
+        module = self.structLib['fluidLib']['fireSmoke']
+        print module
+        test = self.getAllClass(module)
+        print test
+        testFuncStr = test[1][0]
+
+        func = self.importAndExec(module, testFuncStr)
+        print func
+        func()
+
+    def getStructLib(self):
+        return self.structLib
+
+    def importAndExec(self, moduleString, function):
+        module = __import__(moduleString, fromlist=[''])
+        func = getattr(module, function)
+        return func
 
     def listAllPackage(self):
         package_list = []
@@ -68,7 +108,7 @@ class StructureManager():
     def getAllClass(self, module_str):
         module = __import__(module_str, fromlist=[''])
         class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
-        return class_list[0]
+        return class_list
 
     def getAllMethod(self, module):
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
