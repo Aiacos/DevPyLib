@@ -3,6 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import inspect
 import pkgutil
 import mayaLib as mLib
+import collections
 
 
 class StructureManager():
@@ -38,7 +39,6 @@ class StructureManager():
             # Class OR Function Case
 
             # Add Class to path
-            print 'ITEM: ', item
             self.class_list = self.getAllClass(item)
             for c in self.class_list:
                 self.finalClassList.append(item + '.' + c[0])
@@ -49,14 +49,43 @@ class StructureManager():
 
         # Testing
         for item in self.finalClassList:
-            print item
+            split = item.split('.')
+            tmpDict = {}
+            for key in reversed(split):
+                if key == split[-1]:
+                    tmpDict = {key: item}
+                else:
+                    tmpDict = self.incapsulateDict(tmpDict, key)
 
+            #print tmpDict
+            self.dict_merge(self.structLib, tmpDict)
+
+
+        #for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
+        #    print k, v
         #func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
         #print 'FUNCTION: ', func
-        #testFuncStr = test[1][0]
-        #func = self.importAndExec(module, testFuncStr)
-        #print func
         #func()
+
+
+    def dict_merge(self, dct, merge_dct):
+        """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+        updating only top-level keys, dict_merge recurses down into dicts nested
+        to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
+        ``dct``.
+        :param dct: dict onto which the merge is executed
+        :param merge_dct: dct merged into dct
+        :return: None
+        """
+        for k, v in merge_dct.iteritems():
+            if (k in dct and isinstance(dct[k], dict)
+                    and isinstance(merge_dct[k], collections.Mapping)):
+                self.dict_merge(dct[k], merge_dct[k])
+            else:
+                dct[k] = merge_dct[k]
+
+    def incapsulateDict(self, dict, key):
+        return {key: dict}
 
 
     def getStructLib(self):
