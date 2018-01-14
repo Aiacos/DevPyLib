@@ -14,7 +14,8 @@ class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
 
-        self.LibStructure = lm.StructureManager(mayaLib)
+        self.libStructure = lm.StructureManager(mayaLib)
+        self.libDict = self.libStructure.getStructLib()
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
@@ -65,20 +66,71 @@ class MenuLibWidget(QtWidgets.QWidget):
     def addMenuBar(self):
         mainMenu = QtWidgets.QMenuBar(self)
 
+        libKeys = self.libStructure.getStructLib().iterkeys()
         discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lighting']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
-            fileMenu.addAction(self.addMenuAction(disci))
+            #fileMenu.addAction(self.addMenuAction(disci))
+            for action in self.addMultipleMenuAction(fileMenu, disci):
+                fileMenu.addAction(action)
 
         return mainMenu
 
-    def addMenuAction(self, discipline):
-        extractAction = QtWidgets.QAction('test', self)
+    def addMenuAction(self, discipline, function):
+        extractAction = QtWidgets.QAction(discipline, self)
         #extractAction.setShortcut("Ctrl+Q")
         #extractAction.setStatusTip('Leave The App')
-        #extractAction.triggered.connect(self.close_application)
+        extractAction.triggered.connect(function)
+        #extractAction.hovered.connect(self.docLabel.setText('CIAO'))
 
         return extractAction
+
+    def addSubMenu(self, upMenu, lib):
+        libname = lib.replace('Lib', '').title()
+        return upMenu.addMenu(libname)
+
+    def addItemToMenu(self, dict, subMenu):
+        for key, value in dict.iteritems():
+            for k, v in value.iteritems():
+                if isinstance(v, str):
+                    classString = v.split('.')
+                    module = '.'.join(classString[:-1])
+                    func = self.libStructure.importAndExec(module, k)
+                    subMenu.addAction(self.addMenuAction(k, func))
+
+    def addRecursiveMenu(self, upMenu, lib):
+        for key, value in self.libDict[lib].iteritems():
+            if isinstance(value,dict):
+                subMenu = self.addSubMenu(upMenu, key)
+                self.addItemToMenu(value, subMenu)
+
+            else:
+                action = self.addMenuAction(key, value)
+                upMenu.addAction(action)
+                print 'aggiunta zione'
+
+        return subMenu
+
+            # ToDo: use subMenu and call importAndExec
+
+
+    def addMultipleMenuAction(self, upMenu, discipline):
+        action_list = []
+        if discipline == 'Modelling':
+            pass
+        elif discipline == 'Rigging':
+            pass
+        elif discipline == 'animLib':
+            pass
+        elif discipline == 'Vfx':
+            libMenu = self.addSubMenu(upMenu, 'fluidLib')
+            self.addRecursiveMenu(libMenu, 'fluidLib')
+
+        elif discipline == 'Lighting':
+            pass
+
+        return action_list
+
 
     def addFuncButton(self):
         index = self.layout.count()
