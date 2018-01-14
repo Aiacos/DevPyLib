@@ -51,6 +51,8 @@ class StructureManager():
         for item in self.finalClassList:
             print item
 
+        #func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
+        #print 'FUNCTION: ', func
         #testFuncStr = test[1][0]
         #func = self.importAndExec(module, testFuncStr)
         #print func
