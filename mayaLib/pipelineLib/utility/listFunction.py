@@ -3,6 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import inspect
 import pkgutil
 import mayaLib as mLib
+import collections
 
 
 class StructureManager():
@@ -16,50 +17,75 @@ class StructureManager():
         self.root_package = lib
         self.structLib = {}
 
-        # Main Packages
+        self.finalClassList = []
+        self.moduleClassList = []
+
         self.package_list = self.listAllPackage()
-        #print 'Package list: ', self.package_list
-        for pack in self.package_list[1:]:
-            self.structLib[pack] = {}
 
-        # Packages
-        for key in self.structLib.iterkeys():
-            pack_list = self.listModules(key)
-            if len(pack_list) != 0:
-                for pack in pack_list[0]:
-                    mod = pack.split('.')
-                    self.structLib[mod[-2]][mod[-1]] = pack
+        self.module_list = self.listAllModule()
+        self.module_list = sum(self.module_list, [])
 
-                    # Sub Packages
-                    if mod[-1] == 'base' or mod[-1] == 'utility' or mod[-1] == 'utils':
-                        subMod_list = self.explore_package(pack)
-                        for subMod in subMod_list:
-                            subModNameSplit = subMod.split('.')
-                            self.structLib[subModNameSplit[-3]][subModNameSplit[-2]] = {subModNameSplit[-1]: subMod}
+        self.subPackage_list = []
+        for mod in self.module_list:
+            try:
+                # Module Case
+                subPack = self.listSubPackages(mod)
+                self.moduleClassList.extend(subPack)
+            except:
+                self.moduleClassList.append(mod)
 
-        # Class & Function
-        self.nested_dict_iter(self.structLib)
 
-        ##################
-        # self.package_list = self.listAllPackage()
-        # print 'Package list: ', self.package_list
+        for item in self.moduleClassList:
+            # Class OR Function Case
 
-        # self.module_list = self.listAllModule()
-        # print 'Module list: ', self.module_list
-        #
-        # self.subPackage_list = self.listSubPackages(self.module_list[0][0])
-        # print 'subPackage list: ', self.subPackage_list
-        #
-        # self.class_list = self.getAllClass(self.subPackage_list[0])
-        # print 'class list: ', self.class_list[0]
+            # Add Class to path
+            self.class_list = self.getAllClass(item)
+            for c in self.class_list:
+                self.finalClassList.append(item + '.' + c[0])
+            # Add Function to path
+            self.function_list = self.getAllFunction(item)
+            for f in self.function_list:
+                self.finalClassList.append(item + '.' + f[0])
 
         # Testing
-        print  self.structLib
+        for item in self.finalClassList:
+            split = item.split('.')
+            tmpDict = {}
+            for key in reversed(split):
+                if key == split[-1]:
+                    tmpDict = {key: item}
+                else:
+                    tmpDict = self.incapsulateDict(tmpDict, key)
 
-        # testFuncStr = test[1][0]
-        # func = self.importAndExec(module, testFuncStr)
-        # print func
-        # func()
+            #print tmpDict
+            self.dict_merge(self.structLib, tmpDict)
+
+
+        #for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
+        #    print k, v
+        #func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
+        #print 'FUNCTION: ', func
+        #func()
+
+
+    def dict_merge(self, dct, merge_dct):
+        """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+        updating only top-level keys, dict_merge recurses down into dicts nested
+        to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
+        ``dct``.
+        :param dct: dict onto which the merge is executed
+        :param merge_dct: dct merged into dct
+        :return: None
+        """
+        for k, v in merge_dct.iteritems():
+            if (k in dct and isinstance(dct[k], dict)
+                    and isinstance(merge_dct[k], collections.Mapping)):
+                self.dict_merge(dct[k], merge_dct[k])
+            else:
+                dct[k] = merge_dct[k]
+
+    def incapsulateDict(self, dict, key):
+        return {key: dict}
 
 
     def getStructLib(self):
@@ -133,6 +159,7 @@ class StructureManager():
 
     def nested_dict_iter(self, dictionary):
         for k, v in dictionary.iteritems():
+            print v
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:

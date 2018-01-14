@@ -75,6 +75,7 @@ class FunctionUI(QtWidgets.QWidget):
         self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
         self.setWindowTitle(func.__name__)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
     def getParameterList(self):
         args = self.sig.args
@@ -146,5 +147,7 @@ if __name__ == "__main__":
     # button = QtWidgets.QPushButton("Hello World")
     # button.show()
     # app.exec_()
-    t = FunctionUI(test)
+    print type(Prova.__init__)
+    #print inspect.getargspec(Prova)
+    t = FunctionUI(Prova.__init__)
     t.show()

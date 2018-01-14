@@ -7,14 +7,19 @@ import maya.OpenMayaUI as omui
 from maya import mel
 
 import mayaLib
-import mayaLib.pipelineLib.utility.listFunction as lm
+from mayaLib.pipelineLib.utility import listFunction as lm
+from mayaLib.pipelineLib.utility import docs as doc
+from mayaLib.guiLib.base import baseUI as ui
+
+import inspect
 
 
 class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
 
-        self.LibStructure = lm.StructureManager(mayaLib)
+        self.libStructure = lm.StructureManager(mayaLib)
+        self.libDict = self.libStructure.getStructLib()['mayaLib']
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
@@ -68,17 +73,75 @@ class MenuLibWidget(QtWidgets.QWidget):
         discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lighting']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
-            fileMenu.addAction(self.addMenuAction(disci))
+            #fileMenu.addAction(self.addMenuAction(disci))
+            for action in self.addMultipleMenuAction(fileMenu, disci):
+                fileMenu.addAction(action)
 
         return mainMenu
 
-    def addMenuAction(self, discipline):
-        extractAction = QtWidgets.QAction('test', self)
+    def buttonHover(self, text):
+        self.docLabel.setText(text)
+
+    def buttonClicked(self, func):
+        self.functionWindow = None
+        if inspect.isfunction(func):
+            self.functionWindow = ui.FunctionUI(func)
+            self.functionWindow.show()
+        elif inspect.isclass(func):
+            self.functionWindow = ui.FunctionUI(func.__init__)
+            self.functionWindow.show()
+        else:
+            func()
+
+    def addMenuAction(self, discipline, function):
+        extractAction = QtWidgets.QAction(discipline, self)
         #extractAction.setShortcut("Ctrl+Q")
         #extractAction.setStatusTip('Leave The App')
-        #extractAction.triggered.connect(self.close_application)
+
+
+        extractAction.triggered.connect(lambda : self.buttonClicked(function))
+
+        docText = doc.getDocs(function)
+        extractAction.hovered.connect(lambda: self.buttonHover(docText))
 
         return extractAction
+
+    def addSubMenu(self, upMenu, lib):
+        libname = lib.replace('Lib', '').title()
+        return upMenu.addMenu(libname)
+
+    def addRecursiveMenu(self, upMenu, libDict):
+        for key, value in libDict.iteritems():
+            if isinstance(value,dict):
+                subMenu = self.addSubMenu(upMenu, key)
+                self.addRecursiveMenu(subMenu, value)
+
+            else:
+                classString = value.split('.')
+                module = '.'.join(classString[:-1])
+                func = self.libStructure.importAndExec(module, key)
+                upMenu.addAction(self.addMenuAction(key, func))
+
+            # ToDo: use subMenu and call importAndExec
+
+
+    def addMultipleMenuAction(self, upMenu, discipline):
+        action_list = []
+        if discipline == 'Modelling':
+            pass
+        elif discipline == 'Rigging':
+            pass
+        elif discipline == 'animLib':
+            pass
+        elif discipline == 'Vfx':
+            libMenu = self.addSubMenu(upMenu, 'fluidLib')
+            self.addRecursiveMenu(libMenu, self.libDict['fluidLib'])
+
+        elif discipline == 'Lighting':
+            pass
+
+        return action_list
+
 
     def addFuncButton(self):
         index = self.layout.count()
