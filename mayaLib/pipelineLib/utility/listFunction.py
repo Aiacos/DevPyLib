@@ -16,50 +16,45 @@ class StructureManager():
         self.root_package = lib
         self.structLib = {}
 
-        # Main Packages
+        self.finalClassList = []
+        self.moduleClassList = []
+
         self.package_list = self.listAllPackage()
-        #print 'Package list: ', self.package_list
-        for pack in self.package_list[1:]:
-            self.structLib[pack] = {}
 
-        # Packages
-        for key in self.structLib.iterkeys():
-            pack_list = self.listModules(key)
-            if len(pack_list) != 0:
-                for pack in pack_list[0]:
-                    mod = pack.split('.')
-                    self.structLib[mod[-2]][mod[-1]] = pack
+        self.module_list = self.listAllModule()
+        self.module_list = sum(self.module_list, [])
 
-                    # Sub Packages
-                    if mod[-1] == 'base' or mod[-1] == 'utility' or mod[-1] == 'utils':
-                        subMod_list = self.explore_package(pack)
-                        for subMod in subMod_list:
-                            subModNameSplit = subMod.split('.')
-                            self.structLib[subModNameSplit[-3]][subModNameSplit[-2]] = {subModNameSplit[-1]: subMod}
+        self.subPackage_list = []
+        for mod in self.module_list:
+            try:
+                # Module Case
+                subPack = self.listSubPackages(mod)
+                self.moduleClassList.extend(subPack)
+            except:
+                self.moduleClassList.append(mod)
 
-        # Class & Function
-        self.nested_dict_iter(self.structLib)
 
-        ##################
-        # self.package_list = self.listAllPackage()
-        # print 'Package list: ', self.package_list
+        for item in self.moduleClassList:
+            # Class OR Function Case
 
-        # self.module_list = self.listAllModule()
-        # print 'Module list: ', self.module_list
-        #
-        # self.subPackage_list = self.listSubPackages(self.module_list[0][0])
-        # print 'subPackage list: ', self.subPackage_list
-        #
-        # self.class_list = self.getAllClass(self.subPackage_list[0])
-        # print 'class list: ', self.class_list[0]
+            # Add Class to path
+            print 'ITEM: ', item
+            self.class_list = self.getAllClass(item)
+            for c in self.class_list:
+                self.finalClassList.append(item + '.' + c[0])
+            # Add Function to path
+            self.function_list = self.getAllFunction(item)
+            for f in self.function_list:
+                self.finalClassList.append(item + '.' + f[0])
 
         # Testing
-        print  self.structLib
+        for item in self.finalClassList:
+            print item
 
-        # testFuncStr = test[1][0]
-        # func = self.importAndExec(module, testFuncStr)
-        # print func
-        # func()
+        #testFuncStr = test[1][0]
+        #func = self.importAndExec(module, testFuncStr)
+        #print func
+        #func()
 
 
     def getStructLib(self):
@@ -133,6 +128,7 @@ class StructureManager():
 
     def nested_dict_iter(self, dictionary):
         for k, v in dictionary.iteritems():
+            print v
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:
