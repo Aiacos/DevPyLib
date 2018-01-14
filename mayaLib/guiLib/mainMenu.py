@@ -8,6 +8,8 @@ from maya import mel
 
 import mayaLib
 import mayaLib.pipelineLib.utility.listFunction as lm
+import mayaLib.pipelineLib.utility.docs as doc
+import mayaLib.guiLib.base.baseUI as ui
 
 
 class MenuLibWidget(QtWidgets.QWidget):
@@ -15,7 +17,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         super(MenuLibWidget, self).__init__(parent)
 
         self.libStructure = lm.StructureManager(mayaLib)
-        self.libDict = self.libStructure.getStructLib()
+        self.libDict = self.libStructure.getStructLib()['mayaLib']
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
@@ -66,7 +68,6 @@ class MenuLibWidget(QtWidgets.QWidget):
     def addMenuBar(self):
         mainMenu = QtWidgets.QMenuBar(self)
 
-        libKeys = self.libStructure.getStructLib().iterkeys()
         discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lighting']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
@@ -76,12 +77,23 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         return mainMenu
 
+    def buttonHover(self, text):
+        self.docLabel.setText(text)
+
+    def buttonClicked(self, func):
+        functionWindow = ui.FunctionUI(func)
+        functionWindow.show()
+
     def addMenuAction(self, discipline, function):
         extractAction = QtWidgets.QAction(discipline, self)
         #extractAction.setShortcut("Ctrl+Q")
         #extractAction.setStatusTip('Leave The App')
-        extractAction.triggered.connect(function)
-        #extractAction.hovered.connect(self.docLabel.setText('CIAO'))
+
+
+        extractAction.triggered.connect(lambda : self.buttonClicked(function))
+
+        docText = doc.getDocs(function)
+        extractAction.hovered.connect(lambda: self.buttonHover(docText))
 
         return extractAction
 
@@ -89,27 +101,17 @@ class MenuLibWidget(QtWidgets.QWidget):
         libname = lib.replace('Lib', '').title()
         return upMenu.addMenu(libname)
 
-    def addItemToMenu(self, dict, subMenu):
-        for key, value in dict.iteritems():
-            for k, v in value.iteritems():
-                if isinstance(v, str):
-                    classString = v.split('.')
-                    module = '.'.join(classString[:-1])
-                    func = self.libStructure.importAndExec(module, k)
-                    subMenu.addAction(self.addMenuAction(k, func))
-
-    def addRecursiveMenu(self, upMenu, lib):
-        for key, value in self.libDict[lib].iteritems():
+    def addRecursiveMenu(self, upMenu, libDict):
+        for key, value in libDict.iteritems():
             if isinstance(value,dict):
                 subMenu = self.addSubMenu(upMenu, key)
-                self.addItemToMenu(value, subMenu)
+                self.addRecursiveMenu(subMenu, value)
 
             else:
-                action = self.addMenuAction(key, value)
-                upMenu.addAction(action)
-                print 'aggiunta zione'
-
-        return subMenu
+                classString = value.split('.')
+                module = '.'.join(classString[:-1])
+                func = self.libStructure.importAndExec(module, key)
+                upMenu.addAction(self.addMenuAction(key, func))
 
             # ToDo: use subMenu and call importAndExec
 
@@ -124,7 +126,7 @@ class MenuLibWidget(QtWidgets.QWidget):
             pass
         elif discipline == 'Vfx':
             libMenu = self.addSubMenu(upMenu, 'fluidLib')
-            self.addRecursiveMenu(libMenu, 'fluidLib')
+            self.addRecursiveMenu(libMenu, self.libDict['fluidLib'])
 
         elif discipline == 'Lighting':
             pass
