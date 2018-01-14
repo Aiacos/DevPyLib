@@ -6,6 +6,8 @@ from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 from maya import mel
 
+import mayaLib
+
 
 class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
@@ -39,8 +41,15 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonLayout.addWidget(self.updateButton)
         self.layout.addLayout(self.buttonLayout)
 
+        # Connect
+        self.reloadButton.clicked.connect(self.reloaded)
+
 
         self.show()
+
+    def reloaded(self):
+        reload(mayaLib)
+        print 'Lib Reloaded!'
 
     def addIconButton(self, name, imgPath):
         icon = QtGui.QPixmap(imgPath)

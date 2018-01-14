@@ -45,5 +45,5 @@ def main_orientCtrl():
         orientCtrl_constrain(sel2, sel1)
 
 
-
-main_orientCtrl()
+if __name__ == "__main__":
+    main_orientCtrl()

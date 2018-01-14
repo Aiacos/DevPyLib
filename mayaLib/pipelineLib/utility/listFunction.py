@@ -37,6 +37,8 @@ class StructureManager():
                             subModNameSplit = subMod.split('.')
                             self.structLib[subModNameSplit[-3]][subModNameSplit[-2]] = {subModNameSplit[-1]: subMod}
 
+        # Class & Function
+        self.nested_dict_iter(self.structLib)
 
         ##################
         # self.package_list = self.listAllPackage()
@@ -52,15 +54,13 @@ class StructureManager():
         # print 'class list: ', self.class_list[0]
 
         # Testing
-        module = self.structLib['fluidLib']['fireSmoke']
-        print module
-        test = self.getAllClass(module)
-        print test
-        testFuncStr = test[1][0]
+        print  self.structLib
 
-        func = self.importAndExec(module, testFuncStr)
-        print func
-        func()
+        # testFuncStr = test[1][0]
+        # func = self.importAndExec(module, testFuncStr)
+        # print func
+        # func()
+
 
     def getStructLib(self):
         return self.structLib
@@ -110,11 +110,13 @@ class StructureManager():
         class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
         return class_list
 
-    def getAllMethod(self, module):
+    def getAllMethod(self, module_str):
+        module = __import__(module_str, fromlist=[''])
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
         return method_list
 
-    def getAllFunction(self, module):
+    def getAllFunction(self, module_str):
+        module = __import__(module_str, fromlist=[''])
         functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
         return functions_list
 
@@ -128,6 +130,28 @@ class StructureManager():
             self.explore_package(qname)
 
         return package_list
+
+    def nested_dict_iter(self, dictionary):
+        for k, v in dictionary.iteritems():
+            if isinstance(v, dict):
+                self.nested_dict_iter(v)
+            else:
+                #print("{0} : {1}".format(k, v))
+                module = v
+                class_list = self.getAllClass(module)
+                function_list = self.getAllFunction(module)
+
+                class_dict = {}
+                function_dict = {}
+
+                for c in class_list:
+                    class_dict = {c[0]: v + '.' + c[0]}
+                for f in function_list:
+                    function_dict = {f[0]: v + '.' + f[0]}
+
+                callable_dict = {'class': class_dict, 'function': function_dict}
+                dictionary[k] = callable_dict
+
 
 if __name__ == "__main__":
     StructureManager(mLib)

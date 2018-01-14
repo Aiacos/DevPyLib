@@ -59,16 +59,17 @@ def pathMode(path,follow=False,sphereSize=0.1,offsetActive=False,locSize=0.1,joi
     return locatorList
 
 
-locList = []
-for cv in curve:
-    #print cv
-    locList.extend(pathMode(cv))
-cmds.group(locList, n='locator_grp')
+if __name__ == "__main__":
+    locList = []
+    for cv in curve:
+        #print cv
+        locList.extend(pathMode(cv))
+    cmds.group(locList, n='locator_grp')
 
-## --ToDo
+    ## --ToDo
 
-# gui
-# object oriented
-# multithreading --probabilmente si puo evitare
+    # gui
+    # object oriented
+    # multithreading --probabilmente si puo evitare
 
-# docstring not working. why?
+    # docstring not working. why?
