@@ -7,9 +7,11 @@ import maya.OpenMayaUI as omui
 from maya import mel
 
 import mayaLib
-import mayaLib.pipelineLib.utility.listFunction as lm
-import mayaLib.pipelineLib.utility.docs as doc
-import mayaLib.guiLib.base.baseUI as ui
+from mayaLib.pipelineLib.utility import listFunction as lm
+from mayaLib.pipelineLib.utility import docs as doc
+from mayaLib.guiLib.base import baseUI as ui
+
+import inspect
 
 
 class MenuLibWidget(QtWidgets.QWidget):
@@ -81,8 +83,15 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.docLabel.setText(text)
 
     def buttonClicked(self, func):
-        functionWindow = ui.FunctionUI(func)
-        functionWindow.show()
+        self.functionWindow = None
+        if inspect.isfunction(func):
+            self.functionWindow = ui.FunctionUI(func)
+            self.functionWindow.show()
+        elif inspect.isclass(func):
+            self.functionWindow = ui.FunctionUI(func.__init__)
+            self.functionWindow.show()
+        else:
+            func()
 
     def addMenuAction(self, discipline, function):
         extractAction = QtWidgets.QAction(discipline, self)
