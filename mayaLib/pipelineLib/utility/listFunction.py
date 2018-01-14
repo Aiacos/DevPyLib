@@ -7,7 +7,7 @@ import mayaLib as mLib
 
 class StructureManager():
     """
-    Read Documentation in docstring
+    Manage Lib Structure
     """
 
     #root_package = ''

@@ -7,11 +7,14 @@ import maya.OpenMayaUI as omui
 from maya import mel
 
 import mayaLib
+import mayaLib.pipelineLib.utility.listFunction as lm
 
 
 class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
+
+        self.LibStructure = lm.StructureManager(mayaLib)
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
@@ -62,7 +65,7 @@ class MenuLibWidget(QtWidgets.QWidget):
     def addMenuBar(self):
         mainMenu = QtWidgets.QMenuBar(self)
 
-        discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Compositing']
+        discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lighting']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
             fileMenu.addAction(self.addMenuAction(disci))
