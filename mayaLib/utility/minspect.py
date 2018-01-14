@@ -23,11 +23,6 @@ def info(obj):
     result = '\n'.join(lines)
     print result
 
-## -- Test Space -- #
-#syspath()
-
-test = pmc.polySphere()
-info(test[0])
 
 ################################################
 
