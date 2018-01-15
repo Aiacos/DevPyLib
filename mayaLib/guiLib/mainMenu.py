@@ -11,8 +11,6 @@ from mayaLib.pipelineLib.utility import listFunction as lm
 from mayaLib.pipelineLib.utility import docs as doc
 from mayaLib.guiLib.base import baseUI as ui
 
-import inspect
-
 
 class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
