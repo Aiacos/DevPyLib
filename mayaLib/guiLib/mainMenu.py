@@ -96,7 +96,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         #extractAction.setStatusTip('Leave The App')
 
 
-        extractAction.triggered.connect(lambda : self.buttonClicked(function))
+        extractAction.triggered.connect(lambda: self.buttonClicked(function))
 
         docText = doc.getDocs(function)
         extractAction.hovered.connect(lambda: self.buttonHover(docText))

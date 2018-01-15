@@ -4,6 +4,7 @@ import inspect
 import ast
 import mayaLib.pipelineLib.utility.docs as doc
 from mayaLib.utility.Qt import QtCore, QtWidgets
+import pymel.core as pm
 
 
 def test(a, b, c, d='ciao', e='stronzo', f=1):
@@ -44,11 +45,13 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.label_list = []
         self.lineedit_list = []
+        self.fillButton_list = []
 
         row = 0
         for arg in self.args:
             if arg[0] != 'self':
                 labelname = QtWidgets.QLabel(arg[0])
+                fillButton = QtWidgets.QPushButton(">")
 
                 if arg[1]:
                     lineedit = QtWidgets.QLineEdit(str(arg[1]))
@@ -58,7 +61,10 @@ class FunctionUI(QtWidgets.QWidget):
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
 
-                self.layout.addWidget(lineedit, row, 1)
+                self.layout.addWidget(fillButton, row, 1)
+                self.fillButton_list.append(fillButton)
+
+                self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
 
                 row = row + 1
@@ -78,8 +84,24 @@ class FunctionUI(QtWidgets.QWidget):
         self.execButton.clicked.connect(self.execFunction)
         self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
+        for button in self.fillButton_list:
+            button.clicked.connect(self.fillWithSelected)
+
         self.setWindowTitle(func.__name__)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
+    def fillWithSelected(self):
+        button = self.sender()
+        selection_list = pm.ls(sl=True)
+
+        index = self.fillButton_list.index(button)
+        lineedit = self.lineedit_list[index]
+
+        text_list = []
+        for item in selection_list:
+            text_list.append(str(item))
+
+        lineedit.setText(', '.join(text_list))
 
     def getParameterList(self):
         args = self.sig.args
@@ -116,11 +138,13 @@ class FunctionUI(QtWidgets.QWidget):
                     if arg[1]:
                         self.label_list[counter].show()
                         self.lineedit_list[counter].show()
+                        self.fillButton_list[counter].show()
                 else:
                     # hide
                     if arg[1]:
                         self.label_list[counter].hide()
                         self.lineedit_list[counter].hide()
+                        self.fillButton_list[counter].hide()
 
                 counter = counter + 1
 
