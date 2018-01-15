@@ -19,6 +19,11 @@ class BaseFluid():
 
         self.fluidShape = cont.getContainer()[0]
         self.fluidEmit = emit.getEmitter()[0]
+        self.fluidTransform = pm.listRelatives(self.fluidShape, parent=True)
+
+        if fluidName != None:
+            if fluidName != '':
+                pm.rename(self.fluidTransform, fluidName)
 
         # Connect Emitter to Fluid Container
         pm.connectDynamic(self.fluidShape, em=self.fluidEmit)

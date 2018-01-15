@@ -57,7 +57,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def reloaded(self):
         reload(mayaLib)
-        print 'Lib Reloaded!'
+        self.docLabel.setText('Lib Reloaded!')
 
     def addIconButton(self, name, imgPath):
         icon = QtGui.QPixmap(imgPath)
@@ -84,13 +84,10 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def buttonClicked(self, func):
         self.functionWindow = None
-        if inspect.isfunction(func):
+        try:
             self.functionWindow = ui.FunctionUI(func)
             self.functionWindow.show()
-        elif inspect.isclass(func):
-            self.functionWindow = ui.FunctionUI(func.__init__)
-            self.functionWindow.show()
-        else:
+        except:
             func()
 
     def addMenuAction(self, discipline, function):

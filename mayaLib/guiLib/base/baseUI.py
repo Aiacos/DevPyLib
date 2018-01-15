@@ -33,7 +33,10 @@ class FunctionUI(QtWidgets.QWidget):
         super(FunctionUI, self).__init__(parent)
 
         self.function = func
-        self.sig = inspect.getargspec(func)
+        if inspect.isclass(func):
+            self.sig = inspect.getargspec(func.__init__)
+        else:
+            self.sig = inspect.getargspec(func)
 
         self.layout = QtWidgets.QGridLayout()
 
@@ -44,20 +47,21 @@ class FunctionUI(QtWidgets.QWidget):
 
         row = 0
         for arg in self.args:
-            labelname = QtWidgets.QLabel(arg[0])
+            if arg[0] != 'self':
+                labelname = QtWidgets.QLabel(arg[0])
 
-            if arg[1]:
-                lineedit = QtWidgets.QLineEdit(str(arg[1]))
-            else:
-                lineedit = QtWidgets.QLineEdit("")
+                if arg[1]:
+                    lineedit = QtWidgets.QLineEdit(str(arg[1]))
+                else:
+                    lineedit = QtWidgets.QLineEdit("")
 
-            self.layout.addWidget(labelname, row, 0)
-            self.label_list.append(labelname)
+                self.layout.addWidget(labelname, row, 0)
+                self.label_list.append(labelname)
 
-            self.layout.addWidget(lineedit, row, 1)
-            self.lineedit_list.append(lineedit)
+                self.layout.addWidget(lineedit, row, 1)
+                self.lineedit_list.append(lineedit)
 
-            row = row + 1
+                row = row + 1
 
         self.execButton = QtWidgets.QPushButton("Execute")
         self.advancedCheckBox = QtWidgets.QCheckBox("Advanced")
@@ -106,18 +110,19 @@ class FunctionUI(QtWidgets.QWidget):
     def toggleDefaultParameter(self, defaultvisible=False):
         counter = 0
         for arg in self.args:
-            if defaultvisible:
-                # show
-                if arg[1]:
-                    self.label_list[counter].show()
-                    self.lineedit_list[counter].show()
-            else:
-                # hide
-                if arg[1]:
-                    self.label_list[counter].hide()
-                    self.lineedit_list[counter].hide()
+            if arg[0] != 'self':
+                if defaultvisible:
+                    # show
+                    if arg[1]:
+                        self.label_list[counter].show()
+                        self.lineedit_list[counter].show()
+                else:
+                    # hide
+                    if arg[1]:
+                        self.label_list[counter].hide()
+                        self.lineedit_list[counter].hide()
 
-            counter = counter + 1
+                counter = counter + 1
 
     def execFunction(self):
         param_list = []
@@ -133,6 +138,9 @@ class FunctionUI(QtWidgets.QWidget):
             elif value == 'False':
                 value = False
                 param_list.append(value)
+            elif value == '':
+                value = None
+                param_list.append(value)
             else:
                 param_list.append(value)
 
@@ -147,7 +155,6 @@ if __name__ == "__main__":
     # button = QtWidgets.QPushButton("Hello World")
     # button.show()
     # app.exec_()
-    print type(Prova.__init__)
     #print inspect.getargspec(Prova)
-    t = FunctionUI(Prova.__init__)
+    t = FunctionUI(Prova)
     t.show()
