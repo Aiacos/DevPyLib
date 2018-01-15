@@ -163,6 +163,9 @@ class MainMenu(QtWidgets.QWidget):
 
         self.libMenu.addAction(self.wAction)
 
+    def __del__(self):
+        self.libMenu.deleteLater()
+
 
 if __name__ == "__main__":
     menuPanel = MainMenu('/Users/lorenzo/Dropbox/3D/Maya/Script_DEF/DevPyLib')
