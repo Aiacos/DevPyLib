@@ -38,7 +38,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.docLabel = QtWidgets.QLabel()
         self.docLabel.setStyleSheet("background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
         self.layout.addWidget(self.docLabel)
-        self.docLabel.setText('Test')
+        self.docLabel.setText('')
 
         # update Button
         self.updateButton = self.addIconButton('update', libPath + '/mayaLib/icons/update.png')
