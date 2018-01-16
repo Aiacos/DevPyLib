@@ -70,16 +70,13 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.searchLineEdit)
 
         # WidgetList
-        """
         self.buttonListWidget = QtWidgets.QListWidget()
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.setStyleSheet('background: transparent;')
         self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
-        self.buttonListWidget.setMinimumWidth(self.buttonListWidget.sizeHintForColumn(0))
+        #self.buttonListWidget.resize(1, 1)
 
-        self.buttonQListWidgetItem = QtWidgets.QListWidgetItem(self.buttonListWidget)
         self.layout.addWidget(self.buttonListWidget)
-        """
 
         # Docs Label
         self.docLabel = QtWidgets.QLabel()
@@ -104,31 +101,42 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         self.show()
 
+
     def buildButtonList(self, text):
+        if self.buttonListWidget.count() > 0:
+            self.buttonListWidget.clear()
+
+        doc_text = []
         text_list = text.split('*')
-        print text_list
         for libstr in self.libStructure.finalClassList:
             str_match = [True for match in text_list if match in libstr]
 
             if True in str_match:
-                print libstr
+                doc_text.append(libstr)
+                tt = '\n'.join(doc_text)
+                self.docLabel.setText(tt)
                 classString = libstr.split('.')
                 module = '.'.join(classString[:-1])
                 key = classString[-1]
 
-                button = QtWidgets.QPushButton('test')
-                #self.buttonQListWidgetItem.setSizeHint(button.sizeHint())
-                self.buttonListWidget.addItem(self.buttonQListWidgetItem)
-                self.buttonListWidget.setItemWidget(self.buttonQListWidgetItem, button)
-                ##########
+                button = QtWidgets.QPushButton(key)
+                buttonQListWidgetItem = QtWidgets.QListWidgetItem(self.buttonListWidget)
+                buttonQListWidgetItem.setSizeHint(button.sizeHint())
+                self.buttonListWidget.addItem(buttonQListWidgetItem)
+                self.buttonListWidget.setItemWidget(buttonQListWidgetItem, button)
+
                 button.setToolTip(libstr)
                 func = self.libStructure.importAndExec(module, key)
-                docText = doc.getDocs(func)
+                #docText = doc.getDocs(func)
                 #button.hovered.connect(lambda: self.buttonHover(docText))
+
                 button.clicked.connect(lambda: self.buttonClicked(func))
 
-            else:
+        if text == '':
+            self.docLabel.setText('')
+            if self.buttonListWidget.count() > 0:
                 self.buttonListWidget.clear()
+
 
 
 

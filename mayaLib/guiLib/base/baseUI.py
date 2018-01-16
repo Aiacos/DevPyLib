@@ -77,7 +77,7 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.advancedCheckBox, row, 0)
 
         self.doclabel = QtWidgets.QLabel(doc.getDocs(func))
-        self.layout.addWidget(self.doclabel, row + 1, 1)
+        self.layout.addWidget(self.doclabel, row + 1, 2)
         self.setLayout(self.layout)
 
         # self.connect(self.execButton, QtCore.Signal("clicked()"), self.execFunction) # Deprecated
