@@ -12,6 +12,43 @@ from mayaLib.pipelineLib.utility import docs as doc
 from mayaLib.guiLib.base import baseUI as ui
 
 
+class SearchLineEdit(QtWidgets.QLineEdit):
+
+    #buttonClicked = QtCore.pyqtSignal(bool)
+    speak = QtCore.Signal(str)
+
+    def __init__(self, icon_file, parent=None):
+        super(SearchLineEdit, self).__init__(parent)
+
+        self.button = QtWidgets.QToolButton(self)
+        self.button.setIcon(QtGui.QIcon(icon_file))
+        self.button.setStyleSheet('border: 0px; padding: 0px;')
+        self.button.setCursor(QtCore.Qt.ArrowCursor)
+        self.button.clicked.connect(self.clear) #self.buttonClicked.emit
+
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.addWidget(self.button,0,QtCore.Qt.AlignRight)
+        layout.setSpacing(0)
+        layout.setMargin(5)
+
+        frameWidth = self.style().pixelMetric(QtWidgets.QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.button.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' % (buttonSize.width() + frameWidth + 1))
+        self.setMinimumSize(max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth*2 + 3),
+                            max(self.minimumSizeHint().height(), buttonSize.height() + frameWidth*2 + 3))
+
+        self.textChanged.connect(self.replaceText)
+
+    def replaceText(self):
+        text = self.text()
+        text_list = text.split(' ')
+        newtext = '*'.join(text_list)
+        self.setText(newtext)
+
+        self.speak.emit(newtext)
+
+
 class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
@@ -29,8 +66,20 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.mainMenu)
 
         # search bar
-        self.searchLineEdit = QtWidgets.QLineEdit()
+        self.searchLineEdit = SearchLineEdit(libPath + '/mayaLib/icons/close.png')
         self.layout.addWidget(self.searchLineEdit)
+
+        # WidgetList
+        """
+        self.buttonListWidget = QtWidgets.QListWidget()
+        self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.buttonListWidget.setStyleSheet('background: transparent;')
+        self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
+        self.buttonListWidget.setMinimumWidth(self.buttonListWidget.sizeHintForColumn(0))
+
+        self.buttonQListWidgetItem = QtWidgets.QListWidgetItem(self.buttonListWidget)
+        self.layout.addWidget(self.buttonListWidget)
+        """
 
         # Docs Label
         self.docLabel = QtWidgets.QLabel()
@@ -49,9 +98,40 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # Connect
         self.reloadButton.clicked.connect(self.reloaded)
+        #self.updateButton.clicked.connect(self.reloaded)
+        self.searchLineEdit.speak.connect(lambda: self.buildButtonList(self.searchLineEdit.text()))
 
 
         self.show()
+
+    def buildButtonList(self, text):
+        text_list = text.split('*')
+        print text_list
+        for libstr in self.libStructure.finalClassList:
+            str_match = [True for match in text_list if match in libstr]
+
+            if True in str_match:
+                print libstr
+                classString = libstr.split('.')
+                module = '.'.join(classString[:-1])
+                key = classString[-1]
+
+                button = QtWidgets.QPushButton('test')
+                #self.buttonQListWidgetItem.setSizeHint(button.sizeHint())
+                self.buttonListWidget.addItem(self.buttonQListWidgetItem)
+                self.buttonListWidget.setItemWidget(self.buttonQListWidgetItem, button)
+                ##########
+                button.setToolTip(libstr)
+                func = self.libStructure.importAndExec(module, key)
+                docText = doc.getDocs(func)
+                #button.hovered.connect(lambda: self.buttonHover(docText))
+                button.clicked.connect(lambda: self.buttonClicked(func))
+
+            else:
+                self.buttonListWidget.clear()
+
+
+
 
     def reloaded(self):
         reload(mayaLib)
@@ -117,9 +197,6 @@ class MenuLibWidget(QtWidgets.QWidget):
                 func = self.libStructure.importAndExec(module, key)
                 upMenu.addAction(self.addMenuAction(key, func))
 
-            # ToDo: use subMenu and call importAndExec
-
-
     def addMultipleMenuAction(self, upMenu, discipline):
         action_list = []
         if discipline == 'Modelling':
@@ -136,13 +213,6 @@ class MenuLibWidget(QtWidgets.QWidget):
             pass
 
         return action_list
-
-
-    def addFuncButton(self):
-        index = self.layout.count()
-        self.layout.insertWidget(index-1, self.reloadButton)
-
-
 
 
 class MainMenu(QtWidgets.QWidget):
