@@ -44,7 +44,9 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         text = self.text()
         text_list = text.split(' ')
         newtext = '*'.join(text_list)
-        self.setText(newtext)
+
+        if newtext != text:
+            self.setText(newtext)
 
         self.speak.emit(newtext)
 
@@ -71,10 +73,15 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # WidgetList
         self.buttonListWidget = QtWidgets.QListWidget()
-        self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.setStyleSheet('background: transparent;')
+        self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        #self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        #self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
         self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
-        #self.buttonListWidget.resize(1, 1)
+        #self.buttonListWidget.setMinimumHeight(2)
+        #self.buttonListWidget.setMaximumHeight(100)
+
 
         self.layout.addWidget(self.buttonListWidget)
 
@@ -124,6 +131,8 @@ class MenuLibWidget(QtWidgets.QWidget):
                 buttonQListWidgetItem.setSizeHint(button.sizeHint())
                 self.buttonListWidget.addItem(buttonQListWidgetItem)
                 self.buttonListWidget.setItemWidget(buttonQListWidgetItem, button)
+                self.buttonListWidget.adjustSize()
+                self.buttonListWidget.updateGeometry()
 
                 button.setToolTip(libstr)
                 func = self.libStructure.importAndExec(module, key)
@@ -156,7 +165,7 @@ class MenuLibWidget(QtWidgets.QWidget):
     def addMenuBar(self):
         mainMenu = QtWidgets.QMenuBar(self)
 
-        discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lighting']
+        discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lookdev']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
             #fileMenu.addAction(self.addMenuAction(disci))
@@ -210,15 +219,19 @@ class MenuLibWidget(QtWidgets.QWidget):
         if discipline == 'Modelling':
             pass
         elif discipline == 'Rigging':
-            pass
+            libMenu = self.addSubMenu(upMenu, 'rigLib')
+            self.addRecursiveMenu(libMenu, self.libDict['rigLib'])
         elif discipline == 'animLib':
             pass
         elif discipline == 'Vfx':
             libMenu = self.addSubMenu(upMenu, 'fluidLib')
             self.addRecursiveMenu(libMenu, self.libDict['fluidLib'])
 
-        elif discipline == 'Lighting':
-            pass
+        elif discipline == 'Lookdev':
+            libMenu = self.addSubMenu(upMenu, 'lookdevLib')
+            self.addRecursiveMenu(libMenu, self.libDict['lookdevLib'])
+            libMenu = self.addSubMenu(upMenu, 'shaderLib')
+            self.addRecursiveMenu(libMenu, self.libDict['shaderLib'])
 
         return action_list
 
