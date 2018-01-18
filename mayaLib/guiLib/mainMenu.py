@@ -60,7 +60,6 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # set layout
         self.layout = QtWidgets.QVBoxLayout()
-        #self.layout.addStretch(1)
         self.setLayout(self.layout)
 
         # add menu
@@ -72,12 +71,13 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.searchLineEdit)
 
         # WidgetList
+        self.buttonItemList = []
         self.buttonListWidget = QtWidgets.QListWidget()
         self.buttonListWidget.setStyleSheet('background: transparent;')
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         #self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        #self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
+        #self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
         #self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
         #self.buttonListWidget.setMinimumHeight(75)
         #self.buttonListWidget.setMaximumHeight(100)
@@ -102,14 +102,22 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.reloadButton.clicked.connect(self.reloaded)
         #self.updateButton.clicked.connect(self.reloaded)
         self.searchLineEdit.speak.connect(lambda: self.buildButtonList(self.searchLineEdit.text()))
-
+        self.buttonListWidget.itemClicked.connect(self.listWidgetButtonClick)
 
         self.show()
 
+    def listWidgetButtonClick(self, item):
+        libstr = item.toolTip()
+        classString = libstr.split('.')
+        module = '.'.join(classString[:-1])
+        key = classString[-1]
+        func = self.libStructure.importAndExec(module, key)
+        self.buttonClicked(func)
 
     def buildButtonList(self, text):
-        if self.buttonListWidget.count() > 0:
+        if self.buttonListWidget.count() > 0 or text == '':
             self.buttonListWidget.clear()
+            del self.buttonItemList[:]
 
         doc_text = []
         text_list = text.split('*')
@@ -121,32 +129,17 @@ class MenuLibWidget(QtWidgets.QWidget):
                 tt = '\n'.join(doc_text)
                 self.docLabel.setText(tt)
                 classString = libstr.split('.')
-                module = '.'.join(classString[:-1])
                 key = classString[-1]
 
-                button = QtWidgets.QPushButton(key)
-                buttonQListWidgetItem = QtWidgets.QListWidgetItem(self.buttonListWidget)
-                buttonQListWidgetItem.setSizeHint(button.sizeHint())
-                self.buttonListWidget.addItem(buttonQListWidgetItem)
-                self.buttonListWidget.setItemWidget(buttonQListWidgetItem, button)
-                self.buttonListWidget.adjustSize()
-                self.buttonListWidget.updateGeometry()
-
-                button.setToolTip(libstr)
-                func = self.libStructure.importAndExec(module, key)
-                #docText = doc.getDocs(func)
-                #button.hovered.connect(lambda: self.buttonHover(docText))
-
-                button.clicked.connect(lambda: self.buttonClicked(func))
+                buttonQListWidgetItem = QtWidgets.QListWidgetItem(key)
+                buttonQListWidgetItem.setToolTip(libstr)
+                self.buttonItemList.append(buttonQListWidgetItem)
+                self.buttonListWidget.addItem(self.buttonItemList[-1])
 
         if text == '':
             self.docLabel.setText('')
             if self.buttonListWidget.count() > 0:
                 self.buttonListWidget.clear()
-
-
-
-
 
     def reloaded(self):
         reload(mayaLib)
