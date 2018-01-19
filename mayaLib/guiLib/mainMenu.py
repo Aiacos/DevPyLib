@@ -212,12 +212,12 @@ class MenuLibWidget(QtWidgets.QWidget):
         elif discipline == 'Rigging':
             libMenu = self.addSubMenu(upMenu, 'rigLib')
             self.addRecursiveMenu(libMenu, self.libDict['rigLib'])
-        elif discipline == 'animLib':
-            pass
+        elif discipline == 'Animation':
+            libMenu = self.addSubMenu(upMenu, 'animationLib')
+            self.addRecursiveMenu(libMenu, self.libDict['animationLib'])
         elif discipline == 'Vfx':
             libMenu = self.addSubMenu(upMenu, 'fluidLib')
             self.addRecursiveMenu(libMenu, self.libDict['fluidLib'])
-
         elif discipline == 'Lookdev':
             libMenu = self.addSubMenu(upMenu, 'lookdevLib')
             self.addRecursiveMenu(libMenu, self.libDict['lookdevLib'])
