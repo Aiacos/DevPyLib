@@ -10,15 +10,18 @@ class PxrStyleCtrl():
     Create Geometry control like PIXAR
     """
 
-    def __init__(self, obj=pm.ls(sl=True)):
+    def __init__(self, obj):
         # Create backup Group
         self.shapeGrp = pm.group(n='oldShape_GRP', em=True)
         self.shapeGrp.visibility.set(0)
 
         # Get Shape and skin from Object
-        shape = obj[0].getShape()
+        shape = pm.ls(obj)[0].getShape()
         skinCluster = pm.listConnections(shape + '.inMesh', destination=False)
-        self.skin = pm.PyNode(skinCluster[0])
+        if len(skinCluster) > 0:
+            self.skin = pm.PyNode(skinCluster[0])
+        else:
+            print 'Missing SkinCluster'
 
         # Get joint influence of the skin
         influnces = self.skin.getInfluence(q=True)  # influences is joint
@@ -81,8 +84,8 @@ class PxrStyleCtrl():
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)
         pm.select(faces)
-        util.invertSelection()
-        pm.polyDelFacet()
+        toDelete = util.invertSelection()
+        pm.polyDelFacet(toDelete)
 
     def deleteVertex_OLD(self, joint, newShape, threshold=0.45):
         deleteVert_list = []

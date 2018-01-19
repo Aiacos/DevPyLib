@@ -165,6 +165,9 @@ class FunctionUI(QtWidgets.QWidget):
             elif value == '':
                 value = None
                 param_list.append(value)
+            elif ', ' in value:
+                value = value.split(', ')
+                param_list.append(value)
             else:
                 param_list.append(value)
 

@@ -114,3 +114,4 @@ def no_render(tgt):
 
 def invertSelection():
     mel.eval('InvertSelection;')
+    return pm.ls(sl=True)

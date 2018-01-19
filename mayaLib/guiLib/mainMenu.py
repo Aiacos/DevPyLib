@@ -170,11 +170,11 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def buttonClicked(self, func):
         self.functionWindow = None
-        try:
-            self.functionWindow = ui.FunctionUI(func)
-            self.functionWindow.show()
-        except:
-            func()
+        #try:
+        self.functionWindow = ui.FunctionUI(func)
+        self.functionWindow.show()
+        #except:
+        #    func()
 
     def addMenuAction(self, discipline, function):
         extractAction = QtWidgets.QAction(discipline, self)
