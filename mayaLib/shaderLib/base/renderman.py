@@ -76,7 +76,14 @@ class PxrSurface_shaderBase(Shader_base):
 
     def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=True, adjustNormal=True):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
-        self.pxrnormalmap_node.invertBump.set(directx_normal)
+
+        #self.pxrnormalmap_node.invertBump.set(directx_normal) # OLD
+
+        if directx_normal:
+            self.pxrnormalmap_node.orientation.set(1)
+        else:
+            self.pxrnormalmap_node.orientation.set(0)
+
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
 
         if not adjustNormal:
@@ -95,7 +102,6 @@ class PxrSurface_shaderBase(Shader_base):
         pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.pxrblend.bottomRGB)
 
         pm.connectAttr(self.pxrblend.resultRGB, '%s.%s' % (self.shader, slot_name))
-        print 'PYSHICAL BUILTTTTTTTTTTTTTTTTTT'
 
     def connect_artistic_specular(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # blend
