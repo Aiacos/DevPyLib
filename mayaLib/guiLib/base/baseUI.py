@@ -53,7 +53,7 @@ class FunctionUI(QtWidgets.QWidget):
                 labelname = QtWidgets.QLabel(arg[0])
                 fillButton = QtWidgets.QPushButton(">")
 
-                if arg[1]:
+                if arg[1] != None:
                     lineedit = QtWidgets.QLineEdit(str(arg[1]))
                 else:
                     lineedit = QtWidgets.QLineEdit("")
@@ -105,9 +105,16 @@ class FunctionUI(QtWidgets.QWidget):
 
     def getParameterList(self):
         args = self.sig.args
+
+        if len(args) == 0:
+            return []
+
         varargs = self.sig.varargs
         keywords = self.sig.keywords
         defaults = self.sig.defaults
+
+        if not defaults:
+            defaults = []
 
         argspairs = []
         argslen = len(args)
@@ -135,13 +142,13 @@ class FunctionUI(QtWidgets.QWidget):
             if arg[0] != 'self':
                 if defaultvisible:
                     # show
-                    if arg[1]:
+                    if arg[1] != None:
                         self.label_list[counter].show()
                         self.lineedit_list[counter].show()
                         self.fillButton_list[counter].show()
                 else:
                     # hide
-                    if arg[1]:
+                    if arg[1] != None:
                         self.label_list[counter].hide()
                         self.lineedit_list[counter].hide()
                         self.fillButton_list[counter].hide()
