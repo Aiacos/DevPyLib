@@ -13,5 +13,5 @@ def nameCheck(name):
     nameCount = len(nameList)
 
     newNameRPart = str(name).rpartition('_')
-    newName = newNameRPart[0] + str(nameCount + 1) + newNameRPart[1] + newNameRPart[2]
+    newName = newNameRPart[0].replace('*', '') + str(nameCount + 1) + newNameRPart[1] + newNameRPart[2]
     return newName
