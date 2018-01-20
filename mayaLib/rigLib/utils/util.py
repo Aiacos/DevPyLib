@@ -2,6 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 import maya.mel as mel
+import mayaLib.pipelineLib.utility.nameCheck as nc
 
 
 def getDriverDrivenFromConstraint(constraint):
@@ -15,23 +16,47 @@ def getSide(obj):
     side = ''
     return side
 
-def makeCurvesDynamic(curve, grpName='dynamicSystem_GRP'):
+def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
+    grpName = nc.nameCheck(grpName)
     pm.select(curve)
     mel.eval('makeCurvesDynamic 2 { "1", "0", "1", "1", "0"};')
 
     dynamicObj_list = pm.ls('hairSystem*', 'nucleus*')
-    if pm.objExists(grpName):
-        pm.parent(dynamicObj_list, grpName)
-    else:
-        pm.group(dynamicObj_list, n=grpName)
+    # nucleus
+    nucleus = pm.ls('nucleus*')
 
-    outputGrp = pm.ls('hairSystem*OutputCurves')[0]
-    follicleGrp = pm.ls('hairSystem*Follicles')[0]
+    # select last created hairSystem
+    hairSystem = pm.ls('hairSystem*')[-1]
+
+    if pm.objExists(grpName):
+        pm.parent(hairSystem, grpName)
+    else:
+        pm.group(hairSystem, n=grpName)
+
+    outputGrp = pm.ls('hairSystem*OutputCurves')[-1]
+    follicleGrp = pm.ls('hairSystem*Follicles')[-1]
     outputCurve = pm.listRelatives(outputGrp, children=True)[0]
 
     # disable inheritTransform on follicle
     follicle = pm.listRelatives(follicleGrp, children=True)[0]
     pm.setAttr(follicle + '.inheritsTransform', 0)
+
+    # regroup
+    systemGrp = 'system_GRP'
+    if pm.objExists(systemGrp):
+        #pm.parent(nucleus, systemGrp)
+        pass
+    else:
+        pm.group(nucleus, n=systemGrp)
+
+    mainGrpName = 'dynamicSystem_GRP'
+    if pm.objExists(mainGrpName):
+        pm.parent(grpName, mainGrpName)
+    else:
+        pm.group(grpName, n=mainGrpName)
+
+    pm.parent(systemGrp, mainGrpName)
+    pm.parent(pm.ls(outputGrp, follicleGrp), grpName)
 
     return outputCurve, grpName, follicleGrp
 
