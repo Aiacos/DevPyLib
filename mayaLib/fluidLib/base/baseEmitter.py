@@ -5,6 +5,11 @@ import maya.mel as mel
 
 class FlEmitter():
     def __init__(self, name='', obj=None):
+        """
+        Emitter
+        :param name: str
+        :param obj: str
+        """
         if obj == None:
             emitter = pm.fluidEmitter(pos=(0, 0, 0), type='omni', der=1, her=1, fer=1, fdr=2, r=100.0, cye='none', cyi=1, mxd=1, mnd=0)
         else:

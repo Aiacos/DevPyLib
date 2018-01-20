@@ -6,6 +6,13 @@ from mayaLib.rigLib.utils import common
 
 class FootRool():
     def __init__(self, hipJnt, ankleJnt, ballJntList, toeJntList):
+        """
+        Build footRoll on selected joints
+        :param hipJnt: str
+        :param ankleJnt: str
+        :param ballJntList: list
+        :param toeJntList: list
+        """
         self.side = hipJnt[0:2]
 
         self.ballIkHandleList = []

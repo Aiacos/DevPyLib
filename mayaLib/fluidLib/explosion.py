@@ -13,6 +13,12 @@ class Explosion(BaseFluid):
     """
 
     def __init__(self, fluidName='', baseRes=32, emitObj=None):
+        """
+        Explosion Preset
+        :param fluidName: str
+        :param baseRes: int
+        :param emitObj: str
+        """
         BaseFluid.__init__(self, fluidName=fluidName, baseRes=baseRes, emitObj=emitObj)
         self.fluidContainer = BaseFluid.getFluidShape(self)
         self.fluidEmitter = BaseFluid.getFluidEmitter(self)

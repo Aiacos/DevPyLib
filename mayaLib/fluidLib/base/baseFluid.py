@@ -13,6 +13,12 @@ class BaseFluid():
     """
 
     def __init__(self, fluidName='', baseRes=32, emitObj=None):
+        """
+        Create Fluid Container and Emitter
+        :param fluidName: str
+        :param baseRes: int
+        :param emitObj: str
+        """
         # Create Fluid Container and Emitter
         cont = mayaLib.fluidLib.base.baseContainer.FluidContainer()
         emit = mayaLib.fluidLib.base.baseEmitter.FlEmitter(obj=emitObj)
