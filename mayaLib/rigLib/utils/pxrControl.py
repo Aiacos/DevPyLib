@@ -15,7 +15,7 @@ class PxrStyleCtrl():
     Create Geometry control like PIXAR
     """
 
-    def __init__(self, obj):
+    def __init__(self, obj, deleteOldShapeGrp=True):
         # Create backup Group
         self.shapeGrp = pm.group(n='oldShape_GRP', em=True)
         self.shapeGrp.visibility.set(0)
@@ -54,6 +54,9 @@ class PxrStyleCtrl():
                 shape = ctrl[0].getShape()
                 ctrl[0].selectionChildHighlighting.set(0)
                 shape.selectionChildHighlighting.set(0)
+
+        if deleteOldShapeGrp:
+            pm.delete(self.shapeGrp)
 
         print 'DONE!'
 
