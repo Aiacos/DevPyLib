@@ -4,6 +4,11 @@ import pymel.core as pm
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import common
 
+def invertSelection(shape, faces):
+    pm.select(shape+'.f[*]')
+    pm.select(faces, deselect=True)
+    #mel.eval('InvertSelection;')
+    return pm.ls(sl=True)
 
 class PxrStyleCtrl():
     """
@@ -45,6 +50,11 @@ class PxrStyleCtrl():
                 # delete non deformer history
                 common.deleteNonDeformerHistory(ctrlShape)
 
+                # prevent chidlren selection hilight
+                shape = ctrl[0].getShape()
+                ctrl[0].selectionChildHighlighting.set(0)
+                shape.selectionChildHighlighting.set(0)
+
         print 'DONE!'
 
     def duplicateSourceMesh(self, obj, ctrl):
@@ -83,9 +93,9 @@ class PxrStyleCtrl():
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)
-        pm.select(faces)
-        toDelete = util.invertSelection()
-        pm.polyDelFacet(toDelete)
+        #pm.select(faces)
+        toDelete = invertSelection(newShape, faces)
+        pm.polyDelFacet(toDelete, ch=False)
 
     def deleteVertex_OLD(self, joint, newShape, threshold=0.45):
         deleteVert_list = []

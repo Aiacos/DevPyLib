@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+import pymel.core.runtime as runtime
 import maya.mel as mel
 import mayaLib.pipelineLib.utility.nameCheck as nc
 
@@ -139,4 +140,5 @@ def no_render(tgt):
 
 def invertSelection():
     mel.eval('InvertSelection;')
+    #runtime.InvertSelection()
     return pm.ls(sl=True)
