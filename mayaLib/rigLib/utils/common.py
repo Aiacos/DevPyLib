@@ -20,5 +20,4 @@ def deleteHistory(obj):
     pm.delete(obj, ch=True)
 
 def deleteNonDeformerHistory(obj):
-    pm.select(obj)
-    mel.eval('doBakeNonDefHistory( 1, {"pre" });')
+    pm.bakePartialHistory(obj, pre=True) # prePostDeformers=True
