@@ -16,7 +16,7 @@ def copySkinWeightBetweenMesh(selection=pm.ls(sl=True)):
     pm.copySkinWeights(ss=sourceSkinCluster, ds=destinationSkinCluster, mirrorMode='YZ',
                        surfaceAssociation='closestPoint', influenceAssociation='closestJoint')
 
-def copyBind(source, destination):
+def copyBind(source, destination, sa='closestPoint', ia='closestJoint'):
     """
     Bind and Copy skincluster to destination GEO
     :param source: mesh str
@@ -43,8 +43,20 @@ def copyBind(source, destination):
     # copy skin wheights form source
     pm.select(source)
     pm.select(destination, add=True)
-    pm.copySkinWeights(noMirror=True, surfaceAssociation='closestPoint', influenceAssociation='closestJoint')
+    pm.copySkinWeights(noMirror=True, surfaceAssociation=sa, influenceAssociation=ia)
     pm.select(cl=True)
+
+def copyBindSelected(selectionList):
+    """
+    Copy SkinCluster (rayCast) from A to B,C,D...
+    :param selectionList: list
+    :return:
+    """
+    source = selectionList[0]
+    destinationList = selectionList[1:]
+
+    for destination in destinationList:
+        copyBind(source, destination, sa='rayCast')
 
 if __name__ == "__main__":
     copySkinWeightBetweenMesh()
