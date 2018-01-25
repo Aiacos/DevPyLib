@@ -173,6 +173,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         #try:
         self.functionWindow = ui.FunctionUI(func)
         self.functionWindow.show()
+        self.functionWindow.setFocus()
         #except:
         #    func()
 

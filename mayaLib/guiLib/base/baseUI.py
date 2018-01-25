@@ -160,7 +160,10 @@ class FunctionUI(QtWidgets.QWidget):
 
         for param in self.lineedit_list:
             value = param.text()
-            if value.replace('.', '', 1).isdigit():
+            if '[' in value and ']' in value:
+                value = value.replace('[', '').replace(']', '').replace("'", "").replace(' ', '').split(',')
+                param_list.append(value)
+            elif value.replace('.', '', 1).isdigit():
                 value = ast.literal_eval(value)
                 param_list.append(value)
             elif value == 'True':
