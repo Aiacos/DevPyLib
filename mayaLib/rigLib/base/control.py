@@ -37,7 +37,7 @@ class Control():
 
         # name handle
         if '*' in prefix:
-            prefix = nc.nameCheck(prefix + '*_CTRL').split('_')[0]
+            prefix = nc.nameCheck(prefix + '_CTRL').split('_')[0]
 
         ctrlObject = None
         circleNormal = [1, 0, 0]
