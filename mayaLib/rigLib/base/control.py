@@ -138,12 +138,39 @@ class Control():
             self.Modify = ctrlModify
 
     def getControl(self):
+        """
+        Return Control
+        :return:
+        """
         return self.C
 
     def getOffsetGrp(self):
+        """
+        Return Offset Grp if exist or None
+        :return:
+        """
         if self.Off:
             return self.Off
+        return None
 
     def getModifyGrp(self):
+        """
+        Return Modify Grp if exist or None
+        :return:
+        """
         if self.Modify:
             return self.Modify
+        return None
+
+    def getTop(self):
+        """
+        Return control's top Grp or Control
+        :return:
+        """
+        if self.Modify:
+            return self.Modify
+        elif self.Off:
+            return self.Off
+        else:
+            return self.C
+
