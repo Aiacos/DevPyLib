@@ -102,11 +102,6 @@ class Control():
             if pm.objExists(rotateTo):
                 pm.delete(pm.orientConstraint(rotateTo, ctrlOffset))
 
-        # parent control
-        if parent != None and parent != '':
-            if pm.objExists(parent):
-                pm.parent(ctrlOffset, parent)
-
         # lock control channels
 
         singleAttributeLockList = []
@@ -136,6 +131,11 @@ class Control():
             self.Off = ctrlOffset
         if doModify:
             self.Modify = ctrlModify
+
+        # parent control
+        if parent != None and parent != '':
+            if pm.objExists(parent):
+                pm.parent(self.getTop(), parent)
 
     def getControl(self):
         """
@@ -167,10 +167,10 @@ class Control():
         Return control's top Grp or Control
         :return:
         """
-        if self.Modify:
-            return self.Modify
-        elif self.Off:
+        if self.Off:
             return self.Off
+        elif self.Modify:
+            return self.Modify
         else:
             return self.C
 
