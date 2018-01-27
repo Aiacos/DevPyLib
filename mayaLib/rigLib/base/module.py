@@ -21,9 +21,9 @@ class Base():
     ):
 
         """
-        @param characterName: str, character name
-        @param scale: float, general scale of the rig
-        @return: None
+        :param characterName: str, character name
+        :param scale: float, general scale of the rig
+        :return: None
         """
 
         # top group
@@ -73,7 +73,7 @@ class Base():
         pm.parent(self.scaleLocator, self.rigGrp)
 
         # make more groups
-        self.jointsGrp = pm.group(n='joints_GRP', em=1, p=self.mainCtrl.getControl())
+        self.jointsGrp = pm.group(n='skeleton_GRP', em=1, p=self.mainCtrl.getControl())
         self.modulesGrp = pm.group(n='modules_GRP', em=1, p=self.mainCtrl.getControl())
 
         self.partGrp = pm.group(n='parts_GRP', em=1, p=self.rigGrp)
@@ -127,9 +127,9 @@ class Module():
             baseObj=None
     ):
         """
-        @param prefix: str, prefix to name new objects
-        @param baseObj: instance of base.module.Base class
-        @return: None
+        :param prefix: str, prefix to name new objects
+        :param baseObj: instance of base.module.Base class
+        :return: None
         """
 
         self.topGrp = pm.group(n=prefix + 'Module_GRP', em=1)
