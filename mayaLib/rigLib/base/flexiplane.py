@@ -286,7 +286,7 @@ class Flexiplane():
         fp_name = '%sflexiPlane' % prefix
         fp_name = nameCheck.nameCheck(fp_name+'*_GRP').replace('_GRP', '', 1)# flexiPlane_GRP
 
-        fp_surf = self.create_plane('%s%s' % (fp_name, self.surfaceSuffix))[0]
+        fp_surf = self.create_plane('%s_NURBS' % (fp_name))[0]
 
         # Assign Material
         self.create_lambret(fp_surf, color=(0.067, 0.737, 0.749), transparency=(0.75, 0.75, 0.75))
@@ -399,7 +399,7 @@ class Flexiplane():
             pm.scaleConstraint(fp_gm_grp, mparent)
 
         # creates global move control
-        fp_gm_ctrl = self.global_ctrl(name='%s_CTRL' % fp_name)
+        fp_gm_ctrl = self.global_ctrl(name=fp_name)
 
         # moves global control into flexiPlane group then parent global move group to global move control.
         pm.parent(fp_gm_ctrl, fp_grp)
