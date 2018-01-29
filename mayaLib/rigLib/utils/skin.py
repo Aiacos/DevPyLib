@@ -58,6 +58,15 @@ def copyBindSelected(selectionList):
     for destination in destinationList:
         copyBind(source, destination, sa='rayCast')
 
+def findRelatedSkinCluster(geo):
+    """
+    find related skincluster of geo
+    :param geo: str
+    :return: str
+    """
+    skincluster = mel.eval('findRelatedSkinCluster ' + geo)
+    return skincluster
+
 if __name__ == "__main__":
     copySkinWeightBetweenMesh()
     print 'Done!'
