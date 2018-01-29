@@ -287,6 +287,8 @@ class Flexiplane():
         fp_name = nameCheck.nameCheck(fp_name+'*_GRP').replace('_GRP', '', 1)# flexiPlane_GRP
 
         fp_surf = self.create_plane('%s_NURBS' % (fp_name))[0]
+        fp_surf.overrideEnabled.set(1)
+        fp_surf.overrideDisplayType.set(2)
 
         # Assign Material
         self.create_lambret(fp_surf, color=(0.067, 0.737, 0.749), transparency=(0.75, 0.75, 0.75))
