@@ -12,7 +12,7 @@ def invertSelection(shape, faces):
     return pm.ls(sl=True)
 
 class ProxyGeo():
-    def __init__(self, geo, doParentCnst, threshold=0.45):
+    def __init__(self, geo, doParentCnst=True, threshold=0.45):
         self.proxyGeoList = []
         pivotLocator = pm.spaceLocator(n='pivotGeo_LOC')
         # Create proxy geo Group
