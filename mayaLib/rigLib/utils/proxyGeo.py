@@ -12,7 +12,7 @@ def invertSelection(shape, faces):
     return pm.ls(sl=True)
 
 class ProxyGeo():
-    def __init__(self, geo):
+    def __init__(self, geo, doParentCnst, threshold=0.45):
         self.proxyGeoList = []
         pivotLocator = pm.spaceLocator(n='pivotGeo_LOC')
         # Create proxy geo Group
@@ -37,7 +37,7 @@ class ProxyGeo():
             skin.copyBind(pm.ls(geo)[0], transform)
 
             # delete faces in the new shape based on selected joint
-            self.deleteVertex(joint=joint, newShape=dupliShape)
+            self.deleteVertex(joint=joint, newShape=dupliShape, threshold=threshold)
 
             # delete non deformer history
             common.deleteHistory(dupliShape)
@@ -45,6 +45,10 @@ class ProxyGeo():
             # parent under proxy group
             pm.parent(transform, self.shapeGrp)
             self.proxyGeoList.append(transform)
+
+            # parentConstraint with joint
+            if doParentCnst:
+                pm.parentConstraint(joint, transform, mo=True)
 
         # delete pivot locator
         pm.delete(pivotLocator)
