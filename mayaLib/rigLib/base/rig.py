@@ -6,16 +6,25 @@ from mayaLib.rigLib.utils import name
 
 
 class Rig():
-    def __init__(self, model_filePath='', buildScene_filePath='',
-                       doProxyGeo=True,
-                       loadSkinCLuster=True
-                       ):
+    def __init__(self, characterName='new',
+                 model_filePath='', buildScene_filePath='',
+                 doProxyGeo=True,
+                 loadSkinCLuster=True
+                 ):
+        """
+        Create Base Rig
+        :param characterName: str
+        :param model_filePath: str
+        :param buildScene_filePath: str
+        :param doProxyGeo: bool
+        :param loadSkinCLuster: bool
+        """
         # New Scene
-        if model_filePath != '':
+        if model_filePath:
             pm.newFile()
 
         # Import model
-        if model_filePath != '':
+        if model_filePath:
             pm.importFile(model_filePath)
 
         # Import buildScene
@@ -31,7 +40,7 @@ class Rig():
             pass
 
         # Create rig
-        baseModule = Base(characterName='new', scale=1.0, mainCtrlAttachObj='')
+        baseModule = Base(characterName=characterName, scale=1.0, mainCtrlAttachObj='')
 
     def prepare(self):
         pass
