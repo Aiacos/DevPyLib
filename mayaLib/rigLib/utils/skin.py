@@ -82,19 +82,19 @@ def saveSkinWeights(characterName, geoList,
     """
     save weights for character geometry objects
     """
+    # check folder
+    directory = os.path.join(projectPath, characterName, skinWeightsDir)
+    if not os.path.exists(directory):
+        if doDirectory:
+            os.makedirs(directory)
+        else:
+            print 'Path to save SkinCluster not found!'
+            return
+
     if not isinstance(geoList, list):
         geoList = pm.ls(geoList)
 
     for obj in geoList:
-        # check folder
-        directory = os.path.join(projectPath, characterName, skinWeightsDir)
-        if not os.path.exists(directory):
-            if doDirectory:
-                os.makedirs(directory)
-            else:
-                print 'Path to save SkinCluster not found!'
-                return
-
         # weights file
         wtFile = os.path.join(projectPath, characterName, skinWeightsDir, obj + swExt)
 
