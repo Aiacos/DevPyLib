@@ -4,7 +4,7 @@ module for making top rig structure and rig module
 
 import pymel.core as pm
 from mayaLib.rigLib.base import control
-
+from mayaLib.rigLib.utils import common
 
 class Base():
     """
@@ -80,18 +80,18 @@ class Base():
         pm.setAttr(self.partGrp + '.it', 0, l=1)
 
         # make halo
-        haloCtrl = control.Control(
+        self.haloCtrl = control.Control(
             prefix='halo',
             scale=scale * 1,
-            parent=self.mainCtrl.getControl(),
+            parent=self.rigGrp,
             translateTo=mainCtrlAttachObj,
-            lockChannels=['t', 'r', 's', 'v'],
+            lockChannels=['s'],
             shape='circleZ',
-            doOffset=False,
-            doModify=False
+            doOffset=True,
+            doModify=True
         )
-        pm.parent(haloCtrl.getControl().getShape(), self.globalCtrl.getControl(), r=1, s=1)
-        pm.delete(haloCtrl.getControl())
+        self.haloCtrl.getOffsetGrp().visibility.set(0)
+        self.createHalo(mainCtrlAttachObj, scale)
 
         mainVisAts = ['modelVis', 'jointsVis']
         mainDispAts = ['modelDisp', 'jointsDisp']
@@ -111,10 +111,72 @@ class Base():
             pm.setAttr(obj + '.ove', 1)
             pm.connectAttr(self.globalCtrl.getControl() + '.' + at, obj + '.ovdt')
 
+        # create display control
+        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale)
+
 
     def getScaleLocator(self):
         return self.scaleLocator
 
+    def getDisplayControl(self):
+        return self.displayCtrl
+
+    def createHalo(self, mainCtrlAttachObj, scale):
+        if pm.objExists(mainCtrlAttachObj):
+            haloDupliCtrl = pm.duplicate(self.haloCtrl.getControl(), n='halo')[0]
+            haloDupliShape = haloDupliCtrl.getShape()
+
+            # paren shape under globalControl
+            pm.parent(haloDupliShape, self.globalCtrl.getControl(), r=1, s=1)
+            pm.delete(haloDupliCtrl)
+
+            # blendshape control with halo shape
+            pm.blendShape(self.haloCtrl.getControl(), haloDupliShape, n='halo_blendShape', origin='world')
+            pm.setAttr('halo_blendShape.halo_CTRL', 1)
+
+            # constraint haloCtrl
+            pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
+            self.haloCtrl.getModifyGrp().translateY.set(5 * scale)
+
+    def createDisplay(self, mainCtrlAttachObj, scale):
+        # make Display
+        displayCtrl = control.Control(
+            prefix='display',
+            scale=scale * 1,
+            parent=self.globalCtrl.getControl(),
+            translateTo=mainCtrlAttachObj,
+            lockChannels=['t', 'r', 's'],
+            shape='circleZ',
+            doOffset=True,
+            doModify=True
+        )
+
+        if pm.objExists(mainCtrlAttachObj):
+            pm.delete(displayCtrl.getControl().getShape())
+
+            # create text and snap to displayCtrl group
+            textGrp = pm.textCurves(t='Display', n='display_CTRL')[0]
+            common.centerPivot(textGrp)
+            common.freezeTranform(textGrp)
+
+            # parent al text shape under displayCTrl
+            shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
+
+            # ovrride shape colo (yellow)
+            for shape in shapeList:
+                shape.ove.set(1)
+                shape.ovc.set(22)
+
+            pm.parent(shapeList, displayCtrl.getControl(), r=1, s=1)
+            pm.delete(textGrp)
+
+            # constraint displayCtrl
+            common.centerPivot(displayCtrl.getOffsetGrp())
+            common.centerPivot(displayCtrl.getControl())
+            pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
+            displayCtrl.getModifyGrp().translateY.set(3 * scale)
+
+        return displayCtrl
 
 class Module():
     """
