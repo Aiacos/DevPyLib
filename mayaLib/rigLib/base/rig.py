@@ -3,6 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from mayaLib.rigLib.base.module import  Base
 from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import skin
 
 
 class Rig():
@@ -20,7 +21,7 @@ class Rig():
         :param loadSkinCLuster: bool
         """
         # New Scene
-        if model_filePath:
+        if buildScene_filePath:
             pm.newFile()
 
         # Import model
@@ -28,12 +29,13 @@ class Rig():
             pm.importFile(model_filePath)
 
         # Import buildScene
-        if buildScene_filePath != '':
+        if buildScene_filePath:
             pm.importFile(buildScene_filePath)
 
         # Load SkinCluster
         if loadSkinCLuster:
-            pass
+            geoList = [geo.name() for geo in pm.ls('*_GEO')]
+            skin.loadSkinWeights(characterName, geoList)
 
         # Create proxy geo
         if doProxyGeo:
