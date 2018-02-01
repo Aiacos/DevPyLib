@@ -166,7 +166,7 @@ class Base():
             # parent al text shape under displayCTrl
             shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
 
-            # ovrride shape colo (yellow)
+            # ovrride shape color (yellow)
             for shape in shapeList:
                 shape.ove.set(1)
                 shape.ovc.set(22)
@@ -206,7 +206,7 @@ class Base():
             # parent al text shape under displayCTrl
             shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
 
-            # ovrride shape colo (yellow)
+            # ovrride shape color (yellow)
             for shape in shapeList:
                 shape.ove.set(1)
                 shape.ovc.set(22)
