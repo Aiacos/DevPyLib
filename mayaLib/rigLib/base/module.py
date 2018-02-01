@@ -5,6 +5,7 @@ module for making top rig structure and rig module
 import pymel.core as pm
 from mayaLib.rigLib.base import control
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import util
 
 class Base():
     """
@@ -76,6 +77,7 @@ class Base():
         self.jointsGrp = pm.group(n='skeleton_GRP', em=1, p=self.mainCtrl.getControl())
         self.modulesGrp = pm.group(n='modules_GRP', em=1, p=self.mainCtrl.getControl())
         self.rigCtrlGrp = pm.group(n='rigctrl_GRP', em=1, p=self.globalCtrl.getControl())
+        util.lock_and_hide_all(self.rigCtrlGrp)
 
         self.partGrp = pm.group(n='parts_GRP', em=1, p=self.rigGrp)
         pm.setAttr(self.partGrp + '.it', 0, l=1)
