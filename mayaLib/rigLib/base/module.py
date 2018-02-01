@@ -75,6 +75,7 @@ class Base():
         # make more groups
         self.jointsGrp = pm.group(n='skeleton_GRP', em=1, p=self.mainCtrl.getControl())
         self.modulesGrp = pm.group(n='modules_GRP', em=1, p=self.mainCtrl.getControl())
+        self.rigCtrlGrp = pm.group(n='rigctrl_GRP', em=1, p=self.globalCtrl.getControl())
 
         self.partGrp = pm.group(n='parts_GRP', em=1, p=self.rigGrp)
         pm.setAttr(self.partGrp + '.it', 0, l=1)
@@ -83,7 +84,7 @@ class Base():
         self.haloCtrl = control.Control(
             prefix='halo',
             scale=scale * 1,
-            parent=self.rigGrp,
+            parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['s'],
             shape='circleZ',
@@ -113,6 +114,7 @@ class Base():
 
         # create display control
         self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale)
+        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale)
 
 
     def getScaleLocator(self):
@@ -136,14 +138,14 @@ class Base():
 
             # constraint haloCtrl
             pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
-            self.haloCtrl.getModifyGrp().translateY.set(5 * scale)
+            self.haloCtrl.getModifyGrp().translateY.set(6 * scale)
 
     def createDisplay(self, mainCtrlAttachObj, scale):
         # make Display
         displayCtrl = control.Control(
             prefix='display',
             scale=scale * 1,
-            parent=self.globalCtrl.getControl(),
+            parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['t', 'r', 's'],
             shape='circleZ',
@@ -174,9 +176,49 @@ class Base():
             common.centerPivot(displayCtrl.getOffsetGrp())
             common.centerPivot(displayCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
-            displayCtrl.getModifyGrp().translateY.set(3 * scale)
+            displayCtrl.getModifyGrp().translateY.set(4 * scale)
 
         return displayCtrl
+
+    def createIKFK(self, mainCtrlAttachObj, scale):
+        # make Display
+        ikfkCtrl = control.Control(
+            prefix='ikfk',
+            scale=scale * 1,
+            parent=self.rigCtrlGrp,
+            translateTo=mainCtrlAttachObj,
+            lockChannels=['t', 'r', 's'],
+            shape='circleZ',
+            doOffset=True,
+            doModify=True
+        )
+
+        if pm.objExists(mainCtrlAttachObj):
+            pm.delete(ikfkCtrl.getControl().getShape())
+
+            # create text and snap to displayCtrl group
+            textGrp = pm.textCurves(t='IKFK', n='ikfk_CTRL')[0]
+            common.centerPivot(textGrp)
+            common.freezeTranform(textGrp)
+
+            # parent al text shape under displayCTrl
+            shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
+
+            # ovrride shape colo (yellow)
+            for shape in shapeList:
+                shape.ove.set(1)
+                shape.ovc.set(22)
+
+            pm.parent(shapeList, ikfkCtrl.getControl(), r=1, s=1)
+            pm.delete(textGrp)
+
+            # constraint displayCtrl
+            common.centerPivot(ikfkCtrl.getOffsetGrp())
+            common.centerPivot(ikfkCtrl.getControl())
+            pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp())
+            ikfkCtrl.getModifyGrp().translateY.set(3 * scale)
+
+        return ikfkCtrl
 
 class Module():
     """
