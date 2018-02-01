@@ -10,7 +10,7 @@ class Rig():
     def __init__(self, characterName='new',
                  model_filePath='', buildScene_filePath='',
                  doProxyGeo=True,
-                 loadSkinCLuster=True
+                 loadSkinCluster=True
                  ):
         """
         Create Base Rig
@@ -18,7 +18,7 @@ class Rig():
         :param model_filePath: str
         :param buildScene_filePath: str
         :param doProxyGeo: bool
-        :param loadSkinCLuster: bool
+        :param loadSkinCluster: bool
         """
         # New Scene
         if buildScene_filePath:
@@ -33,7 +33,7 @@ class Rig():
             pm.importFile(buildScene_filePath)
 
         # Load SkinCluster
-        if loadSkinCLuster:
+        if loadSkinCluster:
             geoList = [geo.name() for geo in pm.ls('*_GEO')]
             skin.loadSkinWeights(characterName, geoList)
 
