@@ -12,11 +12,6 @@ def getDriverDrivenFromConstraint(constraint):
 
     return driver, driven
 
-def getSide(obj):
-    pass
-    side = ''
-    return side
-
 def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
     grpName = nc.nameCheck(grpName)
     pm.select(curve)

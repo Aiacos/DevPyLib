@@ -22,3 +22,11 @@ def removeSuffix(name):
     nameNoSuffix = name[:-len(suffix)]
 
     return nameNoSuffix
+
+def getSide(name):
+    edits = name.split('_')
+    if len(edits) < 3:
+        return ''
+
+    side = edits[0] + '_'
+    return side
