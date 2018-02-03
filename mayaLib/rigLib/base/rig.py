@@ -4,6 +4,7 @@ import pymel.core as pm
 from mayaLib.rigLib.base.module import  Base
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import skin
+from mayaLib.rigLib.utils import util
 
 
 class Rig():
@@ -39,19 +40,27 @@ class Rig():
             geoList = [geo.name() for geo in pm.ls('*_GEO')]
             skin.loadSkinWeights(characterName, geoList)
 
+        # search model grp
+        modelGrp = pm.ls(characterName + '_model' + '_GRP')[0]
+        if pm.objExists(modelGrp):
+            modelBBox = modelGrp.getBoundingBox()
+            radius = util.get_distance_from_coords([modelBBox[0][0], 0, modelBBox[0][2]], [modelBBox[1][0], 0, modelBBox[1][2]])
+            print radius
+
         # Create proxy geo
         if doProxyGeo:
             pass
 
         # Create rig
-        baseModule = Base(characterName=characterName, scale=1.0, mainCtrlAttachObj='')
+        baseModule = Base(characterName=characterName, scale=radius, mainCtrlAttachObj=rootJnt)
 
         # parent model group
-        modelGrpName = characterName + 'model' + '_GRP'
-        pm.parent(modelGrpName, baseModule.modelGrp)
+        if pm.objExists(modelGrp):
+            pm.parent(modelGrp, baseModule.modelGrp)
 
         # parent joint group
-        pm.parentConstraint(rootJnt, baseModule.jointsGrp)
+        if pm.objExists(rootJnt):
+            pm.parent(rootJnt, baseModule.jointsGrp)
 
 
     def prepare(self):
