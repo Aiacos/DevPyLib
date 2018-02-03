@@ -9,6 +9,7 @@ from mayaLib.rigLib.utils import skin
 class Rig():
     def __init__(self, characterName='new',
                  model_filePath='', buildScene_filePath='',
+                 rootJnt='spineJA_JNT',
                  doProxyGeo=True,
                  loadSkinCluster=True
                  ):
@@ -17,6 +18,7 @@ class Rig():
         :param characterName: str
         :param model_filePath: str
         :param buildScene_filePath: str
+        :param rootJnt: str
         :param doProxyGeo: bool
         :param loadSkinCluster: bool
         """
@@ -43,6 +45,14 @@ class Rig():
 
         # Create rig
         baseModule = Base(characterName=characterName, scale=1.0, mainCtrlAttachObj='')
+
+        # parent model group
+        modelGrpName = characterName + 'model' + '_GRP'
+        pm.parent(modelGrpName, baseModule.modelGrp)
+
+        # parent joint group
+        pm.parentConstraint(rootJnt, baseModule.jointsGrp)
+
 
     def prepare(self):
         pass
