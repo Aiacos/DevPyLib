@@ -75,9 +75,10 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget = QtWidgets.QListWidget()
         self.buttonListWidget.setStyleSheet('background: transparent;')
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.buttonListWidget.adjustSize()
         #self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         #self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
+        #self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
         #self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
         #self.buttonListWidget.setMinimumHeight(75)
         #self.buttonListWidget.setMaximumHeight(100)
@@ -140,6 +141,8 @@ class MenuLibWidget(QtWidgets.QWidget):
             self.docLabel.setText('')
             if self.buttonListWidget.count() > 0:
                 self.buttonListWidget.clear()
+
+        self.buttonListWidget.adjustSize()
 
     def reloaded(self):
         reload(mayaLib)

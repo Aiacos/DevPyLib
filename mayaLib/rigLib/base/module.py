@@ -42,7 +42,7 @@ class Base():
         # make global control
         self.globalCtrl = control.Control(
             prefix='global',
-            scale=scale * 20,
+            scale=scale * 1,
             parent=self.topGrp,
             lockChannels=['t', 'r', 'v'],
             shape='circleY',
@@ -52,10 +52,10 @@ class Base():
 
         self.mainCtrl = control.Control(
             prefix='main',
-            scale=scale * 18,
+            scale=scale * 1,
             parent=self.globalCtrl.getControl(),
             lockChannels=['s', 'v'],
-            shape='circleY', # ToDo: replae with arrow
+            shape='move',
             doModify=False,
             doOffset=False
         )
@@ -85,7 +85,7 @@ class Base():
         # make halo
         self.haloCtrl = control.Control(
             prefix='halo',
-            scale=scale * 1,
+            scale=1,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['s'],
@@ -94,7 +94,7 @@ class Base():
             doModify=True
         )
         self.haloCtrl.getOffsetGrp().visibility.set(0)
-        self.createHalo(mainCtrlAttachObj, scale)
+        self.createHalo(mainCtrlAttachObj, 1)
 
         mainVisAts = ['modelVis', 'jointsVis']
         mainDispAts = ['modelDisp', 'jointsDisp']
@@ -115,8 +115,8 @@ class Base():
             pm.connectAttr(self.globalCtrl.getControl() + '.' + at, obj + '.ovdt')
 
         # create display control
-        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale)
-        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale)
+        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
+        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, 1)
 
 
     def getScaleLocator(self):
@@ -146,7 +146,7 @@ class Base():
         # make Display
         displayCtrl = control.Control(
             prefix='display',
-            scale=scale * 1,
+            scale=1,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['t', 'r', 's'],
@@ -186,7 +186,7 @@ class Base():
         # make Display
         ikfkCtrl = control.Control(
             prefix='ikfk',
-            scale=scale * 1,
+            scale=1,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['t', 'r', 's'],

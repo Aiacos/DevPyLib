@@ -5,6 +5,7 @@ module for making rig controls
 import maya.cmds as pm
 import pymel.core as pm
 import mayaLib.pipelineLib.utility.nameCheck as nc
+from mayaLib.rigLib.utils import ctrlShape
 
 class Control():
     """
@@ -56,10 +57,11 @@ class Control():
 
         elif shape == 'sphere':
 
-            ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=[1, 0, 0], radius=scale)[0]
-            addShape = pm.circle(n=prefix + '_CTRL', ch=False, normal=[0, 0, 1], radius=scale)[0]
-            pm.parent(pm.listRelatives(addShape, s=1), ctrlObject, r=1, s=1)
-            pm.delete(addShape)
+            ctrlObject = pm.sphere(n=prefix + '_CTRL', ch=False, normal=[1, 0, 0], radius=scale)[0]
+
+        elif shape == 'move':
+
+            ctrlObject = ctrlShape.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         if not ctrlObject:
             ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]

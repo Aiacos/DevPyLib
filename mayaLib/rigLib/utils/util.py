@@ -86,6 +86,18 @@ def get_distance(obj1, obj2):
     pm.delete(constraint0, constraint1, loc0, loc1)
     return distance
 
+def get_distance_from_coords(bboxMin, bboxMax):
+    """
+    Return distance between two points
+    :param bboxMin: list, Ax, Ay, Az
+    :param bboxMax: list, Bx, By, Bz
+    :return:
+    """
+    Ax, Ay, Az = bboxMin
+    Bx, By, Bz = bboxMax
+    distance = ((Ax - Bx) ** 2 + (Ay - By) ** 2 + (Az - Bz) ** 2) ** 0.5
+
+    return distance
 
 # function to lock and hide attributes
 def lock_and_hide_all(node):

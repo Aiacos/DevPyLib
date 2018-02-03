@@ -3,6 +3,7 @@ import util
 import joint
 import name
 import transform
+import ctrlShape
 import footRoll
 import pxrControl
 import ikfkSwitch
