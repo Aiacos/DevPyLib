@@ -45,7 +45,7 @@ class Rig():
         if pm.objExists(modelGrp):
             modelBBox = modelGrp.getBoundingBox()
             radius = util.get_distance_from_coords([modelBBox[0][0], 0, modelBBox[0][2]], [modelBBox[1][0], 0, modelBBox[1][2]])
-            print radius
+            radius = radius / 1.5
 
         # Create proxy geo
         if doProxyGeo:
