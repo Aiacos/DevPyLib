@@ -12,6 +12,25 @@ def getDriverDrivenFromConstraint(constraint):
 
     return driver, driven
 
+
+def getAllObjectUnderGroup(group, type='mesh'):
+    """
+    Return all object of given type under group
+    :param group: str, group name
+    :param type: str, object type
+    :return: object list
+    """
+    objList = None
+
+    if type == 'mesh':
+        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
+
+    if type == 'transform':
+        geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
+        objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
+
+    return objList
+
 def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
     grpName = nc.nameCheck(grpName)
     pm.select(curve)
