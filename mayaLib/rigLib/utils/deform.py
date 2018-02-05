@@ -28,7 +28,7 @@ def deltaMushDeformer(geo):
 
 def shrinkWrapDeformer(wrappedObj, wrapperObj):
     """
-    Apply Wrap Deformer on selected mesh
+    Apply ShrinkWrap Deformer on selected mesh
     :param wrappedObjs: str
     :param wrapperObj: str
     :return: deformer node
