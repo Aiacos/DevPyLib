@@ -79,17 +79,18 @@ class Control():
                 pm.parent(ctrlObject, ctrlOffset)
 
         # color control
-        ctrlShapes = ctrlObject.getShape()
-        ctrlShapes.ove.set(1)
+        ctrlShapes = ctrlObject.getShapes()
+        for ctrl_shape in ctrlShapes:
+            ctrl_shape.ove.set(1)
 
-        if prefix.startswith('l_'):
-            ctrlShapes.ovc.set(6)
+            if prefix.startswith('l_'):
+                ctrl_shape.ovc.set(6)
 
-        elif prefix.startswith('r_'):
-            ctrlShapes.ovc.set(13)
+            elif prefix.startswith('r_'):
+                ctrl_shape.ovc.set(13)
 
-        else:
-            ctrlShapes.ovc.set(22)
+            else:
+                ctrl_shape.ovc.set(22)
 
         # translate control
         if translateTo != None and translateTo != '':
