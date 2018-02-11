@@ -44,24 +44,20 @@ class Control():
         circleNormal = [1, 0, 0]
 
         if shape in ['circle', 'circleX']:
-
             circleNormal = [1, 0, 0]
 
         elif shape == 'circleY':
-
             circleNormal = [0, 1, 0]
 
         elif shape == 'circleZ':
-
             circleNormal = [0, 0, 1]
 
         elif shape == 'sphere':
-
             ctrlObject = pm.sphere(n=prefix + '_CTRL', ch=False, normal=[1, 0, 0], radius=scale)[0]
 
         elif shape == 'move':
-
             ctrlObject = ctrlShape.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
+
 
         if not ctrlObject:
             ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]
@@ -80,18 +76,14 @@ class Control():
         # color control
         ctrlShapes = ctrlObject.getShape()
         ctrlShapes.ove.set(1)
-        #[pm.setAttr(s + '.ove', 1) for s in ctrlShapes]
 
         if prefix.startswith('l_'):
-            #[pm.setAttr(s + '.ovc', 6) for s in ctrlShapes]
             ctrlShapes.ovc.set(6)
 
         elif prefix.startswith('r_'):
-            #[pm.setAttr(s + '.ovc', 13) for s in ctrlShapes]
             ctrlShapes.ovc.set(13)
 
         else:
-            #[pm.setAttr(s + '.ovc', 22) for s in ctrlShapes]
             ctrlShapes.ovc.set(22)
 
         # translate control
