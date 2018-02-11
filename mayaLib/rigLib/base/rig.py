@@ -25,7 +25,7 @@ class Rig():
         """
         # New Scene
         if buildScene_filePath:
-            pm.newFile()
+            pm.newFile(force=True)
 
         # Import model
         if model_filePath:
