@@ -2,10 +2,10 @@
 module for making rig controls 
 """
 
-import maya.cmds as pm
 import pymel.core as pm
 import mayaLib.pipelineLib.utility.nameCheck as nc
 from mayaLib.rigLib.utils import ctrlShape
+from mayaLib.rigLib.utils import common
 
 class Control():
     """
@@ -57,6 +57,11 @@ class Control():
 
         elif shape == 'move':
             ctrlObject = ctrlShape.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
+
+        elif shape == 'spine':
+            ctrlObject = ctrlShape.trapeziumCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrlObject.translateY.set(3 * scale)
+            common.freezeTranform(ctrlObject)
 
 
         if not ctrlObject:
