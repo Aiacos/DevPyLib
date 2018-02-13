@@ -63,6 +63,9 @@ class Control():
             ctrlObject.translateY.set(3 * scale)
             common.freezeTranform(ctrlObject)
 
+        elif shape == 'chest':
+            ctrlObject = ctrlShape.chestCtrlShape(name=prefix + '_CTRL', scale=scale)
+
 
         if not ctrlObject:
             ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]
