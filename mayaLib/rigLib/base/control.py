@@ -66,6 +66,9 @@ class Control():
         elif shape == 'chest':
             ctrlObject = ctrlShape.chestCtrlShape(name=prefix + '_CTRL', scale=scale)
 
+        elif shape == 'hip':
+            ctrlObject = ctrlShape.hipCtrlShape(name=prefix + '_CTRL', scale=scale)
+
 
         if not ctrlObject:
             ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]

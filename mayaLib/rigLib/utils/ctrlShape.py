@@ -58,8 +58,27 @@ def chestCtrlShape(name, scale=1):
     pm.scale([ctrl.cv[0], ctrl.cv[2], ctrl.cv[5], ctrl.cv[7]], [1.75, 1.35, 1], r=True, p=[0, 0, 0])
     pm.move(0, 0, -0.75, ctrl.cv[0], ctrl.cv[2], ctrl.cv[5], ctrl.cv[7], r=True, os=True)
     pm.move(0, 0, -1, ctrl.cv[1], ctrl.cv[6], r=True, os=True)
+    pm.move(0, -0.75, 0, ctrl.cv[1], r=True, os=True)
+    pm.move(0, 0.25, 0, ctrl.cv[0], ctrl.cv[2], r=True, os=True)
 
     pm.xform(ctrl, ws=True, pivots=[0, 0, -0.35])
+    ctrl.scale.set(scale, scale, scale)
+    common.deleteHistory(ctrl)
+    common.freezeTranform(ctrl)
+
+    return ctrl
+
+def hipCtrlShape(name, scale=1):
+    ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
+
+    pm.move(0, 0, 1, ctrl.cv[3:4], ctrl.cv[8:9], r=True, os=True)
+    pm.scale([ctrl.cv[3:4], ctrl.cv[8:9]], [1, 3, 1], r=True, p=[0, 0, 1])
+    pm.scale([ctrl.cv[0], ctrl.cv[2], ctrl.cv[5], ctrl.cv[7]], [1.75, 1.35, 1], r=True, p=[0, 0, 0])
+    pm.move(0, 0, -0.75, ctrl.cv[0], ctrl.cv[2], ctrl.cv[5], ctrl.cv[7], r=True, os=True)
+    pm.move(0, 0, -1, ctrl.cv[1], ctrl.cv[6], r=True, os=True)
+    pm.scale(ctrl.cv[:], [1, 0.5, 1], r=True, p=[0, 0, 0])
+
+    pm.xform(ctrl, ws=True, pivots=[0, 0, -0.15])
     ctrl.scale.set(scale, scale, scale)
     common.deleteHistory(ctrl)
     common.freezeTranform(ctrl)
