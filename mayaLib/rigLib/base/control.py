@@ -43,6 +43,7 @@ class Control():
         ctrlObject = None
         circleNormal = [1, 0, 0]
 
+        # custom shape
         if shape in ['circle', 'circleX']:
             circleNormal = [1, 0, 0]
 
@@ -70,6 +71,7 @@ class Control():
             ctrlObject = ctrlShape.hipCtrlShape(name=prefix + '_CTRL', scale=scale)
 
 
+        # default ctrl
         if not ctrlObject:
             ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]
 
@@ -109,7 +111,6 @@ class Control():
                 pm.delete(pm.orientConstraint(rotateTo, ctrlOffset))
 
         # lock control channels
-
         singleAttributeLockList = []
 
         for lockChannel in lockChannels:
@@ -121,14 +122,12 @@ class Control():
                     singleAttributeLockList.append(at)
 
             else:
-
                 singleAttributeLockList.append(lockChannel)
 
         for at in singleAttributeLockList:
             pm.setAttr(ctrlObject + '.' + at, l=1, k=0)
 
         # add public members
-
         self.C = ctrlObject
         self.Modify = None
         self.Off = None
