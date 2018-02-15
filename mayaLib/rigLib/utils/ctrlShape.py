@@ -11,8 +11,8 @@ def copyShape(source, destination):
     :param destination: obj
     :return:
     """
-    sourceShapes = source.getShapes()
-    destinationShapes = destination.getShapes()
+    sourceShapes = pm.ls(source)[0].getShapes()
+    destinationShapes = pm.ls(destination)[0].getShapes()
     pm.delete(destinationShapes)
     pm.parent(sourceShapes, destination, r=True, s=True)
     pm.delete(source)
