@@ -78,10 +78,18 @@ def chestCtrlShape(name, normalDirection=[1,1,0], scale=1):
 
     if normalDirection[0] == 1:
         pm.rotate(ctrl.cv[:], [90, 0, 0])
+    elif normalDirection[0] == -1:
+        pm.rotate(ctrl.cv[:], [-90, 0, 0])
+
     if normalDirection[1] == 1:
         pm.rotate(ctrl.cv[:], [0, 90, 0])
+    elif normalDirection[1] == -1:
+        pm.rotate(ctrl.cv[:], [0, -90, 0])
+
     if normalDirection[2] == 1:
         pm.rotate(ctrl.cv[:], [0, 0, 90])
+    elif normalDirection[2] == -1:
+        pm.rotate(ctrl.cv[:], [0, 0, -90])
 
     ctrl.scale.set(scale, scale, scale)
     common.deleteHistory(ctrl)
@@ -102,10 +110,18 @@ def hipCtrlShape(name, normalDirection=[1,1,0], scale=1):
 
     if normalDirection[0] == 1:
         pm.rotate(ctrl.cv[:], [90, 0, 0])
+    elif normalDirection[0] == -1:
+        pm.rotate(ctrl.cv[:], [-90, 0, 0])
+
     if normalDirection[1] == 1:
         pm.rotate(ctrl.cv[:], [0, 90, 0])
+    elif normalDirection[1] == -1:
+        pm.rotate(ctrl.cv[:], [0, -90, 0])
+
     if normalDirection[2] == 1:
         pm.rotate(ctrl.cv[:], [0, 0, 90])
+    elif normalDirection[2] == -1:
+        pm.rotate(ctrl.cv[:], [0, 0, -90])
 
     ctrl.scale.set(scale, scale, scale)
     common.deleteHistory(ctrl)
