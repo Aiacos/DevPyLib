@@ -66,7 +66,7 @@ class Base():
         # rig group
         self.rigGrp = pm.group(n='rig_GRP', em=1, p=self.mainCtrl.getControl())
 
-        # Wolrd Scale
+        # World Scale
         self.scaleLocator = pm.spaceLocator(n='scale_LOC')
         self.scaleLocator.inheritsTransform.set(0)
         self.scaleLocator.visibility.set(0)
