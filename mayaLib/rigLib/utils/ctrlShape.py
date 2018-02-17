@@ -34,7 +34,7 @@ def moveCtrlShape(name, scale):
     common.freezeTranform(cv)
     return cv
 
-def trapeziumCtrlShape(name, normalDirection=[0,1,1], scale=1):
+def trapeziumCtrlShape(name, normalDirection=[0,1,0], scale=1):
     bottomSquare = pm.nurbsSquare(c=[0, 0, 0], nr=[0, 1, 0], d=1, ch=False)
     topSquare = pm.nurbsSquare(c=[0, 1, 0], nr=[0, 1, 0], d=1, ch=False)
 
@@ -69,19 +69,19 @@ def trapeziumCtrlShape(name, normalDirection=[0,1,1], scale=1):
     pm.select(cl=True)
 
     if normalDirection[0] == 1:
-        pm.rotate(ctrl.cv[:], [90, 0, 0])
+        pm.rotate(ctrl, [90, 0, 0])
     elif normalDirection[0] == -1:
-        pm.rotate(ctrl.cv[:], [-90, 0, 0])
+        pm.rotate(ctrl, [-90, 0, 0])
 
     if normalDirection[1] == 1:
-        pm.rotate(ctrl.cv[:], [0, 90, 0])
+        pm.rotate(ctrl, [0, 90, 0])
     elif normalDirection[1] == -1:
-        pm.rotate(ctrl.cv[:], [0, -90, 0])
+        pm.rotate(ctrl, [0, -90, 0])
 
     if normalDirection[2] == 1:
-        pm.rotate(ctrl.cv[:], [0, 0, 90])
+        pm.rotate(ctrl, [0, 0, 90])
     elif normalDirection[2] == -1:
-        pm.rotate(ctrl.cv[:], [0, 0, -90])
+        pm.rotate(ctrl, [0, 0, -90])
 
     pm.rename(ctrl, name)
     ctrl.scale.set(scale, scale, scale)
@@ -89,7 +89,7 @@ def trapeziumCtrlShape(name, normalDirection=[0,1,1], scale=1):
 
     return ctrl
 
-def chestCtrlShape(name, normalDirection=[0,1,1], scale=1):
+def chestCtrlShape(name, normalDirection=[1,0,0], scale=1):
     ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
 
     pm.move(0, 0, 1, ctrl.cv[3:4], ctrl.cv[8:9], r=True, os=True)
@@ -122,7 +122,7 @@ def chestCtrlShape(name, normalDirection=[0,1,1], scale=1):
 
     return ctrl
 
-def hipCtrlShape(name, normalDirection=[0,1,1], scale=1):
+def hipCtrlShape(name, normalDirection=[1,0,0], scale=1):
     ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
 
     pm.move(0, 0, 1, ctrl.cv[3:4], ctrl.cv[8:9], r=True, os=True)

@@ -7,6 +7,10 @@ from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
 
 class Spine():
+    """
+    class for building spine
+    """
+
     def __init__(self,
                 spineJoints,
                 rootJnt,
