@@ -54,7 +54,7 @@ class Control():
             circleNormal = [0, 0, 1]
 
         elif shape == 'sphere':
-            ctrlObject = pm.sphere(n=prefix + '_CTRL', ch=False, normal=[1, 0, 0], radius=scale)[0]
+            ctrlObject = ctrlShape.sphereCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'move':
             ctrlObject = ctrlShape.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
