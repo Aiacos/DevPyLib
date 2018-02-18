@@ -24,7 +24,7 @@ class DynamicCurve():
             pm.parent(self.dynamicSystemGrp, baseRig.rigGrp)
 
         # dynamic Curve
-        self.makeCurveDynamic(curve, prefix)
+        self.follicleGrp, self.follicle, self.inputCrv, self.outputCrvGrp, self.outputCrv, self.hairSystem = self.makeCurveDynamic(curve, prefix)
 
     def makeCurveDynamic(self, crv, name):
         crvInfo = []
@@ -36,25 +36,33 @@ class DynamicCurve():
         shapeBuffer = pm.listRelatives(follicleBuffer, shapes=True)
         inputCurveOldNameBuffer = util.returnDriverObject(shapeBuffer[0] + '.startPosition')
         inputCurveBuffer = pm.rename(inputCurveOldNameBuffer, (name + '_input_CRV'))
+
+        # curve transform node
         outputCurveShapeBuffer = util.returnDrivenObject(shapeBuffer[0] + '.outCurve')
-        outputCurveOldNameBuffer = pm.listRelatives(outputCurveShapeBuffer, parent=True)
-        outputCurveBuffer = pm.rename(outputCurveOldNameBuffer, (name + '_output_CRV'))
-        hairSystemOldShapeNameBuffer = util.returnDriverObject(shapeBuffer[0] + '.currentPosition')
-        hairSystemOldNameBuffer = pm.listRelatives(hairSystemOldShapeNameBuffer, parent=True)
+        outputCurveBuffer = pm.rename(outputCurveShapeBuffer, (name + '_output_CRV'))
+
+        # output crv group
+        outputCurveOldNameBuffer = pm.listRelatives(outputCurveBuffer, parent=True)
+        outputCrvsGroup = pm.rename(outputCurveOldNameBuffer, (name + 'OutputCrvs_GRP'))
+
+        # hair system
+        hairSystemOldNameBuffer = util.returnDriverObject(shapeBuffer[0] + '.currentPosition')
         hairSystemBuffer = pm.rename(hairSystemOldNameBuffer, (name + '_hairSystem'))
 
+        # follice
+        oldFolicleGroupBuffer = (pm.listRelatives(follicleBuffer, parent=True))
+        folicleGroup = pm.rename(oldFolicleGroupBuffer[0], (name + 'follicles_GRP'))
+
+        crvInfo.append(folicleGroup)
         crvInfo.append(follicleBuffer)
-        crvInfo.append(shapeBuffer[0])
+        #crvInfo.append(shapeBuffer[0])
         crvInfo.append(inputCurveBuffer)
+        crvInfo.append(outputCrvsGroup)
         crvInfo.append(outputCurveBuffer)
         crvInfo.append(hairSystemBuffer)
+        #crvInfo.append(hairSystemBuffer.getShape())
 
-        oldFolicleGroupBuffer = (pm.listRelatives(crvInfo[0], parent=True))
-        folicleGroup = pm.rename(oldFolicleGroupBuffer[0], (name + 'follicles_GRP'))
-        oldOutputGroupBuffer = (pm.listRelatives(crvInfo[3], parent=True))
-        outputCrvsGroup = pm.rename(oldOutputGroupBuffer[0], (name + 'OutputCrvs_GRP'))
-
-        print crvInfo
+        return crvInfo
 
 
 def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
