@@ -28,6 +28,13 @@ class DynamicCurve():
 
         # nucleus
         self.nucleus = pm.listConnections(self.hairSystem.getShape().currentState, destination=True)
+        try:
+            pm.parent(self.nucleus, self.dynamicSystemGrp)
+        except:
+            pass
+
+        # regroup
+        pm.group(self.hairSystem, self.follicleGrp, self.outputCrvGrp, n=prefix + 'Dynamic_GRP', p=self.dynamicSystemGrp)
 
     def makeCurveDynamic(self, crv, name):
         crvInfo = []
