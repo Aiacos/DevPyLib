@@ -26,6 +26,9 @@ class DynamicCurve():
         # dynamic Curve
         self.follicleGrp, self.follicle, self.inputCrv, self.outputCrvGrp, self.outputCrv, self.hairSystem = self.makeCurveDynamic(curve, prefix)
 
+        # nucleus
+        self.nucleus = pm.listConnections(self.hairSystem.getShape().currentState, destination=True)
+
     def makeCurveDynamic(self, crv, name):
         crvInfo = []
         pm.select(crv)
