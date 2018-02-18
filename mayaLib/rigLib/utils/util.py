@@ -1,16 +1,64 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-import pymel.core.runtime as runtime
 import maya.mel as mel
-import mayaLib.pipelineLib.utility.nameCheck as nc
 
 
 def getDriverDrivenFromConstraint(constraint):
-    driver = pm.listConnections(constraint+'.target[0].targetParentMatrix', destination=False)
+    driver = pm.listConnections(constraint + '.target[0].targetParentMatrix', destination=False)
     driven = pm.listConnections(constraint, source=False)[0]
 
     return driver, driven
+
+
+def returnDriverObject(attribute, skipConversionNodes=False):
+    """
+    Returns the driver of an attribute if there is one
+    :param attribute: pymel obj
+    :param skipConversionNodes: bool
+    :return: obj
+    """
+    objectBuffer = pm.listConnections(attribute, scn=skipConversionNodes, d=False, s=True, plugs=False)
+    return pm.ls(objectBuffer[0])[0]
+
+
+def returnDrivenAttribute(attribute, skipConversionNodes=False):
+    """
+    Returns the drivenAttribute of an attribute if there is one
+    :param attribute: pymel obj
+    :param skipConversionNodes: bool
+    :return: list || False
+    """
+    if (pm.connectionInfo(attribute, isSource=True)) == True:
+        destinationBuffer = pm.listConnections(attribute, scn=skipConversionNodes, s=False, d=True, plugs=True)
+        if not destinationBuffer:
+            destinationBuffer = pm.connectionInfo(attribute, destinationFromSource=True)
+        if destinationBuffer:
+            returnList = []
+            for lnk in destinationBuffer:
+                returnList.append(str(pm.ls(lnk)[0]))
+            return returnList
+        return False
+    return False
+
+
+def returnDrivenObject(attribute, skipConversionNodes=True):
+    """
+    Returns the driven object of an attribute if there is one
+    :param attribute: pymel obj
+    :param skipConversionNodes: bool
+    :return: list || False
+    """
+    objectBuffer = pm.listConnections(attribute, scn=skipConversionNodes, s=False, d=True, plugs=False)
+    if not objectBuffer:
+        return False
+    if attribute in objectBuffer:
+        objectBuffer.remove(attribute)
+
+    returnList = []
+    for lnk in objectBuffer:
+        returnList.append(str(pm.ls(lnk)[0]))
+    return returnList
 
 
 def getAllObjectUnderGroup(group, type='mesh'):
@@ -31,49 +79,6 @@ def getAllObjectUnderGroup(group, type='mesh'):
 
     return objList
 
-def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
-    grpName = nc.nameCheck(grpName)
-    pm.select(curve)
-    mel.eval('makeCurvesDynamic 2 { "1", "0", "1", "1", "0"};')
-
-    dynamicObj_list = pm.ls('hairSystem*', 'nucleus*')
-    # nucleus
-    nucleus = pm.ls('nucleus*')
-
-    # select last created hairSystem
-    hairSystem = pm.ls('hairSystem*')[-1]
-
-    if pm.objExists(grpName):
-        pm.parent(hairSystem, grpName)
-    else:
-        pm.group(hairSystem, n=grpName)
-
-    outputGrp = pm.ls('hairSystem*OutputCurves')[-1]
-    follicleGrp = pm.ls('hairSystem*Follicles')[-1]
-    outputCurve = pm.listRelatives(outputGrp, children=True)[0]
-
-    # disable inheritTransform on follicle
-    follicle = pm.listRelatives(follicleGrp, children=True)[0]
-    pm.setAttr(follicle + '.inheritsTransform', 0)
-
-    # regroup
-    systemGrp = 'system_GRP'
-    if pm.objExists(systemGrp):
-        #pm.parent(nucleus, systemGrp)
-        pass
-    else:
-        pm.group(nucleus, n=systemGrp)
-
-    mainGrpName = 'dynamicSystem_GRP'
-    if pm.objExists(mainGrpName):
-        pm.parent(grpName, mainGrpName)
-    else:
-        pm.group(grpName, n=mainGrpName)
-
-    pm.parent(systemGrp, mainGrpName)
-    pm.parent(pm.ls(outputGrp, follicleGrp), grpName)
-
-    return outputCurve, grpName, follicleGrp
 
 def moveShape(source, destination):
     pn = pm.PyNode
@@ -81,6 +86,7 @@ def moveShape(source, destination):
         pm.parent(source, destination[0], r=True, s=True)
     else:
         pm.parent(pm.PyNode(source[0]).getShape(), destination, r=True, s=True)
+
 
 def get_distance(obj1, obj2):
     """
@@ -105,6 +111,7 @@ def get_distance(obj1, obj2):
     pm.delete(constraint0, constraint1, loc0, loc1)
     return distance
 
+
 def get_distance_from_coords(bboxMin, bboxMax):
     """
     Return distance between two points
@@ -117,6 +124,7 @@ def get_distance_from_coords(bboxMin, bboxMax):
     distance = ((Ax - Bx) ** 2 + (Ay - By) ** 2 + (Az - Bz) ** 2) ** 0.5
 
     return distance
+
 
 # function to lock and hide attributes
 def lock_and_hide_all(node):
@@ -134,6 +142,7 @@ def lock_and_hide_all(node):
     node.sy.set(l=1, k=0, cb=0)
     node.sz.set(l=1, k=0, cb=0)
 
+
 # function to unlock and unhide attributes
 def unlock_and_unhide_all(node):
     """
@@ -150,6 +159,7 @@ def unlock_and_unhide_all(node):
     node.sy.set(l=0, k=1, cb=0)
     node.sz.set(l=0, k=1, cb=0)
 
+
 # function to make surface not render
 def no_render(tgt):
     """
@@ -164,7 +174,8 @@ def no_render(tgt):
     tgt.visibleInReflections.set(0)
     tgt.visibleInRefractions.set(0)
 
+
 def invertSelection():
     mel.eval('InvertSelection;')
-    #runtime.InvertSelection()
+    # runtime.InvertSelection()
     return pm.ls(sl=True)
