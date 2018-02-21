@@ -4,13 +4,43 @@ import sys
 import os.path
 import os
 import time
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PySide2 import QtCore, QtWidgets
 import urllib
-import installCmd
 
 
-class InstallLibrary(QObject):
+# import installCmd
+
+def buildInstallCmd(libDir, libName, port):
+    installCommand = \
+        """
+        # Install mayaLib
+        import sys
+        import maya.cmds as cmds
+        import maya.utils
+        
+        libDir = '""" + libDir + """'
+port = '""" + port + """'
+libName = '""" + libName + """'
+
+# Open Maya port
+if not cmds.commandPort(port, q=True):
+    cmds.commandPort(n=port)
+
+# Add develpment PATH
+if not libDir in sys.path:
+    sys.path.append(libDir)
+    __import__(libName)
+else:
+    reload(__import__(libName))
+
+import mayaLib.guiLib.mainMenu as mm
+cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
+"""
+
+    return installCommand
+
+
+class InstallLibrary(QtCore.QObject):
     def __init__(self, devMode=False, parent=None):
         super(InstallLibrary, self).__init__(parent)
 
@@ -23,7 +53,6 @@ class InstallLibrary(QObject):
 
         self.updateDevMode(devMode)
 
-
     def updateDevMode(self, devMode=False):
         self.devMode = devMode
 
@@ -32,7 +61,7 @@ class InstallLibrary(QObject):
         else:
             self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
 
-        self.installCommand = installCmd.buildInstallCmd(self.libDir, self.libName, self.port)
+        self.installCommand = buildInstallCmd(self.libDir, self.libName, self.port)
 
     def installInMayaUserSetup(self):
         userSetup_path = self.mayaScriptPath
@@ -116,35 +145,35 @@ class InstallLibrary(QObject):
             os.system(rm_cmd)
 
 
-class InstallWindow(QWidget):
+class InstallWindow(QtWidgets.QWidget):
     def __init__(self, devMode=False, parent=None):
         super(InstallWindow, self).__init__(parent)
         self.libManager = InstallLibrary(devMode=devMode)
 
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        self.layout = QGridLayout()
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         self.setWindowTitle('Install Maya Library')
 
         # browse install path
-        self.installDirLabel = QLabel('Install Directory')
-        self.installDirLineEdit = QLineEdit(self.libManager.mayaScriptPath)
-        self.installDirButton = QPushButton('Select Folder')
+        self.installDirLabel = QtWidgets.QLabel('Install Directory')
+        self.installDirLineEdit = QtWidgets.QLineEdit(self.libManager.mayaScriptPath)
+        self.installDirButton = QtWidgets.QPushButton('Select Folder')
         self.layout.addWidget(self.installDirLabel, 0, 0)
         self.layout.addWidget(self.installDirLineEdit, 0, 1)
         self.layout.addWidget(self.installDirButton, 0, 2)
 
         # devMode checkBox
-        self.devModeCheckBox = QCheckBox("Developer Mode")
+        self.devModeCheckBox = QtWidgets.QCheckBox("Developer Mode")
         self.devModeCheckBox.setChecked(False)
         self.layout.addWidget(self.devModeCheckBox, 1, 1)
 
         # install button
-        self.installButton = QPushButton('Install')
+        self.installButton = QtWidgets.QPushButton('Install')
         self.layout.addWidget(self.installButton, 1, 2)
 
         # status label
-        self.statusLabel = QLabel('')
+        self.statusLabel = QtWidgets.QLabel('')
         self.layout.addWidget(self.statusLabel, 2, 0)
 
         self.installDirButton.clicked.connect(self.selectFile)
@@ -152,22 +181,19 @@ class InstallWindow(QWidget):
         self.devModeCheckBox.stateChanged.connect(self.libManager.updateDevMode)
 
     def selectFile(self):
-        self.installDirLineEdit.setText(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.installDirLineEdit.setText(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
 
     def installLib(self):
         self.libManager.install()
         self.statusLabel.setText('Installation Complete!')
 
 
-
 def main(devMode=False):
-    app = QApplication(sys.argv)
-
     w = InstallWindow(devMode=devMode)
     w.show()
 
-    sys.exit(app.exec_())
+    return w
 
 
 if __name__ == "__main__":
-    main(devMode=False)
+    mayaLibInstallWindow = main(devMode=False)
