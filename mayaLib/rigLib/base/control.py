@@ -22,7 +22,8 @@ class Control():
             shape='circle',
             lockChannels=['s', 'v'],
             doOffset=True,
-            doModify=False
+            doModify=False,
+            doDynamicPivot=False
     ):
 
         """
@@ -141,6 +142,20 @@ class Control():
         if parent != None and parent != '':
             if pm.objExists(parent):
                 pm.parent(self.getTop(), parent)
+
+        if doDynamicPivot:
+            self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
+
+    def makeDynamicPivot(self, prefix, scale, translateTo, rotateTo):
+        pivotCtrl = Control(prefix=prefix+'Pivot', scale=scale/5, translateTo=translateTo, rotateTo=rotateTo, parent=self.C,
+                            shape='sphere', doOffset=True, doDynamicPivot=False)
+        pm.connectAttr(pivotCtrl.getControl().translate, self.C.rotatePivot, f=True)
+
+        # add visibility Attribute on CTRL
+        pm.addAttr(self.C, ln='PivotVisibility', at='enum', enumName='off:on', k=1, dv=0)
+        pm.connectAttr(self.C.PivotVisibility, pivotCtrl.getOffsetGrp().visibility, f=True)
+
+        return pivotCtrl
 
     def getControl(self):
         """
