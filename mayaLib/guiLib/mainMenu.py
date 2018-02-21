@@ -14,6 +14,7 @@ from maya import mel
 import mayaLib
 from mayaLib.pipelineLib.utility import listFunction as lm
 from mayaLib.pipelineLib.utility import docs as doc
+from mayaLib.pipelineLib.utility import libManager
 from mayaLib.guiLib.base import baseUI as ui
 
 
@@ -109,7 +110,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # Connect
         self.reloadButton.clicked.connect(self.reloaded)
-        #self.updateButton.clicked.connect(self.reloaded)
+        self.updateButton.clicked.connect(self.download)
         self.searchLineEdit.speak.connect(lambda: self.buildButtonList(self.searchLineEdit.text()))
         self.buttonListWidget.itemClicked.connect(self.listWidgetButtonClick)
 
@@ -154,6 +155,12 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def reloaded(self):
         self.updateWidget.emit()
+
+    def download(self):
+        lib = libManager.InstallLibrary()
+        lib.download()
+
+        self.reloaded()
 
     def addIconButton(self, name, imgPath):
         icon = QtGui.QPixmap(imgPath)
