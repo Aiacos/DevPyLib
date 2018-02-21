@@ -1,7 +1,12 @@
 __author__ = 'Lorenzo Argentieri'
 
+import os
+import types
+import importlib
+
 #from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
 from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtCore import QObject, SIGNAL
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 from maya import mel
@@ -52,6 +57,9 @@ class SearchLineEdit(QtWidgets.QLineEdit):
 
 
 class MenuLibWidget(QtWidgets.QWidget):
+
+    updateWidget = QtCore.Signal()
+
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
 
@@ -145,8 +153,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.adjustSize()
 
     def reloaded(self):
-        reload(mayaLib)
-        self.docLabel.setText('Lib Reloaded!')
+        self.updateWidget.emit()
 
     def addIconButton(self, name, imgPath):
         icon = QtGui.QPixmap(imgPath)
@@ -247,8 +254,48 @@ class MainMenu(QtWidgets.QWidget):
 
         self.libMenu.addAction(self.wAction)
 
+        QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+
+    def updateWidget(self, libPath):
+        reload_package(mayaLib)
+        self.libMenu.removeAction(self.wAction)
+        self.libWindow.destroy()
+        #self.wAction.deleteWidget()
+        #self.libMenu.clear()
+
+        self.wAction = QtWidgets.QWidgetAction(self)
+        self.libWindow = MenuLibWidget(libPath) # ql
+        self.wAction.setDefaultWidget(self.libWindow)
+
+        self.libMenu.addAction(self.wAction)
+        QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+        print 'Reloaded MayaLib!'
+
     def __del__(self):
         self.libMenu.deleteLater()
+
+
+def reload_package(package):
+    assert(hasattr(package, "__package__"))
+    fn = package.__file__
+    fn_dir = os.path.dirname(fn) + os.sep
+    module_visit = {fn}
+    del fn
+
+    def reload_recursive_ex(module):
+        #importlib.reload(module)
+        reload(module)
+
+        for module_child in vars(module).values():
+            if isinstance(module_child, types.ModuleType):
+                fn_child = getattr(module_child, "__file__", None)
+                if (fn_child is not None) and fn_child.startswith(fn_dir):
+                    if fn_child not in module_visit:
+                        # print("reloading:", fn_child, "from", module)
+                        module_visit.add(fn_child)
+                        reload_recursive_ex(module_child)
+
+    return reload_recursive_ex(package)
 
 
 if __name__ == "__main__":
