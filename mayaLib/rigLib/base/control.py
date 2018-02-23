@@ -143,6 +143,7 @@ class Control():
             if pm.objExists(parent):
                 pm.parent(self.getTop(), parent)
 
+        self.dynamicPivot = None
         if doDynamicPivot:
             self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
 
@@ -150,19 +151,25 @@ class Control():
         pivotCtrl = Control(prefix=prefix+'Pivot', scale=scale/5, translateTo=translateTo, rotateTo=rotateTo, parent=self.C,
                             shape='sphere', doOffset=True, doDynamicPivot=False)
         pm.connectAttr(pivotCtrl.getControl().translate, self.C.rotatePivot, f=True)
+        control = pm.group(n=prefix+'Con_GRP', p=self.getControl(), em=True)
 
         # add visibility Attribute on CTRL
         pm.addAttr(self.C, ln='PivotVisibility', at='enum', enumName='off:on', k=1, dv=0)
         pm.connectAttr(self.C.PivotVisibility, pivotCtrl.getOffsetGrp().visibility, f=True)
+        control.visibility.set(0)
 
-        return pivotCtrl
+        return control
 
     def getControl(self):
         """
         Return Control
         :return:
         """
-        return self.C
+
+        if not self.dynamicPivot:
+            return self.C
+        else:
+            return self.dynamicPivot
 
     def getOffsetGrp(self):
         """
@@ -192,5 +199,5 @@ class Control():
         elif self.Modify:
             return self.Modify
         else:
-            return self.C
+            return self.getControl()
 
