@@ -4,9 +4,10 @@ import sys
 import os.path
 import os
 import time
-from PySide2 import QtCore, QtWidgets
+#from PySide2 import QtCore, QtWidgets
+import PyQt4.QtCore as QtCore
+import PyQt4.QtGui as QtWidgets
 import urllib
-
 
 # import installCmd
 
@@ -196,4 +197,6 @@ def main(devMode=False):
 
 
 if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
     mayaLibInstallWindow = main(devMode=False)
+    app.exec_()
