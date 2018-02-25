@@ -8,3 +8,4 @@ import footRoll
 import pxrControl
 import ikfkSwitch
 import dynamic
+import stretchyIKChain
