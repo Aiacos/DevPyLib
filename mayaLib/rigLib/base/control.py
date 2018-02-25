@@ -166,10 +166,10 @@ class Control():
         :return:
         """
 
-        if not self.dynamicPivot:
-            return self.C
-        else:
+        if self.dynamicPivot:
             return self.dynamicPivot
+
+        return self.C
 
     def getOffsetGrp(self):
         """
@@ -199,5 +199,5 @@ class Control():
         elif self.Modify:
             return self.Modify
         else:
-            return self.getControl()
+            return self.C
 
