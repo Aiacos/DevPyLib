@@ -307,13 +307,13 @@ class Flexiplane():
         flc_grp = pm.group(flcs, name='%s_flcs_GRP' % (fp_name))
 
         # creates flexiPlane controls curves at each end
-        ctrl_a = self.ctrl_square(name='%s_ctrl_a_CTRL' % (fp_name), pos=[-5, 0, 0])
-        ctrl_ashape = ctrl_a.getShape()
-        pm.rename(ctrl_ashape, '%sShape' % ctrl_a)
+        self.ctrl_a = self.ctrl_square(name='%s_ctrl_a_CTRL' % (fp_name), pos=[-5, 0, 0])
+        ctrl_ashape = self.ctrl_a.getShape()
+        pm.rename(ctrl_ashape, '%sShape' % self.ctrl_a)
 
-        ctrl_b = self.ctrl_square(name='%s_ctrl_b_CTRL' % (fp_name), pos=[5, 0, 0])
-        ctrl_bshape = ctrl_b.getShape()
-        pm.rename(ctrl_bshape, '%sShape' % ctrl_b)
+        self.ctrl_b = self.ctrl_square(name='%s_ctrl_b_CTRL' % (fp_name), pos=[5, 0, 0])
+        ctrl_bshape = self.ctrl_b.getShape()
+        pm.rename(ctrl_bshape, '%sShape' % self.ctrl_b)
 
         pm.select(cl=True)
 
@@ -341,8 +341,8 @@ class Flexiplane():
         pm.rename(fp_twist[1], '%s_twist_Handle_DEFORMER' % (fp_name))
         fp_twist[1].rz.set(90)
         # connect start and end angle to their respective control
-        connect = ctrl_b.rx >> fp_twist[0].startAngle
-        connect = ctrl_a.rx >> fp_twist[0].endAngle
+        connect = self.ctrl_b.rx >> fp_twist[0].startAngle
+        connect = self.ctrl_a.rx >> fp_twist[0].endAngle
 
         # skins wire to blendshape
         fp_wire = pm.wire(fp_bshp, w=fp_curve, gw=False, en=1, ce=0, li=0,  # dds=(0, 20),
@@ -359,30 +359,30 @@ class Flexiplane():
         util.lock_and_hide_all(cl_grp)
 
         # creates mid control
-        ctrl_mid = self.flexiplane_mid_ctrl(name='%s_ctrl_mid_CTRL' % (fp_name))
-        ctrl_mid_grp = pm.group(ctrl_mid, n='%s_grp_midBend_GRP' % (fp_name))
-        pm.pointConstraint(ctrl_a, ctrl_b, ctrl_mid_grp, o=[0, 0, 0], w=1)
+        self.ctrl_mid = self.flexiplane_mid_ctrl(name='%s_ctrl_mid_CTRL' % (fp_name))
+        ctrl_mid_grp = pm.group(self.ctrl_mid, n='%s_grp_midBend_GRP' % (fp_name))
+        pm.pointConstraint(self.ctrl_a, self.ctrl_b, ctrl_mid_grp, o=[0, 0, 0], w=1)
 
         # groups controls together and locks and hides group attributes
-        ctrl_grp = pm.group(ctrl_a, ctrl_b, ctrl_mid_grp, n='%s_ctrl_GRP' % (fp_name))
+        ctrl_grp = pm.group(self.ctrl_a, self.ctrl_b, ctrl_mid_grp, n='%s_ctrl_GRP' % (fp_name))
         util.lock_and_hide_all(ctrl_grp)
 
         # connecting translate attrs of control curves for to the clusters
         connect = []
-        connect.append(ctrl_a.t >> cl_a[1].t)
-        connect.append(ctrl_b.t >> cl_b[1].t)
-        connect.append(ctrl_mid.t >> cl_mid[1].t)
+        connect.append(self.ctrl_a.t >> cl_a[1].t)
+        connect.append(self.ctrl_b.t >> cl_b[1].t)
+        connect.append(self.ctrl_mid.t >> cl_mid[1].t)
 
         # makes mid_ctrl, flexiPlane and blendShape surfaces non renderable
         util.no_render(fp_surf)
         util.no_render(fp_bshp)
-        util.no_render(ctrl_mid)
+        util.no_render(self.ctrl_mid)
 
         # groups everything under 1 group then locks and hides the transform attrs of that group #flexiPlane_wire_surface0101BaseWire
-        fp_grp = pm.group(fp_surf, flc_grp, fp_bshp, fp_wire,
+        self.fp_grp = pm.group(fp_surf, flc_grp, fp_bshp, fp_wire,
                           #'%s_wire_%s_BaseWire_GRP' % (fp_name, self.surfaceSuffix),
                           cl_grp, ctrl_grp, n='%s_GRP' % (fp_name))
-        util.lock_and_hide_all(fp_grp)
+        util.lock_and_hide_all(self.fp_grp)
 
         # creates global move group and extraNodes
         fp_gm_grp = pm.group(fp_surf, ctrl_grp, n='%s_globalMove_GRP' % (fp_name))
@@ -390,7 +390,7 @@ class Flexiplane():
                                  '%s_wire_CVBaseWire' % (fp_name),
                                  cl_grp, n='%s_extraNodes_GRP' % (fp_name))
         pm.parent(fp_twist, fp_xnodes_grp)
-        pm.parent(fp_xnodes_grp, fp_grp)
+        pm.parent(fp_xnodes_grp, self.fp_grp)
         fp_xnodes_grp.overrideEnabled.set(1)
         fp_xnodes_grp.overrideDisplayType.set(2)
 
@@ -401,11 +401,11 @@ class Flexiplane():
             pm.scaleConstraint(fp_gm_grp, mparent)
 
         # creates global move control
-        fp_gm_ctrl = self.global_ctrl(name=fp_name)
+        self.fp_gm_ctrl = self.global_ctrl(name=fp_name)
 
         # moves global control into flexiPlane group then parent global move group to global move control.
-        pm.parent(fp_gm_ctrl, fp_grp)
-        pm.parent(fp_gm_grp, fp_gm_ctrl)
+        pm.parent(self.fp_gm_ctrl, self.fp_grp)
+        pm.parent(fp_gm_grp, self.fp_gm_ctrl)
 
         # joints placement
         jnts = []
@@ -448,9 +448,9 @@ class Flexiplane():
         connect = length.arcLength >> fp_div.input1.input1X
         fp_div.input2.input2X.set(10)
         connect = fp_div.outputX >> fp_div_vol.input2.input2X
-        connect = fp_gm_ctrl.enable >> fp_cond.firstTerm
+        connect = self.fp_gm_ctrl.enable >> fp_cond.firstTerm
         connect = fp_div_vol.outputX >> fp_cond.colorIfTrueR
-        fp_ctrl_global = fp_gm_ctrl.getShape()
+        fp_ctrl_global = self.fp_gm_ctrl.getShape()
 
         for i in range(0, len(flcs)):
             connect = fp_cond.outColorR >> jnts[i].sy
@@ -463,8 +463,14 @@ class Flexiplane():
         fp_bshp.visibility.set(0)
         fp_curve.visibility.set(0)
 
-        pm.select(fp_gm_ctrl, r=True)
-        return fp_gm_ctrl
+        pm.select(self.fp_gm_ctrl, r=True)
+        return self.fp_gm_ctrl
+
+    def getControls(self):
+        return self.fp_gm_ctrl, self.ctrl_a, self.ctrl_b, self.ctrl_mid
+
+    def getTopGrp(self):
+        return self.fp_grp
 
 
 if __name__ == "__main__":

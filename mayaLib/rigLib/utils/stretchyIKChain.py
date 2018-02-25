@@ -3,10 +3,11 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.base import flexiplane
 
 
 class StretchyIKChain():
-    def __init__(self, ikHandle, ikCtrl):
+    def __init__(self, ikHandle, ikCtrl, doFlexyplane=True):
         prefix = name.removeSuffix(ikHandle.name())
 
         jointList = pm.ikHandle(ikHandle, jointList=True, q=True)
@@ -46,8 +47,27 @@ class StretchyIKChain():
         self.stretchyGrp = pm.group(startLoc, endLoc, distanceDimensionShape.getParent(), n=prefix+'Stretchy_GRP')
         self.stretchyGrp.visibility.set(0)
 
+        # save attributes
+        self.prefix = prefix
+        self.jointList = jointList
+
+        if doFlexyplane:
+            self.doFlexyPlane(prefix)
+
     def getStretchyGrp(self):
         return self.stretchyGrp
+
+    def doFlexyPlane(self, prefix, stretchy=1):
+        for i in range(0, len(self.jointList[:-1])):
+            flex = flexiplane.Flexiplane(prefix + str(i))
+            globalCtrl, ctrlA, ctrlB, ctrlMid = flex.getControls()
+            pm.pointConstraint([self.jointList[i], self.jointList[i + 1]], globalCtrl)
+            pm.parentConstraint(self.jointList[i], ctrlA)
+            pm.parentConstraint(self.jointList[i+1], ctrlB)
+
+            globalCtrl.enable.set(stretchy)
+
+            pm.parent(flex.getTopGrp(), self.stretchyGrp)
 
 
 if __name__ == "__main__":
