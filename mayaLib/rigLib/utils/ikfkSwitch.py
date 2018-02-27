@@ -1,5 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
+import inspect
 import pymel.core as pm
 from mayaLib.rigLib.utils import util
 
@@ -32,6 +33,8 @@ class IKFKSwitch():
         poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
         self.poleVector = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
 
+        self.ikHandle = ikHandle
+
     def toIK(self):
         pm.delete(pm.parentConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
         pm.delete(pm.pointConstraint(self.joint2FKCtrl, self.poleVector))
@@ -41,23 +44,36 @@ class IKFKSwitch():
         pm.delete(pm.orientConstraint(self.joint2, self.joint2FKCtrl))
         pm.delete(pm.orientConstraint(self.joint3, self.joint3FKCtrl))
 
+    def switchIKFK(self):
+        blend = self.ikHandle.ikBlend.get()
+        if blend == 0:
+            self.toFK()
+        elif blend == 1:
+            self.toIK()
 
-def ikHandleSearch():
-    ikHandleList = pm.ls(type='ikHandle')
-    handleLocator = pm.spaceLocator(n='ikHandleCtrl_LOC')
-    util.lock_and_hide_all(handleLocator)
+    def addScriptJob(self):
+        pm.scriptJob(attributeChange=[self.ikHandle.ikBlend, self.switchIKFK])
 
-    for handle in ikHandleList:
-        # add attribute on locator control
-        pm.addAttr(handleLocator, ln=handle, k=True, at='enum', en='FK=0:IK=1:')
-        # intance switch class
+def installIKFK(ikList):
+    classDefinitionString = inspect.getsource(IKFKSwitch)
+    utilDefinitionString = inspect.getsource(util.getDriverDrivenFromConstraint)
 
-        # add event
-        # pm.evalDeferred("pm.deleteUI(button)")
+    cmdList = []
+    cmdList.append('import pymel.core as pm')
+    cmdList.append(utilDefinitionString)
+    cmdList.append(classDefinitionString.replace('util.', ''))
+
+    cmdList.append('ikList = pm.ls(' + ','.join("'" + str(x) + "'" for x in ikList) + ')')
+    cmdList.append('ikInstanceList = [IKFKSwitch(ik) for ik in ikList]')
+    cmdList.append('ikScriptJobList = [i.addScriptJob() for i in ikInstanceList]')
+
+    cmdString = '\n'.join(cmdList)
+    pm.scriptNode(st=2, bs=cmdString, n='switch_IKFK', stp='python')
+
 
 
 if __name__ == "__main__":
-    ikHandleSearch()
+    installIKFK()
     # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
     # classeProva.toIK()
     # classeProva.toFK()
