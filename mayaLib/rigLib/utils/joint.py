@@ -37,8 +37,11 @@ class TwistJoint():
         else:
             self.twistJointsMainGrp = pm.ls('twistJoints_GRP')[0]
 
-        for parentJnt in parentJoints:
-            self.maketwistJoints(parentJnt, nTwistJoint, rotAxis)
+        if isinstance(parentJoints, basestring):
+            self.maketwistJoints(pm.ls(parentJoints)[0], nTwistJoint, rotAxis)
+        else:
+            for parentJnt in parentJoints:
+                self.maketwistJoints(parentJnt, nTwistJoint, rotAxis)
 
     def maketwistJoints(self, parentJnt, nTwistJoint, rotAxis):
         prefix = name.removeSuffix(parentJnt)
@@ -94,7 +97,13 @@ class TwistJoint():
             pm.delete(pm.parentConstraint(startJnt, new_joint))
             common.freezeTranform(new_joint)
             pm.parent(new_joint, startJnt)
-            pm.move((i + 1) * distance, 0, 0, new_joint, relative=True, localSpace=True)
+            direction = 1
+            print startJnt.jointOrient.get()[0]
+            if startJnt.jointOrient.get()[0] == 0:
+                direction = 1
+            elif startJnt.jointOrient.get()[0] != 0:
+                direction = -1
+            pm.move((i + 1) * distance * direction, 0, 0, new_joint, relative=True, localSpace=True)
 
             # connect to mulDoubleLinear node
             multiplyNode = pm.shadingNode('multDoubleLinear', asUtility=True)
