@@ -87,6 +87,7 @@ class TwistJoint():
         :param nTwistJoint:
         :return:
         """
+        axis = {'X': 0, 'Y': 1, 'Z': 2}
         distance = util.get_distance(startJnt, endJnt) / (nTwistJoint + 1)
 
         joint_list = []
@@ -98,10 +99,9 @@ class TwistJoint():
             common.freezeTranform(new_joint)
             pm.parent(new_joint, startJnt)
             direction = 1
-            print startJnt.jointOrient.get()[0]
-            if startJnt.jointOrient.get()[0] == 0:
+            if startJnt.jointOrient.get()[axis[rotAxis]] == 0:
                 direction = 1
-            elif startJnt.jointOrient.get()[0] != 0:
+            elif startJnt.jointOrient.get()[axis[rotAxis]] != 0:
                 direction = -1
             pm.move((i + 1) * distance * direction, 0, 0, new_joint, relative=True, localSpace=True)
 
