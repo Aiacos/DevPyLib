@@ -9,6 +9,25 @@ from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import common
 
+def jointDirection(joint):
+    """
+    Get joint orient direction
+    :param joint: str, pymel object
+    :return: int (1 || -1)
+    """
+    child = pm.listRelatives(joint, c=True, type='joint')[0]
+    t = child.getTranslation()
+    max = 0.0
+    maxsign = 0
+    for tv in t:
+        if abs(tv) > max:
+              max = abs(tv)
+              if tv < 0.0:
+                  maxsign = -1
+              else:
+                  maxsign = 1
+    return maxsign
+
 def listHierarchy(topJoint, withEndJoints=True):
     """
     list joint hierarchy starting with top joint
@@ -87,7 +106,6 @@ class TwistJoint():
         :param nTwistJoint:
         :return:
         """
-        axis = {'X': 0, 'Y': 1, 'Z': 2}
         distance = util.get_distance(startJnt, endJnt) / (nTwistJoint + 1)
 
         joint_list = []
@@ -98,11 +116,8 @@ class TwistJoint():
             pm.delete(pm.parentConstraint(startJnt, new_joint))
             common.freezeTranform(new_joint)
             pm.parent(new_joint, startJnt)
-            direction = 1
-            if startJnt.jointOrient.get()[axis[rotAxis]] == 0:
-                direction = 1
-            elif startJnt.jointOrient.get()[axis[rotAxis]] != 0:
-                direction = -1
+
+            direction = jointDirection(startJnt)
             pm.move((i + 1) * distance * direction, 0, 0, new_joint, relative=True, localSpace=True)
 
             # connect to mulDoubleLinear node
