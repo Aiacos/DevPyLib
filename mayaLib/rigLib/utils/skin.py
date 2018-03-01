@@ -6,6 +6,32 @@ import maya.mel as mel
 from mayaLib.utility import bSkinSaver
 
 
+def selectSkinClusterObject():
+    """
+    Select all skinCluster object
+    :return: list(str), geo transform
+    """
+    objectList = []
+    skinClusterList = pm.ls(type='skinCluster')
+    for skinCluster in skinClusterList:
+        objShape = pm.skinCluster(skinCluster, q=True, geometry=True)
+        obj = pm.listRelatives(objShape, p=True)[0]
+        objectList.append(obj)
+
+    pm.select(objectList)
+    return objectList
+
+
+def disableInheritsTransformOnSkinClusters():
+    """
+    Disable InheritsTransform on all skinCluster object
+    :return:
+    """
+    objList = selectSkinClusterObject()
+    for obj in objList:
+        obj.inheritsTransform.set(0)
+
+
 def copySkinWeightBetweenMesh(selection=pm.ls(sl=True)):
     """
     Copy skin weight to mirrored mesh
