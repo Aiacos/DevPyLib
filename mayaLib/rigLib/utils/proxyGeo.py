@@ -19,10 +19,9 @@ class ProxyGeo():
         self.shapeGrp = pm.group(n='fastGeo_GRP', em=True)
 
         # Get Shape and skin from Object
-        shape = pm.ls(geo)[0].getShape()
-        skinCluster = pm.listConnections(shape + '.inMesh', destination=False)
-        if len(skinCluster) > 0:
-            self.skin = pm.PyNode(skinCluster[0])
+        skinCluster = skin.findRelatedSkinCluster(geo)
+        if skinCluster:
+            self.skin = skinCluster
         else:
             print 'Missing SkinCluster'
 

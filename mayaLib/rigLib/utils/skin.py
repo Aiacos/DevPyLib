@@ -55,10 +55,9 @@ def copyBind(source, destination, sa='closestPoint', ia='closestJoint'):
     :return: 
     """
     # Get Shape and skin from Object
-    shape = pm.ls(source)[0].getShape()
-    skinCluster = pm.listConnections(shape + '.inMesh', destination=False)
-    if len(skinCluster) > 0:
-        skin = pm.PyNode(skinCluster[0])
+    skinCluster = findRelatedSkinCluster(source)
+    if skinCluster:
+        skin = skinCluster
     else:
         print 'Missing source SkinCluster'
 
@@ -98,7 +97,12 @@ def findRelatedSkinCluster(geo):
     :return: str
     """
     skincluster = mel.eval('findRelatedSkinCluster ' + geo)
-    return skincluster
+    if skincluster == '' or len(pm.ls(skincluster, type='skinCluster')) == 0:
+        skincluster = pm.ls(pm.listHistory(geo), type='skinCluster')
+        if len(skincluster) == 0:
+            return None
+
+    return pm.ls(skincluster)[0]
 
 
 def saveSkinWeights(characterName, geoList,

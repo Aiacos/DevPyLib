@@ -3,6 +3,8 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import skin
+
 
 def invertSelection(shape, faces):
     pm.select(shape+'.f[*]')
@@ -21,10 +23,9 @@ class PxrStyleCtrl():
         self.shapeGrp.visibility.set(0)
 
         # Get Shape and skin from Object
-        shape = pm.ls(obj)[0].getShape()
-        skinCluster = pm.listConnections(shape + '.inMesh', destination=False)
-        if len(skinCluster) > 0:
-            self.skin = pm.PyNode(skinCluster[0])
+        skinCluster = skin.findRelatedSkinCluster(obj)
+        if skinCluster:
+            self.skin = skinCluster
         else:
             print 'Missing SkinCluster'
 
