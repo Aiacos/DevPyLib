@@ -85,11 +85,11 @@ class Base():
         # make halo
         self.haloCtrl = control.Control(
             prefix='halo',
-            scale=1,
+            scale=scale / 20,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['s'],
-            shape='circleZ',
+            shape='circleX',
             doOffset=True,
             doModify=True
         )
@@ -113,6 +113,12 @@ class Base():
             pm.setAttr(self.globalCtrl.getControl() + '.' + at, cb=1)
             pm.setAttr(obj + '.ove', 1)
             pm.connectAttr(self.globalCtrl.getControl() + '.' + at, obj + '.ovdt')
+
+        # # add rig display level connection
+        # displayLevel = 'displayLevel'
+        # levelGrp = [pm.ls('fastGeo_GRP')[0], self.modelGrp]
+        #
+        # pm.addAttr(self.globalCtrl.getControl(), ln=displayLevel, at='enum', enumName='fast:medium:slow', k=1, dv=2)
 
         # create display control
         self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
@@ -140,7 +146,7 @@ class Base():
 
             # constraint haloCtrl
             pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
-            self.haloCtrl.getModifyGrp().translateY.set(6 * scale)
+            self.haloCtrl.getModifyGrp().translateY.set(12 * scale)
 
     def createDisplay(self, mainCtrlAttachObj, scale):
         # make Display
@@ -178,7 +184,7 @@ class Base():
             common.centerPivot(displayCtrl.getOffsetGrp())
             common.centerPivot(displayCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
-            displayCtrl.getModifyGrp().translateY.set(4 * scale)
+            displayCtrl.getModifyGrp().translateY.set(8 * scale)
 
         return displayCtrl
 
@@ -218,7 +224,7 @@ class Base():
             common.centerPivot(ikfkCtrl.getOffsetGrp())
             common.centerPivot(ikfkCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp())
-            ikfkCtrl.getModifyGrp().translateY.set(3 * scale)
+            ikfkCtrl.getModifyGrp().translateY.set(6 * scale)
 
         return ikfkCtrl
 
