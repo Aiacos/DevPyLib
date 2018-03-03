@@ -47,7 +47,7 @@ class Spine():
                                                     createCurve=True, numSpans=2)
 
         # rename curve
-        pm.rename(spineCurve, prefix+'_CV')
+        pm.rename(spineCurve, prefix+'_CRV')
 
         # make spine curve clusters
         spineCurveCVs = pm.ls(spineCurve + '.cv[*]', fl=1)

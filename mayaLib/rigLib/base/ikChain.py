@@ -13,7 +13,6 @@ from mayaLib.rigLib.utils import deform
 class IKChain():
     def __init__(self, 
                  chainJoints,
-                 chainCurve,
                  prefix='tail',
                  rigScale=1.0,
                  doDynamic=False,
@@ -23,7 +22,6 @@ class IKChain():
                  ):
         """
         :param chainJoints: list( str ), list of chain joints
-        :param chainCurve: str, name of chain cubic curve
         :param prefix: str, prefix to name new objects
         :param rigScale: float, scale factor for size of controls
         :param smallestScalePercent: float, scale of smallest control at the end of chain compared to rigScale
@@ -32,9 +30,17 @@ class IKChain():
         :param baseRig: instance of base.module.Base class
         :return: dictionary with rig module objects
         """
+        # :param chainCurve: str, name of chain cubic curve
     
         # make rig module
         self.rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
+
+        # make IK handle
+        chainIk, effector, chainCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=chainJoints[0], ee=chainJoints[-1], # -2
+                                                    createCurve=True, numSpans=2)
+
+        # rename curve
+        pm.rename(chainCurve, prefix+'_CRV')
     
         # make chain curve clusters
         chainCurveCVs = pm.ls(chainCurve + '.cv[*]', fl=1)
@@ -80,10 +86,6 @@ class IKChain():
     
         # attach controls
         pm.parentConstraint(self.baseAttachGrp, chainControls[0].Off, mo=1)
-    
-        # make IK handle
-        chainIk = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=chainJoints[0], ee=chainJoints[-1],
-                              c=chainCurve, ccv=0, parentCurve=0)[0]
     
         pm.hide(chainIk)
         pm.parent(chainIk, self.rigmodule.partsNoTransGrp)

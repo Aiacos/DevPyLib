@@ -34,7 +34,7 @@ class Neck():
                              createCurve=True, numSpans=2)
 
         # rename curve
-        pm.rename(neckCurve, prefix+'_CV')
+        pm.rename(neckCurve, prefix+'_CRV')
 
         # make neck curve clusters
         neckCurveCVs = pm.ls(neckCurve + '.cv[*]', fl=1)
