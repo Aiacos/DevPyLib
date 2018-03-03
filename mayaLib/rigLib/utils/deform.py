@@ -4,6 +4,25 @@ import pymel.core as pm
 from maya import mel
 
 
+def blendShapeDeformer(base, blendshapeList, defaultValue=[1,], frontOfChain=False):
+    """
+    Apply BlendShape on selected mesh or curve
+    :param base: str
+    :param blendshapeList: list(str)
+    :param frontOfChain: bool
+    :return: deformer node
+    """
+
+    w = (0, float(defaultValue[0]))
+    if isinstance(blendshapeList, list):
+        for i, df in zip(range(0, len(blendshapeList)), defaultValue):
+            w = (i, float(df))
+
+    blendshapeNode = pm.blendShape(blendshapeList, base, frontOfChain=frontOfChain,
+                                   weight=w)
+
+    return blendshapeNode
+
 def wrapDeformer(wrappedObjs, wrapperObj):
     """
     Apply Wrap Deformer on selected mesh
