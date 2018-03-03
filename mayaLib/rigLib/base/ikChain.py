@@ -27,6 +27,7 @@ class IKChain():
         :param prefix: str, prefix to name new objects
         :param rigScale: float, scale factor for size of controls
         :param smallestScalePercent: float, scale of smallest control at the end of chain compared to rigScale
+        :param doDynamic: bool, setup dynamic curve
         :param fkParenting: bool, parent each control to previous one to make FK chain
         :param baseRig: instance of base.module.Base class
         :return: dictionary with rig module objects
