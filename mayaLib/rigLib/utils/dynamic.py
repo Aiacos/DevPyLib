@@ -9,11 +9,6 @@ import mayaLib.pipelineLib.utility.nameCheck as nc
 
 class DynamicCurve():
     def __init__(self, curve, prefix='new', baseRig=None):
-        # make rig module
-        self.rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
-        if baseRig:
-            pm.parent(self.dynamicSystemGrp, baseRig.rigGrp)
-
         # create main dynamic grp under rigGrp
         mainGrpName = 'dynamicSystem_GRP'
         if not pm.objExists(mainGrpName):
@@ -34,7 +29,7 @@ class DynamicCurve():
             pass
 
         # regroup
-        pm.group(self.hairSystem, self.follicleGrp, self.outputCrvGrp, n=prefix + 'Dynamic_GRP', p=self.dynamicSystemGrp)
+        self.systemGrp = pm.group(self.hairSystem, self.follicleGrp, self.outputCrvGrp, n=prefix + 'Dynamic_GRP', p=self.dynamicSystemGrp)
 
     def makeCurveDynamic(self, crv, name):
         crvInfo = []
@@ -73,6 +68,12 @@ class DynamicCurve():
         #crvInfo.append(hairSystemBuffer.getShape())
 
         return crvInfo
+
+    def getOutputCurve(self):
+        return self.outputCrv
+
+    def getSystemGrp(self):
+        return self.systemGrp
 
 
 def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):

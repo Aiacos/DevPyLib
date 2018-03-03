@@ -3,8 +3,11 @@ ikChain @ rig
 """
 
 import pymel.core as pm
+from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
+from mayaLib.rigLib.utils import dynamic
+from mayaLib.rigLib.utils import deform
 
 
 class IKChain():
@@ -13,6 +16,7 @@ class IKChain():
                  chainCurve,
                  prefix='tail',
                  rigScale=1.0,
+                 doDynamic=False,
                  smallestScalePercent=0.5,
                  fkParenting=True,
                  baseRig=None
@@ -64,12 +68,9 @@ class IKChain():
     
         # parent controls
         if fkParenting:
-    
             for i in range(numChainCVs):
-    
                 if i == 0:
                     continue
-    
                 pm.parent(chainControls[i].Off, chainControls[i - 1].C)
     
         # attach clusters
@@ -91,6 +92,26 @@ class IKChain():
         pm.addAttr(chainControls[-1].C, ln=twistAt, k=1)
         pm.connectAttr(chainControls[-1].C + '.' + twistAt, chainIk + '.twist')
 
+        # save class attribute
+        self.chainCurve = chainCurve
+
+        if doDynamic:
+            self.makeDynamic(prefix, baseRig, self.rigmodule)
+
 
     def getModuleDict(self):
         return {'module': self.rigmodule, 'baseAttachGrp': self.baseAttachGrp}
+
+    def makeDynamic(self, prefix, baserig, basemodule):
+        # duplicate ikChain curve and make dynamic
+        dynamicCurveName = name.removeSuffix(pm.ls(self.chainCurve)[0].shortName()) + '_CRV'
+        dynCurvebase = pm.duplicate(self.chainCurve, n=dynamicCurveName)
+        pm.parent(dynCurvebase, w=True)
+
+        dynCurve = dynamic.DynamicCurve(dynCurvebase, prefix=prefix, baseRig=baserig)
+
+        # add dynamic blendshape to main curve
+        deform.blendShapeDeformer(self.chainCurve, [dynCurve.getOutputCurve()], nodeName=prefix+'BlendShape', frontOfChain=True)
+
+        # reparent
+        pm.parent(dynCurve.getSystemGrp(), basemodule.partsNoTransGrp)

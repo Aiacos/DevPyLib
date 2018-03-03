@@ -4,7 +4,7 @@ import pymel.core as pm
 from maya import mel
 
 
-def blendShapeDeformer(base, blendshapeList, defaultValue=[1,], frontOfChain=False):
+def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1,], frontOfChain=False):
     """
     Apply BlendShape on selected mesh or curve
     :param base: str
@@ -18,7 +18,7 @@ def blendShapeDeformer(base, blendshapeList, defaultValue=[1,], frontOfChain=Fal
         for i, df in zip(range(0, len(blendshapeList)), defaultValue):
             w = (i, float(df))
 
-    blendshapeNode = pm.blendShape(blendshapeList, base, frontOfChain=frontOfChain,
+    blendshapeNode = pm.blendShape(blendshapeList, base, n=nodeName, frontOfChain=frontOfChain,
                                    weight=w)
 
     return blendshapeNode
