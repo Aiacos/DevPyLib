@@ -157,8 +157,78 @@ def hipCtrlShape(name, normalDirection=[1,0,0], scale=1):
 def headCtrlShape(name, normalDirection=[1,0,0], scale=1):
     return hipCtrlShape(name, normalDirection, scale)
 
-def displayCtrlShape(name, normalDirection=[1,0,0], scale=1):
-    pass
+def displayCtrlShape(name='display', normalDirection=[0,1,0], scale=1):
+    ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
+    pm.delete(ctrl.getShape())
 
-def ikfkCtrlShape(name, normalDirection=[1,0,0], scale=1):
-    pass
+    # create text and snap to displayCtrl group
+    textGrp = pm.textCurves(t='Display', n=name)[0]
+    common.centerPivot(textGrp)
+    common.freezeTranform(textGrp)
+
+    # parent al text shape under displayCTrl
+    shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
+    pm.parent(shapeList, ctrl, r=1, s=1)
+    pm.delete(textGrp)
+    common.centerPivot(ctrl)
+
+    # rotate shape
+    for shape in shapeList:
+        if normalDirection[0] == 1:
+            pm.rotate(shape.cv[:], [90, 0, 0])
+        elif normalDirection[0] == -1:
+            pm.rotate(shape.cv[:], [-90, 0, 0])
+
+        if normalDirection[1] == 1:
+            pm.rotate(shape.cv[:], [0, 90, 0])
+        elif normalDirection[1] == -1:
+            pm.rotate(shape.cv[:], [0, -90, 0])
+
+        if normalDirection[2] == 1:
+            pm.rotate(shape.cv[:], [0, 0, 90])
+        elif normalDirection[2] == -1:
+            pm.rotate(shape.cv[:], [0, 0, -90])
+
+    pm.scale(ctrl, [scale, scale, scale], r=True)
+    common.centerPivot(ctrl)
+    common.freezeTranform(ctrl)
+
+    return ctrl
+
+def ikfkCtrlShape(name='ikfk', normalDirection=[0,1,0], scale=1):
+    ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
+    pm.delete(ctrl.getShape())
+
+    # create text and snap to displayCtrl group
+    textGrp = pm.textCurves(t='IKFK', n=name)[0]
+    common.centerPivot(textGrp)
+    common.freezeTranform(textGrp)
+
+    # parent al text shape under displayCTrl
+    shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
+    pm.parent(shapeList, ctrl, r=1, s=1)
+    pm.delete(textGrp)
+    common.centerPivot(ctrl)
+
+    # rotate shape
+    for shape in shapeList:
+        if normalDirection[0] == 1:
+            pm.rotate(shape.cv[:], [90, 0, 0])
+        elif normalDirection[0] == -1:
+            pm.rotate(shape.cv[:], [-90, 0, 0])
+
+        if normalDirection[1] == 1:
+            pm.rotate(shape.cv[:], [0, 90, 0])
+        elif normalDirection[1] == -1:
+            pm.rotate(shape.cv[:], [0, -90, 0])
+
+        if normalDirection[2] == 1:
+            pm.rotate(shape.cv[:], [0, 0, 90])
+        elif normalDirection[2] == -1:
+            pm.rotate(shape.cv[:], [0, 0, -90])
+
+    pm.scale(ctrl, [scale, scale, scale], r=True)
+    common.centerPivot(ctrl)
+    common.freezeTranform(ctrl)
+
+    return ctrl

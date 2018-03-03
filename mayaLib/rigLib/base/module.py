@@ -121,8 +121,8 @@ class Base():
         # pm.addAttr(self.globalCtrl.getControl(), ln=displayLevel, at='enum', enumName='fast:medium:slow', k=1, dv=2)
 
         # create display control
-        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
-        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, 1)
+        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale / 20)
+        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale / 20)
 
 
     def getScaleLocator(self):
@@ -152,39 +152,21 @@ class Base():
         # make Display
         displayCtrl = control.Control(
             prefix='display',
-            scale=1,
+            scale=scale,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['t', 'r', 's'],
-            shape='circleZ',
+            shape='display',
             doOffset=True,
             doModify=True
         )
 
         if pm.objExists(mainCtrlAttachObj):
-            pm.delete(displayCtrl.getControl().getShape())
-
-            # create text and snap to displayCtrl group
-            textGrp = pm.textCurves(t='Display', n='display_CTRL')[0]
-            common.centerPivot(textGrp)
-            common.freezeTranform(textGrp)
-
-            # parent al text shape under displayCTrl
-            shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
-
-            # ovrride shape color (yellow)
-            for shape in shapeList:
-                shape.ove.set(1)
-                shape.ovc.set(22)
-
-            pm.parent(shapeList, displayCtrl.getControl(), r=1, s=1)
-            pm.delete(textGrp)
-
             # constraint displayCtrl
             common.centerPivot(displayCtrl.getOffsetGrp())
             common.centerPivot(displayCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
-            displayCtrl.getModifyGrp().translateY.set(8 * scale)
+            displayCtrl.getModifyGrp().translateY.set(4 * scale)
 
         return displayCtrl
 
@@ -192,39 +174,21 @@ class Base():
         # make Display
         ikfkCtrl = control.Control(
             prefix='ikfk',
-            scale=1,
+            scale=scale,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['t', 'r', 's'],
-            shape='circleZ',
+            shape='ikfk',
             doOffset=True,
             doModify=True
         )
 
         if pm.objExists(mainCtrlAttachObj):
-            pm.delete(ikfkCtrl.getControl().getShape())
-
-            # create text and snap to displayCtrl group
-            textGrp = pm.textCurves(t='IKFK', n='ikfk_CTRL')[0]
-            common.centerPivot(textGrp)
-            common.freezeTranform(textGrp)
-
-            # parent al text shape under displayCTrl
-            shapeList = pm.ls(textGrp, dag=True, leaf=True, type='nurbsCurve')
-
-            # ovrride shape color (yellow)
-            for shape in shapeList:
-                shape.ove.set(1)
-                shape.ovc.set(22)
-
-            pm.parent(shapeList, ikfkCtrl.getControl(), r=1, s=1)
-            pm.delete(textGrp)
-
             # constraint displayCtrl
             common.centerPivot(ikfkCtrl.getOffsetGrp())
             common.centerPivot(ikfkCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp())
-            ikfkCtrl.getModifyGrp().translateY.set(6 * scale)
+            ikfkCtrl.getModifyGrp().translateY.set(3 * scale)
 
         return ikfkCtrl
 
