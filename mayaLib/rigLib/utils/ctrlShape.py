@@ -153,3 +153,12 @@ def hipCtrlShape(name, normalDirection=[1,0,0], scale=1):
     common.freezeTranform(ctrl)
 
     return ctrl
+
+def headCtrlShape(name, normalDirection=[1,0,0], scale=1):
+    return hipCtrlShape(name, normalDirection, scale)
+
+def displayCtrlShape(name, normalDirection=[1,0,0], scale=1):
+    pass
+
+def ikfkCtrlShape(name, normalDirection=[1,0,0], scale=1):
+    pass

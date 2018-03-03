@@ -71,6 +71,15 @@ class Control():
         elif shape == 'hip':
             ctrlObject = ctrlShape.hipCtrlShape(name=prefix + '_CTRL', scale=scale)
 
+        elif shape == 'head':
+            ctrlObject = ctrlShape.headCtrlShape(name=prefix + '_CTRL', scale=scale)
+
+        elif shape == 'display':
+            ctrlObject = ctrlShape.displayCtrlShape(name=prefix + '_CTRL', scale=scale)
+
+        elif shape == 'ikfk':
+            ctrlObject = ctrlShape.ikfkCtrlShape(name=prefix + '_CTRL', scale=scale)
+
 
         # default ctrl
         if not ctrlObject:
