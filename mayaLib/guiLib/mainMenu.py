@@ -86,7 +86,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.adjustSize()
         #self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        #self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         #self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
         #self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
         #self.buttonListWidget.setMinimumHeight(75)

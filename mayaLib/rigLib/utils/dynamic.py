@@ -2,10 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 import maya.mel as mel
-from mayaLib.rigLib.base import module
-from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import util
-import mayaLib.pipelineLib.utility.nameCheck as nc
 
 class DynamicCurve():
     def __init__(self, curve, prefix='new', baseRig=None):
@@ -75,69 +72,9 @@ class DynamicCurve():
     def getSystemGrp(self):
         return self.systemGrp
 
-
-def makeCurvesDynamic(curve, grpName='dynamicCurve*_GRP'):
-    grpName = nc.nameCheck(grpName)
-    pm.select(curve)
-    mel.eval('makeCurvesDynamic 2 { "1", "0", "1", "1", "0"};')
-
-    dynamicObj_list = pm.ls('hairSystem*', 'nucleus*')
-    # nucleus
-    nucleus = pm.ls('nucleus*')
-
-    # select last created hairSystem
-    hairSystem = pm.ls('hairSystem*')[-1]
-
-    if pm.objExists(grpName):
-        pm.parent(hairSystem, grpName)
-    else:
-        pm.group(hairSystem, n=grpName)
-
-    outputGrp = pm.ls('hairSystem*OutputCurves')[-1]
-    follicleGrp = pm.ls('hairSystem*Follicles')[-1]
-    outputCurve = pm.listRelatives(outputGrp, children=True)[0]
-
-    # disable inheritTransform on follicle
-    follicle = pm.listRelatives(follicleGrp, children=True)[0]
-    pm.setAttr(follicle + '.inheritsTransform', 0)
-
-    # regroup
-    systemGrp = 'system_GRP'
-    if pm.objExists(systemGrp):
-        #pm.parent(nucleus, systemGrp)
-        pass
-    else:
-        pm.group(nucleus, n=systemGrp)
-
-    mainGrpName = 'dynamicSystem_GRP'
-    if pm.objExists(mainGrpName):
-        pm.parent(grpName, mainGrpName)
-    else:
-        pm.group(grpName, n=mainGrpName)
-
-    pm.parent(systemGrp, mainGrpName)
-    pm.parent(pm.ls(outputGrp, follicleGrp), grpName)
-
-    return outputCurve, grpName, follicleGrp
-
-class IkDynamicChain():
-    def __init__(self, startJnt, curve, name='ikChain'):
-        # get childern of shoulder
-        tipJnt = pm.listRelatives(startJnt, type='joint', children=True, allDescendents=True)[0]
-        # make curve dinamic
-        dynamicCurve, self.systemGrp, follicleGrp = makeCurvesDynamic(curve)
-        # create ik
-        ikhandle = pm.ikHandle(n=name, sj=startJnt, ee=tipJnt, c=dynamicCurve, sol='ikSplineSolver', ccv=False,
-                               roc=False, pcv=False, snc=True)
-        # create control locator
-        self.ctrlLocator = pm.spaceLocator(n=name + 'Ctrl_LOC')
-        # group ik and dynamicSystem
-        self.chainGrp = pm.group(self.ctrlLocator, ikhandle[0], self.systemGrp, n=name + '_GRP')
-        common.centerPivot(self.chainGrp, startJnt)
-
-        pm.parent(startJnt, self.chainGrp)
-        # return ctrlLocator, chainGrp
+    def getFollicleGrp(self):
+        return self.follicleGrp
 
 
 if __name__ == "__main__":
-    IkDynamicChain('joint1', 'curve1')
+    DynamicCurve('curve1')

@@ -99,13 +99,13 @@ class IKChain():
         self.chainCurve = chainCurve
 
         if doDynamic:
-            self.makeDynamic(prefix, baseRig, self.rigmodule)
+            self.makeDynamic(prefix, baseRig, self.rigmodule, chainControls, chainCurveClusters)
 
 
     def getModuleDict(self):
         return {'module': self.rigmodule, 'baseAttachGrp': self.baseAttachGrp}
 
-    def makeDynamic(self, prefix, baserig, basemodule):
+    def makeDynamic(self, prefix, baserig, basemodule, chainControls, chainCurveClusters):
         # duplicate ikChain curve and make dynamic
         dynamicCurveName = name.removeSuffix(pm.ls(self.chainCurve)[0].shortName()) + '_CRV'
         dynCurvebase = pm.duplicate(self.chainCurve, n=dynamicCurveName)
@@ -118,3 +118,8 @@ class IKChain():
 
         # reparent
         pm.parent(dynCurve.getSystemGrp(), basemodule.partsNoTransGrp)
+
+        # deactivate first cluster and parentConstraint follicle
+        pm.cluster(chainCurveClusters[0], e=True, en=0)
+        pm.parentConstraint(chainControls[0].getControl(), dynCurve.getFollicleGrp(), mo=True)
+

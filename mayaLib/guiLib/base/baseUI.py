@@ -89,6 +89,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.setWindowTitle(func.__name__)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setFocus()
 
     def fillWithSelected(self):
         button = self.sender()
