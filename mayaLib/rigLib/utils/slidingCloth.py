@@ -6,7 +6,7 @@ from mayaLib.rigLib.utils import deform
 
 
 class SlidingCloth():
-    def __init__(self, mainSkinGeo, proxySkinGeo, mainClothGeo, proxyClothGeo):
+    def __init__(self, mainSkinGeo, proxySkinGeo, mainClothGeo, proxyClothGeo, rigModelGrp=None):
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
@@ -48,3 +48,12 @@ class SlidingCloth():
 
         # wrap main Cloth Geo
         wrapDeformer = deform.wrapDeformer(self.mainClothGeo, self.proxyClothGeo)
+        baseObj = pm.listConnections(wrapDeformer.basePoints, source=True)[0]
+        if rigModelGrp:
+            pm.parent(baseObj, rigModelGrp)
+
+        # save attribute
+        self.baseObj = baseObj
+
+    def getWrapBaseObj(self):
+        return self.baseObj
