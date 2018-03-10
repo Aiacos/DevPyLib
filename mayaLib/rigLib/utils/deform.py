@@ -57,5 +57,14 @@ def shrinkWrapDeformer(wrappedObj, wrapperObj):
     shrinkWrapNode.closestIfNoIntersection.set(True)
     return shrinkWrapNode
 
+def cMuscleSystemDeformer(obj):
+    """
+    Apply cMuscleSystem Deformer on selected mesh
+    :param obj: str
+    :return: deformer node
+    """
+    deformerNode = pm.deformer(obj, type='cMuscleSystem')[0]
+    return deformerNode
+
 if __name__ == "__main__":
     pass
