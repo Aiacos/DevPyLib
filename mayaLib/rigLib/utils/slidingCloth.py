@@ -34,7 +34,7 @@ class SlidingCloth():
         skin.copyBind(self.mainSkinGeo, self.proxySkinGeo)
 
         # setup cloth proxy geo
-        skin.copyBind(self.mainClothGeo, self.proxyClothGeo)
+        skin.copyBind(self.mainSkinGeo, self.proxyClothGeo)
 
         cMuscleDeformer = deform.cMuscleSystemDeformer(self.proxyClothGeo)
         cMuscleDeformer.enableRelax.set(1)
