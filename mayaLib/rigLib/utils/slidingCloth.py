@@ -7,7 +7,7 @@ from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import common
 
 class SlidingCloth():
-    def __init__(self, mainSkinGeo, mainClothGeo, proxySkinGeo=None, proxyClothGeo=None, rigModelGrp=None):
+    def __init__(self, mainSkinGeo, mainClothGeo, proxySkinGeo='', proxyClothGeo='', rigModelGrp=None):
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
@@ -44,6 +44,8 @@ class SlidingCloth():
 
         shrinkWrapDeformer = deform.shrinkWrapDeformer(self.proxyClothGeo, self.proxySkinGeo)
         shrinkWrapDeformer.shapePreservationEnable.set(1)
+        shrinkWrapDeformer.projection.set(4)
+        shrinkWrapDeformer.targetInflation.set(0.01)
 
         polySmoothDeformer = pm.polySmooth(self.proxyClothGeo)[0]
 
@@ -73,4 +75,6 @@ class SlidingCloth():
                       keepCreaseEdgeWeight=0.5, useVirtualSymmetry=0, symmetryTolerance=0.01, sx=0, sy=1, sz=0, sw=0,
                       preserveTopology=1, keepQuadsWeight=1, vertexMapName='', cachingReduce=1, ch=1, vct=0, tct=0,
                       replaceOriginal=1)
-        common.deleteHistory(geo)
+        common.deleteHistory(proxyGeo)
+
+        return proxyGeo

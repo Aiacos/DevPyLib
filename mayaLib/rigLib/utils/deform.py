@@ -34,7 +34,7 @@ def wrapDeformer(wrappedObjs, wrapperObj):
     pm.select(wrapperObj, add=1)
     #deformerNode = pm.deformer(type='wrap')
     deformerNode = mel.eval('doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }')
-    return deformerNode
+    return pm.ls(deformerNode)[0]
 
 def deltaMushDeformer(geo):
     """
@@ -57,13 +57,21 @@ def shrinkWrapDeformer(wrappedObj, wrapperObj):
     shrinkWrapNode.closestIfNoIntersection.set(True)
     return shrinkWrapNode
 
-def cMuscleSystemDeformer(obj):
+def cMuscleSystemDeformer(obj, relativeSticky=True):
     """
     Apply cMuscleSystem Deformer on selected mesh
     :param obj: str
     :return: deformer node
     """
-    deformerNode = pm.deformer(obj, type='cMuscleSystem')[0]
+    deformerNode = None
+
+    if relativeSticky:
+        pm.select(obj)
+        d = mel.eval('cMuscle_makeMuscleSystem(1);')
+        deformerNode = pm.ls(d)[0]
+    else:
+        deformerNode = pm.deformer(obj, type='cMuscleSystem')[0]
+
     return deformerNode
 
 if __name__ == "__main__":
