@@ -7,12 +7,12 @@ from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import common
 
 class SlidingCloth():
-    def __init__(self, mainSkinGeo, proxySkinGeo, mainClothGeo, proxyClothGeo, rigModelGrp=None):
+    def __init__(self, mainSkinGeo, mainClothGeo, proxySkinGeo=None, proxyClothGeo=None, rigModelGrp=None):
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
-        :param proxySkinGeo: str
         :param mainClothGeo: str
+        :param proxySkinGeo: str
         :param proxyClothGeo: str
         """
         if mainSkinGeo and mainClothGeo:
