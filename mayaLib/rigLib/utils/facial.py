@@ -55,3 +55,5 @@ def makeControlFollowSkin(geo, ctrlTop):
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
     multDivideNode.input2Z.set(-1)
+
+    return follicle
