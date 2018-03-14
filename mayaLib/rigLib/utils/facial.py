@@ -50,7 +50,7 @@ def makeControlFollowSkin(geo, ctrlTop):
     pm.pointConstraint(follicle, followGrp, mo=True)
 
     multDivideNode = pm.createNode('multiplyDivide', n=prefix+'CompensateNode')
-    pm.connectAttr(ctrlTop.translate, multDivideNode.input1)
+    pm.connectAttr(followGrp.translate, multDivideNode.input1)
     pm.connectAttr(multDivideNode.output, compensateGrp.translate)
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
