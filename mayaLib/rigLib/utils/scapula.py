@@ -20,7 +20,7 @@ class Scapula():
         scapula_jnt = pm.listRelatives(scapulaShoulder_jnt, type='joint')[0]
 
         # create ik
-        ikhandle = pm.ikHandle(n=side+'scapula_HANDLE', sj=scapulaShoulder_jnt, ee=scapula_jnt)
+        ikhandle = pm.ikHandle(n=side+'scapula_IKH', sj=scapulaShoulder_jnt, ee=scapula_jnt)
 
         # group ik
         grpName = name.removeSuffix(side+'scapula_GRP')

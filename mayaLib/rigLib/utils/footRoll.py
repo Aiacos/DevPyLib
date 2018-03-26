@@ -2,6 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import name
 
 
 class FootRool():
@@ -13,18 +14,21 @@ class FootRool():
         :param ballJntList: list
         :param toeJntList: list
         """
-        self.side = hipJnt[0:2]
+        self.side = name.getSide(hipJnt)
 
         self.ballIkHandleList = []
         self.toeIkHandleList= []
-        self.ankleIkHandle = pm.ikHandle( n=self.side+'ankle_IKH', sj=hipJnt, ee=ankleJnt)[0]
+        self.prefixJnt1 = name.removeSuffix(hipJnt)
+        self.ankleIkHandle = pm.ikHandle( n=self.prefixJnt1+'_IKH', sj=hipJnt, ee=ankleJnt)[0]
 
         for ballJnt in ballJntList:
-            tmpBallIkHandle = pm.ikHandle( n=self.side+'ball_IKH', sj=ankleJnt, ee=ballJnt)[0]
+            prefix = name.removeSuffix(ballJnt)
+            tmpBallIkHandle = pm.ikHandle( n=prefix+'_IKH', sj=ankleJnt, ee=ballJnt)[0]
             self.ballIkHandleList.append(tmpBallIkHandle)
 
         for toeJnt, ballJnt in zip(toeJntList, ballJntList):
-            tmpToeIkHandle = pm.ikHandle(n=self.side+'toe_IKH', sj=ballJnt, ee=toeJnt)[0]
+            prefix = name.removeSuffix(toeJnt)
+            tmpToeIkHandle = pm.ikHandle(n=prefix+'_IKH', sj=ballJnt, ee=toeJnt)[0]
             self.toeIkHandleList.append(tmpToeIkHandle)
 
         # set temporarily ON Sticky
