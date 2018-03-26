@@ -158,7 +158,8 @@ class Limb():
             if 'scapula' in jnt.name():
                 scapulaShoulder_jnt = jnt
         if scapulaShoulder_jnt:
-            scapula.Scapula(spineJnt, limbJoints[0], scapulaShoulder_jnt)
+            scapulaInstance = scapula.Scapula(spineJnt, limbJoints[0], scapulaShoulder_jnt)
+            pm.parent(scapulaInstance.getScapulaGrp(), rigmodule.partsGrp)
 
     def makeFK(self, limbJoints, rigScale, rigmodule):
         limbCtrlInstanceList = []
