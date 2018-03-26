@@ -11,6 +11,7 @@ from mayaLib.rigLib.utils import scapula
 from mayaLib.rigLib.utils import poleVector
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import ikfkSwitch
 
 
 class Limb():
@@ -55,7 +56,7 @@ class Limb():
         #### OK --------
 
         if doFK:
-            pass
+            self.makeFK(limbJoints, rigScale, rigmodule)
 
         if doIK:
             pass
@@ -148,7 +149,7 @@ class Limb():
         pm.parent(scapulaIk, scapulaCtrl.C)
         pm.pointConstraint(scapulaCtrl.C, scapulaJnt)
 
-    def makeDynamicScapula(self, limbJoints):
+    def makeDynamicScapula(self, limbJoints, rigmodule):
         spineJnt = limbJoints[0].getParent().getParent()
         clavicleJnt = limbJoints[0].getParent()
         shoulderList = clavicleJnt.getChildren(type='joint')
@@ -159,8 +160,15 @@ class Limb():
         if scapulaShoulder_jnt:
             scapula.Scapula(spineJnt, limbJoints[0], scapulaShoulder_jnt)
 
-    def makeFK(self):
-        pass
+    def makeFK(self, limbJoints, rigScale, rigmodule):
+        limbCtrlInstanceList = []
+        for jnt in limbJoints:
+            prefix = name.removeSuffix(jnt.name())
+            ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 3,
+                            parent=rigmodule.controlsGrp, shape='circleY')
+
+            pm.orientConstraint(ctrl.getControl(), jnt)
+            limbCtrlInstanceList.append(ctrl)
 
     def makeIK(self):
         pass
