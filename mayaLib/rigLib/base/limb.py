@@ -56,7 +56,7 @@ class Limb():
         #### OK --------
 
         if doFK:
-            self.makeFK(limbJoints, rigScale, rigmodule)
+            self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
 
         if doIK:
             pass
@@ -161,11 +161,36 @@ class Limb():
             scapulaInstance = scapula.Scapula(spineJnt, limbJoints[0], scapulaShoulder_jnt)
             pm.parent(scapulaInstance.getScapulaGrp(), rigmodule.partsGrp)
 
-    def makeFK(self, limbJoints, rigScale, rigmodule):
+    def makeFK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
+        """
+        Do FK Arm/Leg, Metacarpal and Finger/Toe ctrl
+        :param limbJoints: list(str), Arm/leg joints
+        :param topFingerJoints: list(str), Metacarpal joints
+        :param rigScale: float
+        :param rigmodule: dict
+        :return:
+        """
+        
         limbCtrlInstanceList = []
+
+        # Arm/Leg
         for jnt in limbJoints:
             prefix = name.removeSuffix(jnt.name())
             ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 3,
+                            parent=rigmodule.controlsGrp, shape='circleY')
+
+            pm.orientConstraint(ctrl.getControl(), jnt)
+            limbCtrlInstanceList.append(ctrl)
+
+        # Hand/Foot
+        fingerJointList = []
+        for topJntList in topFingerJoints:
+            fnjJntList = joint.listHierarchy(topJntList, withEndJoints=False)
+            fingerJointList.extend(fnjJntList)
+
+        for jnt in fingerJointList:
+            prefix = name.removeSuffix(jnt.name())
+            ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1.5,
                             parent=rigmodule.controlsGrp, shape='circleY')
 
             pm.orientConstraint(ctrl.getControl(), jnt)
