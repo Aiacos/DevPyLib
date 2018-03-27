@@ -1,69 +1,37 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.base import colorControl
-#from qtshim import QtGui, QtCore, Signal
+
 
 class PoleVector():
-    def __init__(self, ikHandle=None):
-        if ikHandle is None:
-            ikHandle = pm.ls(sl=True)
-            print self.connect_poleVector(ikHandle[0])
-        else:
-            print self.connect_poleVector(ikHandle)
+    def __init__(self, ikHandle):
+        if ikHandle:
+            self.poleVector, self.poleVectorGrp = self.connect_poleVector(ikHandle)
 
-    def createPV(self, ikHandle_selection=pm.ls(sl=True)):
+    def createPV(self, ikHandle):
         '''
         Create a Locator in a correct plane to usa as Pole Vector
-        :param ikHandle_selection: select an ikHandle
+        :param ikHandle: select an ikHandle
         :return: grupped locator
         '''
-        ## Put all three joints in a variable based on a selected ikHandle
 
-        # string $ikHandleSel[] = (`ls -sl`);
-        # ikHandle_selection = pm.ls(sl=True)
-        ikHandle_name = ikHandle_selection
-        # string $selJoints[] = `ikHandle -q -jointList $ikHandleSel`;
-        selJoints = ikHandle_selection.getJointList()
-        # select $selJoints;
+        ikHandle_name = ikHandle
+        selJoints = ikHandle.getJointList()
         pm.select(selJoints[-1])
-        # pickWalk -d down;
         pm.pickWalk(d='down')
-        # string $newJoints[] = `ls -sl`;
         newJoints = pm.ls(sl=True)
-        # appendStringArray ($newJoints, $selJoints, 1);
         selJoints.append(newJoints[0])
 
-        ## Create a locator and group it twice
+        # Create a locator and group it twice
+        poleVector_locator = pm.spaceLocator(n=ikHandle_name + '_PV' + '_LOC')
+        poleVector_group = pm.group(poleVector_locator, n=ikHandle_name + '_PV' + '_LOC' + '_GRP')
 
-        # spaceLocator -name ("poleVector"+"_#");
-        poleVector_locator = pm.spaceLocator(n=ikHandle_name + '_pv' + '_loc')
-        # string $locatorItself1[] = `ls -sl`;
-        pm.select(poleVector_locator)
-        # group -w -name ($locatorItself1[0]+"_grp");
-        # group -w -name ($locatorItself1[0]+"_off");
-        ## Cast the vector group into a variable
-        # string $vectorGroup111 = ($locatorItself1[0]+"_off");
-        poleVector_group = pm.group(n=ikHandle_name + '_pv' + '_loc' + '_grp')
-
-        ## Point constrain it between the three joints
-
-        # pointConstraint -name "myVerySpecialPointConstraint" $newJoints $vectorGroup111;
+        # Point constrain it between the three joints
         pointConstraint = pm.pointConstraint(selJoints, poleVector_group)
-
-        ## Delete the point constraint
-
-        # delete "myVerySpecialPointConstraint";
         pm.delete(pointConstraint)
 
-        ## Create an aim constraint for the locator to aim at the middle joint
-
-        # aimConstraint -name "myVerySpecialAimConstraint" $newJoints[0] $vectorGroup111;
+        # Create an aim constraint for the locator to aim at the middle joint
         aimConstraint = pm.aimConstraint(selJoints[1], poleVector_group)
-
-        ## Delete the aim constraint
-
-        # delete "myVerySpecialAimConstraint";
         pm.delete(aimConstraint)
 
         ##Snap grupLocator to middle joint
@@ -71,14 +39,15 @@ class PoleVector():
 
         return poleVector_group
 
-    def getJointDistance(self, ikHandle_selection=pm.ls(sl=True)):
+    def getJointDistance(self, ikHandle):
         '''
         Return the lenght of ikHandle
-        :param ikHandle_selection: select an ikHandle
+        :param ikHandle: select an ikHandle
         :return: Return the lenght og ikHandle
         '''
-        ## Put all three joints in a variable based on a selected ikHandle
-        selJoints = ikHandle_selection.getJointList()
+
+        # Put all three joints in a variable based on a selected ikHandle
+        selJoints = ikHandle.getJointList()
         pm.select(selJoints[-1])
         pm.pickWalk(d='down')
         newJoints = pm.ls(sl=True)
@@ -93,49 +62,28 @@ class PoleVector():
             return (  (Ax-Bx)**2 + (Ay-By)**2 + (Az-Bz)**2  )**0.5
 
         distance = ctr_dist(loc0, loc1)
-        #distance = pm.distanceDimension(loc0, loc1)
         pm.delete(constraint0, constraint1, loc0, loc1)
         return distance
 
     def connect_poleVector(self, ikHandle):
-        # string $testObject[] = `ls -sl`;
-        # if (`objectType $testObject[0]` != "ikHandle")
-        # confirmDialog -title "Seriously?" -message "This is not an IK Handle!" -button "Sorry, I'm Kinda High";
-
-        if ikHandle:
-            if ikHandle.type() != 'ikHandle':
-                print "Seriously? This is not an IK Handle!"
-                return 'no ikHandle Exit'
-        else:
-            return "Nothing selected!"
-
-
-
         poleVector_locator_grp = self.createPV(ikHandle)
 
-        ## Calculate ikHandle lenght to set as pv -X axis
+        # Calculate ikHandle lenght to set as pv -X axis
         distance = int(self.getJointDistance(ikHandle)/2)
-        ## Move the Locator Group in the -X axis (Object Space)
+        # Move the Locator Group in the -X axis (Object Space)
         pm.move(distance, 0, 0, poleVector_locator_grp, objectSpace=True, relative=True)
 
-        ## Connect PoleVector
+        # Connect PoleVector
         pm.select(poleVector_locator_grp)
         poleVector_loc = pm.pickWalk(d='down')
         pm.poleVectorConstraint(poleVector_loc, ikHandle)
 
-        return 'PoleVector ' + poleVector_loc[0] + ' successfully created!'
+        return poleVector_loc, poleVector_locator_grp
 
-# def main_poleVector():
-#     selectedObj = pm.ls(sl=True)
-#     for ikHandle in selectedObj:
-#         print connect_poleVector(ikHandle)
+    def getPoleVector(self):
+        return self.poleVector, self.poleVectorGrp
+
 
 if __name__ == "__main__":
     PoleVector()
-    #main_poleVector()
-    #rigLib.base.colorControl.color_control(controls=pm.ls('*_pv*'))
-## instance a GUI
-#app = QtGui.QApplication.instance()
-#poleVector_form = qtMainWindow_poleVector()
-#poleVector_form.show()
-#app.exec_()
+

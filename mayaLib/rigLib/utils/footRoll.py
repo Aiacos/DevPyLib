@@ -84,6 +84,9 @@ class FootRoll():
     def getIkFingerList(self):
         return self.toeIkHandleList
 
+    def getLimbIK(self):
+        return self.ankleIkHandle
+
 
 if __name__ == "__main__":
     FootRoll('joint1_JNT', 'joint3_JNT', ['joint4_JNT'], ['joint5_JNT'])

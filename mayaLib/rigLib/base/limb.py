@@ -58,7 +58,8 @@ class Limb():
             self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
 
         if doIK:
-            self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule)
+            ikHandle = self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule)
+            self.makePoleVector(ikHandle, rigScale, rigmodule)
 
         if doFK and doIK:
             # IK/FK switch
@@ -81,9 +82,6 @@ class Limb():
 
         ballCtrl = control.Control(prefix=prefix + 'Ball', translateTo=limbJoints[3], rotateTo=limbJoints[3],
                                    scale=rigScale * 2, parent=footCtrl.C, shape='circleZ')
-
-        poleVectorCtrl = control.Control(prefix=prefix + 'PV', translateTo=pvLocator, scale=rigScale,
-                                         parent=rigmodule.controlsGrp, shape='sphere')
 
         toeIkControls = []
 
@@ -111,29 +109,10 @@ class Limb():
             pm.hide(toeIk)
             pm.parent(toeIk, toeIkControls[i].C)
 
-        # attach controls
-        pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
 
         # attach objects to controls
         pm.parent(legIk, ballCtrl.C)
         pm.parent(ballIk, mainToeIk, footCtrl.C)
-
-        pm.poleVectorConstraint(poleVectorCtrl.C, legIk)
-
-
-        # make pole vector connection line
-        pvLinePos1 = pm.xform(limbJoints[1], q=1, t=1, ws=1)
-        pvLinePos2 = pm.xform(pvLocator, q=1, t=1, ws=1)
-        poleVectorCrv = pm.curve(n=prefix + 'Pv_CRV', d=1, p=[pvLinePos1, pvLinePos2])
-        pm.cluster(poleVectorCrv + '.cv[0]', n=prefix + 'Pv1_CLS', wn=[limbJoints[1], limbJoints[1]], bs=True)
-        pm.cluster(poleVectorCrv + '.cv[1]', n=prefix + 'Pv2_CLS', wn=[poleVectorCtrl.C, poleVectorCtrl.C], bs=True)
-        pm.parent(poleVectorCrv, rigmodule.controlsGrp)
-        pm.setAttr(poleVectorCrv + '.template', 1)
-        pm.setAttr(poleVectorCrv + '.it', 0)
-
-        self.rigmodule = rigmodule
-        self.baseAttachGrp = baseAttachGrp
-        self.bodyAttachGrp = bodyAttachGrp
 
 
     def getModuleDict(self):
@@ -196,6 +175,29 @@ class Limb():
             pm.orientConstraint(ctrl.getControl(), jnt)
             limbCtrlInstanceList.append(ctrl)
 
+    def makePoleVector(self, ikHandle, rigScale, rigmodule):
+        prefix = name.removeSuffix(ikHandle.name())
+        pvInstance = poleVector.PoleVector(ikHandle)
+        poleVectorLoc, poleVectorGrp = pvInstance.getPoleVector()
+        pm.parent(poleVectorGrp, rigmodule.partsNoTransGrp)
+
+        poleVectorCtrl = control.Control(prefix=prefix + 'PV', translateTo=poleVectorLoc, scale=rigScale,
+                                         parent=rigmodule.controlsGrp, shape='sphere')
+        pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
+        pm.parentConstraint(poleVectorCtrl.getControl(), poleVectorLoc)
+
+        # make pole vector connection line
+        elbowJnt = ikHandle.getJointList()[1]
+        pvLinePos1 = pm.xform(elbowJnt, q=1, t=1, ws=1)
+        pvLinePos2 = pm.xform(poleVectorLoc, q=1, t=1, ws=1)
+        poleVectorCrv = pm.curve(n=prefix + 'Pv_CRV', d=1, p=[pvLinePos1, pvLinePos2])
+        pm.cluster(poleVectorCrv + '.cv[0]', n=prefix + 'Pv1_CLS', wn=[elbowJnt, elbowJnt], bs=True)
+        pm.cluster(poleVectorCrv + '.cv[1]', n=prefix + 'Pv2_CLS', wn=[poleVectorCtrl.C, poleVectorCtrl.C], bs=True)
+        pm.parent(poleVectorCrv, rigmodule.controlsGrp)
+        pm.setAttr(poleVectorCrv + '.template', 1)
+        pm.setAttr(poleVectorCrv + '.it', 0)
+
+
     def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
@@ -214,3 +216,5 @@ class Limb():
 
         footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFingerJoints, topFngJntList)
         footRollGrpList = footRoolInstance.getGroupList()
+
+        return footRoolInstance.getLimbIK()
