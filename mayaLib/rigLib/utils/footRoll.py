@@ -5,7 +5,7 @@ from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import name
 
 
-class FootRool():
+class FootRoll():
     def __init__(self, hipJnt, ankleJnt, ballJntList, toeJntList):
         """
         Build footRoll on selected joints
@@ -50,7 +50,7 @@ class FootRool():
             toeIkHandle.stickiness.set(val)
 
     def peelHeel(self):
-        self.peelHeelGrp = pm.group(self.ankleIkHandle, n=self.side+'peelHeel_GRP')
+        self.peelHeelGrp = pm.group(self.ankleIkHandle, n=self.prefixJnt1+'PeelHeel_GRP')
 
         # move Peel Heel Group Pivot to Middle Ball
         index = int(round(len(self.ballIkHandleList)/2.0))-1
@@ -58,7 +58,7 @@ class FootRool():
         common.centerPivot(self.peelHeelGrp, midBallJnt)
 
     def toeTap(self):
-        self.toeTapGrp = pm.group(self.ballIkHandleList, self.toeIkHandleList, n=self.side+'toeTap_GRP')
+        self.toeTapGrp = pm.group(self.ballIkHandleList, self.toeIkHandleList, n=self.prefixJnt1+'ToeTap_GRP')
 
         # move Toe Tap Group Pivot to Middle Ball
         index = int(round(len(self.ballIkHandleList)/2.0))-1
@@ -66,16 +66,19 @@ class FootRool():
         common.centerPivot(self.toeTapGrp, midBallJnt)
 
     def tippyToe(self):
-        self.tippyToeGrp = pm.group(self.toeTapGrp, self.peelHeelGrp, n=self.side+'tippyToe_GRP')
+        self.tippyToeGrp = pm.group(self.toeTapGrp, self.peelHeelGrp, n=self.prefixJnt1+'TippyToe_GRP')
 
         # move Toe Tap Group Pivot to Middle Ball
         index = int(round(len(self.toeIkHandleList)/2.0))-1
         midToeJnt = self.toeIkHandleList[index]
         common.centerPivot(self.tippyToeGrp, midToeJnt)
 
+    def getGroupList(self):
+        return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp
+
 
 if __name__ == "__main__":
-    FootRool('joint1_JNT', 'joint3_JNT', ['joint4_JNT'], ['joint5_JNT'])
+    FootRoll('joint1_JNT', 'joint3_JNT', ['joint4_JNT'], ['joint5_JNT'])
     # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
     # classeProva.toIK()
     # classeProva.toFK()
