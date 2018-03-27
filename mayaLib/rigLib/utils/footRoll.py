@@ -19,6 +19,7 @@ class FootRoll():
         self.ballIkHandleList = []
         self.toeIkHandleList= []
         self.prefixJnt1 = name.removeSuffix(hipJnt)
+        self.prefixJnt2 = name.removeSuffix(ankleJnt)
         self.ankleIkHandle = pm.ikHandle( n=self.prefixJnt1+'_IKH', sj=hipJnt, ee=ankleJnt)[0]
 
         for ballJnt in ballJntList:
@@ -37,6 +38,7 @@ class FootRoll():
         self.peelHeel()
         self.toeTap()
         self.tippyToe()
+        self.moveGrp()
 
         # set OFF Sticky
         self.setSticky(0)
@@ -50,7 +52,7 @@ class FootRoll():
             toeIkHandle.stickiness.set(val)
 
     def peelHeel(self):
-        self.peelHeelGrp = pm.group(self.ankleIkHandle, n=self.prefixJnt1+'PeelHeel_GRP')
+        self.peelHeelGrp = pm.group(self.ankleIkHandle, n=self.prefixJnt2+'PeelHeel_GRP')
 
         # move Peel Heel Group Pivot to Middle Ball
         index = int(round(len(self.ballIkHandleList)/2.0))-1
@@ -58,7 +60,7 @@ class FootRoll():
         common.centerPivot(self.peelHeelGrp, midBallJnt)
 
     def toeTap(self):
-        self.toeTapGrp = pm.group(self.ballIkHandleList, self.toeIkHandleList, n=self.prefixJnt1+'ToeTap_GRP')
+        self.toeTapGrp = pm.group(self.ballIkHandleList, self.toeIkHandleList, n=self.prefixJnt2+'ToeTap_GRP')
 
         # move Toe Tap Group Pivot to Middle Ball
         index = int(round(len(self.ballIkHandleList)/2.0))-1
@@ -66,15 +68,21 @@ class FootRoll():
         common.centerPivot(self.toeTapGrp, midBallJnt)
 
     def tippyToe(self):
-        self.tippyToeGrp = pm.group(self.toeTapGrp, self.peelHeelGrp, n=self.prefixJnt1+'TippyToe_GRP')
+        self.tippyToeGrp = pm.group(self.toeTapGrp, self.peelHeelGrp, n=self.prefixJnt2+'TippyToe_GRP')
 
         # move Toe Tap Group Pivot to Middle Ball
         index = int(round(len(self.toeIkHandleList)/2.0))-1
         midToeJnt = self.toeIkHandleList[index]
         common.centerPivot(self.tippyToeGrp, midToeJnt)
 
+    def moveGrp(self):
+        self.moveGrp = pm.group(self.tippyToeGrp, n=self.prefixJnt2+'Move_GRP')
+
     def getGroupList(self):
-        return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp
+        return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp, self.moveGrp
+
+    def getIkFingerList(self):
+        return self.toeIkHandleList
 
 
 if __name__ == "__main__":

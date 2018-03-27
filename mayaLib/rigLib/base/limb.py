@@ -7,10 +7,11 @@ import pymel.core as pm
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
 
-from mayaLib.rigLib.utils import scapula
-from mayaLib.rigLib.utils import poleVector
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import scapula
+from mayaLib.rigLib.utils import footRoll
+from mayaLib.rigLib.utils import poleVector
 from mayaLib.rigLib.utils import ikfkSwitch
 
 
@@ -53,13 +54,11 @@ class Limb():
         self.baseAttachGrp = baseAttachGrp
         self.bodyAttachGrp = bodyAttachGrp
 
-        #### OK --------
-
         if doFK:
             self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
 
         if doIK:
-            pass
+            self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule)
 
         if doFK and doIK:
             # IK/FK switch
@@ -73,7 +72,8 @@ class Limb():
             else:
                 # dynamic scapula
                 self.makeDynamicScapula(limbJoints)
-        ##################################
+
+        ################################## OOK --------
 
         # make controls
         footCtrl = control.Control(prefix=prefix + 'Foot', translateTo=limbJoints[2], scale=rigScale * 3,
@@ -170,7 +170,7 @@ class Limb():
         :param rigmodule: dict
         :return:
         """
-        
+
         limbCtrlInstanceList = []
 
         # Arm/Leg
@@ -196,5 +196,21 @@ class Limb():
             pm.orientConstraint(ctrl.getControl(), jnt)
             limbCtrlInstanceList.append(ctrl)
 
-    def makeIK(self):
-        pass
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
+        """
+        Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
+        :param limbJoints: list(str), Arm/leg joints
+        :param topFingerJoints: list(str), Metacarpal joints
+        :param rigScale: float
+        :param rigmodule: dict
+        :return:
+        """
+
+        metacarpalJointList = topFingerJoints
+        topFngJntList = []
+        for topJntList in metacarpalJointList:
+            fnjJntList = joint.listHierarchy(topJntList, withEndJoints=False)[1:]
+            topFngJntList.extend(fnjJntList)
+
+        footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFingerJoints, topFngJntList)
+        footRollGrpList = footRoolInstance.getGroupList()
