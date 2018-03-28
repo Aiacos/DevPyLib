@@ -155,25 +155,36 @@ class Limb():
         # Arm/Leg
         for jnt in limbJoints:
             prefix = name.removeSuffix(jnt.name())
+
+            parent = rigmodule.controlsGrp
+            if len(limbCtrlInstanceList) > 0:
+                parent = limbCtrlInstanceList[-1].C
+
             ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 3,
-                            parent=rigmodule.controlsGrp, shape='circleY')
+                            parent=parent, shape='circleY')
 
             pm.orientConstraint(ctrl.getControl(), jnt)
             limbCtrlInstanceList.append(ctrl)
 
         # Hand/Foot
-        fingerJointList = []
         for topJntList in topFingerJoints:
             fnjJntList = joint.listHierarchy(topJntList, withEndJoints=False)
-            fingerJointList.extend(fnjJntList)
+            #fingerJointList.extend(fnjJntList)
 
-        for jnt in fingerJointList:
-            prefix = name.removeSuffix(jnt.name())
-            ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1.5,
-                            parent=rigmodule.controlsGrp, shape='circleY')
+            fingerJointList = []
+            for jnt in fnjJntList:
+                prefix = name.removeSuffix(jnt.name())
 
-            pm.orientConstraint(ctrl.getControl(), jnt)
-            limbCtrlInstanceList.append(ctrl)
+                parent = limbCtrlInstanceList[-1].C
+                if len(fingerJointList) > 0:
+                    parent = fingerJointList[-1].C
+
+                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1.5,
+                                       parent=parent, shape='circleY')
+
+                pm.orientConstraint(ctrl.getControl(), jnt)
+                fingerJointList.append(ctrl)
+                
 
     def makePoleVector(self, ikHandle, rigScale, rigmodule):
         prefix = name.removeSuffix(ikHandle.name())
