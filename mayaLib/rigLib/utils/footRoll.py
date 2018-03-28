@@ -6,13 +6,13 @@ from mayaLib.rigLib.utils import name
 
 
 class FootRoll():
-    def __init__(self, hipJnt, ankleJnt, ballJntList, toeJntList):
+    def __init__(self, hipJnt, ankleJnt, ballJntList, toeEndJntList):
         """
         Build footRoll on selected joints
         :param hipJnt: str
         :param ankleJnt: str
         :param ballJntList: list
-        :param toeJntList: list
+        :param toeEndJntList: list
         """
         self.side = name.getSide(hipJnt)
 
@@ -23,13 +23,14 @@ class FootRoll():
         self.ankleIkHandle = pm.ikHandle( n=self.prefixJnt1+'_IKH', sj=hipJnt, ee=ankleJnt)[0]
 
         for ballJnt in ballJntList:
+            ballJntParent = pm.ls(ballJnt)[0].getParent()
             prefix = name.removeSuffix(ballJnt)
-            tmpBallIkHandle = pm.ikHandle( n=prefix+'_IKH', sj=ankleJnt, ee=ballJnt)[0]
+            tmpBallIkHandle = pm.ikHandle( n=prefix+'Ball_IKH', sj=ballJntParent, ee=ballJnt)[0]
             self.ballIkHandleList.append(tmpBallIkHandle)
 
-        for toeJnt, ballJnt in zip(toeJntList, ballJntList):
+        for toeJnt, ballJnt in zip(toeEndJntList, ballJntList):
             prefix = name.removeSuffix(toeJnt)
-            tmpToeIkHandle = pm.ikHandle(n=prefix+'_IKH', sj=ballJnt, ee=toeJnt)[0]
+            tmpToeIkHandle = pm.ikHandle(n=prefix+'Fng_IKH', sj=ballJnt, ee=toeJnt)[0]
             self.toeIkHandleList.append(tmpToeIkHandle)
 
         # set temporarily ON Sticky

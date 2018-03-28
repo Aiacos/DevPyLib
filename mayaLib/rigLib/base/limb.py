@@ -122,7 +122,7 @@ class Limb():
                 parent = limbCtrlInstanceList[-1].C
 
             ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 3,
-                            parent=parent, shape='circleY')
+                            parent=parent, shape='circleX')
 
             pm.orientConstraint(ctrl.getControl(), jnt)
             limbCtrlInstanceList.append(ctrl)
@@ -130,7 +130,6 @@ class Limb():
         # Hand/Foot
         for topJntList in topFingerJoints:
             fnjJntList = joint.listHierarchy(topJntList, withEndJoints=False)
-            #fingerJointList.extend(fnjJntList)
 
             fingerJointList = []
             for jnt in fnjJntList:
@@ -140,8 +139,8 @@ class Limb():
                 if len(fingerJointList) > 0:
                     parent = fingerJointList[-1].C
 
-                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1.5,
-                                       parent=parent, shape='circleY')
+                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1,
+                                       parent=parent, shape='circleX')
 
                 pm.orientConstraint(ctrl.getControl(), jnt)
                 fingerJointList.append(ctrl)
@@ -182,11 +181,14 @@ class Limb():
 
         metacarpalJointList = topFingerJoints
         topFngJntList = []
+        endFngJntList = []
         for mtJnt in metacarpalJointList:
             fngJnt = pm.listRelatives(mtJnt, type='joint', children=True)[0]
+            fngEndJnt = joint.listHierarchy(mtJnt, withEndJoints=True)[-1]
             topFngJntList.append(fngJnt)
+            endFngJntList.append(fngEndJnt)
 
-        footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFingerJoints, topFngJntList)
+        footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFngJntList, endFngJntList)
         footRollGrpList = footRoolInstance.getGroupList()
         pm.parent(footRollGrpList[-1], rigmodule.partsNoTransGrp)
 
@@ -216,10 +218,10 @@ class Limb():
         for i, toeIK in enumerate(footRoolInstance.getIkFingerList()):
             pm.parentConstraint(toeIkControls[i].C, toeIK)
 
-        toeIKGrp = pm.group(footRoolInstance.getIkFingerList(), n=prefix+'ToeIK_GRP')
-        pm.parent(toeIKGrp, rigmodule.partsNoTransGrp)
+        #toeIKGrp = pm.group(footRoolInstance.getIkFingerList(), n=prefix+'ToeIK_GRP')
+        #pm.parent(toeIKGrp, rigmodule.partsNoTransGrp)
 
-        pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1])
-        pm.orientConstraint(ballCtrl.C, footRollGrpList[0])
+        pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
+        pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
 
         return footRoolInstance.getLimbIK()
