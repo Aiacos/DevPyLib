@@ -77,6 +77,7 @@ class FootRoll():
 
     def moveGrp(self):
         self.moveGrp = pm.group(self.tippyToeGrp, n=self.prefixJnt2+'Move_GRP')
+        common.centerPivot(self.moveGrp, self.ankleIkHandle)
 
     def getGroupList(self):
         return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp, self.moveGrp

@@ -67,52 +67,13 @@ class Limb():
 
         # check scapula
         if scapulaJnt:
-            if limbJoints[0].getParent() == scapulaJnt:
+            scpJnt = pm.ls(limbJoints[0])[0]
+            if scpJnt.getParent() == scapulaJnt:
                 # simple scapula
                 self.makeSimpleScapula(prefix, limbJoints, scapulaJnt, rigScale, rigmodule)
             else:
                 # dynamic scapula
                 self.makeDynamicScapula(limbJoints)
-
-        ################################## OOK --------
-
-        # make controls
-        footCtrl = control.Control(prefix=prefix + 'Foot', translateTo=limbJoints[2], scale=rigScale * 3,
-                                   parent=rigmodule.controlsGrp, shape='circleY')
-
-        ballCtrl = control.Control(prefix=prefix + 'Ball', translateTo=limbJoints[3], rotateTo=limbJoints[3],
-                                   scale=rigScale * 2, parent=footCtrl.C, shape='circleZ')
-
-        toeIkControls = []
-
-        for topToeJnt in topFingerJoints:
-            toePrefix = name.removeSuffix(topToeJnt)[:-1]
-            toeEndJnt = pm.listRelatives(topToeJnt, ad=1, type='joint')[0]
-
-            toeIkCtrl = control.Control(prefix=toePrefix, translateTo=toeEndJnt, scale=rigScale,
-                                        parent=footCtrl.C, shape='circleY')
-
-            toeIkControls.append(toeIkCtrl)
-
-        # make IK handles
-        legIk = pm.ikHandle(n=prefix + 'Main_IKH', sol='ikRPsolver', sj=limbJoints[0], ee=limbJoints[2])[0]
-        ballIk = pm.ikHandle(n=prefix + 'Ball_IKH', sol='ikSCsolver', sj=limbJoints[2], ee=limbJoints[3])[0]
-        mainToeIk = pm.ikHandle(n=prefix + 'MainToe_IKH', sol='ikSCsolver', sj=limbJoints[3], ee=limbJoints[4])[0]
-
-        pm.hide(legIk, ballIk, mainToeIk)
-
-        for i, topToeJnt in enumerate(topFingerJoints):
-            toePrefix = name.removeSuffix(topToeJnt)[:-1]
-            toeJoints = joint.listHierarchy(topToeJnt)
-
-            toeIk = pm.ikHandle(n=toePrefix + '_IKH', sol='ikSCsolver', sj=toeJoints[1], ee=toeJoints[-1])[0]
-            pm.hide(toeIk)
-            pm.parent(toeIk, toeIkControls[i].C)
-
-
-        # attach objects to controls
-        pm.parent(legIk, ballCtrl.C)
-        pm.parent(ballIk, mainToeIk, footCtrl.C)
 
 
     def getModuleDict(self):
@@ -134,7 +95,7 @@ class Limb():
         shoulderList = clavicleJnt.getChildren(type='joint')
         scapulaShoulder_jnt = None
         for jnt in shoulderList:
-            if 'scapula' in jnt.name():
+            if 'scapula' in jnt:
                 scapulaShoulder_jnt = jnt
         if scapulaShoulder_jnt:
             scapulaInstance = scapula.Scapula(spineJnt, limbJoints[0], scapulaShoulder_jnt)
@@ -154,7 +115,7 @@ class Limb():
 
         # Arm/Leg
         for jnt in limbJoints:
-            prefix = name.removeSuffix(jnt.name())
+            prefix = name.removeSuffix(jnt)
 
             parent = rigmodule.controlsGrp
             if len(limbCtrlInstanceList) > 0:
@@ -173,7 +134,7 @@ class Limb():
 
             fingerJointList = []
             for jnt in fnjJntList:
-                prefix = name.removeSuffix(jnt.name())
+                prefix = name.removeSuffix(jnt)
 
                 parent = limbCtrlInstanceList[-1].C
                 if len(fingerJointList) > 0:
@@ -184,10 +145,10 @@ class Limb():
 
                 pm.orientConstraint(ctrl.getControl(), jnt)
                 fingerJointList.append(ctrl)
-                
+
 
     def makePoleVector(self, ikHandle, rigScale, rigmodule):
-        prefix = name.removeSuffix(ikHandle.name())
+        prefix = name.removeSuffix(ikHandle)
         pvInstance = poleVector.PoleVector(ikHandle)
         poleVectorLoc, poleVectorGrp = pvInstance.getPoleVector()
         pm.parent(poleVectorGrp, rigmodule.partsNoTransGrp)
@@ -221,11 +182,44 @@ class Limb():
 
         metacarpalJointList = topFingerJoints
         topFngJntList = []
-        for topJntList in metacarpalJointList:
-            fnjJntList = joint.listHierarchy(topJntList, withEndJoints=False)[1:]
-            topFngJntList.extend(fnjJntList)
+        for mtJnt in metacarpalJointList:
+            fngJnt = pm.listRelatives(mtJnt, type='joint', children=True)[0]
+            topFngJntList.append(fngJnt)
 
         footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFingerJoints, topFngJntList)
         footRollGrpList = footRoolInstance.getGroupList()
+        pm.parent(footRollGrpList[-1], rigmodule.partsNoTransGrp)
+
+        prefix = name.removeSuffix(limbJoints[2])
+
+        # make controls
+        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2], scale=rigScale * 3,
+                                   parent=rigmodule.controlsGrp, shape='circleY')
+
+        midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList())/2.0))-1
+        midFngJnt = footRoolInstance.getIkFingerList()[midFngIKIndex].getJointList()[0]
+        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt,
+                                   rotateTo=midFngJnt,
+                                   scale=rigScale * 2, parent=mainIKCtrl.C, shape='circleZ')
+
+        toeIkControls = []
+        for topToeJnt in topFingerJoints:
+            toePrefix = name.removeSuffix(topToeJnt)
+            toeEndJnt = pm.listRelatives(topToeJnt, ad=1, type='joint')[0]
+
+            toeIkCtrl = control.Control(prefix=toePrefix, translateTo=toeEndJnt, scale=rigScale,
+                                        parent=mainIKCtrl.C, shape='circleY')
+
+            toeIkControls.append(toeIkCtrl)
+
+        # constraint IK
+        for i, toeIK in enumerate(footRoolInstance.getIkFingerList()):
+            pm.parentConstraint(toeIkControls[i].C, toeIK)
+
+        toeIKGrp = pm.group(footRoolInstance.getIkFingerList(), n=prefix+'ToeIK_GRP')
+        pm.parent(toeIKGrp, rigmodule.partsNoTransGrp)
+
+        pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1])
+        pm.orientConstraint(ballCtrl.C, footRollGrpList[0])
 
         return footRoolInstance.getLimbIK()
