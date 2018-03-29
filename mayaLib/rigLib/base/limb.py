@@ -20,6 +20,7 @@ class Limb():
                  limbJoints,
                  topFingerJoints,
                  scapulaJnt='',
+                 visibilityIKFKCtrl='ikfk_CTRL',
                  doFK=True,
                  doIK=True,
                  prefix=None,
@@ -55,15 +56,19 @@ class Limb():
         self.bodyAttachGrp = bodyAttachGrp
 
         if doFK:
-            self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
+            fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst = self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
 
         if doIK:
-            ikHandle = self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule)
-            self.makePoleVector(ikHandle, rigScale, rigmodule)
+            mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs = self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule)
+            poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, rigScale, rigmodule)
 
         if doFK and doIK:
             # IK/FK switch
-            pass
+            if visibilityIKFKCtrl:
+                IKFKCtrl = pm.ls(visibilityIKFKCtrl)[0]
+                self.switchIKFK(prefix, IKFKCtrl,
+                                fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
+                                mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl)
 
         # check scapula
         if scapulaJnt:
@@ -78,6 +83,43 @@ class Limb():
 
     def getModuleDict(self):
         return {'module': self.rigmodule, 'baseAttachGrp': self.baseAttachGrp, 'bodyAttachGrp': self.bodyAttachGrp}
+
+    def switchIKFK(self, prefix, visCtrl,
+                   fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
+                   mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl):
+
+        pm.addAttr(visCtrl, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
+        ctrlAttr = prefix.lower()
+        reverseNode = pm.shadingNode('reverse', asUtility=True, n=prefix+'Node')
+        pm.connectAttr(visCtrl+'.'+ctrlAttr, reverseNode.inputX)
+
+        # connect IK
+        pm.connectAttr(reverseNode.outputX, mainIKCtrl.getTop().visibility)
+        pm.connectAttr(reverseNode.outputX, ikHandle.ikBlend)
+
+        pm.connectAttr(reverseNode.outputX, fngCtrls[0].getTop().visibility)
+        for ctrl in fngCtrls[1]:
+            pm.connectAttr(reverseNode.outputX, ctrl.getTop().visibility)
+
+        for ik in fngIKs:
+            pm.connectAttr(reverseNode.outputX, ik.ikBlend)
+        for ik in ballIKs:
+            pm.connectAttr(reverseNode.outputX, ik.ikBlend)
+
+        pm.connectAttr(reverseNode.outputX, poleVectorCtrl.getTop().visibility)
+
+        # connect FK
+        for ctrl in fkLimbCtrls:
+            pm.connectAttr(visCtrl+'.'+ctrlAttr, ctrl.getTop().visibility)
+        for cnst in fkLimbCnst:
+            attr = pm.listConnections(cnst.target[0].targetWeight, p=True, s=True)[0]
+            pm.connectAttr(visCtrl+'.'+ctrlAttr, attr)
+
+        for ctrl in fkHandsFeetCtrls:
+            pm.connectAttr(visCtrl+'.'+ctrlAttr, ctrl.getTop().visibility)
+        for cnst in fkHandsFeetCnst:
+            attr = pm.listConnections(cnst.target[0].targetWeight, p=True, s=True)[0]
+            pm.connectAttr(visCtrl+'.'+ctrlAttr, attr)
 
     def makeSimpleScapula(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         scapulaCtrl = control.Control(prefix=prefix + 'Scapula', translateTo=scapulaJnt, rotateTo=scapulaJnt,
@@ -112,6 +154,10 @@ class Limb():
         """
 
         limbCtrlInstanceList = []
+        handFeetCtrlInstanceList = []
+
+        limbCtrlConstraintList = []
+        handFeetCtrlConstraintList = []
 
         # Arm/Leg
         for jnt in limbJoints:
@@ -124,7 +170,9 @@ class Limb():
             ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 3,
                             parent=parent, shape='circleX')
 
-            pm.orientConstraint(ctrl.getControl(), jnt)
+            orientCnst = pm.orientConstraint(ctrl.getControl(), jnt)
+
+            limbCtrlConstraintList.append(orientCnst)
             limbCtrlInstanceList.append(ctrl)
 
         # Hand/Foot
@@ -142,8 +190,13 @@ class Limb():
                 ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, scale=rigScale * 1,
                                        parent=parent, shape='circleX')
 
-                pm.orientConstraint(ctrl.getControl(), jnt)
+                orientCnst = pm.orientConstraint(ctrl.getControl(), jnt)
                 fingerJointList.append(ctrl)
+                handFeetCtrlConstraintList.append(orientCnst)
+
+            handFeetCtrlInstanceList.extend(fingerJointList)
+
+        return limbCtrlInstanceList, limbCtrlConstraintList, handFeetCtrlInstanceList, handFeetCtrlConstraintList
 
 
     def makePoleVector(self, ikHandle, rigScale, rigmodule):
@@ -167,6 +220,8 @@ class Limb():
         pm.parent(poleVectorCrv, rigmodule.controlsGrp)
         pm.setAttr(poleVectorCrv + '.template', 1)
         pm.setAttr(poleVectorCrv + '.it', 0)
+
+        return poleVectorCtrl, poleVectorLoc
 
 
     def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
@@ -224,4 +279,4 @@ class Limb():
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
         pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
 
-        return footRoolInstance.getLimbIK()
+        return mainIKCtrl, footRoolInstance.getLimbIK(), [ballCtrl, toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList()

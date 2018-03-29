@@ -86,6 +86,9 @@ class FootRoll():
     def getIkFingerList(self):
         return self.toeIkHandleList
 
+    def getIkBallList(self):
+        return self.ballIkHandleList
+
     def getLimbIK(self):
         return self.ankleIkHandle
 
