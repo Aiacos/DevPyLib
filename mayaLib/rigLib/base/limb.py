@@ -103,7 +103,8 @@ class Limb():
         pm.connectAttr(reverseNode.outputX, mainIKCtrl.getTop().visibility)
         pm.connectAttr(reverseNode.outputX, ikHandle.ikBlend)
 
-        pm.connectAttr(reverseNode.outputX, fngCtrls[0].getTop().visibility)
+        for ctrl in fngCtrls[0]:
+            pm.connectAttr(reverseNode.outputX, ctrl.getTop().visibility)
         for ctrl in fngCtrls[1]:
             pm.connectAttr(reverseNode.outputX, ctrl.getTop().visibility)
 
@@ -279,5 +280,5 @@ class Limb():
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
         pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
 
-        return mainIKCtrl, footRoolInstance.getLimbIK(), [ballCtrl,
+        return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl],
                                                           toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList()
