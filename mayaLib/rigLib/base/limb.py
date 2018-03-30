@@ -7,11 +7,13 @@ import pymel.core as pm
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
 
+from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import scapula
 from mayaLib.rigLib.utils import footRoll
 from mayaLib.rigLib.utils import poleVector
+from mayaLib.rigLib.utils import spaces
 from mayaLib.rigLib.utils import ikfkSwitch
 
 
@@ -62,7 +64,7 @@ class Limb():
         if doIK:
             mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs = self.makeIK(limbJoints, topFingerJoints,
                                                                           rigScale, rigmodule)
-            poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, rigScale, rigmodule)
+            poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, mainIKCtrl.getControl(), rigScale, rigmodule)
 
         if doFK and doIK:
             # IK/FK switch
@@ -205,7 +207,7 @@ class Limb():
 
         return limbCtrlInstanceList, limbCtrlConstraintList, handFeetCtrlInstanceList, handFeetCtrlConstraintList
 
-    def makePoleVector(self, ikHandle, rigScale, rigmodule):
+    def makePoleVector(self, ikHandle, autoElbowCtrl, rigScale, rigmodule):
         prefix = name.removeSuffix(ikHandle)
         pvInstance = poleVector.PoleVector(ikHandle)
         poleVectorLoc, poleVectorGrp = pvInstance.getPoleVector()
@@ -213,7 +215,10 @@ class Limb():
 
         poleVectorCtrl = control.Control(prefix=prefix + 'PV', translateTo=poleVectorLoc,
                                          scale=rigScale, parent=rigmodule.controlsGrp, shape='sphere')
-        pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
+
+        #pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
+        spaces.spaces([self.bodyAttachGrp, autoElbowCtrl], ['body', 'control'], poleVectorCtrl.Off, poleVectorCtrl.getControl())
+
         pm.parentConstraint(poleVectorCtrl.getControl(), poleVectorLoc)
 
         # make pole vector connection line
