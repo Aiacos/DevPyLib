@@ -21,3 +21,16 @@ def deleteHistory(obj):
 
 def deleteNonDeformerHistory(obj):
     pm.bakePartialHistory(obj, pre=True) # prePostDeformers=True
+
+def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linear'):
+    """
+    Set Driven Key utility
+    :param driver: str, driver + driving attribute (ctrl.attr)
+    :param driverValueList: list, value list
+    :param driven: str, driven + driven attribute (ctrl.attr)
+    :param drivenValueList: list, value list
+    :param cvType: str, auto, clamped, fast, flat, linear, plateau, slow, spline, step, and stepnext
+    :return:
+    """
+    for driverV, drivenV in zip(driverValueList, drivenValueList):
+        pm.setDrivenKeyframe(driven, currentDriver=driver, driverValue=driverV, value=drivenV, inTangentType=cvType, outTangentType=cvType)
