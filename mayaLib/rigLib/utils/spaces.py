@@ -9,7 +9,8 @@ def spaces(driverList, driverNames, destinationConstraint, destinationAttribute,
     Add spaces
     :param driverList: list(str), driver object list
     :param driverNames: list(str), attrviute value name for each driver
-    :param destination: str, destination obj
+    :param destinationConstraint: str, destination obj
+    :param destinationAttribute: str, where attribute should appear
     :param name: str, name of the attribute
     :param maintainOffset: bool, constraint maintainOffset
     :return:
