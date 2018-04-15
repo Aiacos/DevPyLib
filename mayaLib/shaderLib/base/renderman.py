@@ -22,6 +22,7 @@ class PxrSurface_shaderBase(Shader_base):
         self.shader = Shader_base.get_shader(self)
 
         # init Specular model type
+        self.shader.specularModelType.set(1) # set GGX reflection
         if physicalSpecular:
             self.shader.specularFresnelMode.set(1)
         else:
