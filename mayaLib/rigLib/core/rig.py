@@ -51,22 +51,27 @@ class BaseRig(object):
 
         # Create proxy geo
         self.prxGeoList = pm.ls('*_PRX')
-        if doProxyGeo and len(self.prxGeoList) == 0:
+        if doProxyGeo and len(self.prxGeoList) == 0 and len(pm.ls('mainProxy_GEO')) > 0:
             mainProxyGeo = pm.ls('mainProxy_GEO')[0]
             prxGeoInstance = proxyGeo.ProxyGeo(mainProxyGeo)
             self.prxGeoList = prxGeoInstance.getProxyGeoList()
 
         # search model grp
+        self.sceneRadius = 1
         modelGrp = pm.ls(characterName + '_model' + '_GRP')
-        if pm.objExists(modelGrp):
+        if modelGrp:
             radius = util.getPlanarRadiusBBOXFromTransform(modelGrp[0])['planarY']
+            self.sceneRadius = radius
 
         # Create rig
-        self.baseModule = Base(characterName=characterName, scale=radius, mainCtrlAttachObj=headJnt)
+        self.baseModule = Base(characterName=characterName, scale=self.sceneRadius, mainCtrlAttachObj=headJnt)
 
         # parent model group
-        if pm.objExists(modelGrp):
-            pm.parent(modelGrp, self.baseModule.modelGrp)
+        if modelGrp:
+            pm.parent(modelGrp, self.baseModule.mediumSlowGrp)
+            if len(self.prxGeoList) > 0:
+                pm.parent(self.prxGeoList, self.baseModule.fastModelGrp)
+                pm.delete(prxGeoInstance.getFastGeoGroup())
 
         # parent joint group
         if pm.objExists(rootJnt):
