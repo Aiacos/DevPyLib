@@ -59,7 +59,7 @@ class BaseRig(object):
         # search model grp
         modelGrp = pm.ls(characterName + '_model' + '_GRP')
         if pm.objExists(modelGrp):
-            radius = util.getPlanarRadiusBBOXFromTransform(modelGrp[0])
+            radius = util.getPlanarRadiusBBOXFromTransform(modelGrp[0])['planarY']
 
         # Create rig
         self.baseModule = Base(characterName=characterName, scale=radius, mainCtrlAttachObj=headJnt)

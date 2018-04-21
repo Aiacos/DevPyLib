@@ -182,17 +182,28 @@ def invertSelection():
 
 def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
     """
-    Returns the bounding box radius in XZ
+    Returns radius bounding box as a dict for: planarX, planarY, planarZ, 3D;
+    where X, Y, Z is the upvector plane n world space
     :param transform: str, transform node
-    :return: float
+    :return: dict(float)
     """
     transform = pm.ls(transform)[0]
     BBox = transform.getBoundingBox()
     xmin, ymin, zmin = BBox[0]
     xmax, ymax, zmax = BBox[1]
-    hypotenuse = get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax])
-    c1 = get_distance_from_coords([xmin, 0, 0], [xmax, 0, 0])
-    c2 = get_distance_from_coords([0, 0, zmin], [0, 0, zmax])
-    radius = hypotenuse / radiusFactor
+    
+    hypotenuseX = get_distance_from_coords([0, ymin, zmin], [0, ymin, zmax])
+    hypotenuseY = get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax])
+    hypotenuseZ = get_distance_from_coords([xmin, ymin, 0], [xmax, ymin, 0])
+    hypotenuseXYZ = get_distance_from_coords([xmin, ymin, zmin], [xmax, ymax, zmax])
 
-    return radius
+    cX = get_distance_from_coords([xmin, 0, 0], [xmax, 0, 0])
+    cY = get_distance_from_coords([0, ymin, 0], [0, ymax, 0])
+    cZ = get_distance_from_coords([0, 0, zmin], [0, 0, zmax])
+
+    radiusDict = {'planarX': hypotenuseX / radiusFactor,
+                  'planarY': hypotenuseY / radiusFactor,
+                  'planarZ': hypotenuseZ / radiusFactor,
+                  '3D': hypotenuseXYZ / radiusFactor}
+
+    return radiusDict
