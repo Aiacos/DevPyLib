@@ -66,12 +66,13 @@ class BaseRig(object):
         # Create rig
         self.baseModule = Base(characterName=characterName, scale=self.sceneRadius, mainCtrlAttachObj=headJnt)
 
-        # parent model group
+        # parent model group and clean scene
         if modelGrp:
             pm.parent(modelGrp, self.baseModule.mediumSlowGrp)
             if len(self.prxGeoList) > 0:
                 pm.parent(self.prxGeoList, self.baseModule.fastModelGrp)
-                pm.delete(prxGeoInstance.getFastGeoGroup())
+                if doProxyGeo and len(pm.ls('mainProxy_GEO')) > 0 and pm.objExists(prxGeoInstance.getFastGeoGroup()):
+                    pm.delete(prxGeoInstance.getFastGeoGroup(), pm.ls('mainProxy_GEO'))
 
         # parent joint group
         if pm.objExists(rootJnt):

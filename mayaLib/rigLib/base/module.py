@@ -158,7 +158,7 @@ class Base():
 
             # constraint haloCtrl
             pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
-            self.haloCtrl.getModifyGrp().translateY.set(12 * self.haloCtrl.getCtrlScale())
+            self.haloCtrl.getModifyGrp().translateY.set(6 * self.haloCtrl.getCtrlScale())
 
     def createDisplay(self, mainCtrlAttachObj, scale):
         # make Display

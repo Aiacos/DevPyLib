@@ -7,6 +7,7 @@ import mayaLib.pipelineLib.utility.nameCheck as nc
 from mayaLib.rigLib.utils import ctrlShape
 from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import name
 
 class Control():
     """
@@ -25,10 +26,12 @@ class Control():
             doOffset=True,
             doModify=False,
             doDynamicPivot=False,
-            objBBox = ''
+            objBBox = '',
+            autoBBox=True
     ):
 
         """
+        class for building rig control
         :param prefix: str, prefix to name new objects
         :param scale: float, scale value for size of control shapes
         :param translateTo: str, reference object for control position
@@ -37,6 +40,7 @@ class Control():
         :param shape: str, control shape type (normal direction)
         :param lockChannels: list( str ), list of channels on control to be locked and non-keyable
         :param objBBox: str, object to calculate ctrl scale
+        :param autoBBox: bool, auto find scale value from Proxy Geo if exist
         :return: None
         """
 
@@ -46,9 +50,8 @@ class Control():
 
         ctrlObject = None
         circleNormal = [1, 0, 0]
-        if scale == 1 and len(pm.ls(objBBox)) > 0:
-            objBBox = pm.ls(objBBox)[0]
-            scale = util.getPlanarRadiusBBOXFromTransform(objBBox)['3D']
+
+        scale = self.calculateScale(scale, objBBox, autoBBox, translateTo)
 
         # custom shape
         if shape in ['circle', 'circleX']:
@@ -162,6 +165,28 @@ class Control():
         self.dynamicPivot = None
         if doDynamicPivot:
             self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
+
+    def calculateScale(self, scale, objBBox, autoBBox, translateTo=''):
+        """
+        Calculate scale value
+        :param scale: float
+        :param objBBox: str, object where to calculate bounding box
+        :param autoBBox: bool, auto find proxy geo for bbox
+        :param translateTo: str, object where to search proxy geo
+        :return: float, scale
+        """
+        proxyGeoName = name.removeSuffix(translateTo) + '_PRX'
+        if autoBBox and scale == 1 and translateTo and pm.objExists(proxyGeoName):
+            objBBox = pm.ls(proxyGeoName)[0]
+
+        elif scale == 1 and len(pm.ls(objBBox)) > 0:
+            objBBox = pm.ls(objBBox)[0]
+
+        else:
+            return scale
+
+        scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
+        return scale
 
     def getCtrlScale(self):
         return self.scale
