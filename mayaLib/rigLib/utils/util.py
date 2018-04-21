@@ -179,3 +179,20 @@ def invertSelection():
     mel.eval('InvertSelection;')
     # runtime.InvertSelection()
     return pm.ls(sl=True)
+
+def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
+    """
+    Returns the bounding box radius in XZ
+    :param transform: str, transform node
+    :return: float
+    """
+    transform = pm.ls(transform)[0]
+    BBox = transform.getBoundingBox()
+    xmin, ymin, zmin = BBox[0]
+    xmax, ymax, zmax = BBox[1]
+    hypotenuse = get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax])
+    c1 = get_distance_from_coords([xmin, 0, 0], [xmax, 0, 0])
+    c2 = get_distance_from_coords([0, 0, zmin], [0, 0, zmax])
+    radius = hypotenuse / radiusFactor
+
+    return radius

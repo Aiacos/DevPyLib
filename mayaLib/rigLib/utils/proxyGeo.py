@@ -20,37 +20,37 @@ class ProxyGeo():
 
         # Get Shape and skin from Object
         skinCluster = skin.findRelatedSkinCluster(geo)
-        if skinCluster:
-            self.skin = skinCluster
-        else:
+        if not skinCluster:
             print 'Missing SkinCluster'
+        else:
+            self.skin = skinCluster
 
-        # Get joint influence of the skin
-        influnces = self.skin.getInfluence(q=True)  # influences is joint
-        for joint in influnces:
-            # duplicate mesh for a control
-            transform, dupliShape = self.duplicateSourceMesh(obj=geo, joint=joint)
-            common.centerPivot(transform, pivotLocator)
+            # Get joint influence of the skin
+            influnces = self.skin.getInfluence(q=True)  # influences is joint
+            for joint in influnces:
+                # duplicate mesh for a control
+                transform, dupliShape = self.duplicateSourceMesh(obj=geo, joint=joint)
+                common.centerPivot(transform, pivotLocator)
 
-            # copy skinCluster
-            skin.copyBind(pm.ls(geo)[0], transform)
+                # copy skinCluster
+                skin.copyBind(pm.ls(geo)[0], transform)
 
-            # delete faces in the new shape based on selected joint
-            self.deleteVertex(joint=joint, newShape=dupliShape, threshold=threshold)
+                # delete faces in the new shape based on selected joint
+                self.deleteVertex(joint=joint, newShape=dupliShape, threshold=threshold)
 
-            # delete non deformer history
-            common.deleteHistory(dupliShape)
+                # delete non deformer history
+                common.deleteHistory(dupliShape)
 
-            # parent under proxy group
-            pm.parent(transform, self.shapeGrp)
-            self.proxyGeoList.append(transform)
+                # parent under proxy group
+                pm.parent(transform, self.shapeGrp)
+                self.proxyGeoList.append(transform)
 
-            # parentConstraint with joint
-            if doParentCnst:
-                pm.parentConstraint(joint, transform, mo=True)
+                # parentConstraint with joint
+                if doParentCnst:
+                    pm.parentConstraint(joint, transform, mo=True)
 
-        # delete pivot locator
-        pm.delete(pivotLocator)
+            # delete pivot locator
+            pm.delete(pivotLocator)
 
 
     def duplicateSourceMesh(self, obj, joint):
