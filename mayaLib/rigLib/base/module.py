@@ -92,7 +92,7 @@ class Base():
         # make halo
         self.haloCtrl = control.Control(
             prefix='halo',
-            scale=scale,
+            scale=1,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['s'],
@@ -133,8 +133,8 @@ class Base():
         common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v', [0, 1, 1])
 
         # create display control
-        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale)
-        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale)
+        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
+        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, 1)
 
 
     def getScaleLocator(self):
