@@ -6,6 +6,7 @@ import pymel.core as pm
 import mayaLib.pipelineLib.utility.nameCheck as nc
 from mayaLib.rigLib.utils import ctrlShape
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import util
 
 class Control():
     """
@@ -23,7 +24,8 @@ class Control():
             lockChannels=['s', 'v'],
             doOffset=True,
             doModify=False,
-            doDynamicPivot=False
+            doDynamicPivot=False,
+            objBBox = ''
     ):
 
         """
@@ -34,6 +36,7 @@ class Control():
         :param parent: str, object to be parent of new control
         :param shape: str, control shape type (normal direction)
         :param lockChannels: list( str ), list of channels on control to be locked and non-keyable
+        :param objBBox: str, object to calculate ctrl scale
         :return: None
         """
 
@@ -43,6 +46,9 @@ class Control():
 
         ctrlObject = None
         circleNormal = [1, 0, 0]
+        if scale == 1 and len(pm.ls(objBBox)) > 0:
+            objBBox = pm.ls(objBBox)[0]
+            scale = util.getPlanarRadiusBBOXFromTransform(objBBox)['3D']
 
         # custom shape
         if shape in ['circle', 'circleX']:
@@ -138,6 +144,7 @@ class Control():
             pm.setAttr(ctrlObject + '.' + at, l=1, k=0)
 
         # add public members
+        self.scale = scale
         self.C = ctrlObject
         self.Modify = None
         self.Off = None
@@ -155,6 +162,9 @@ class Control():
         self.dynamicPivot = None
         if doDynamicPivot:
             self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
+
+    def getCtrlScale(self):
+        return self.scale
 
     def makeDynamicPivot(self, prefix, scale, translateTo, rotateTo):
         pivotCtrl = Control(prefix=prefix+'Pivot', scale=scale/5, translateTo=translateTo, rotateTo=rotateTo, parent=self.C,

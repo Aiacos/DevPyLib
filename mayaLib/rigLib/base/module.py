@@ -62,6 +62,13 @@ class Base():
 
         # model group
         self.modelGrp = pm.group(n='model_GRP', em=1, p=self.topGrp)
+        self.fastModelGrp = pm.group(n='fastModel_GRP', em=1, p=self.modelGrp)
+        self.mediumModelGrp = pm.group(n='mediumModel_GRP', em=1, p=self.modelGrp)
+        self.mediumSlowGrp = pm.group(n='mediumSlowModel_GRP', em=1, p=self.modelGrp)
+        self.slowModelGrp = pm.group(n='slowModel_GRP', em=1, p=self.modelGrp)
+        self.allModelGrp = pm.group(n='allModel_GRP', em=1, p=self.modelGrp)
+        self.rigModelGrp = pm.group(n='rigModel_GRP', em=1, p=self.modelGrp)
+        pm.hide(self.rigModelGrp)
 
         # rig group
         self.rigGrp = pm.group(n='rig_GRP', em=1, p=self.mainCtrl.getControl())
@@ -85,13 +92,14 @@ class Base():
         # make halo
         self.haloCtrl = control.Control(
             prefix='halo',
-            scale=scale / 20,
+            scale=scale,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
             lockChannels=['s'],
             shape='circleX',
             doOffset=True,
-            doModify=True
+            doModify=True,
+            objBBox=mainCtrlAttachObj
         )
         self.haloCtrl.getOffsetGrp().visibility.set(0)
         self.createHalo(mainCtrlAttachObj, 1)
@@ -114,15 +122,19 @@ class Base():
             pm.setAttr(obj + '.ove', 1)
             pm.connectAttr(self.globalCtrl.getControl() + '.' + at, obj + '.ovdt')
 
-        # # add rig display level connection
-        # displayLevel = 'displayLevel'
-        # levelGrp = [pm.ls('fastGeo_GRP')[0], self.modelGrp]
-        #
-        # pm.addAttr(self.globalCtrl.getControl(), ln=displayLevel, at='enum', enumName='fast:medium:slow', k=1, dv=2)
+        # add rig display level connection
+        displayLevel = 'displayLevel'
+        levelGrp = [self.fastModelGrp, self.mediumModelGrp, self.slowModelGrp]
+        pm.addAttr(self.globalCtrl.getControl(), ln=displayLevel, at='enum', enumName='fast:medium:slow', k=1, dv=1)
+        pm.setAttr(self.globalCtrl.getControl() + '.' + displayLevel, cb=1)
+        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[0] + '.v', [1, 0, 0])
+        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[1] + '.v', [0, 1, 0])
+        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[2] + '.v', [0, 0, 1])
+        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v', [0, 1, 1])
 
         # create display control
-        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale / 20)
-        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale / 20)
+        self.displayCtrl = self.createDisplay(mainCtrlAttachObj, scale)
+        self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, scale)
 
 
     def getScaleLocator(self):
@@ -136,7 +148,7 @@ class Base():
             haloDupliCtrl = pm.duplicate(self.haloCtrl.getControl(), n='halo')[0]
             haloDupliShape = haloDupliCtrl.getShape()
 
-            # paren shape under globalControl
+            # parent shape under globalControl
             pm.parent(haloDupliShape, self.globalCtrl.getControl(), r=1, s=1)
             pm.delete(haloDupliCtrl)
 
@@ -146,7 +158,7 @@ class Base():
 
             # constraint haloCtrl
             pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
-            self.haloCtrl.getModifyGrp().translateY.set(12 * scale)
+            self.haloCtrl.getModifyGrp().translateY.set(12 * self.haloCtrl.getCtrlScale())
 
     def createDisplay(self, mainCtrlAttachObj, scale):
         # make Display
@@ -158,7 +170,8 @@ class Base():
             lockChannels=['t', 'r', 's'],
             shape='display',
             doOffset=True,
-            doModify=True
+            doModify=True,
+            objBBox = mainCtrlAttachObj
         )
 
         if pm.objExists(mainCtrlAttachObj):
@@ -166,7 +179,7 @@ class Base():
             common.centerPivot(displayCtrl.getOffsetGrp())
             common.centerPivot(displayCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
-            displayCtrl.getModifyGrp().translateY.set(4 * scale)
+            displayCtrl.getModifyGrp().translateY.set(4 * displayCtrl.getCtrlScale())
 
         return displayCtrl
 
@@ -180,7 +193,8 @@ class Base():
             lockChannels=['t', 'r', 's'],
             shape='ikfk',
             doOffset=True,
-            doModify=True
+            doModify=True,
+            objBBox=mainCtrlAttachObj
         )
 
         if pm.objExists(mainCtrlAttachObj):
@@ -188,7 +202,7 @@ class Base():
             common.centerPivot(ikfkCtrl.getOffsetGrp())
             common.centerPivot(ikfkCtrl.getControl())
             pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp())
-            ikfkCtrl.getModifyGrp().translateY.set(3 * scale)
+            ikfkCtrl.getModifyGrp().translateY.set(3 * ikfkCtrl.getCtrlScale())
 
         return ikfkCtrl
 

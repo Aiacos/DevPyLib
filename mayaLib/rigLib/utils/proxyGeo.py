@@ -82,6 +82,9 @@ class ProxyGeo():
     def getProxyGeoList(self):
         return self.proxyGeoList
 
+    def getFastGeoGroup(self):
+        return self.shapeGrp
+
 
 
 
