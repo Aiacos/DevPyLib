@@ -262,6 +262,8 @@ class MainMenu(QtWidgets.QWidget):
         self.libMenu.addAction(self.wAction)
 
         QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+        self.libMenu.clicked.connect(self.libWindow.adjustSize())
+        self.libMenu.clicked.connect(self.libWindow.resize(self.libWindow.sizeHint()))
 
     def updateWidget(self, libPath):
         reload_package(mayaLib)

@@ -74,8 +74,7 @@ class PoleVector():
         pm.move(distance, 0, 0, poleVector_locator_grp, objectSpace=True, relative=True)
 
         # Connect PoleVector
-        pm.select(poleVector_locator_grp)
-        poleVector_loc = pm.pickWalk(d='down')
+        poleVector_loc = pm.listRelatives(poleVector_locator_grp, children=True)[0]
         pm.poleVectorConstraint(poleVector_loc, ikHandle)
 
         return poleVector_loc, poleVector_locator_grp

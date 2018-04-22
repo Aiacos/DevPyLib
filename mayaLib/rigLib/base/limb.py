@@ -75,14 +75,14 @@ class Limb():
                                 mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl)
 
         # check scapula
-        if scapulaJnt:
-            scpJnt = pm.ls(limbJoints[0])[0]
-            if scpJnt.getParent() == scapulaJnt:
+        if scapulaJnt != '' and pm.objExists(scapulaJnt):
+            scpJnt = pm.ls(limbJoints)[0].getParent()
+            if scpJnt.name() == pm.ls(scapulaJnt)[0].name():
                 # simple scapula
                 self.makeSimpleScapula(prefix, limbJoints, scapulaJnt, rigScale, rigmodule)
             else:
                 # dynamic scapula
-                self.makeDynamicScapula(limbJoints)
+                self.makeDynamicScapula(limbJoints, rigmodule)
 
         self.limbIK = ikHandle
 
@@ -141,6 +141,7 @@ class Limb():
         pm.pointConstraint(scapulaCtrl.C, scapulaJnt)
 
     def makeDynamicScapula(self, limbJoints, rigmodule):
+        limbJoints = pm.ls(limbJoints)
         spineJnt = limbJoints[0].getParent().getParent()
         clavicleJnt = limbJoints[0].getParent()
         shoulderList = clavicleJnt.getChildren(type='joint')
