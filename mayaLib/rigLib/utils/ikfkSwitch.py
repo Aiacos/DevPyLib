@@ -70,6 +70,8 @@ def installIKFK(ikList):
     cmdString = '\n'.join(cmdList)
     pm.scriptNode(st=2, bs=cmdString, n='switch_IKFK', stp='python')
 
+    print 'INSTALLED IKFK SWITCH!'
+
 
 
 if __name__ == "__main__":

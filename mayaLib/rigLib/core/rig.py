@@ -11,6 +11,7 @@ from mayaLib.rigLib.base import spine
 from mayaLib.rigLib.base import neck
 from mayaLib.rigLib.base import ikChain
 from mayaLib.rigLib.base import limb
+from mayaLib.rigLib.utils import ikfkSwitch
 
 from mayaLib.rigLib.utils import proxyGeo
 
@@ -126,7 +127,11 @@ class BaseRig(object):
         """
         limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, scapulaJnt=scapulaJoint, baseRig=self.baseModule)
 
-        pm.parentConstraint(limbJoints[-1], limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+        if scapulaJoint:
+            pm.parentConstraint(limbJoints[-1], limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+        else:
+            pm.parentConstraint(spineRig.getModuleDict()['baseAttachGrp'], limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, limbRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         return limbRig
@@ -202,7 +207,7 @@ class Rig(BaseRig):
 
 
         # left arm
-        legJoints = ['l_shoulder1_jnt', 'l_elbow1_jnt', 'l_hand1_jnt', 'l_hand2_jnt', 'l_hand3_jnt']
+        legJoints = ['l_shoulder1_jnt', 'l_elbow1_jnt', 'l_hand1_jnt']
         topToeJoints = ['l_foreToeA1_jnt', 'l_foreToeB1_jnt', 'l_foreToeC1_jnt', 'l_foreToeD1_jnt', 'l_foreToeE1_jnt']
 
         lArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='l_scapula1_jnt', baseRig=self.baseModule)
@@ -211,7 +216,7 @@ class Rig(BaseRig):
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         # right arm
-        legJoints = ['r_shoulder1_jnt', 'r_elbow1_jnt', 'r_hand1_jnt', 'r_hand2_jnt', 'r_hand3_jnt']
+        legJoints = ['r_shoulder1_jnt', 'r_elbow1_jnt', 'r_hand1_jnt']
         topToeJoints = ['r_foreToeA1_jnt', 'r_foreToeB1_jnt', 'r_foreToeC1_jnt', 'r_foreToeD1_jnt', 'r_foreToeE1_jnt']
 
         rArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='r_scapula1_jnt', baseRig=self.baseModule)
@@ -220,22 +225,26 @@ class Rig(BaseRig):
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         # left leg
-        legJoints = ['l_hip1_jnt', 'l_knee1_jnt', 'l_foot1_jnt', 'l_foot2_jnt', 'l_foot3_jnt']
+        legJoints = ['l_hip1_jnt', 'l_knee1_jnt', 'l_foot1_jnt']
         topToeJoints = ['l_hindToeA1_jnt', 'l_hindToeB1_jnt', 'l_hindToeC1_jnt', 'l_hindToeD1_jnt', 'l_hindToeE1_jnt']
 
         lLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule)
 
-        pm.parentConstraint(spineJoints[-2], lLegRig.getModuleDict()['baseAttachGrp'], mo=1)
+        pm.parentConstraint(spineJoints[0], lLegRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lLegRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         # right leg
-        legJoints = ['r_hip1_jnt', 'r_knee1_jnt', 'r_foot1_jnt', 'r_foot2_jnt', 'r_foot3_jnt']
+        legJoints = ['r_hip1_jnt', 'r_knee1_jnt', 'r_foot1_jnt']
         topToeJoints = ['r_hindToeA1_jnt', 'r_hindToeB1_jnt', 'r_hindToeC1_jnt', 'r_hindToeD1_jnt', 'r_hindToeE1_jnt']
 
         rLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule)
 
-        pm.parentConstraint(spineJoints[-2], rLegRig.getModuleDict()['baseAttachGrp'], mo=1)
+        pm.parentConstraint(spineJoints[0], rLegRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rLegRig.getModuleDict()['bodyAttachGrp'], mo=1)
+
+        ikfkSwitch.installIKFK([lArmRig.getMainLimbIK(), rArmRig.getMainLimbIK(), lLegRig.getMainLimbIK(), rLegRig.getMainLimbIK()])
+
+
 
 
 if __name__ == "__main__":

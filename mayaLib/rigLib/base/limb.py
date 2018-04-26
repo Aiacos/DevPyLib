@@ -77,12 +77,19 @@ class Limb():
         # check scapula
         if scapulaJnt != '' and pm.objExists(scapulaJnt):
             scpJnt = pm.ls(limbJoints)[0].getParent()
+            scapulaCtrl = None
             if scpJnt.name() == pm.ls(scapulaJnt)[0].name():
                 # simple scapula
-                self.makeSimpleScapula(prefix, limbJoints, scapulaJnt, rigScale, rigmodule)
+                scapulaCtrl = self.makeSimpleScapula(prefix, limbJoints, scapulaJnt, rigScale, rigmodule)
             else:
                 # dynamic scapula
                 self.makeDynamicScapula(limbJoints, rigmodule)
+
+            # constriant FK limb
+            if scapulaCtrl:
+                pm.parentConstraint(scapulaCtrl.getControl(), fkLimbCtrls[0].getTop(), mo=1)
+        else:
+            pm.parentConstraint(self.baseAttachGrp, fkLimbCtrls[0].getTop(), mo=1)
 
         self.limbIK = ikHandle
 
@@ -139,6 +146,8 @@ class Limb():
         pm.parentConstraint(self.baseAttachGrp, scapulaCtrl.Off, mo=1)
         pm.parent(scapulaIk, scapulaCtrl.C)
         pm.pointConstraint(scapulaCtrl.C, scapulaJnt)
+
+        return scapulaCtrl
 
     def makeDynamicScapula(self, limbJoints, rigmodule):
         limbJoints = pm.ls(limbJoints)

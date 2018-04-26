@@ -200,7 +200,7 @@ class Control():
                 translateTo = pm.ls(translateTo)[0]
 
                 proxyGeoName = name.removeSuffix(translateTo.name()) + '_PRX'
-                if pm.objExists(proxyGeoName):
+                if useBBox and pm.objExists(proxyGeoName):
                     objBBox = pm.ls(proxyGeoName)[0]
                     scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
                 elif isinstance(translateTo, pm.nodetypes.Joint):
