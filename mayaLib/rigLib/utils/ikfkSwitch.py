@@ -27,11 +27,19 @@ class IKFKSwitch():
         self.joint3FKCtrl = util.getDriverDrivenFromConstraint(orientConstraintFK3)[0][0]
 
         # IK control
-        pointConstraintIK = pm.listConnections(ikHandle, type='constraint')[0]
+        #pointConstraintIK = pm.listConnections(ikHandle, type='constraint')[0]
+        #self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
+        peelHeelGrp = ikHandle.getParent()
+        tippyToeGrp = peelHeelGrp.getParent()
+        moveGrp = tippyToeGrp.getParent()
+        pointConstraintIK = pm.listConnections(moveGrp, type='constraint')[0]
         self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
 
         poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
-        self.poleVector = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
+        poleVectorLoc = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
+        poleVectorLocConstraint = poleVectorLoc.getChildren()[1]
+        self.poleVector =  util.getDriverDrivenFromConstraint(poleVectorLocConstraint)[0][0]
+
 
         self.ikHandle = ikHandle
 
@@ -47,15 +55,16 @@ class IKFKSwitch():
     def switchIKFK(self):
         blend = self.ikHandle.ikBlend.get()
         if blend == 0:
-            self.toFK()
-        elif blend == 1:
             self.toIK()
+        elif blend == 1:
+            self.toFK()
 
     def addScriptJob(self):
         pm.scriptJob(attributeChange=[self.ikHandle.ikBlend, self.switchIKFK])
 
 def installIKFK(ikList):
-    classDefinitionString = inspect.getsource(IKFKSwitch)
+    from mayaLib.rigLib.utils import ikfkSwitch
+    classDefinitionString = inspect.getsource(ikfkSwitch.IKFKSwitch)
     utilDefinitionString = inspect.getsource(util.getDriverDrivenFromConstraint)
 
     cmdList = []
@@ -75,7 +84,7 @@ def installIKFK(ikList):
 
 
 if __name__ == "__main__":
-    installIKFK()
+    installIKFK(pm.ls('?_shoulder1_IKH'))
     # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
     # classeProva.toIK()
     # classeProva.toFK()
