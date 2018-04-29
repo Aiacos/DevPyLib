@@ -6,7 +6,7 @@ from mayaLib.rigLib.utils import util
 
 
 class IKFKSwitch():
-    def __init__(self, ikHandle, forearmMidJnt=False):
+    def __init__(self, ikHandle, forearmMidJnt=False, simpleIK=False):
         self.joint1 = pm.listConnections(ikHandle, type='joint')[0]
         self.joint2 = self.joint1.outputs(type='joint')[0]
 
@@ -26,19 +26,27 @@ class IKFKSwitch():
         orientConstraintFK3 = self.joint3.outputs(type='constraint')[0]
         self.joint3FKCtrl = util.getDriverDrivenFromConstraint(orientConstraintFK3)[0][0]
 
-        # IK control
-        #pointConstraintIK = pm.listConnections(ikHandle, type='constraint')[0]
-        #self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
-        peelHeelGrp = ikHandle.getParent()
-        tippyToeGrp = peelHeelGrp.getParent()
-        moveGrp = tippyToeGrp.getParent()
-        pointConstraintIK = pm.listConnections(moveGrp, type='constraint')[0]
-        self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
 
-        poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
-        poleVectorLoc = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
-        poleVectorLocConstraint = poleVectorLoc.getChildren()[1]
-        self.poleVector =  util.getDriverDrivenFromConstraint(poleVectorLocConstraint)[0][0]
+
+        # IK control
+        if simpleIK:
+            # IK control
+            pointConstraintIK = pm.listConnections(ikHandle, type='constraint')[0]
+            self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
+
+            poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
+            self.poleVector = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
+        else:
+            peelHeelGrp = ikHandle.getParent()
+            tippyToeGrp = peelHeelGrp.getParent()
+            moveGrp = tippyToeGrp.getParent()
+            pointConstraintIK = pm.listConnections(moveGrp, type='constraint')[0]
+            self.joint3IKCtrl = util.getDriverDrivenFromConstraint(pointConstraintIK)[0][0]
+
+            poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
+            poleVectorLoc = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
+            poleVectorLocConstraint = poleVectorLoc.getChildren()[1]
+            self.poleVector =  util.getDriverDrivenFromConstraint(poleVectorLocConstraint)[0][0]
 
 
         self.ikHandle = ikHandle
