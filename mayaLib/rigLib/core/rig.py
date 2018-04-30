@@ -45,11 +45,6 @@ class BaseRig(object):
         if buildScene_filePath:
             pm.importFile(buildScene_filePath)
 
-        # Load SkinCluster
-        if loadSkinCluster:
-            geoList = [geo.name() for geo in pm.ls('*_GEO')]
-            skin.loadSkinWeights(characterName, geoList)
-
         # Create proxy geo
         self.prxGeoList = pm.ls('*_PRX')
         if doProxyGeo:
@@ -57,6 +52,8 @@ class BaseRig(object):
                 mainProxyGeo = pm.ls('mainProxy_GEO')[0]
                 prxGeoInstance = proxyGeo.ProxyGeo(mainProxyGeo)
                 self.prxGeoList = prxGeoInstance.getProxyGeoList()
+
+        self.prepare()
 
         # search model grp
         self.sceneRadius = 1
@@ -80,6 +77,22 @@ class BaseRig(object):
         if pm.objExists(rootJnt):
             pm.parent(rootJnt, self.baseModule.jointsGrp)
 
+        # Load SkinCluster
+        if loadSkinCluster:
+            geoList = [geo.name() for geo in pm.ls('*_GEO')]
+            skin.loadSkinWeights(characterName, geoList)
+
+        self.upgrade()
+        self.finalize()
+
+    def prepare(self):
+        pass
+
+    def upgrade(self):
+        pass
+
+    def finalize(self):
+        pass
 
     def makeSpine(self, rootJnt, spineJoints, sceneScale):
         """
@@ -135,15 +148,6 @@ class BaseRig(object):
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, limbRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         return limbRig
-
-    def prepare(self):
-        pass
-
-    def upgrade(self):
-        pass
-
-    def finalize(self):
-        pass
 
 
 class Rig(BaseRig):
