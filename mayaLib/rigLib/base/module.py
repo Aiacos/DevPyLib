@@ -225,6 +225,7 @@ class Module():
         self.topGrp = pm.group(n=prefix + 'Module_GRP', em=1)
 
         self.controlsGrp = pm.group(n=prefix + 'Controls_GRP', em=1, p=self.topGrp)
+        self.secControlsGrp = pm.group(n=prefix + 'secondaryControls_GRP', em=1, p=self.topGrp)
         self.jointsGrp = pm.group(n=prefix + 'Joints_GRP', em=1, p=self.topGrp)
         self.partsGrp = pm.group(n=prefix + 'Parts_GRP', em=1, p=self.topGrp)
         self.partsNoTransGrp = pm.group(n=prefix + 'PartsNoTrans_GRP', em=1, p=self.topGrp)
@@ -233,7 +234,16 @@ class Module():
 
         pm.setAttr(self.partsNoTransGrp + '.it', 0, l=1)
 
-        # parent module
+        if(pm.objExists('display_CTRL')):
+            displayCtrl = pm.ls('display_CTRL')[0]
 
+            levelGrp = [self.controlsGrp, self.secControlsGrp]
+            pm.addAttr(displayCtrl, ln=prefix, at='enum', enumName='none:block:all', k=1, dv=1)
+            pm.setAttr(displayCtrl + '.' + prefix, cb=1)
+            common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[0] + '.v', [0, 1, 1])
+            common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[1] + '.v', [0, 0, 1])
+
+
+        # parent module
         if baseObj:
             pm.parent(self.topGrp, baseObj.modulesGrp)
