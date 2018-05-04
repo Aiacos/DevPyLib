@@ -12,6 +12,7 @@ from mayaLib.rigLib.base import neck
 from mayaLib.rigLib.base import ikChain
 from mayaLib.rigLib.base import limb
 from mayaLib.rigLib.utils import ikfkSwitch
+from mayaLib.rigLib.utils import ctrlShape
 
 from mayaLib.rigLib.utils import proxyGeo
 
@@ -83,6 +84,17 @@ class BaseRig(object):
             skin.loadSkinWeights(characterName, geoList)
 
         self.upgrade()
+
+        # control shape
+        if pm.objExists('controlShapes_GRP'):
+            controlShapeList = util.getAllObjectUnderGroup('controlShapes_GRP', type='transform')
+            controlList = [cv for cv in pm.ls('*_CTRL') if cv not in controlShapeList]
+            for ctrl in controlList:
+                for ctrlshape in controlShapeList:
+                    if ctrlshape.name().split('|')[-1] == ctrl.name().split('|')[-1]:
+                        ctrlShape.copyShape(ctrlshape, ctrl)
+            pm.delete('controlShapes_GRP')
+
         self.finalize()
 
     def prepare(self):

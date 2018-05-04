@@ -17,6 +17,17 @@ def copyShape(source, destination):
     pm.parent(sourceShapes, destination, r=True, s=True)
     pm.delete(source)
 
+def extractCtrlShape():
+    controlShapeGrp = pm.group(n='controlShapes_GRP', em=True)
+    ctrlList = pm.ls('*_CTRL')
+    for ctrl in ctrlList:
+        ctrlShape = pm.duplicate(ctrl, rr=True)[0]
+        deleteList = pm.listRelatives(ctrlShape, c=True, type='transform')
+        pm.delete(deleteList)
+        pm.parent(ctrlShape, controlShapeGrp)
+        newName = ctrlShape.name().replace('_CTRL1', '_CTRL')
+        pm.rename(ctrlShape, newName)
+
 def sphereCtrlShape(name, scale=1):
     ctrlObject = pm.circle(n=name, ch=False, normal=[1, 0, 0], radius=scale)[0]
     addShape = pm.circle(n=name, ch=False, normal=[0, 0, 1], radius=scale)[0]
