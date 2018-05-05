@@ -182,7 +182,7 @@ class Control():
 
         return radius
 
-    def calculateScale(self, scale, translateTo='', objBBox='', useBBox=False):
+    def calculateScale(self, scale, translateTo='', objBBox='', useBBox=False, useMean=False):
         """
         Calculate scale value
         :param scale: float
@@ -203,6 +203,12 @@ class Control():
                 if useBBox and pm.objExists(proxyGeoName):
                     objBBox = pm.ls(proxyGeoName)[0]
                     scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
+
+                elif useMean and pm.objExists(proxyGeoName):
+                    objBBox = pm.ls(proxyGeoName)[0]
+                    bboxValues = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)
+                    scale = (bboxValues['planarX'] + bboxValues['planarY'] + bboxValues['planarZ']) / 3
+
                 elif isinstance(translateTo, pm.nodetypes.Joint):
                     scale = self.ctrlRadiusFromJoint(translateTo)
                     if scale < 1 or (scale/3) < 0.01:
