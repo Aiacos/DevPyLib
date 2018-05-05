@@ -27,10 +27,29 @@ class PxrSurface_shaderBase(Shader_base):
             self.shader.specularFresnelMode.set(1)
         else:
             self.shader.specularFresnelMode.set(0)
+
         # init faceColor
         self.shader.specularEdgeColor.set((1.0, 1.0, 1.0))
+
         # connect texture
         self.makePxrSurface(file_node_dict, physicalSpecular)
+
+        # connect displacement
+        if config.displace in file_node_dict:
+            self.pxrDisplace = self.makePxrDisplace()
+            pm.connectAttr(self.pxrDisplace.outColor, self.shading_group.displacementShader)
+
+
+    def makePxrDisplace(self, shader_name, pxrtexture_node):
+        pxrDisplace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name+'Displace')
+        pxrDispTransform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name+'DispTransform')
+
+        pm.connectAttr(pxrDispTransform.resultF, pxrDisplace.dispScalar)
+        pm.connectAttr(pxrtexture_node[config.displace].resultA, pxrDispTransform.dispScalar)
+        
+        pxrDisplace.dispAmount.set(0.1)
+
+        return pxrDisplace
 
     def makePxrSurface(self, pxrtexture_node, physicalSpecular):
         connect_diffuse = self.connect_color_pxrtexture
