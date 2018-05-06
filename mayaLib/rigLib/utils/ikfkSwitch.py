@@ -52,7 +52,8 @@ class IKFKSwitch():
         self.ikHandle = ikHandle
 
     def toIK(self):
-        pm.delete(pm.parentConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
+        pm.delete(pm.pointConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
+        pm.delete(pm.orientConstraint(self.joint3, self.joint3IKCtrl))
         pm.delete(pm.pointConstraint(self.joint2FKCtrl, self.poleVector))
 
     def toFK(self):
@@ -63,12 +64,14 @@ class IKFKSwitch():
     def switchIKFK(self):
         blend = self.ikHandle.ikBlend.get()
         if blend == 0:
-            self.toIK()
-        elif blend == 1:
             self.toFK()
+            print 'Snap FK CTRL To IK'
+        elif blend == 1:
+            self.toIK()
+            print 'Snap IK CTRL To FK'
 
     def addScriptJob(self):
-        pm.scriptJob(attributeChange=[self.ikHandle.ikBlend, self.switchIKFK])
+        return pm.scriptJob(attributeChange=[self.ikHandle.ikBlend, self.switchIKFK])
 
 def installIKFK(ikList):
     from mayaLib.rigLib.utils import ikfkSwitch
@@ -92,8 +95,12 @@ def installIKFK(ikList):
 
 
 if __name__ == "__main__":
-    installIKFK(pm.ls('?_shoulder1_IKH'))
-    # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
-    # classeProva.toIK()
-    # classeProva.toFK()
+    ikList = pm.ls('l_shoulder1_IKH', 'r_shoulder1_IKH', 'l_hip1_IKH', 'r_hip1_IKH')
+    ikInstanceList = [IKFKSwitch(ik) for ik in ikList]
+    ikScriptJobList = [i.addScriptJob() for i in ikInstanceList]
+    print ikScriptJobList
+
+    c = IKFKSwitch(ikList[0])
+    c.switchIKFK()
+    print c.addScriptJob()
 
