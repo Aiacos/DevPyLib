@@ -50,6 +50,7 @@ class IKFKSwitch():
 
 
         self.ikHandle = ikHandle
+        self.driverAttribute = self.ikHandle.inputs(scn=True, type='reverse')[0].inputs(scn=True, plugs=True)[0]
 
     def toIK(self):
         pm.delete(pm.pointConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
@@ -63,15 +64,31 @@ class IKFKSwitch():
 
     def switchIKFK(self):
         blend = self.ikHandle.ikBlend.get()
+
+        attribute = self.disconnect()
+
         if blend == 0:
+            self.ikHandle.ikBlend.set(1)
             self.toFK()
             print 'Snap FK CTRL To IK'
         elif blend == 1:
+            self.ikHandle.ikBlend.set(0)
             self.toIK()
             print 'Snap IK CTRL To FK'
 
+        self.reconnect(attribute)
+
     def addScriptJob(self):
-        return pm.scriptJob(attributeChange=[self.ikHandle.ikBlend, self.switchIKFK])
+        return pm.scriptJob(attributeChange=[self.driverAttribute, self.switchIKFK])
+
+    def disconnect(self):
+        attribute = pm.listConnections(self.ikHandle.ikBlend, scn=True, d=False, s=True, plugs=True)[0]
+        pm.disconnectAttr(attribute, self.ikHandle.ikBlend)
+
+        return attribute
+
+    def reconnect(self, attribute):
+        pm.connectAttr(attribute, self.ikHandle.ikBlend, f=True)
 
 def installIKFK(ikList):
     from mayaLib.rigLib.utils import ikfkSwitch
