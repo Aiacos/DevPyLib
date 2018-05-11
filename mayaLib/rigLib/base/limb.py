@@ -62,7 +62,7 @@ class Limb():
                                                                                      rigScale, rigmodule)
 
         if doIK:
-            mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs = self.makeIK(limbJoints, topFingerJoints,
+            mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, handIKOrientCnst = self.makeIK(limbJoints, topFingerJoints,
                                                                           rigScale, rigmodule)
             poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, mainIKCtrl.getControl(), rigScale, rigmodule)
 
@@ -72,7 +72,7 @@ class Limb():
                 IKFKCtrl = pm.ls(visibilityIKFKCtrl)[0]
                 self.switchIKFK(prefix, IKFKCtrl,
                                 fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
-                                mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl)
+                                mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl, handIKOrientCnst)
 
         # check scapula
         if scapulaJnt != '' and pm.objExists(scapulaJnt):
@@ -101,7 +101,7 @@ class Limb():
 
     def switchIKFK(self, prefix, visCtrl,
                    fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
-                   mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl):
+                   mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl, handIKOrientCnst):
 
         pm.addAttr(visCtrl, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
         ctrlAttr = prefix.lower()
@@ -111,6 +111,8 @@ class Limb():
         # connect IK
         pm.connectAttr(reverseNode.outputX, mainIKCtrl.getTop().visibility)
         pm.connectAttr(reverseNode.outputX, ikHandle.ikBlend)
+        IKcnstAttr = pm.listConnections(handIKOrientCnst.target[1].targetWeight, p=True, s=True)[0]
+        pm.connectAttr(reverseNode.outputX, IKcnstAttr)
 
         for ctrl in fngCtrls[0]:
             pm.connectAttr(reverseNode.outputX, ctrl.getTop().visibility)
@@ -189,7 +191,7 @@ class Limb():
             ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt,
                                    scale=rigScale * 3, parent=parent, shape='circleX')
 
-            orientCnst = pm.orientConstraint(ctrl.getControl(), jnt)
+            orientCnst = pm.orientConstraint(ctrl.getControl(), jnt, mo=True)
 
             limbCtrlConstraintList.append(orientCnst)
             limbCtrlInstanceList.append(ctrl)
@@ -270,7 +272,7 @@ class Limb():
         prefix = name.removeSuffix(limbJoints[2])
 
         # make controls
-        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2],
+        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2], rotateTo=limbJoints[2],
                                      scale=rigScale * 3, parent=rigmodule.controlsGrp, shape='circleY')
 
         midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList()) / 2.0)) - 1
@@ -294,6 +296,6 @@ class Limb():
 
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
         pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
+        handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
 
-        return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl],
-                                                          toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList()
+        return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl], toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint
