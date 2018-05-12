@@ -53,8 +53,7 @@ class IKFKSwitch():
         self.driverAttribute = self.ikHandle.inputs(scn=True, type='reverse')[0].inputs(scn=True, plugs=True)[0]
 
     def toIK(self):
-        pm.delete(pm.pointConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
-        pm.delete(pm.orientConstraint(self.joint3, self.joint3IKCtrl))
+        pm.delete(pm.parentConstraint(self.joint3FKCtrl, self.joint3IKCtrl))
         pm.delete(pm.pointConstraint(self.joint2FKCtrl, self.poleVector))
 
     def toFK(self):
