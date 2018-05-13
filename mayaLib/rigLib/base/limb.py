@@ -103,10 +103,21 @@ class Limb():
                    fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
                    mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl, handIKOrientCnst):
 
+        if not pm.objExists('switchIKFK_LOC'):
+            switchLoc = pm.spaceLocator(n='switchIKFK_LOC')
+            pm.parent(switchLoc, 'rig_GRP')
+            pm.hide(switchLoc)
+            util.lock_and_hide_all(switchLoc)
+        else:
+            switchLoc = pm.ls('switchIKFK_LOC')[0]
+
+        pm.addAttr(switchLoc, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
         pm.addAttr(visCtrl, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
         ctrlAttr = prefix.lower()
-        reverseNode = pm.shadingNode('reverse', asUtility=True, n=prefix + 'Node')
-        pm.connectAttr(visCtrl + '.' + ctrlAttr, reverseNode.inputX)
+        pm.connectAttr(visCtrl + '.' + ctrlAttr, switchLoc + '.' + ctrlAttr)
+
+        reverseNode = pm.shadingNode('reverse', asUtility=True, n=prefix + 'ReverseNode')
+        pm.connectAttr(switchLoc + '.' + ctrlAttr, reverseNode.inputX)
 
         # connect IK
         pm.connectAttr(reverseNode.outputX, mainIKCtrl.getTop().visibility)
@@ -128,16 +139,16 @@ class Limb():
 
         # connect FK
         for ctrl in fkLimbCtrls:
-            pm.connectAttr(visCtrl + '.' + ctrlAttr, ctrl.getTop().visibility)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr, ctrl.getTop().visibility)
         for cnst in fkLimbCnst:
             attr = pm.listConnections(cnst.target[0].targetWeight, p=True, s=True)[0]
-            pm.connectAttr(visCtrl + '.' + ctrlAttr, attr)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr, attr)
 
         for ctrl in fkHandsFeetCtrls:
-            pm.connectAttr(visCtrl + '.' + ctrlAttr, ctrl.getTop().visibility)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr, ctrl.getTop().visibility)
         for cnst in fkHandsFeetCnst:
             attr = pm.listConnections(cnst.target[0].targetWeight, p=True, s=True)[0]
-            pm.connectAttr(visCtrl + '.' + ctrlAttr, attr)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr, attr)
 
     def makeSimpleScapula(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         scapulaCtrl = control.Control(prefix=prefix + 'Scapula', translateTo=scapulaJnt, rotateTo=scapulaJnt,
