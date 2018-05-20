@@ -8,6 +8,7 @@ import pymel.core as pm
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import attributes
 
 def jointDirection(joint):
     """
@@ -48,6 +49,36 @@ def listHierarchy(topJoint, withEndJoints=True):
 
     return completeJoints
 
+def savePose(topJoint, poseName):
+    jointList = pm.ls(listHierarchy(topJoint))
+    for jnt in jointList:
+        jointOrient = jnt.jointOrient.get()
+        attributes.addVectorAttribute(jnt, poseName, jointOrient)
+
+def loadPose(topJoint, poseName):
+    jointList = pm.ls(listHierarchy(topJoint))
+    for jnt in jointList:
+        attributeList = pm.ls(jnt + '.' + poseName)
+        if len(attributeList) == 1:
+            attribute = attributeList[0]
+            jointOrientPose = attribute.get()
+            jnt.jointOrient.set(jointOrientPose)
+
+def saveProjectionPose(topJnt='spineJA_JNT'):
+    mainJoint = pm.ls(topJnt)[0]
+    savePose(mainJoint, 'projectionPose')
+
+def saveTPose(topJnt='spineJA_JNT'):
+    mainJoint = pm.ls(topJnt)[0]
+    savePose(mainJoint, 'TPose')
+
+def loadProjectionPose(topJnt='spineJA_JNT'):
+    mainJoint = pm.ls(topJnt)[0]
+    loadPose(mainJoint, 'projectionPose')
+
+def loadTPose(topJnt='spineJA_JNT'):
+    mainJoint = pm.ls(topJnt)[0]
+    loadPose(mainJoint, 'TPose')
 
 class TwistJoint():
     def __init__(self, parentGrp, parentJoints, nTwistJoint=3, rotAxis='X'):
