@@ -4,6 +4,7 @@ joint @ utils
 Various joint utility functions
 """
 
+import math
 import pymel.core as pm
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
@@ -49,6 +50,7 @@ def listHierarchy(topJoint, withEndJoints=True):
 
     return completeJoints
 
+
 def savePose(topJoint, poseName):
     jointList = pm.ls(listHierarchy(topJoint))
     for jnt in jointList:
@@ -79,6 +81,17 @@ def loadProjectionPose(topJnt='spineJA_JNT'):
 def loadTPose(topJnt='spineJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'TPose')
+
+def setJointParallelToGrid(p1, p2):
+    p1x, p1y, p1z = pm.xform(p1, query=True, translation=True, worldSpace=True)
+    p2x, p2y, p2z = pm.xform(p2, query=True, translation=True, worldSpace=True)
+
+    xOffset = p1x - p2x
+    yOffset = p1y - p2y
+    angle = math.atan(yOffset / xOffset)
+
+    return math.degrees(angle)
+
 
 class TwistJoint():
     def __init__(self, parentGrp, parentJoints, nTwistJoint=3, rotAxis='X'):
