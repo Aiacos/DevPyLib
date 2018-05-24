@@ -17,3 +17,13 @@ def addVectorAttribute(object, name, defaultValue=[0, 0, 0]):
 
     attribute = pm.Attribute(object + '.' + name)
     return attribute
+
+def addFloatAttribute(object, name, defaultValue=0):
+    attributeList = pm.ls(object + '.' + name)
+    if len(attributeList) == 0:
+        pm.addAttr(object, longName=name, attributeType='float', dv=defaultValue)
+    else:
+        pm.setAttr(object + '.' + name, defaultValue)
+
+    attribute = pm.Attribute(object + '.' + name)
+    return attribute

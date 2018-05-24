@@ -30,3 +30,8 @@ def getSide(name):
 
     side = edits[0] + '_'
     return side
+
+def getAlpha(i):
+    if i >= 0 and i <= 25:
+        return chr(65 + i)
+    return ''
