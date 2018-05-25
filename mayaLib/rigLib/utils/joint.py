@@ -54,13 +54,51 @@ def listHierarchy(topJoint, withEndJoints=True):
 def savePose(topJoint, poseName):
     jointList = pm.ls(listHierarchy(topJoint))
     for jnt in jointList:
+        # translate
+        translate = jnt.translate.get()
+        attributes.addVectorAttribute(jnt, poseName + 'Translate', translate)
+        # rotate
+        rotate = jnt.rotate.get()
+        attributes.addVectorAttribute(jnt, poseName + 'Rotate', rotate)
+        # scale
+        scale = jnt.scale.get()
+        attributes.addVectorAttribute(jnt, poseName + 'Scale', scale)
+        # rotation order
+        rotateOrder = jnt.rotateOrder.get()
+        attributes.addFloatAttribute(jnt, poseName + 'RotateOrder', rotateOrder)
+        # joint orient
         jointOrient = jnt.jointOrient.get()
-        attributes.addVectorAttribute(jnt, poseName, jointOrient)
+        attributes.addVectorAttribute(jnt, poseName + 'JointOrient', jointOrient)
 
 def loadPose(topJoint, poseName):
     jointList = pm.ls(listHierarchy(topJoint))
     for jnt in jointList:
-        attributeList = pm.ls(jnt + '.' + poseName)
+        # translate
+        attributeList = pm.ls(jnt + '.' + poseName + 'Translate')
+        if len(attributeList) == 1:
+            attribute = attributeList[0]
+            translatePose = attribute.get()
+            jnt.translate.set(translatePose)
+        # rotate
+        attributeList = pm.ls(jnt + '.' + poseName + 'Rotate')
+        if len(attributeList) == 1:
+            attribute = attributeList[0]
+            rotatePose = attribute.get()
+            jnt.rotate.set(rotatePose)
+        # scale
+        attributeList = pm.ls(jnt + '.' + poseName + 'Scale')
+        if len(attributeList) == 1:
+            attribute = attributeList[0]
+            scalePose = attribute.get()
+            jnt.scale.set(scalePose)
+        # rotate order
+        attributeList = pm.ls(jnt + '.' + poseName + 'RotateOrder')
+        if len(attributeList) == 1:
+            attribute = attributeList[0]
+            rotateOrderPose = attribute.get()
+            jnt.rotateOrder.set(rotateOrderPose)
+        # joint orient
+        attributeList = pm.ls(jnt + '.' + poseName + 'JointOrient')
         if len(attributeList) == 1:
             attribute = attributeList[0]
             jointOrientPose = attribute.get()
