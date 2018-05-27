@@ -130,6 +130,17 @@ def setJointParallelToGrid(p1, p2):
 
     return math.degrees(angle)
 
+def setArmParallelToGrid():
+    leftArmJntList = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
+    for i, jnt in enumerate(leftArmJntList[:-1]):
+        angle = setJointParallelToGrid(leftArmJntList[i], leftArmJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
+    rightArmJntList = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
+    for i, jnt in enumerate(rightArmJntList[:-1]):
+        angle = setJointParallelToGrid(rightArmJntList[i], rightArmJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
 
 class TwistJoint():
     def __init__(self, parentGrp, parentJoints, nTwistJoint=3, rotAxis='X'):
@@ -258,6 +269,12 @@ def renameHumanIKJoint(element='Character1', deleteHumanIK=True):
         for jnt in sideList:
             elementSplit, jointSplit = jnt.name().split('_')
             newName = side + jointSplit.replace(oldSide, '') + '_JNT'
+            pm.rename(jnt, newName)
+
+        # Clavicle
+        clavicleList = pm.ls(side + 'Shoulder_JNT')
+        for jnt, i in zip(clavicleList, range(0, len(clavicleList))):
+            newName = side + 'clavicleJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Arms
