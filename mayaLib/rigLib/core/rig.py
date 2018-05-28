@@ -37,6 +37,10 @@ class BaseRig(object):
         :param doProxyGeo: bool
         :param goToTPose: bool
         """
+
+        start = pm.timerX()
+        print '-- START --'
+
         # New Scene
         if buildScene_filePath:
             pm.newFile(force=True)
@@ -81,6 +85,9 @@ class BaseRig(object):
                 if doProxyGeo and len(pm.ls('mainProxy_GEO')) > 0 and pm.objExists(prxGeoInstance.getFastGeoGroup()):
                     pm.delete(prxGeoInstance.getFastGeoGroup(), pm.ls('mainProxy_GEO'))
 
+        if pm.objExists('skeletonModel_GEO'):
+            pm.parent('skeletonModel_GEO', self.baseModule.rigModelGrp)
+
         # parent joint group
         if pm.objExists(rootJnt):
             pm.parent(rootJnt, self.baseModule.jointsGrp)
@@ -104,6 +111,10 @@ class BaseRig(object):
             pm.delete('controlShapes_GRP')
 
         self.finalize()
+
+        totalTime = pm.timerX(startTime=start)
+        print '-- END --'
+        print 'Total time: ', totalTime
 
     def prepare(self):
         pass
@@ -308,32 +319,45 @@ class HumanoidRig(BaseRig):
         :param doSpine: bool
         :param doNeck: bool
         :param doTail: bool
+        :param doDynamicTail: bool
+        :param goToTPose: bool
         """
+
+        self.rootJnt = rootJnt
+        self.headJnt = headJnt
+
+        self.doSpine = doSpine
+        self.doNeck = doNeck
+        self.doTail = doTail
+        self.doDynamicTail = doDynamicTail
+        self.goToTPose = goToTPose
+
+        self.sceneScale = sceneScale
 
         super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
 
-    def rig(self, rootJnt, headJnt, sceneScale, doSpine, doNeck, doTail, doDynamicTail, goToTPose):
-        print '-- RIG2 --'
+    def rig(self):
+        print '-- RIG HUMANOID --'
 
-        if goToTPose:
-            joint.loadTPose(rootJnt)
+        if self.goToTPose:
+            joint.loadTPose(self.rootJnt)
 
-        if doSpine:
+        if self.doSpine:
             spineJoints = pm.ls('spineJ?_JNT')
-            self.spineRig = self.makeSpine(rootJnt, spineJoints, sceneScale)
+            self.spineRig = self.makeSpine(self.rootJnt, spineJoints, self.sceneScale)
 
-        if doNeck:
+        if self.doNeck:
             neckJoints = pm.ls('neckJ?_JNT')
-            self.neckRig = self.makeNeck(headJnt, neckJoints, sceneScale, self.spineRig)
+            self.neckRig = self.makeNeck(self.headJnt, neckJoints, self.sceneScale, self.spineRig)
 
-        if doSpine and doNeck:
+        if self.doSpine and self.doNeck:
             pm.parentConstraint(spineJoints[-1], self.neckRig.getModuleDict()['baseAttachGrp'], mo=1)
             pm.parentConstraint(self.spineRig.getModuleDict()['bodyCtrl'].C, self.neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
-        if doTail:
+        if self.doTail:
             tailJoints = pm.ls('tail*_JNT')
-            pelvisJnt = pm.ls(rootJnt)[0]
-            self.tailRig = self.makeTail(pelvisJnt, tailJoints, doDynamicTail, sceneScale)
+            pelvisJnt = pm.ls(self.rootJnt)[0]
+            self.tailRig = self.makeTail(pelvisJnt, tailJoints, self.doDynamicTail, self.sceneScale)
 
 
         # left arm

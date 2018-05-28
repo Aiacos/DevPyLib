@@ -104,19 +104,19 @@ def loadPose(topJoint, poseName):
             jointOrientPose = attribute.get()
             jnt.jointOrient.set(jointOrientPose)
 
-def saveProjectionPose(topJnt='spineJA_JNT'):
+def saveProjectionPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'projectionPose')
 
-def saveTPose(topJnt='spineJA_JNT'):
+def saveTPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'TPose')
 
-def loadProjectionPose(topJnt='spineJA_JNT'):
+def loadProjectionPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'projectionPose')
 
-def loadTPose(topJnt='spineJA_JNT'):
+def loadTPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'TPose')
 
