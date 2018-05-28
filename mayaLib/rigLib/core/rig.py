@@ -5,6 +5,7 @@ from mayaLib.rigLib.base.module import Base
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import skin
 from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import joint
 
 from mayaLib.rigLib.base import control
 from mayaLib.rigLib.base import spine
@@ -23,7 +24,8 @@ class BaseRig(object):
                  rootJnt='spineJA_jnt',
                  headJnt='headJA_jnt',
                  loadSkinCluster=True,
-                 doProxyGeo=True
+                 doProxyGeo=True,
+                 goToTPose=True
                  ):
         """
         Create Base Rig
@@ -33,6 +35,7 @@ class BaseRig(object):
         :param rootJnt: str
         :param loadSkinCluster: bool
         :param doProxyGeo: bool
+        :param goToTPose: bool
         """
         # New Scene
         if buildScene_filePath:
@@ -45,6 +48,9 @@ class BaseRig(object):
         # Import buildScene
         if buildScene_filePath:
             pm.importFile(buildScene_filePath)
+
+        if goToTPose:
+            joint.loadTPose(rootJnt)
 
         # Create proxy geo
         self.prxGeoList = pm.ls('*_PRX')
@@ -65,6 +71,7 @@ class BaseRig(object):
 
         # Create rig
         self.baseModule = Base(characterName=characterName, scale=self.sceneRadius, mainCtrlAttachObj=headJnt)
+        self.rig()
 
         # parent model group and clean scene
         if modelGrp:
@@ -80,6 +87,7 @@ class BaseRig(object):
 
         # Load SkinCluster
         if loadSkinCluster:
+            joint.loadProjectionPose(rootJnt)
             geoList = [geo.name() for geo in pm.ls('*_GEO')]
             skin.loadSkinWeights(characterName, geoList)
 
@@ -98,6 +106,9 @@ class BaseRig(object):
         self.finalize()
 
     def prepare(self):
+        pass
+
+    def rig(self):
         pass
 
     def upgrade(self):
@@ -141,7 +152,7 @@ class BaseRig(object):
 
         return tailRig
 
-    def makeLimb(self, spineRig, scapulaJoint, limbJoints, topFngJoints):
+    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint=''):
         """
         Make general Limb
         :param spineRig: instance
@@ -150,12 +161,14 @@ class BaseRig(object):
         :param topFngJoints: list(str)
         :return: instance, limbRig
         """
-        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, scapulaJnt=scapulaJoint, baseRig=self.baseModule)
+        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt, scapulaJnt=scapulaJoint, baseRig=self.baseModule)
 
-        if scapulaJoint:
-            pm.parentConstraint(limbJoints[-1], limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+        if clavicleJnt:
+            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+        elif scapulaJoint:
+            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
         else:
-            pm.parentConstraint(spineRig.getModuleDict()['baseAttachGrp'], limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
 
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, limbRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
@@ -261,6 +274,85 @@ class Rig(BaseRig):
         ikfkSwitch.installIKFK([lArmRig.getMainLimbIK(), rArmRig.getMainLimbIK(), lLegRig.getMainLimbIK(), rLegRig.getMainLimbIK()])
 
 
+class HumanoidRig(BaseRig):
+    """
+    Rig
+    """
+    def __init__(self, characterName='new',
+                 model_filePath='', buildScene_filePath='',
+                 sceneScale=1,
+                 rootJnt='spineJA_JNT',
+                 headJnt='headJA_JNT',
+                 loadSkinCluster=True,
+                 doProxyGeo=True,
+                 doSpine=True,
+                 doNeck=True,
+                 doTail=False, doDynamicTail=False,
+                 goToTPose=True
+                 ):
+        """
+        Create Base Rig
+        :param characterName: str
+        :param model_filePath: str
+        :param buildScene_filePath: str
+        :param sceneScale: float
+        :param rootJnt: str
+        :param headJnt: str
+        :param loadSkinCluster: bool
+        :param doProxyGeo: bool
+        :param doSpine: bool
+        :param doNeck: bool
+        :param doTail: bool
+        """
+        super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
+
+        if goToTPose:
+            joint.loadTPose(rootJnt)
+
+        if doSpine:
+            spineJoints = pm.ls('spineJ?_JNT')
+            self.spineRig = self.makeSpine(rootJnt, spineJoints, sceneScale)
+
+        if doNeck:
+            neckJoints = pm.ls('neckJ?_JNT')
+            self.neckRig = self.makeNeck(headJnt, neckJoints, sceneScale, self.spineRig)
+
+        if doSpine and doNeck:
+            pm.parentConstraint(spineJoints[-1], self.neckRig.getModuleDict()['baseAttachGrp'], mo=1)
+            pm.parentConstraint(self.spineRig.getModuleDict()['bodyCtrl'].C, self.neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
+
+        if doTail:
+            tailJoints = pm.ls('tail*_JNT')
+            pelvisJnt = pm.ls(rootJnt)[0]
+            self.tailRig = self.makeTail(pelvisJnt, tailJoints, doDynamicTail, sceneScale)
+
+
+        # left arm
+        lClavicleJoint = pm.ls('l_clavicleJA_JNT')[0]
+        lScapulaJoint = ''
+        lArmJoints = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
+        lTopFngJoints = pm.ls('l_fngThumbJA_JNT', 'l_fngIndexJA_JNT', 'l_fngMiddleJA_JNT', 'l_fngRingJA_JNT', 'l_fngPinkyJA_JNT')
+        self.lArmRig = self.makeLimb(self.spineRig, lClavicleJoint, lScapulaJoint, lArmJoints, lTopFngJoints, spineJoints[-1])
+
+        # right arm
+        rClavicleJoint = pm.ls('r_clavicleJA_JNT')[0]
+        rScapulaJoint = ''
+        rArmJoints = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
+        rTopFngJoints = pm.ls('r_fngThumbJA_JNT', 'r_fngIndexJA_JNT', 'r_fngMiddleJA_JNT', 'r_fngRingJA_JNT', 'r_fngPinkyJA_JNT')
+        self.rArmRig = self.makeLimb(self.spineRig, rClavicleJoint, rScapulaJoint, rArmJoints, rTopFngJoints, spineJoints[-1])
+
+        # left leg
+        lLegJoints = pm.ls('l_legJ?_JNT', 'l_footJA_JNT')
+        lTopToeJoints = pm.ls('l_toeThumbJA_JNT', 'l_toeIndexJA_JNT', 'l_toeMiddleJA_JNT', 'l_toeRingJA_JNT', 'l_toePinkyJA_JNT')
+        self.lLegRig = self.makeLimb(self.spineRig, '', '', lLegJoints, lTopToeJoints, spineJoints[0])
+
+        # right leg
+        rLegJoints = pm.ls('r_legJ?_JNT', 'r_footJA_JNT')
+        rTopToeJoints = pm.ls('r_toeThumbJA_JNT', 'r_toeIndexJA_JNT', 'r_toeMiddleJA_JNT', 'r_toeRingJA_JNT', 'r_toePinkyJA_JNT')
+        self.rLegRig = self.makeLimb(self.spineRig, '', '', rLegJoints, rTopToeJoints, spineJoints[0])
+
+        # install IKFK Switch
+        ikfkSwitch.installIKFK([self.lArmRig.getMainLimbIK(), self.rArmRig.getMainLimbIK(), self.lLegRig.getMainLimbIK(), self.rLegRig.getMainLimbIK()])
 
 
 if __name__ == "__main__":
