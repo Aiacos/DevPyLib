@@ -21,6 +21,7 @@ class Limb():
     def __init__(self,
                  limbJoints,
                  topFingerJoints,
+                 clavicleJoint='',
                  scapulaJnt='',
                  visibilityIKFKCtrl='ikfk_CTRL',
                  doFK=True,
@@ -74,7 +75,14 @@ class Limb():
                                 fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst,
                                 mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, poleVectorCtrl, handIKOrientCnst)
 
-        # check scapula
+        # clavicle
+        if clavicleJoint != '' and pm.objExists(clavicleJoint):
+            clavicleCtrl = self.makeClavicle(prefix, limbJoints, clavicleJoint, rigScale, rigmodule)
+            pm.parentConstraint(clavicleCtrl.getControl(), fkLimbCtrls[0].getTop(), mo=1)
+        else:
+            pm.parentConstraint(self.baseAttachGrp, fkLimbCtrls[0].getTop(), mo=1)
+
+        # scapula
         if scapulaJnt != '' and pm.objExists(scapulaJnt):
             scpJnt = pm.ls(limbJoints)[0].getParent()
             scapulaCtrl = None
@@ -88,8 +96,6 @@ class Limb():
             # constriant FK limb
             if scapulaCtrl:
                 pm.parentConstraint(scapulaCtrl.getControl(), fkLimbCtrls[0].getTop(), mo=1)
-        else:
-            pm.parentConstraint(self.baseAttachGrp, fkLimbCtrls[0].getTop(), mo=1)
 
         self.limbIK = ikHandle
 
@@ -113,7 +119,7 @@ class Limb():
 
         pm.addAttr(switchLoc, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
         pm.addAttr(visCtrl, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
-        ctrlAttr = prefix.lower()
+        ctrlAttr = prefix#.lower()
         pm.connectAttr(visCtrl + '.' + ctrlAttr, switchLoc + '.' + ctrlAttr)
 
         reverseNode = pm.shadingNode('reverse', asUtility=True, n=prefix + 'ReverseNode')
@@ -161,6 +167,18 @@ class Limb():
         pm.pointConstraint(scapulaCtrl.C, scapulaJnt)
 
         return scapulaCtrl
+
+    def makeClavicle(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
+        clavicleCtrl = control.Control(prefix=prefix + 'Clavicle', translateTo=scapulaJnt, rotateTo=scapulaJnt,
+                                      scale=rigScale * 3, parent=rigmodule.controlsGrp, shape='sphere',
+                                      lockChannels=['t', 's', 'v'])
+        scapulaIk = pm.ikHandle(n=prefix + 'Scapula_IKH', sol='ikSCsolver', sj=scapulaJnt, ee=limbJoints[0])[0]
+        pm.hide(scapulaIk)
+        pm.parentConstraint(self.baseAttachGrp, clavicleCtrl.Off, mo=1)
+        pm.parent(scapulaIk, clavicleCtrl.C)
+        pm.pointConstraint(clavicleCtrl.C, scapulaJnt)
+
+        return clavicleCtrl
 
     def makeDynamicScapula(self, limbJoints, rigmodule):
         limbJoints = pm.ls(limbJoints)
