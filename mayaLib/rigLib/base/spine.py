@@ -64,10 +64,10 @@ class Spine():
         pm.parent(spineCurve, self.rigmodule.partsNoTransGrp)
 
         # make controls
-        self.bodyCtrl = control.Control(prefix=prefix + 'Body', translateTo=bodyLocator, scale=rigScale * 4,
+        self.bodyCtrl = control.Control(prefix=prefix + 'Body', translateTo=bodyLocator, rotateTo=spineJoints[-1], scale=rigScale * 4,
                                    parent=self.rigmodule.controlsGrp, shape='spine')
 
-        chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, scale=rigScale * 6,
+        chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, rotateTo=spineJoints[-1], scale=rigScale * 6,
                                     parent=self.bodyCtrl.C, shape='chest')
 
         pelvisCtrl = control.Control(prefix=prefix + 'Pelvis', translateTo=pelvisLocator, scale=rigScale * 6,
