@@ -107,15 +107,19 @@ class BaseRig(object):
 
     def prepare(self):
         pass
+        print '-- PREPARE --'
 
     def rig(self):
         pass
+        print '-- RIG --'
 
     def upgrade(self):
         pass
+        print '-- UPGRADE --'
 
     def finalize(self):
         pass
+        print '-- FINALIZE --'
 
     def makeSpine(self, rootJnt, spineJoints, sceneScale):
         """
@@ -282,7 +286,7 @@ class HumanoidRig(BaseRig):
     def __init__(self, characterName='new',
                  model_filePath='', buildScene_filePath='',
                  sceneScale=1,
-                 rootJnt='spineJA_JNT',
+                 rootJnt='rootJA_JNT',
                  headJnt='headJA_JNT',
                  loadSkinCluster=True,
                  doProxyGeo=True,
@@ -305,7 +309,11 @@ class HumanoidRig(BaseRig):
         :param doNeck: bool
         :param doTail: bool
         """
+
         super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
+
+    def rig(self, rootJnt, headJnt, sceneScale, doSpine, doNeck, doTail, doDynamicTail, goToTPose):
+        print '-- RIG2 --'
 
         if goToTPose:
             joint.loadTPose(rootJnt)
