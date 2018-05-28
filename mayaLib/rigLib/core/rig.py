@@ -152,7 +152,7 @@ class BaseRig(object):
 
         return tailRig
 
-    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint=''):
+    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint='', useMetacarpalJoint=False):
         """
         Make general Limb
         :param spineRig: instance
@@ -161,7 +161,8 @@ class BaseRig(object):
         :param topFngJoints: list(str)
         :return: instance, limbRig
         """
-        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt, scapulaJnt=scapulaJoint, baseRig=self.baseModule)
+        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt, scapulaJnt=scapulaJoint,
+                            baseRig=self.baseModule, useMetacarpalJoint=useMetacarpalJoint)
 
         if clavicleJnt:
             pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
@@ -239,7 +240,7 @@ class Rig(BaseRig):
         legJoints = ['l_shoulder1_jnt', 'l_elbow1_jnt', 'l_hand1_jnt']
         topToeJoints = ['l_foreToeA1_jnt', 'l_foreToeB1_jnt', 'l_foreToeC1_jnt', 'l_foreToeD1_jnt', 'l_foreToeE1_jnt']
 
-        lArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='l_scapula1_jnt', baseRig=self.baseModule)
+        lArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='l_scapula1_jnt', baseRig=self.baseModule, useMetacarpalJoint=True)
 
         pm.parentConstraint(spineJoints[-2], lArmRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
@@ -248,7 +249,7 @@ class Rig(BaseRig):
         legJoints = ['r_shoulder1_jnt', 'r_elbow1_jnt', 'r_hand1_jnt']
         topToeJoints = ['r_foreToeA1_jnt', 'r_foreToeB1_jnt', 'r_foreToeC1_jnt', 'r_foreToeD1_jnt', 'r_foreToeE1_jnt']
 
-        rArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='r_scapula1_jnt', baseRig=self.baseModule)
+        rArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='r_scapula1_jnt', baseRig=self.baseModule, useMetacarpalJoint=True)
 
         pm.parentConstraint(spineJoints[-2], rArmRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
@@ -257,7 +258,7 @@ class Rig(BaseRig):
         legJoints = ['l_hip1_jnt', 'l_knee1_jnt', 'l_foot1_jnt']
         topToeJoints = ['l_hindToeA1_jnt', 'l_hindToeB1_jnt', 'l_hindToeC1_jnt', 'l_hindToeD1_jnt', 'l_hindToeE1_jnt']
 
-        lLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule)
+        lLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule, useMetacarpalJoint=True)
 
         pm.parentConstraint(spineJoints[0], lLegRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lLegRig.getModuleDict()['bodyAttachGrp'], mo=1)
@@ -266,7 +267,7 @@ class Rig(BaseRig):
         legJoints = ['r_hip1_jnt', 'r_knee1_jnt', 'r_foot1_jnt']
         topToeJoints = ['r_hindToeA1_jnt', 'r_hindToeB1_jnt', 'r_hindToeC1_jnt', 'r_hindToeD1_jnt', 'r_hindToeE1_jnt']
 
-        rLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule)
+        rLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule, useMetacarpalJoint=True)
 
         pm.parentConstraint(spineJoints[0], rLegRig.getModuleDict()['baseAttachGrp'], mo=1)
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rLegRig.getModuleDict()['bodyAttachGrp'], mo=1)

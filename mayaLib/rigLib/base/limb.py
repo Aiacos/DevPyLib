@@ -26,6 +26,7 @@ class Limb():
                  visibilityIKFKCtrl='ikfk_CTRL',
                  doFK=True,
                  doIK=True,
+                 useMetacarpalJoint=False,
                  prefix=None,
                  rigScale=1.0,
                  baseRig=None):
@@ -64,7 +65,7 @@ class Limb():
 
         if doIK:
             mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, handIKOrientCnst = self.makeIK(limbJoints, topFingerJoints,
-                                                                          rigScale, rigmodule)
+                                                                          rigScale, rigmodule, useMetacarpalJoint)
             poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, mainIKCtrl.getControl(), rigScale, rigmodule)
 
         if doFK and doIK:
@@ -275,7 +276,7 @@ class Limb():
 
         return poleVectorCtrl, poleVectorLoc
 
-    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
         :param limbJoints: list(str), Arm/leg joints
@@ -289,7 +290,11 @@ class Limb():
         topFngJntList = []
         endFngJntList = []
         for mtJnt in metacarpalJointList:
-            fngJnt = pm.listRelatives(mtJnt, type='joint', children=True)[0]
+            if useMetacarpalJoint:
+                fngJnt = pm.listRelatives(mtJnt, type='joint', children=True)[0]
+            else:
+                fngJnt = mtJnt
+
             fngEndJnt = joint.listHierarchy(mtJnt, withEndJoints=True)[-1]
             topFngJntList.append(fngJnt)
             endFngJntList.append(fngEndJnt)
