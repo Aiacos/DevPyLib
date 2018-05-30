@@ -29,6 +29,10 @@ class Base():
 
         # top group
         self.topGrp = pm.group(n=characterName + '_rig_GRP', em=1)
+        self.rigCtrlLoc = pm.spaceLocator(n='rigCtrl_LOC')
+        pm.rotate(self.rigCtrlLoc, [0, -90, 0], r=True, ws=True)
+        #common.freezeTranform(self.rigCtrlLoc)
+        pm.delete(pm.pointConstraint(mainCtrlAttachObj, self.rigCtrlLoc))
 
         characterNameAt = 'characterName'
         sceneObjectTypeAt = 'sceneObjectType'
@@ -95,6 +99,7 @@ class Base():
             scale=1,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
+            rotateTo=self.rigCtrlLoc,
             lockChannels=['s'],
             shape='circleX',
             doOffset=True,
@@ -135,6 +140,7 @@ class Base():
         # create display control
         self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
         self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, 1)
+        pm.delete(self.rigCtrlLoc)
 
 
     def getScaleLocator(self):
@@ -157,7 +163,7 @@ class Base():
             pm.setAttr('halo_blendShape.halo_CTRL', 1)
 
             # constraint haloCtrl
-            pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp())
+            pm.parentConstraint(mainCtrlAttachObj, self.haloCtrl.getOffsetGrp(), mo=True)
             self.haloCtrl.getModifyGrp().translateY.set(6 * self.haloCtrl.getCtrlScale())
 
     def createDisplay(self, mainCtrlAttachObj, scale):
@@ -167,6 +173,7 @@ class Base():
             scale=scale,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
+            rotateTo=self.rigCtrlLoc,
             lockChannels=['t', 'r', 's'],
             shape='display',
             doOffset=True,
@@ -178,7 +185,7 @@ class Base():
             # constraint displayCtrl
             common.centerPivot(displayCtrl.getOffsetGrp())
             common.centerPivot(displayCtrl.getControl())
-            pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp())
+            pm.parentConstraint(mainCtrlAttachObj, displayCtrl.getOffsetGrp(), mo=True)
             displayCtrl.getModifyGrp().translateY.set(4 * displayCtrl.getCtrlScale())
 
         return displayCtrl
@@ -190,6 +197,7 @@ class Base():
             scale=scale,
             parent=self.rigCtrlGrp,
             translateTo=mainCtrlAttachObj,
+            rotateTo=self.rigCtrlLoc,
             lockChannels=['t', 'r', 's'],
             shape='ikfk',
             doOffset=True,
@@ -201,7 +209,7 @@ class Base():
             # constraint displayCtrl
             common.centerPivot(ikfkCtrl.getOffsetGrp())
             common.centerPivot(ikfkCtrl.getControl())
-            pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp())
+            pm.parentConstraint(mainCtrlAttachObj, ikfkCtrl.getOffsetGrp(), mo=True)
             ikfkCtrl.getModifyGrp().translateY.set(3 * ikfkCtrl.getCtrlScale())
 
         return ikfkCtrl

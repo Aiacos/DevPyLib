@@ -171,9 +171,12 @@ class BaseRig(object):
         """
         Make general Limb
         :param spineRig: instance
+        :param clavicleJnt: str
         :param scapulaJoint: str
         :param limbJoints: list(str)
         :param topFngJoints: list(str)
+        :param spineDriverJoint: str
+        :param useMetacarpalJoint: bool
         :return: instance, limbRig
         """
         limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt, scapulaJnt=scapulaJoint,
