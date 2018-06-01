@@ -74,5 +74,17 @@ def cMuscleSystemDeformer(obj, relativeSticky=True):
 
     return deformerNode
 
+def cMuscleConnectMuscle(muscleMainObj, muscleObjList):
+    """
+    Connect Muscle to Mesh
+    :param muscleMainObj: str
+    :param muscleObjList: list(str)
+    :return: None
+    """
+    pm.select(muscleObjList)
+    pm.select(muscleMainObj, add=1)
+    mel.eval('cMuscle_connectToSystem();')
+
+
 if __name__ == "__main__":
     pass
