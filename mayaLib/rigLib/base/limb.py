@@ -14,7 +14,7 @@ from mayaLib.rigLib.utils import scapula
 from mayaLib.rigLib.utils import footRoll
 from mayaLib.rigLib.utils import poleVector
 from mayaLib.rigLib.utils import spaces
-from mayaLib.rigLib.utils import ikfkSwitch
+from mayaLib.rigLib.utils import attributes
 
 
 class Limb():
@@ -27,6 +27,7 @@ class Limb():
                  doFK=True,
                  doIK=True,
                  useMetacarpalJoint=False,
+                 doSmartFootRool=True,
                  prefix=None,
                  rigScale=1.0,
                  baseRig=None):
@@ -276,7 +277,7 @@ class Limb():
 
         return poleVectorCtrl, poleVectorLoc
 
-    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False):
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
         :param limbJoints: list(str), Arm/leg joints
@@ -329,7 +330,67 @@ class Limb():
             pm.parentConstraint(toeIkControls[i].C, toeIK)
 
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
-        pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
+        #pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
         handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
+
+        ballRollGrp = footRollGrpList[0]
+        tippyToeGrp = footRollGrpList[2]
+        frontRollGrp, backRollGrp, innerRollGrp, outerRollGrp = footRollGrpList[3:-1]
+        if smartFootRoll and frontRollGrp and ballRollGrp and innerRollGrp and outerRollGrp:
+            rollAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'roll', defaultValue=0, keyable=True, minValue=-120, maxValue=120)
+            bendLimitAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'bendLimitAngle', defaultValue=45, keyable=False)
+            straightAngleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeStraightAngle', defaultValue=70, keyable=False)
+
+            heelClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix+'_heelRotClamp')
+            pm.connectAttr(rollAttr, heelClampNode.inputR)
+            heelClampNode.minR.set(-90)
+            pm.connectAttr(heelClampNode.outputR, backRollGrp.rotateX)
+
+            ballClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix + '_zeroToBendClamp')
+            pm.connectAttr(rollAttr, ballClampNode.inputR)
+            #heelClampNode.maxR.set(90)
+            #pm.connectAttr(ballClampNode.outputR, ballRollGrp.rotateX)
+
+            bendToStraightClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix + '_bendToStraightClamp')
+            pm.connectAttr(bendLimitAttr, bendToStraightClampNode.minR)
+            pm.connectAttr(straightAngleAttr, bendToStraightClampNode.maxR)
+            pm.connectAttr(rollAttr, bendToStraightClampNode.inputR)
+
+            bendToStraightSetRangeNode = pm.shadingNode('setRange', asUtility=True, n=prefix + '_bendToStraightPercent')
+            pm.connectAttr(bendToStraightClampNode.minR, bendToStraightSetRangeNode.oldMinX)
+            pm.connectAttr(bendToStraightClampNode.maxR, bendToStraightSetRangeNode.oldMaxX)
+            bendToStraightSetRangeNode.maxX.set(1)
+            pm.connectAttr(bendToStraightClampNode.inputR, bendToStraightSetRangeNode.valueX)
+
+            rollMultDivNode = pm.shadingNode('multiplyDivide', asUtility=True, n=prefix + '_rollMultDiv')
+            pm.connectAttr(bendToStraightSetRangeNode.outValueX, rollMultDivNode.input1X)
+            pm.connectAttr(bendToStraightClampNode.inputR, rollMultDivNode.input2X)
+            pm.connectAttr(rollMultDivNode.outputX, tippyToeGrp.rotateX)
+
+            pm.connectAttr(bendLimitAttr, ballClampNode.maxR)
+            zeroToBendSetRangeNode = pm.shadingNode('setRange', asUtility=True, n=prefix + '_zeroToBendPercent')
+            pm.connectAttr(ballClampNode.minR, zeroToBendSetRangeNode.oldMinX)
+            pm.connectAttr(ballClampNode.maxR, zeroToBendSetRangeNode.oldMaxX)
+            zeroToBendSetRangeNode.maxX.set(1)
+            pm.connectAttr(ballClampNode.inputR, zeroToBendSetRangeNode.valueX)
+
+            invertPercentNode = pm.shadingNode('plusMinusAverage', asUtility=True, n=prefix + '_invertPercent')
+            invertPercentNode.input1D[0].set(1)
+            invertPercentNode.input1D[1].set(1)
+            pm.connectAttr(bendToStraightSetRangeNode.outValueX, invertPercentNode.input1D[1])
+            invertPercentNode.operation.set(2)
+
+            ballPercentMultDivNode = pm.shadingNode('multiplyDivide', asUtility=True, n=prefix + '_ballPercentMultDiv')
+            pm.connectAttr(zeroToBendSetRangeNode.outValueX, ballPercentMultDivNode.input1X)
+            pm.connectAttr(invertPercentNode.output1D, ballPercentMultDivNode.input2X)
+
+            ballRollMultDivNode = pm.shadingNode('multiplyDivide', asUtility=True, n=prefix + '_ballRollMultDiv')
+            pm.connectAttr(ballPercentMultDivNode.outputX, ballRollMultDivNode.input1X)
+            pm.connectAttr(rollAttr, ballRollMultDivNode.input2X)
+
+            pm.connectAttr(ballRollMultDivNode.outputX, ballRollGrp.rotateX)
+
+            # Tilt
+            tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True, minValue=-120, maxValue=120)
 
         return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl], toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint

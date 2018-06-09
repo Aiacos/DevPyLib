@@ -6,13 +6,14 @@ from mayaLib.rigLib.utils import name
 
 
 class FootRoll():
-    def __init__(self, hipJnt, ankleJnt, ballJntList, toeEndJntList):
+    def __init__(self, hipJnt, ankleJnt, ballJntList, toeEndJntList, doSmartFootRoll=True):
         """
         Build footRoll on selected joints
         :param hipJnt: str
         :param ankleJnt: str
         :param ballJntList: list
         :param toeEndJntList: list
+        :param doSmartFootRoll: bool
         """
         self.side = name.getSide(hipJnt)
 
@@ -39,6 +40,19 @@ class FootRoll():
         self.peelHeel()
         self.toeTap()
         self.tippyToe()
+
+        if doSmartFootRoll:
+            frontRollLoc = self.prefixJnt2 + '_frontRoll_LOC'
+            backRollLoc = self.prefixJnt2 + '_backRoll_LOC'
+            innerRollLoc = self.prefixJnt2 + '_innerRoll_LOC'
+            outerRollLoc = self.prefixJnt2 + '_outerRoll_LOC'
+            self.frontRollGrp, self.backRollGrp, self.innerRollGrp, self.outerRollGrp = self.rollGroups(frontRollLoc,
+                                                                                                        backRollLoc,
+                                                                                                        innerRollLoc,
+                                                                                                        outerRollLoc)
+        else:
+            self.frontRollGrp, self.backRollGrp, self.innerRollGrp, self.outerRollGrp = [None, None, None, None]
+
         self.moveGrp()
 
         # set OFF Sticky
@@ -76,12 +90,36 @@ class FootRoll():
         midToeJnt = self.toeIkHandleList[index]
         common.centerPivot(self.tippyToeGrp, midToeJnt)
 
+    def rollGroups(self, frontRollLoc, backRollLoc, innerRollLoc, outerRollLoc):
+        frontRollGrp, backRollGrp, innerRollGrp, outerRollGrp = [None, None, None, None]
+        if pm.objExists(frontRollLoc) and pm.objExists(backRollLoc) and pm.objExists(innerRollLoc) and pm.objExists(outerRollLoc):
+            frontLoc = pm.ls(frontRollLoc)[0]
+            backLoc = pm.ls(backRollLoc)[0]
+            innerLoc = pm.ls(innerRollLoc)[0]
+            outerLoc = pm.ls(outerRollLoc)[0]
+
+            frontRollGrp = pm.group(self.tippyToeGrp, n=name.removeSuffix(frontLoc) + '_GRP')
+            backRollGrp = pm.group(frontRollGrp, n=name.removeSuffix(backLoc) + '_GRP')
+            innerRollGrp = pm.group(backRollGrp, n=name.removeSuffix(innerLoc) + '_GRP')
+            outerRollGrp = pm.group(innerRollGrp, n=name.removeSuffix(outerLoc) + '_GRP')
+
+            common.centerPivot(frontRollGrp, frontLoc)
+            common.centerPivot(backRollGrp, backLoc)
+            common.centerPivot(innerRollGrp, innerLoc)
+            common.centerPivot(outerRollGrp, outerLoc)
+
+        return frontRollGrp, backRollGrp, innerRollGrp, outerRollGrp
+
     def moveGrp(self):
-        self.moveGrp = pm.group(self.tippyToeGrp, n=self.prefixJnt2+'Move_GRP')
+        if self.outerRollGrp:
+            self.moveGrp = pm.group(self.outerRollGrp, n=self.prefixJnt2 + 'Move_GRP')
+        else:
+            self.moveGrp = pm.group(self.tippyToeGrp, n=self.prefixJnt2+'Move_GRP')
+
         common.centerPivot(self.moveGrp, self.ankleIkHandle)
 
     def getGroupList(self):
-        return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp, self.moveGrp
+        return self.peelHeelGrp, self.toeTapGrp, self.tippyToeGrp, self.frontRollGrp, self.backRollGrp, self.innerRollGrp, self.outerRollGrp, self.moveGrp
 
     def getIkFingerList(self):
         return self.toeIkHandleList
@@ -91,6 +129,31 @@ class FootRoll():
 
     def getLimbIK(self):
         return self.ankleIkHandle
+
+def createLimbFootRollLocatorsReference(ankleJnt):
+    prefix = name.removeSuffix(ankleJnt)
+    frontLoc = pm.spaceLocator(n=prefix + '_frontRoll_LOC')
+    backLoc = pm.spaceLocator(n=prefix + '_backRoll_LOC')
+    innerLoc = pm.spaceLocator(n=prefix + '_innerRoll_LOC')
+    outerLoc = pm.spaceLocator(n=prefix + '_outerRoll_LOC')
+    locGrp = pm.group(frontLoc, backLoc, innerLoc, outerLoc, n=prefix+'FootRollLocators_GRP')
+
+    return locGrp
+
+def mirrorFootRollGrp(footRollLocatorGrp):
+    locGrp = pm.ls(footRollLocatorGrp)[0]
+    newGrpName = locGrp.name().replace('l_', 'r_', 1)
+    dupliLocGrp = pm.duplicate(locGrp, n=newGrpName)
+
+    locList = pm.listRelatives(dupliLocGrp[0], c=True)
+    for obj in locList:
+        newName = obj.name().replace('l_', 'r_', 1)
+        pm.rename(obj, newName)
+
+    dupliLocGrp[0].scaleX.set(-1)
+    common.freezeTranform(dupliLocGrp[0])
+
+    return dupliLocGrp[0]
 
 
 if __name__ == "__main__":
