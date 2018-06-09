@@ -7,6 +7,7 @@ import pymel.core as pm
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
 
+from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
@@ -334,6 +335,7 @@ class Limb():
         handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
 
         ballRollGrp = footRollGrpList[0]
+        toeTapGrp = footRollGrpList[1]
         tippyToeGrp = footRollGrpList[2]
         frontRollGrp, backRollGrp, innerRollGrp, outerRollGrp = footRollGrpList[3:-1]
         if smartFootRoll and frontRollGrp and ballRollGrp and innerRollGrp and outerRollGrp:
@@ -391,6 +393,21 @@ class Limb():
             pm.connectAttr(ballRollMultDivNode.outputX, ballRollGrp.rotateX)
 
             # Tilt
-            tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True, minValue=-120, maxValue=120)
+            tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
+            common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
+
+            # lean
+            leanAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'lean', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            pm.connectAttr(leanAttr, ballRollGrp.rotateZ)
+
+            # toeSpin
+            toeSpinAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeSpin', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            pm.connectAttr(toeSpinAttr, tippyToeGrp.rotateY)
+            tippyToeGrp.rotateOrder.set(2)
+
+            # toeWiggle
+            toeWiggleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeWiggle', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            pm.connectAttr(toeWiggleAttr, toeTapGrp.rotateX)
 
         return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl], toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint
