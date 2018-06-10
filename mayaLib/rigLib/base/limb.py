@@ -278,7 +278,7 @@ class Limb():
 
         return poleVectorCtrl, poleVectorLoc
 
-    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True):
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True, lSide='l_'):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
         :param limbJoints: list(str), Arm/leg joints
@@ -322,7 +322,7 @@ class Limb():
             toeEndJnt = pm.listRelatives(topToeJnt, ad=1, type='joint')[0]
 
             toeIkCtrl = control.Control(prefix=toePrefix, translateTo=toeEndJnt, scale=rigScale,
-                                        parent=mainIKCtrl.C, shape='circleY')
+                                        parent=ballCtrl.C, shape='circleY')
 
             toeIkControls.append(toeIkCtrl)
 
@@ -331,7 +331,7 @@ class Limb():
             pm.parentConstraint(toeIkControls[i].C, toeIK)
 
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
-        #pm.parentConstraint(ballCtrl.C, footRollGrpList[0], mo=True)
+        pm.parentConstraint(footRollGrpList[1], ballCtrl.getOffsetGrp(), mo=True)
         handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
 
         ballRollGrp = footRollGrpList[0]
@@ -394,8 +394,12 @@ class Limb():
 
             # Tilt
             tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
-            common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
-            common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
+            if lSide in prefix:
+                common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
+                common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
+            else:
+                common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [-90, 0, 0])
+                common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, 90])
 
             # lean
             leanAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'lean', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
