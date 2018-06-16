@@ -6,6 +6,7 @@ import pymel.core as pm
 class PoleVector():
     def __init__(self, ikHandle):
         if ikHandle:
+            ikHandle = pm.ls(ikHandle)[0]
             self.poleVector, self.poleVectorGrp = self.connect_poleVector(ikHandle)
 
     def createPV(self, ikHandle):
@@ -15,7 +16,7 @@ class PoleVector():
         :return: grupped locator
         '''
 
-        ikHandle_name = ikHandle
+        ikHandle_name = ikHandle.name()
         selJoints = ikHandle.getJointList()
         pm.select(selJoints[-1])
         pm.pickWalk(d='down')
