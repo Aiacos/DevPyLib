@@ -8,6 +8,9 @@ from mayaLib.rigLib.base import flexiplane
 
 class StretchyIKChain():
     def __init__(self, ikHandle, ikCtrl, doFlexyplane=True):
+        ikHandle = pm.ls(ikHandle)[0]
+        ikCtrl = pm.ls(ikCtrl)[0]
+
         prefix = name.removeSuffix(ikHandle.name())
 
         jointList = pm.ikHandle(ikHandle, jointList=True, q=True)

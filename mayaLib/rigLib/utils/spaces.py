@@ -4,7 +4,7 @@ import pymel.core as pm
 from mayaLib.rigLib.utils import common
 
 
-def spaces(driverList, driverNames, destinationConstraint, destinationAttribute, name='Space', maintainOffset=True):
+def spaces(driverList, driverNames, destinationConstraint, destinationAttribute, name='space', maintainOffset=True):
     """
     Add spaces
     :param driverList: list(str), driver object list

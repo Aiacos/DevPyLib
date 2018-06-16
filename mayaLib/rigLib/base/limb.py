@@ -262,6 +262,7 @@ class Limb():
 
         #pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
         spaces.spaces([self.bodyAttachGrp, autoElbowCtrl], ['body', 'control'], poleVectorCtrl.Off, poleVectorCtrl.getControl())
+        poleVectorCtrl.getControl().space.set(1)
 
         pm.parentConstraint(poleVectorCtrl.getControl(), poleVectorLoc)
 
