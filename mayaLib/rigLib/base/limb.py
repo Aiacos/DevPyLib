@@ -161,7 +161,7 @@ class Limb():
 
     def makeSimpleScapula(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         scapulaCtrl = control.Control(prefix=prefix + 'Scapula', translateTo=scapulaJnt, rotateTo=scapulaJnt,
-                                      scale=rigScale * 3, parent=rigmodule.controlsGrp, shape='sphere',
+                                      parent=rigmodule.controlsGrp, shape='sphere',
                                       lockChannels=['ty', 'rx', 'rz', 's', 'v'])
         scapulaIk = pm.ikHandle(n=prefix + 'Scapula_IKH', sol='ikSCsolver', sj=scapulaJnt, ee=limbJoints[0])[0]
         pm.hide(scapulaIk)
@@ -173,7 +173,7 @@ class Limb():
 
     def makeClavicle(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         clavicleCtrl = control.Control(prefix=prefix + 'Clavicle', translateTo=scapulaJnt, rotateTo=scapulaJnt,
-                                      scale=rigScale * 3, parent=rigmodule.controlsGrp, shape='sphere',
+                                      parent=rigmodule.controlsGrp, shape='sphere',
                                       lockChannels=['t', 's', 'v'])
         scapulaIk = pm.ikHandle(n=prefix + 'Scapula_IKH', sol='ikSCsolver', sj=scapulaJnt, ee=limbJoints[0])[0]
         pm.hide(scapulaIk)
@@ -220,8 +220,7 @@ class Limb():
             if len(limbCtrlInstanceList) > 0:
                 parent = limbCtrlInstanceList[-1].C
 
-            ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt,
-                                   scale=rigScale * 3, parent=parent, shape='circleX')
+            ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, parent=parent, shape='circleX')
 
             orientCnst = pm.orientConstraint(ctrl.getControl(), jnt, mo=True)
 
@@ -240,8 +239,7 @@ class Limb():
                 if len(fingerJointList) > 0:
                     parent = fingerJointList[-1].C
 
-                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt,
-                                       scale=rigScale * 1, parent=parent, shape='circleX')
+                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, parent=parent, shape='circleX')
 
                 orientCnst = pm.orientConstraint(ctrl.getControl(), jnt)
                 fingerJointList.append(ctrl)
@@ -309,13 +307,13 @@ class Limb():
         prefix = name.removeSuffix(limbJoints[2])
 
         # make controls
-        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2], rotateTo=limbJoints[2],
-                                     scale=rigScale * 3, parent=rigmodule.controlsGrp, shape='circleY')
+        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2], rotateTo=limbJoints[2]
+                                     , parent=rigmodule.controlsGrp, shape='circleY')
 
         midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList()) / 2.0)) - 1
         midFngJnt = footRoolInstance.getIkFingerList()[midFngIKIndex].getJointList()[0]
-        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt,
-                                   scale=rigScale * 2, parent=mainIKCtrl.C, shape='circleZ')
+        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt
+                                   , parent=mainIKCtrl.C, shape='circleZ')
 
         toeIkControls = []
         for topToeJnt in topFingerJoints:
