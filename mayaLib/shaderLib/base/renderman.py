@@ -35,8 +35,8 @@ class PxrSurface_shaderBase(Shader_base):
         self.makePxrSurface(file_node_dict, physicalSpecular)
 
         # connect displacement
-        if config.displace in file_node_dict:
-            self.pxrDisplace = self.makePxrDisplace()
+        if file_node_dict[config.displace]:
+            self.pxrDisplace = self.makePxrDisplace(shader_name, file_node_dict[config.displace])
             pm.connectAttr(self.pxrDisplace.outColor, self.shading_group.displacementShader)
 
 
