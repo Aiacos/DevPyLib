@@ -14,6 +14,7 @@ from mayaLib.rigLib.base import ikChain
 from mayaLib.rigLib.base import limb
 from mayaLib.rigLib.utils import ikfkSwitch
 from mayaLib.rigLib.utils import ctrlShape
+from mayaLib.rigLib.utils import stretchyIKChain
 
 from mayaLib.rigLib.utils import proxyGeo
 
@@ -85,8 +86,8 @@ class BaseRig(object):
                 if doProxyGeo and len(pm.ls('mainProxy_GEO')) > 0 and pm.objExists(prxGeoInstance.getFastGeoGroup()):
                     pm.delete(prxGeoInstance.getFastGeoGroup(), pm.ls('mainProxy_GEO'))
 
-        if pm.objExists('skeletonModel_GEO'):
-            pm.parent('skeletonModel_GEO', self.baseModule.rigModelGrp)
+        if pm.objExists('skeletonModel_GRP'):
+            pm.parent('skeletonModel_GRP', self.baseModule.rigModelGrp)
 
         # parent joint group
         if pm.objExists(rootJnt):
@@ -307,6 +308,8 @@ class HumanoidRig(BaseRig):
                  doSpine=True,
                  doNeck=True,
                  doTail=False, doDynamicTail=False,
+                 doStretchy=False,
+                 doFlexyplane=False,
                  goToTPose=True
                  ):
         """
@@ -333,6 +336,8 @@ class HumanoidRig(BaseRig):
         self.doNeck = doNeck
         self.doTail = doTail
         self.doDynamicTail = doDynamicTail
+        self.doStretchy = doStretchy
+        self.doFlexyplane = doFlexyplane
         self.goToTPose = goToTPose
 
         self.sceneScale = sceneScale
@@ -386,6 +391,12 @@ class HumanoidRig(BaseRig):
         rLegJoints = pm.ls('r_legJ?_JNT', 'r_footJA_JNT')
         rTopToeJoints = pm.ls('r_toeThumbJA_JNT', 'r_toeIndexJA_JNT', 'r_toeMiddleJA_JNT', 'r_toeRingJA_JNT', 'r_toePinkyJA_JNT')
         self.rLegRig = self.makeLimb(self.spineRig, '', '', rLegJoints, rTopToeJoints, spineJoints[0])
+
+        if self.doStretchy:
+            stretchyIKChain.StretchyIKChain(self.lArmRig.getMainLimbIK(), self.lArmRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.rArmRig.getMainLimbIK(), self.rArmRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.lLegRig.getMainLimbIK(), self.lLegRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.rLegRig.getMainLimbIK(), self.rLegRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
 
         # install IKFK Switch
         ikfkSwitch.installIKFK([self.lArmRig.getMainLimbIK(), self.rArmRig.getMainLimbIK(), self.lLegRig.getMainLimbIK(), self.rLegRig.getMainLimbIK()])

@@ -101,9 +101,13 @@ class Limb():
                 pm.parentConstraint(scapulaCtrl.getControl(), fkLimbCtrls[0].getTop(), mo=1)
 
         self.limbIK = ikHandle
+        self.mainIKControl = mainIKCtrl
 
     def getMainLimbIK(self):
         return self.limbIK
+
+    def getMainIKControl(self):
+        return self.mainIKControl
 
     def getModuleDict(self):
         return {'module': self.rigmodule, 'baseAttachGrp': self.baseAttachGrp, 'bodyAttachGrp': self.bodyAttachGrp}

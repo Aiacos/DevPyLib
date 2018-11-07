@@ -2,6 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import deform
 
 
 def copyShape(source, destination):
@@ -243,3 +244,58 @@ def ikfkCtrlShape(name='ikfk', normalDirection=[0,1,0], scale=1):
     common.freezeTranform(ctrl)
 
     return ctrl
+
+class ControlShapeAdaptive():
+    def __init__(self, control, geoList, scaleConstant=1.2, ctrlSmooth=4):
+        """
+
+        :param control:
+        :param geoList:
+        :param ctrlSmooth:
+        """
+
+        self.ctrl = pm.ls(control)[0]
+        self.dupliCtrl = pm.duplicate(self.ctrl, n='tmpCtrl')[0]
+        self.geoList = pm.ls(geoList)
+        self.dupliGeo = pm.duplicate(self.geoList)
+        self.geoCombined = pm.polyUnite( self.dupliGeo, ch=False, name='tmpAdaptiveRef_GEO')[0]
+
+        self.extrudePathSetup(ctrlSmooth)
+
+        pm.scale(self.dupliCtrl.cv[:], [scaleConstant, scaleConstant, scaleConstant])
+
+        copyShape(self.dupliCtrl, self.ctrl)
+
+        pm.delete(self.geoCombined)
+
+    def extrudePathSetup(self, ctrlSmooth):
+
+        extrudeCircle = pm.circle(r=0.1, ch=0)[0]
+        ctrl = self.dupliCtrl
+        motionPathNode = pm.ls(pm.pathAnimation(extrudeCircle, curve=ctrl, fractionMode=True, follow=True, followAxis='z',
+                                          upAxis='y', worldUpType='vector', worldUpVector=[0, 1, 0], inverseUp=False,
+                                          inverseFront=False, bank=False))[0]
+
+        pm.disconnectAttr(extrudeCircle.tx)
+        pm.disconnectAttr(extrudeCircle.ty)
+        pm.disconnectAttr(extrudeCircle.tz)
+        pm.disconnectAttr(extrudeCircle.rx)
+        pm.disconnectAttr(extrudeCircle.ry)
+        pm.disconnectAttr(extrudeCircle.rz)
+        pm.disconnectAttr(motionPathNode.u)
+        pm.delete(motionPathNode)
+
+
+        extrudedSurface = pm.extrude(extrudeCircle, ctrl, ch=False, rn=False, po=0, et=2, ucp=0, fpt=1, upn=0, rotation=0, scale=1, rsp=1)[0]
+        nurbsToPoly = pm.nurbsToPoly(extrudedSurface, ch=False, polygonType=1, chr=0.9)
+
+        wrapNode = deform.wrapDeformer(ctrl, nurbsToPoly)
+        shrinkWrapNode = deform.shrinkWrapDeformer(nurbsToPoly, self.geoCombined)
+
+        shrinkWrapNode.projection.set(4)
+        shrinkWrapNode.targetSmoothLevel.set(ctrlSmooth)
+
+        common.deleteHistory(shrinkWrapNode)
+        common.deleteHistory(wrapNode)
+
+        pm.delete(extrudeCircle, extrudedSurface, nurbsToPoly)
