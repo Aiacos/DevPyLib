@@ -22,6 +22,20 @@ def deleteHistory(obj):
 def deleteNonDeformerHistory(obj):
     pm.bakePartialHistory(obj, pre=True) # prePostDeformers=True
 
+def disconnect(objAttr):
+    if(False):
+        myattr = mycube.translateX
+
+        # get and set values
+        myattr.get()
+        myattr.set(4)
+
+        # break connections
+        myattr.disconnect(mysphere.translateY)
+
+    # disconnect all outputs
+    myattr.disconnect(outputs=True)
+
 def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linear'):
     """
     Set Driven Key utility
