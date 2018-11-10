@@ -248,7 +248,7 @@ def ikfkCtrlShape(name='ikfk', normalDirection=[0,1,0], scale=1):
     return ctrl
 
 
-def controlShapeAdaptive(controlList, geoList, ctrlSmooth=4, scaleConstant=1.2, rebuildCV=24):
+def controlShapeAdaptive(controlList, geoList, ctrlSmooth=6, scaleConstant=1.5, rebuildCV=32):
     adaptiveShapeBuildGrp = pm.group(n='daptiveShapeBuild_GRP', em=True)
     geoList = pm.ls(geoList)
     dupliGeo = pm.duplicate(geoList)
