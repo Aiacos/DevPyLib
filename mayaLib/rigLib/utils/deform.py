@@ -36,13 +36,15 @@ def wrapDeformer(wrappedObjs, wrapperObj):
     deformerNode = mel.eval('doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }')
     return pm.ls(deformerNode)[0]
 
-def deltaMushDeformer(geo):
+def deltaMushDeformer(geo, smoothingIterations=10, smoothingStep=0.5):
     """
     Apply Mush Deformer
     :param geo: str
+    :param smoothingIterations: float
+    :param smoothingStep: float
     :return: deformer node
     """
-    deformerNode = pm.deltaMush(geo, smoothingIterations=25)[0]
+    deformerNode = pm.deltaMush(geo, smoothingIterations=smoothingIterations, smoothingStep=smoothingStep)[0]
     return deformerNode
 
 def shrinkWrapDeformer(wrappedObj, wrapperObj):
