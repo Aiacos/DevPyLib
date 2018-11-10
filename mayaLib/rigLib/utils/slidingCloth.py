@@ -61,9 +61,21 @@ class SlidingCloth():
 
         # save attribute
         self.baseObj = baseObj
+        self.wrapDeformer = wrapDeformer
+        self.shrinkWrapDeformer = shrinkWrapDeformer
+        self.cMuscleDeformer = cMuscleDeformer
 
     def getWrapBaseObj(self):
         return self.baseObj
+
+    def getWrapDeformer(self):
+        return self.wrapDeformer
+
+    def getShrinkWrapDeformer(self):
+        return self.shrinkWrapDeformer
+
+    def getCMuscleDeformer(self):
+        return self.cMuscleDeformer
 
     def makeProxyGeo(self, geo, percentage=50):
         proxyName = name.removeSuffix(geo.name()) + 'Proxy_GEO'
