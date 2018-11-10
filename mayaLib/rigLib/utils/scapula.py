@@ -21,16 +21,20 @@ class Scapula():
 
         # create ik
         ikhandle = pm.ikHandle(n=side+'scapula_IKH', sj=scapulaShoulder_jnt, ee=scapula_jnt)
+        effector = pm.listConnections(ikhandle[0].endEffector, source=True)
 
         # group ik
         grpName = name.removeSuffix(side+'scapula_GRP')
         self.scapulaGrp = pm.group(ikhandle, n=grpName)
 
         # parent constraint group
-        pm.parentConstraint(spine_jnt, self.scapulaGrp)
+        pm.parentConstraint(spine_jnt, self.scapulaGrp, mo=True)
 
         # parent constraint only transform
-        pm.parentConstraint(shoulder_jnt, scapulaShoulder_jnt, skipRotate=['x', 'y', 'z'])
+        pm.parentConstraint(shoulder_jnt, scapulaShoulder_jnt, skipRotate=['x', 'y', 'z'], mo=True)
+
+        # parent effector
+        pm.parent(effector, scapulaShoulder_jnt)
 
     def getScapulaGrp(self):
         return self.getScapulaGrp()
