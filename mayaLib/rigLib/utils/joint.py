@@ -131,6 +131,16 @@ def setJointParallelToGrid(p1, p2):
     return math.degrees(angle)
 
 def setArmParallelToGrid():
+    leftClavicleJntList = pm.ls('l_clavicleJA_JNT', 'l_armJA_JNT')
+    for i, jnt in enumerate(leftClavicleJntList[:-1]):
+        angle = setJointParallelToGrid(leftClavicleJntList[i], leftClavicleJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
+    rightClavicleJntList = pm.ls('r_clavicleJA_JNT', 'r_armJA_JNT')
+    for i, jnt in enumerate(rightClavicleJntList[:-1]):
+        angle = setJointParallelToGrid(rightClavicleJntList[i], rightClavicleJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
     leftArmJntList = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
     for i, jnt in enumerate(leftArmJntList[:-1]):
         angle = setJointParallelToGrid(leftArmJntList[i], leftArmJntList[i+1])
@@ -141,18 +151,36 @@ def setArmParallelToGrid():
         angle = setJointParallelToGrid(rightArmJntList[i], rightArmJntList[i+1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
+    leftHandJntList = pm.ls('l_handJA_JNT', 'l_fngMiddleJA_JNT')
+    for i, jnt in enumerate(leftHandJntList[:-1]):
+        angle = setJointParallelToGrid(leftHandJntList[i], leftHandJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
+    rightHandJntList = pm.ls('r_handJA_JNT', 'r_fngMiddleJA_JNT')
+    for i, jnt in enumerate(rightHandJntList[:-1]):
+        angle = setJointParallelToGrid(rightHandJntList[i], rightHandJntList[i+1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
 class TwistJoint():
-    def __init__(self, parentGrp, parentJoints, nTwistJoint=3, rotAxis='X'):
+    """
+    Add Twist Joint for selected Joint
+    :param joint_selection:
+    :param n_twist_joint:
+    :return:
+    """
+    def __init__(self, parentJoint, parentGrp='rig_GRP', nTwistJoint=3, rotAxis='X'):
+        if not pm.objExists(parentGrp):
+            pm.group(n=parentGrp, em=True)
+
         if not pm.objExists('twistJoints_GRP'):
             self.twistJointsMainGrp = pm.group(n='twistJoints_GRP', p=parentGrp, em=1)
         else:
             self.twistJointsMainGrp = pm.ls('twistJoints_GRP')[0]
 
-        if isinstance(parentJoints, basestring):
-            self.maketwistJoints(pm.ls(parentJoints)[0], nTwistJoint, rotAxis)
+        if isinstance(parentJoint, basestring):
+            self.maketwistJoints(pm.ls(parentJoint)[0], nTwistJoint, rotAxis)
         else:
-            for parentJnt in parentJoints:
+            for parentJnt in parentJoint:
                 self.maketwistJoints(parentJnt, nTwistJoint, rotAxis)
 
     def maketwistJoints(self, parentJnt, nTwistJoint, rotAxis):
