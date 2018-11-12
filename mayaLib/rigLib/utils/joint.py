@@ -180,8 +180,8 @@ class TwistJoint():
         if isinstance(parentJoint, basestring):
             self.maketwistJoints(pm.ls(parentJoint)[0], nTwistJoint, rotAxis)
         else:
-            for parentJnt in parentJoint:
-                self.maketwistJoints(parentJnt, nTwistJoint, rotAxis)
+            for jnt in parentJoint:
+                self.maketwistJoints(jnt, nTwistJoint, rotAxis)
 
     def maketwistJoints(self, parentJnt, nTwistJoint, rotAxis):
         prefix = name.removeSuffix(parentJnt)
