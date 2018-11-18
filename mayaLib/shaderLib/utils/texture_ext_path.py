@@ -3,13 +3,13 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 # See active Renderer
-render_engine = pm.getAttr('defaultRenderGlobals.currentRenderer')
+render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
 
 if render_engine == 'arnold':
     new_ext = '.tx'
     file_node_type = 'file'
     fileTextureAttribute = '.fileTextureName'
-elif render_engine == 'renderManRIS':
+elif render_engine == 'renderman':
     new_ext = '.tex'
     file_node_type = 'PxrTexture'
     fileTextureAttribute = '.filename'

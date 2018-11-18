@@ -18,11 +18,11 @@ class TextureShader():
         self.filenode_dict = {}
         # See active Renderer
         # renderManRIS, arnold
-        self.renderer = pm.getAttr('defaultRenderGlobals.currentRenderer')
+        self.renderer = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
 
         if self.renderer == 'arnold':
             self.shader = self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
-        elif self.renderer == 'renderManRIS':
+        elif self.renderer == 'renderman':
             self.shader = self.build_pxrSurface(texture_path, geo_name, textureset_dict)
         else:
             print 'No valid active render engine'

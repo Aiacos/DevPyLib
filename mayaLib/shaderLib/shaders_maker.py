@@ -9,7 +9,7 @@ from mayaLib.shaderLib import shader
 class ShadersManager():
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr', autoAssingShader=True):
         # See active Renderer
-        self.render_engine = pm.getAttr('defaultRenderGlobals.currentRenderer')
+        self.render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)
         self.texture_dict = self.file_manager.texture_dict
 
@@ -41,7 +41,7 @@ class ShadersManager():
             # for arnold should be default, conversion is done by Maya
             #texture_ext_path.replace_ext(ext='.tx')
             pass
-        elif self.render_engine == 'renderManRIS':
+        elif self.render_engine == 'renderman':
             texture_ext_path.replace_ext(ext='.tex', file_name_attribute='.filename', file_type='PxrTexture')
 
 
