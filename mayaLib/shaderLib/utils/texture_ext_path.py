@@ -2,26 +2,6 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 
-# See active Renderer
-render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
-
-if render_engine == 'arnold':
-    new_ext = '.tx'
-    file_node_type = 'file'
-    fileTextureAttribute = '.fileTextureName'
-elif render_engine == 'renderman':
-    new_ext = '.tex'
-    file_node_type = 'PxrTexture'
-    fileTextureAttribute = '.filename'
-else:
-    print 'No valid active render engine'
-
-
-filename = '/home/user/somefile'
-
-newPath = path = pm.workspace(q=True, dir=True)+''
-oldPath = ''
-
 
 def replacePath(fileName, oldPath, newPath):
     newString = fileName.replace(oldPath,newPath)
@@ -33,7 +13,7 @@ def changeExtension(filename,newExtension):
     return prefix + newExtension
 
 
-def replace_ext(ext=new_ext, file_name_attribute=fileTextureAttribute, file_type=file_node_type):
+def replace_ext(ext, file_name_attribute, file_type):
     """
     Replace all file extension in a given list
     :param file_node_type: 'file' or 'PxrTexture'
@@ -51,7 +31,7 @@ def replace_ext(ext=new_ext, file_name_attribute=fileTextureAttribute, file_type
         new_tex = changeExtension(texture_filename, ext)
         pm.setAttr(f + file_name_attribute, new_tex, type="string")
 
-def replace_path(path, file_name_attribute=fileTextureAttribute, file_type=file_node_type):
+def replace_path(oldPath, path, file_name_attribute, file_type):
     """
     Replace all file path in a given list
     :param file_node_type: 'file' or 'PxrTexture'
