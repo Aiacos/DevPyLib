@@ -133,7 +133,7 @@ class BaseRig(object):
         pass
         print '-- FINALIZE --'
 
-    def makeSpine(self, rootJnt, spineJoints, sceneScale):
+    def makeSpine(self, prefix, rootJnt, spineJoints, sceneScale):
         """
         Make general Spine
         :param rootJnt:
@@ -141,12 +141,12 @@ class BaseRig(object):
         :param sceneScale:
         :return:
         """
-        spineRig = spine.Spine(spineJoints, rootJnt, prefix='spine', rigScale=sceneScale, baseRig=self.baseModule)
+        spineRig = spine.Spine(spineJoints, rootJnt, prefix=prefix, rigScale=sceneScale, baseRig=self.baseModule)
 
         return spineRig
 
-    def makeNeck(self, headJnt, neckJoints, sceneScale, spineRig=None, spineJoints=[]):
-        neckRig = neck.Neck(neckJoints, headJnt, prefix='neck', rigScale=sceneScale, baseRig=self.baseModule)
+    def makeNeck(self, prefix, headJnt, neckJoints, sceneScale, spineRig=None, spineJoints=[]):
+        neckRig = neck.Neck(neckJoints, headJnt, prefix=prefix, rigScale=sceneScale, baseRig=self.baseModule)
 
         if spineRig and len(spineJoints) > 0:
             pm.parentConstraint(spineJoints[-1], neckRig.getModuleDict()['baseAttachGrp'], mo=1)
@@ -193,105 +193,6 @@ class BaseRig(object):
         pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, limbRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         return limbRig
-
-
-class Rig(BaseRig):
-    """
-    Rig
-    """
-    def __init__(self, characterName='new',
-                 model_filePath='', buildScene_filePath='',
-                 sceneScale=1,
-                 rootJnt='root1_jnt',
-                 headJnt='head1_jnt',
-                 loadSkinCluster=True,
-                 doProxyGeo=True,
-                 doSpine=True,
-                 doNeck=True,
-                 doTail=True, doDynamicTail=False,
-                 ):
-        """
-        Create Base Rig
-        :param characterName: str
-        :param model_filePath: str
-        :param buildScene_filePath: str
-        :param sceneScale: float
-        :param rootJnt: str
-        :param headJnt: str
-        :param loadSkinCluster: bool
-        :param doProxyGeo: bool
-        :param doSpine: bool
-        :param doNeck: bool
-        :param doTail: bool
-        """
-        super(Rig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo)
-
-        if doSpine:
-            spineJoints = pm.ls('spine*_jnt')
-            #spineJoints = ['spine1_jnt', 'spine2_jnt', 'spine3_jnt', 'spine4_jnt', 'spine5_jnt', 'spine6_jnt']
-            spineRig = spine.Spine(spineJoints, rootJnt, prefix='spine', rigScale=sceneScale, baseRig=self.baseModule)
-
-        if doNeck:
-            neckJoints = pm.ls('neck*_jnt')
-            #neckJoints = ['neck1_jnt', 'neck2_jnt', 'neck3_jnt', 'neck4_jnt', 'neck5_jnt', 'neck6_jnt']
-            neckRig = neck.Neck(neckJoints, headJnt, prefix='neck', rigScale=sceneScale, baseRig=self.baseModule)
-
-        if doSpine and doNeck:
-            pm.parentConstraint(spineJoints[-1], neckRig.getModuleDict()['baseAttachGrp'], mo=1)
-            pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        if doTail:
-            tailJoints = pm.ls('tail*_jnt')
-            pelvisJnt = pm.ls('pelvis*_jnt')[-1]
-            tailRig = ikChain.IKChain(
-                chainJoints=tailJoints,
-                prefix='tail',
-                rigScale=sceneScale,
-                doDynamic=doDynamicTail,
-                smallestScalePercent=0.4,
-                fkParenting=False,
-                baseRig=self.baseModule)
-
-            pm.parentConstraint(pelvisJnt, tailRig.getModuleDict()['baseAttachGrp'], mo=1)
-
-
-        # left arm
-        legJoints = ['l_shoulder1_jnt', 'l_elbow1_jnt', 'l_hand1_jnt']
-        topToeJoints = ['l_foreToeA1_jnt', 'l_foreToeB1_jnt', 'l_foreToeC1_jnt', 'l_foreToeD1_jnt', 'l_foreToeE1_jnt']
-
-        lArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='l_scapula1_jnt', baseRig=self.baseModule, useMetacarpalJoint=True)
-
-        pm.parentConstraint(spineJoints[-2], lArmRig.getModuleDict()['baseAttachGrp'], mo=1)
-        pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        # right arm
-        legJoints = ['r_shoulder1_jnt', 'r_elbow1_jnt', 'r_hand1_jnt']
-        topToeJoints = ['r_foreToeA1_jnt', 'r_foreToeB1_jnt', 'r_foreToeC1_jnt', 'r_foreToeD1_jnt', 'r_foreToeE1_jnt']
-
-        rArmRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='r_scapula1_jnt', baseRig=self.baseModule, useMetacarpalJoint=True)
-
-        pm.parentConstraint(spineJoints[-2], rArmRig.getModuleDict()['baseAttachGrp'], mo=1)
-        pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rArmRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        # left leg
-        legJoints = ['l_hip1_jnt', 'l_knee1_jnt', 'l_foot1_jnt']
-        topToeJoints = ['l_hindToeA1_jnt', 'l_hindToeB1_jnt', 'l_hindToeC1_jnt', 'l_hindToeD1_jnt', 'l_hindToeE1_jnt']
-
-        lLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule, useMetacarpalJoint=True)
-
-        pm.parentConstraint(spineJoints[0], lLegRig.getModuleDict()['baseAttachGrp'], mo=1)
-        pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, lLegRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        # right leg
-        legJoints = ['r_hip1_jnt', 'r_knee1_jnt', 'r_foot1_jnt']
-        topToeJoints = ['r_hindToeA1_jnt', 'r_hindToeB1_jnt', 'r_hindToeC1_jnt', 'r_hindToeD1_jnt', 'r_hindToeE1_jnt']
-
-        rLegRig = limb.Limb(limbJoints=legJoints, topFingerJoints=topToeJoints, scapulaJnt='', baseRig=self.baseModule, useMetacarpalJoint=True)
-
-        pm.parentConstraint(spineJoints[0], rLegRig.getModuleDict()['baseAttachGrp'], mo=1)
-        pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, rLegRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        ikfkSwitch.installIKFK([lArmRig.getMainLimbIK(), rArmRig.getMainLimbIK(), lLegRig.getMainLimbIK(), rLegRig.getMainLimbIK()])
 
 
 class HumanoidRig(BaseRig):
@@ -403,4 +304,4 @@ class HumanoidRig(BaseRig):
 
 
 if __name__ == "__main__":
-    mRig = Rig()
+    pass
