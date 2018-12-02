@@ -70,7 +70,7 @@ class Spine():
         chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, rotateTo=spineJoints[-1], scale=rigScale * 6,
                                     parent=self.bodyCtrl.C, shape='chest')
 
-        pelvisCtrl = control.Control(prefix=prefix + 'Pelvis', translateTo=pelvisLocator, scale=rigScale * 6,
+        pelvisCtrl = control.Control(prefix=prefix + 'Pelvis', translateTo=pelvisLocator, rotateTo=pelvisLocator, scale=rigScale * 6,
                                      parent=self.bodyCtrl.C, shape='hip')
 
         middleCtrl = control.Control(prefix=prefix + 'Middle', translateTo=spineCurveClusters[2], scale=rigScale * 3,
@@ -114,8 +114,8 @@ class Spine():
         chestLocator = pm.spaceLocator(n='chest_LOC')
         pelvisLocator = pm.spaceLocator(n='pelvis_LOC')
 
-        pm.delete(pm.pointConstraint(spineJoints[0], pelvisLocator))
-        pm.delete(pm.pointConstraint(spineJoints[-1], chestLocator))
+        pm.delete(pm.parentConstraint(spineJoints[0], pelvisLocator))
+        pm.delete(pm.parentConstraint(spineJoints[-1], chestLocator))
         if numJoints % 2 == 0:
             pm.delete(pm.pointConstraint([spineJoints[midJoint], spineJoints[midJoint + 1]], bodyLocator))
         else:
