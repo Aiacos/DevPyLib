@@ -262,6 +262,7 @@ class MainMenu(QtWidgets.QWidget):
         self.libMenu.addAction(self.wAction)
 
         QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+        self.libMenu.triggered.connect(self.showWidget)
 
     def updateWidget(self, libPath):
         reload_package(mayaLib)
@@ -276,7 +277,11 @@ class MainMenu(QtWidgets.QWidget):
 
         self.libMenu.addAction(self.wAction)
         QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+        self.libMenu.triggered.connect(self.showWidget)
         print 'Reloaded MayaLib!'
+
+    def showWidget(self):
+        self.libWindow.adjustSize()
 
     def __del__(self):
         self.libMenu.deleteLater()
