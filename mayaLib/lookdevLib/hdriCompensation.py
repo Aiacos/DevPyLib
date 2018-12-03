@@ -7,11 +7,14 @@ from mayaLib.shaderLib.utils import file
 class Compensation():
     def __init__(self, hdriNode, plateR, plateG, plateB, renderR, renderG, renderB):
         self.hdriNode = pm.ls(hdriNode)[0].getShape()
+
+        r, g, b = self.compensationFormula(plateR, plateG, plateB, renderR, renderG, renderB)
+
         if pm.objectType(self.hdriNode, isType='aiSkyDomeLight'):
             self.createStandardColorCorrect()
-            self.setStandarGain()
+            self.setStandarGain(r, g, b)
         elif pm.objectType(self.hdriNode, isType='PxrDomeLight'):
-            self.setPxrGain()
+            self.setPxrGain(r, g, b)
         else:
             print 'invalid node'
 
