@@ -51,7 +51,6 @@ class FunctionUI(QtWidgets.QWidget):
         for arg in self.args:
             if arg[0] != 'self':
                 labelname = QtWidgets.QLabel(arg[0])
-                fillButton = QtWidgets.QPushButton(">")
 
                 if arg[1] != None:
                     if isinstance(arg[1], bool):
@@ -59,14 +58,17 @@ class FunctionUI(QtWidgets.QWidget):
                         lineedit.setChecked(arg[1])
                     else:
                         lineedit = QtWidgets.QLineEdit(str(arg[1]))
+                        fillButton = QtWidgets.QPushButton(">")
                 else:
                     lineedit = QtWidgets.QLineEdit("")
+                    fillButton = QtWidgets.QPushButton(">")
 
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
 
-                self.layout.addWidget(fillButton, row, 1)
-                self.fillButton_list.append(fillButton)
+                if fillButton:
+                    self.layout.addWidget(fillButton, row, 1)
+                    self.fillButton_list.append(fillButton)
 
                 self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
