@@ -54,7 +54,11 @@ class FunctionUI(QtWidgets.QWidget):
                 fillButton = QtWidgets.QPushButton(">")
 
                 if arg[1] != None:
-                    lineedit = QtWidgets.QLineEdit(str(arg[1]))
+                    if isinstance(arg[1], bool):
+                        lineedit = QtWidgets.QCheckBox('')
+                        lineedit.setChecked(arg[1])
+                    else:
+                        lineedit = QtWidgets.QLineEdit(str(arg[1]))
                 else:
                     lineedit = QtWidgets.QLineEdit("")
 
@@ -89,6 +93,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.setWindowTitle(func.__name__)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         self.setFocus()
 
     def fillWithSelected(self):
