@@ -61,10 +61,10 @@ class Neck():
                                        parent=self.rigmodule.controlsGrp, shape='head')
 
         headLocalCtrl = control.Control(prefix=prefix + 'HeadLocal', translateTo=headJnt, rotateTo=headJnt,
-                                        scale=rigScale * 4, parent=headMainCtrl.C, shape='circleX')
+                                        scale=rigScale * 4, parent=headMainCtrl.C, shape='circleX', lockChannels=['t'])
 
         middleCtrl = control.Control(prefix=prefix + 'Middle', translateTo=neckCurveClusters[2], rotateTo=neckJoints[2],
-                                     scale=rigScale * 4, parent=self.rigmodule.controlsGrp, shape='circleX')
+                                     scale=rigScale * 4, parent=self.rigmodule.controlsGrp, shape='circleX', lockChannels=['r'])
 
         # attach controls
         pm.parentConstraint(headMainCtrl.C, self.baseAttachGrp, middleCtrl.Off, sr=['x', 'y', 'z'], mo=1)

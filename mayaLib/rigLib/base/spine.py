@@ -74,7 +74,7 @@ class Spine():
                                      parent=self.bodyCtrl.C, shape='hip')
 
         middleCtrl = control.Control(prefix=prefix + 'Middle', translateTo=spineCurveClusters[2], scale=rigScale * 3,
-                                     parent=self.bodyCtrl.C, shape='sphere')
+                                     parent=self.bodyCtrl.C, shape='sphere', lockChannels=['r'])
 
         # attach controls
         pm.parentConstraint(chestCtrl.C, pelvisCtrl.C, middleCtrl.Off, sr=['x', 'y', 'z'], mo=1)
