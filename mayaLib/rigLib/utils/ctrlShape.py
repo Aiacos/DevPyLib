@@ -29,6 +29,98 @@ def extractCtrlShape():
         newName = ctrlShape.name().replace('_CTRL1', '_CTRL')
         pm.rename(ctrlShape, newName)
 
+
+class CtrlShape():
+
+    shapes = {
+        'circle': 'CircleX',
+        'circleX': 'CircleX',
+        'circleY': 'CircleY',
+        'circleZ': 'CircleZ',
+        'sphere': 'Sphere',
+        'move': 'Move',
+        'trapezium': 'Trapezium',
+        'chest': 'Chest',
+        'hip': 'Hip',
+        'head': 'Head',
+        'display': 'Display',
+        'ikfk': 'IKFK'
+        }
+
+    def __init__(self, name, scale, shape='circle', normalDirection=[0,0,0]):
+        pass
+
+        if shape in ['circle', 'circleX']:
+            circleNormal = [1, 0, 0]
+            ctrlObject = circleCtrlShape(name, normalDirection=circleNormal, scale=scale)
+
+        elif shape == 'circleY':
+            circleNormal = [0, 1, 0]
+            ctrlObject = circleCtrlShape(name, normalDirection=circleNormal, scale=scale)
+
+        elif shape == 'circleZ':
+            circleNormal = [0, 0, 1]
+            ctrlObject = circleCtrlShape(name, normalDirection=circleNormal, scale=scale)
+
+        elif shape == 'sphere':
+            ctrlObject = sphereCtrlShape(name=name, scale=scale)
+
+        elif shape == 'move':
+            ctrlObject = moveCtrlShape(name=name, scale=scale)
+
+        elif shape == 'spine':
+            ctrlObject = trapeziumCtrlShape(name=name, scale=scale)
+            ctrlObject.translateY.set(3 * scale)
+            common.freezeTranform(ctrlObject)
+
+        elif shape == 'chest':
+            ctrlObject = chestCtrlShape(name=name, scale=scale)
+
+        elif shape == 'hip':
+            ctrlObject = hipCtrlShape(name=name, scale=scale)
+
+        elif shape == 'head':
+            ctrlObject = headCtrlShape(name=name, scale=scale)
+
+        elif shape == 'display':
+            ctrlObject = displayCtrlShape(name=name, scale=scale)
+
+        elif shape == 'ikfk':
+            ctrlObject = ikfkCtrlShape(name=name, scale=scale)
+
+        ctrl = ''
+        self.transformCtrl(ctrl, normalDirection=normalDirection, scale=scale)
+
+    def transformCtrl(self, ctrl, normalDirection=[0,0,0], scale=1):
+        if normalDirection[0] == 1:
+            pm.rotate(ctrl, [90, 0, 0])
+        elif normalDirection[0] == -1:
+            pm.rotate(ctrl, [-90, 0, 0])
+
+        if normalDirection[1] == 1:
+            pm.rotate(ctrl, [0, 90, 0])
+        elif normalDirection[1] == -1:
+            pm.rotate(ctrl, [0, -90, 0])
+
+        if normalDirection[2] == 1:
+            pm.rotate(ctrl, [0, 0, 90])
+        elif normalDirection[2] == -1:
+            pm.rotate(ctrl, [0, 0, -90])
+
+        ctrlGrp = pm.group(ctrl, name=ctrl.getName()+'CtrlScale_TEMP_GRP')
+        ctrlGrp.scale.set(scale, scale, scale)
+        common.freezeTranform(ctrlGrp)
+        pm.parent(ctrl, w=True)
+        pm.delete(ctrlGrp)
+
+        return ctrl
+
+
+def circleCtrlShape(name, normalDirection=[1, 0, 0], scale=1):
+    ctrlObject = pm.circle(n=name, ch=False, normal=normalDirection, radius=scale)[0]
+
+    return ctrlObject
+
 def sphereCtrlShape(name, scale=1):
     ctrlObject = pm.circle(n=name, ch=False, normal=[1, 0, 0], radius=scale)[0]
     addShape = pm.circle(n=name, ch=False, normal=[0, 0, 1], radius=scale)[0]
@@ -136,7 +228,7 @@ def chestCtrlShape(name, normalDirection=[1,1,0], scale=1):
 
     return ctrl
 
-def hipCtrlShape(name, normalDirection=[1,0,0], scale=1):
+def hipCtrlShape(name, normalDirection=[0,-1,1], scale=1):
     ctrl = pm.circle(n=name, s=10, nr=[0, 0, 1])[0]
 
     pm.move(0, 0, 1, ctrl.cv[3:4], ctrl.cv[8:9], r=True, os=True)
@@ -168,7 +260,7 @@ def hipCtrlShape(name, normalDirection=[1,0,0], scale=1):
 
     return ctrl
 
-def headCtrlShape(name, normalDirection=[1,0,0], scale=1):
+def headCtrlShape(name, normalDirection=[0,-1,1], scale=1):
     return hipCtrlShape(name, normalDirection, scale)
 
 def displayCtrlShape(name='display', normalDirection=[0,1,0], scale=1):
