@@ -168,7 +168,15 @@ class FunctionUI(QtWidgets.QWidget):
 
         for param in self.lineedit_list:
             value = param.text()
-            if '[' in value and ']' in value:
+
+            if isinstance(param, QtWidgets.QCheckBox):
+                if param.isChecked():
+                    qCheckBoxValue = True
+                else:
+                    qCheckBoxValue = False
+                value = qCheckBoxValue
+                param_list.append(value)
+            elif '[' in value and ']' in value:
                 value = value.replace('[', '').replace(']', '').replace("'", "").replace(' ', '').split(',')
                 param_list.append(value)
             elif value.replace('.', '', 1).isdigit():
