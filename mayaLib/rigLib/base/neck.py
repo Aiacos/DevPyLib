@@ -57,7 +57,7 @@ class Neck():
         pm.delete(pm.pointConstraint(neckJoints[0], self.baseAttachGrp))
 
         # make controls
-        headMainCtrl = control.Control(prefix=prefix + 'HeadMain', translateTo=neckJoints[-1], scale=rigScale * 5,
+        headMainCtrl = control.Control(prefix=prefix + 'HeadMain', translateTo=neckJoints[-1], rotateTo=headJnt, scale=rigScale * 5,
                                        parent=self.rigmodule.controlsGrp, shape='head')
 
         headLocalCtrl = control.Control(prefix=prefix + 'HeadLocal', translateTo=headJnt, rotateTo=headJnt,
