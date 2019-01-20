@@ -2,7 +2,7 @@ __author__ = 'Lorenzo Argentieri'
 
 #from PyQt4 import QtCore
 #from PyQt4 import QtGui
-from mayaLib.utility.Qt import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 

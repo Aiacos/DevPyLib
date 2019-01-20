@@ -1,16 +1,15 @@
 __author__ = 'Lorenzo Argentieri'
 
 import sys
+from sys import platform as _platform
 import os.path
 import os
 import time
-#from PySide2 import QtCore, QtWidgets
-import PyQt4.QtCore as QtCore
-import PyQt4.QtGui as QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 import urllib
 
-# import installCmd
 
+# import installCmd
 def buildInstallCmd(libDir, libName, port):
     installCommand = \
         """
@@ -20,7 +19,7 @@ def buildInstallCmd(libDir, libName, port):
         import maya.utils
         
         libDir = '""" + libDir + """'
-port = '""" + port + """'
+port = '""" + str(port) + """'
 libName = '""" + libName + """'
 
 # Open Maya port
@@ -42,17 +41,32 @@ cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
 
 
 class InstallLibrary(QtCore.QObject):
-    def __init__(self, devMode=False, parent=None):
+    def __init__(self, devMode=False, parent=None, libDir=None):
         super(InstallLibrary, self).__init__(parent)
 
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
-        self.mayaScriptPath = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/'
+        self.winPath = ''
+        self.linuxPath = ''
+        self.osxPath = '/Library/Preferences/Autodesk'
+        self.mayaScriptPath = '/maya/scripts/'
 
-        self.port = ':7005'
+        self.port = ':4434'
         self.libName = 'mayaLib'
 
         self.updateDevMode(devMode)
+
+        if _platform == "linux" or _platform == "linux2":
+            # linux
+            self.libDir = self.homeUser + self.linuxPath + self.mayaScriptPath
+        elif _platform == "darwin":
+            # MAC OS X
+            self.libDir = self.homeUser + self.osxPath + self.mayaScriptPath
+        elif _platform == "win32" or _platform == "win64":
+            # Windows
+            self.libDir = self.homeUser + self.linuxPath + self.mayaScriptPath
+
+        print self.libDir
 
     def updateDevMode(self, devMode=False):
         self.devMode = devMode
@@ -197,6 +211,6 @@ def main(devMode=False):
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication.instance()
     mayaLibInstallWindow = main(devMode=False)
     app.exec_()
