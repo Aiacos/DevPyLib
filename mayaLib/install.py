@@ -4,6 +4,7 @@ import sys
 from sys import platform as _platform
 import os.path
 import os
+import pip
 import time
 from PySide2 import QtCore, QtWidgets, QtGui
 import urllib
@@ -12,13 +13,13 @@ import urllib
 # import installCmd
 def buildInstallCmd(libDir, libName, port):
     installCommand = \
-        """
-        # Install mayaLib
-        import sys
-        import maya.cmds as cmds
-        import maya.utils
-        
-        libDir = '""" + libDir + """'
+"""
+# Install mayaLib
+import sys
+import maya.cmds as cmds
+import maya.utils
+
+libDir = '""" + libDir + """'
 port = '""" + str(port) + """'
 libName = '""" + libName + """'
 
@@ -54,27 +55,23 @@ class InstallLibrary(QtCore.QObject):
         self.port = ':4434'
         self.libName = 'mayaLib'
 
-        self.updateDevMode(devMode)
-
         if _platform == "linux" or _platform == "linux2":
             # linux
-            self.libDir = self.homeUser + self.linuxPath + self.mayaScriptPath
+            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
         elif _platform == "darwin":
             # MAC OS X
-            self.libDir = self.homeUser + self.osxPath + self.mayaScriptPath
+            self.mayaScriptPath = self.homeUser + self.osxPath + self.mayaScriptPath
         elif _platform == "win32" or _platform == "win64":
             # Windows
-            self.libDir = self.homeUser + self.linuxPath + self.mayaScriptPath
+            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
 
-        print self.libDir
+        print self.mayaScriptPath
 
-    def updateDevMode(self, devMode=False):
-        self.devMode = devMode
+    def updateDevMode(self, devPath=False):
+        self.devMode = True if devPath != '' else False
 
-        if devMode:
-            self.libDir = self.homeUser + '/Dropbox/3D/Maya/Script_DEF/DevPyLib'
-        else:
-            self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
+        if devPath:
+            self.libDir = devPath
 
         self.installCommand = buildInstallCmd(self.libDir, self.libName, self.port)
 
@@ -103,6 +100,9 @@ class InstallLibrary(QtCore.QObject):
         if not self.devMode:
             self.download()
         self.installInMayaUserSetup()
+
+        # install dependency pkg
+        pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath
@@ -193,10 +193,11 @@ class InstallWindow(QtWidgets.QWidget):
 
         self.installDirButton.clicked.connect(self.selectFile)
         self.installButton.clicked.connect(self.installLib)
-        self.devModeCheckBox.stateChanged.connect(self.libManager.updateDevMode)
+        self.devModeCheckBox.stateChanged.connect(lambda: self.libManager.updateDevMode(self.installDirLineEdit.text()))
 
     def selectFile(self):
         self.installDirLineEdit.setText(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.devModeCheckBox.setChecked(False)
 
     def installLib(self):
         self.libManager.install()
