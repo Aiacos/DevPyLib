@@ -1,34 +1,78 @@
 __author__ = 'Lorenzo Argentieri'
 
 import sys
+from sys import platform as _platform
 import os.path
 import os
+import pip
 import time
 import urllib
 import mayaLib.installCmd as installCmd
 
 
+# import installCmd
+def buildInstallCmd(libDir, libName, port):
+    installCommand = \
+"""
+# Install mayaLib
+import sys
+import maya.cmds as cmds
+import maya.utils
+
+libDir = '""" + libDir + """'
+port = '""" + str(port) + """'
+libName = '""" + libName + """'
+
+# Open Maya port
+if not cmds.commandPort(port, q=True):
+    cmds.commandPort(n=port)
+
+# Add develpment PATH
+if not libDir in sys.path:
+    sys.path.append(libDir)
+    __import__(libName)
+else:
+    reload(__import__(libName))
+
+import mayaLib.guiLib.mainMenu as mm
+cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
+"""
+
+    return installCommand
+
 class InstallLibrary():
-    def __init__(self, devMode=False):
+    def __init__(self, devMode=False, parent=None, libDir=None):
+        super(InstallLibrary, self).__init__(parent)
+
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
-        self.mayaScriptPath = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/'
+        self.winPath = ''
+        self.linuxPath = ''
+        self.osxPath = '/Library/Preferences/Autodesk'
+        self.mayaScriptPath = '/maya/scripts/'
 
-        self.port = ':7005'
+        self.port = ':4434'
         self.libName = 'mayaLib'
 
-        self.updateDevMode(devMode)
+        if _platform == "linux" or _platform == "linux2":
+            # linux
+            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
+        elif _platform == "darwin":
+            # MAC OS X
+            self.mayaScriptPath = self.homeUser + self.osxPath + self.mayaScriptPath
+        elif _platform == "win32" or _platform == "win64":
+            # Windows
+            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
 
+        print self.mayaScriptPath
 
-    def updateDevMode(self, devMode=False):
-        self.devMode = devMode
+    def updateDevMode(self, devPath=False):
+        self.devMode = True if devPath != '' else False
 
-        if devMode:
-            self.libDir = self.homeUser + '/Dropbox/3D/Maya/Script_DEF/DevPyLib'
-        else:
-            self.libDir = self.homeUser + '/Library/Preferences/Autodesk/maya/scripts/DevPyLib-master'
+        if devPath:
+            self.libDir = devPath
 
-        self.installCommand = self.installCommand = installCmd.buildInstallCmd(self.libDir, self.libName, self.port)
+        self.installCommand = buildInstallCmd(self.libDir, self.libName, self.port)
 
     def installInMayaUserSetup(self):
         userSetup_path = self.mayaScriptPath
@@ -55,7 +99,9 @@ class InstallLibrary():
         if not self.devMode:
             self.download()
         self.installInMayaUserSetup()
-        reload(__import__(self.libName))
+
+        # install dependency pkg
+        pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath
@@ -96,7 +142,6 @@ class InstallLibrary():
 
         # download
         urllib.urlretrieve(self.libUrl, self.mayaScriptPath + zipFilename, self.reporthook)
-
 
         # unzip
         unzip_cmd = cd_cmd + 'unzip ' + zipFilename
