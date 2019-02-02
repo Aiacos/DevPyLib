@@ -6,3 +6,4 @@ import mayaLib.animationLib
 import mayaLib.shaderLib
 import mayaLib.fluidLib
 import mayaLib.lookdevLib
+import mayaLib.modelLib

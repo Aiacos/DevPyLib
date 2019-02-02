@@ -226,7 +226,8 @@ class MenuLibWidget(QtWidgets.QWidget):
     def addMultipleMenuAction(self, upMenu, discipline):
         action_list = []
         if discipline == 'Modelling':
-            pass
+            libMenu = self.addSubMenu(upMenu, 'modelLib')
+            self.addRecursiveMenu(libMenu, self.libDict['modelLib'])
         elif discipline == 'Rigging':
             libMenu = self.addSubMenu(upMenu, 'rigLib')
             self.addRecursiveMenu(libMenu, self.libDict['rigLib'])
