@@ -1,12 +1,11 @@
 import math
 import pymel.core as pm
 import maya.mel as mel
+from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
 
 
 def checkUVInBoundaries(shell):
     uvs = pm.polyListComponentConversion(shell, tuv=True)
-    uList = []
-    vList = []
 
     uMax = 1
     uMin = 0
@@ -38,10 +37,6 @@ def checkUVBoundaries(shell):
     uvs = pm.polyListComponentConversion(shell, tuv=True)
     uvTileRange = []
 
-    uMax = 1
-    uMin = 0
-    vMax = 1
-    vMin = 0
     for i, uv in zip(range(len(pm.ls(uvs, fl=True))), pm.ls(uvs, fl=True)):
         u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
 
@@ -59,8 +54,6 @@ def checkUVBoundaries(shell):
 
 
 def cutUVTile(shell):
-    uvs = pm.polyListComponentConversion(shell, tuv=True)
-
     for tile in checkUVBoundaries(shell):
         tmpBuffer = []
         uvs = pm.polyListComponentConversion(shell, tuv=True)
@@ -76,8 +69,7 @@ def cutUVTile(shell):
         # pm.polyMapCut(faces, ch=True)
 
 
-def recursiveCutUV(geo, stop=5):
-    # pm.polyMapCut(faces, ch=False)
+def recursiveCutUV(geo):
     shellList = getUVShell(geo)
     for shell in shellList:
         if not checkUVInBoundaries(shell):
@@ -106,24 +98,13 @@ def uvLayoutNoScale(geoList, uCount, vCount, mapRes=1024):
 
 
 def finalLayoutUV(geoList, area=1):
-    tileValue = round(math.sqrt(area))
-    uCount = tileValue if tileValue >= 1 else tileValue + 1
-    vCount = tileValue if tileValue >= 1 else tileValue + 1
-    i = 0
+    tileNumber = math.ceil(math.sqrt(area))
+    tileValue = tileNumber / 2
+    uCount = tileValue if tileValue % 2 else tileValue +1
+    vCount = tileValue
 
-    uvLayoutNoScale(geoList, uCount, vCount)
-
-    shellList = getUVShell(geoList)
-    for shell in shellList:
-        if not checkUVInBoundaries(shell):
-            'Test!!!!!'
-            uvLayoutNoScale(geoList, uCount, vCount)
-            print 'UV count: ', uCount, vCount
-            if i % 2:
-                vCount += 1
-            else:
-                uCount += 1
-            i += 1
+    print 'UV: ', math.ceil(uCount), math.ceil(vCount)
+    uvLayoutNoScale(geoList, math.ceil(uCount), math.ceil(vCount))
 
 
 def autoSeamUV(geo, angle=0):
@@ -144,7 +125,7 @@ def fixNonManifoldUV(geo):
         'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
 
 
-def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
+def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=10.24, autoSeam=0):
     # Default TexelDensity
     # texelDensity = mapRes/100;
     area = 0
@@ -152,7 +133,7 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
     for geo in geoList:
         print geo
         # Automatic Projection UV
-        pm.polyAutoProjection(geo.f[:])
+        pm.polyAutoProjection(geo.f[:], lm=0, pb=0, ibd=1, cm=0, l=0, sc=0, o=0, p=6, ps=0.2, ws=0)
 
         # fi non Manifold UV
         fixNonManifoldUV(geo)
@@ -167,7 +148,7 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
         pm.u3dLayout(geo, res=1024, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1])
 
         # set Texel Density
-        setTexelDensity(geo)
+        setTexelDensity(geo, texelDensity, mapRes)
 
         # check UV boundaries
         recursiveCutUV(geo)
@@ -184,5 +165,5 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
 
 
 if __name__ == "__main__":
-    geos = pm.ls(sl=True)
+    geos = getAllObjectUnderGroup(pm.ls(sl=True)[0])
     autoUV(geos)

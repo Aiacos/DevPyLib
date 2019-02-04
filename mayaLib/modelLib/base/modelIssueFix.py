@@ -1,22 +1,7 @@
 import pymel.core as pm
 import maya.mel as mel
+from mayaLib.rigLib.utils.util import unlock_and_unhide_all, getAllObjectUnderGroup
 
-
-# function to unlock and unhide attributes
-def unlock_and_unhide_all(node):
-    """
-    unlock and unhide all transform attributes of selected node
-    :param node: node to be affected
-    """
-    node.tx.set(l=0, k=1, cb=0)
-    node.ty.set(l=0, k=1, cb=0)
-    node.tz.set(l=0, k=1, cb=0)
-    node.rx.set(l=0, k=1, cb=0)
-    node.ry.set(l=0, k=1, cb=0)
-    node.rz.set(l=0, k=1, cb=0)
-    node.sx.set(l=0, k=1, cb=0)
-    node.sy.set(l=0, k=1, cb=0)
-    node.sz.set(l=0, k=1, cb=0)
     
 def mergeDuplicatedVertex(geo, threshold=0.001, only2Vertex=False):
     pm.polyMergeVertex(geo, am=only2Vertex, ch=False, distance=threshold)
@@ -90,31 +75,102 @@ def removeInvalidComponents(geo, query=True):
         return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
     else:
         return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
-    
-    
-def fixGeoIssue(geo=pm.ls(sl=True)[0]):
-    unlock_and_unhide_all(geo)
-    
-    mergeDuplicatedVertex(geo)
-    
-    fixFaceWithMoreThan4Sides(geo)
-    fixConcaveFaces(geo)
-    fixFaceWithHoles(geo)
-    fixNonPlanarFaces(geo)
-    removeLaminaFaces(geo)
-    removeNonmanifoldGeometry(geo)
-    removeEdgesWithZeroLenght(geo)
-    removeFacesWithZeroGeometryArea(geo)
-    removeFacesWithZeroMapArea(geo)
-    removeInvalidComponents(geo)
 
-    pm.makeIdentity(geo, apply=True, t=1, r=1, s=1, n=0)
-    pm.delete(geo, ch=1)
-    pm.xform(geo, ws=True, pivots=[0,0,0])
+
+class ModelFix():
+    def __init__(self, geo, check=True):
+        self.geo = pm.ls(geo)[0]
+
+        unlock_and_unhide_all(self.geo)
+        mergeDuplicatedVertex(self.geo)
+        
+        if check:
+            self.checkFaceWithMoreThan4Sides = fixFaceWithMoreThan4Sides(self.geo, query=True)
+            self.checkConcaveFaces = fixConcaveFaces(self.geo, query=True)
+            self.checkFaceWithHoles = fixFaceWithHoles(self.geo, query=True)
+            self.checkNonPlanarFaces = fixNonPlanarFaces(self.geo, query=True)
+            self.checkLaminaFaces = removeLaminaFaces(self.geo, query=True)
+            self.checkNonmanifoldGeometry = removeNonmanifoldGeometry(self.geo, query=True)
+            self.checkEdgesWithZeroLenght = removeEdgesWithZeroLenght(self.geo, query=True)
+            self.checkFacesWithZeroGeometryArea = removeFacesWithZeroGeometryArea(self.geo, query=True)
+            self.checkFacesWithZeroMapArea = removeFacesWithZeroMapArea(self.geo, query=True)
+            self.checkInvalidComponents = removeInvalidComponents(self.geo, query=True)
+
+    def autoFix(self,
+                faceWithMoreThan4Sides=False,
+                concaveFaces=True,
+                faceWithHoles=True,
+                nonPlanarFaces=False,
+                laminaFaces=True,
+                nonmanifoldGeometry=True,
+                edgesWithZeroLenght=True,
+                facesWithZeroGeometryArea=True,
+                facesWithZeroMapArea=True,
+                invalidComponents=True):
+
+        if faceWithMoreThan4Sides:
+            self.fixFaceWithMoreThan4Sides()
+        if concaveFaces:
+            self.fixConcaveFaces()
+        if faceWithHoles:
+            self.fixFaceWithHoles()
+        if nonPlanarFaces:
+            self.fixNonPlanarFaces()
+
+        if laminaFaces:
+            self.removeLaminaFaces()
+        if nonmanifoldGeometry:
+            self.removeNonmanifoldGeometry()
+        if edgesWithZeroLenght:
+            self.removeEdgesWithZeroLenght()
+        if facesWithZeroGeometryArea:
+            self.removeFacesWithZeroGeometryArea()
+        if facesWithZeroMapArea:
+            self.removeFacesWithZeroMapArea()
+        if invalidComponents:
+            self.removeInvalidComponents()
+
+        self.finalize()
+
+    def fixFaceWithMoreThan4Sides(self):
+        fixFaceWithMoreThan4Sides(self.geo, query=False)
+
+    def fixConcaveFaces(self):
+        fixConcaveFaces(self.geo, query=False)
+
+    def fixFaceWithHoles(self):
+        fixFaceWithHoles(self.geo, query=False)
+
+    def fixNonPlanarFaces(self):
+        fixNonPlanarFaces(self.geo, query=False)
+
+    def removeLaminaFaces(self):
+        removeLaminaFaces(self.geo, query=False)
+
+    def removeNonmanifoldGeometry(self):
+        removeNonmanifoldGeometry(self.geo, query=False)
+
+    def removeEdgesWithZeroLenght(self):
+        removeEdgesWithZeroLenght(self.geo, query=False)
+
+    def removeFacesWithZeroGeometryArea(self):
+        removeFacesWithZeroGeometryArea(self.geo, query=False)
+
+    def removeFacesWithZeroMapArea(self):
+        removeFacesWithZeroMapArea(self.geo, query=False)
+
+    def removeInvalidComponents(self):
+        removeInvalidComponents(self.geo, query=False)
+
+    def finalize(self):
+        pm.makeIdentity(self.geo, apply=True, t=1, r=1, s=1, n=0)
+        pm.delete(self.geo, ch=1)
+        pm.xform(self.geo, ws=True, pivots=[0, 0, 0])
     
 if __name__ == "__main__":
-    geoList = pm.ls(sl=True)
+    geoList = getAllObjectUnderGroup(pm.ls(sl=True)[0])
     for geo in geoList:
         print geo.name()
-        print fixGeoIssue(geo)
+        modelFix = ModelFix(geo)
+        modelFix.autoFix()
     
