@@ -83,7 +83,7 @@ class ModelFix():
 
         unlock_and_unhide_all(self.geo)
         mergeDuplicatedVertex(self.geo)
-        
+
         if check:
             self.checkFaceWithMoreThan4Sides = fixFaceWithMoreThan4Sides(self.geo, query=True)
             self.checkConcaveFaces = fixConcaveFaces(self.geo, query=True)
@@ -105,7 +105,7 @@ class ModelFix():
                 nonmanifoldGeometry=True,
                 edgesWithZeroLenght=True,
                 facesWithZeroGeometryArea=True,
-                facesWithZeroMapArea=True,
+                facesWithZeroMapArea=False,
                 invalidComponents=True):
 
         if faceWithMoreThan4Sides:
@@ -166,6 +166,36 @@ class ModelFix():
         pm.makeIdentity(self.geo, apply=True, t=1, r=1, s=1, n=0)
         pm.delete(self.geo, ch=1)
         pm.xform(self.geo, ws=True, pivots=[0, 0, 0])
+
+    def getFaceWithMoreThan4Sides(self):
+        return self.checkFaceWithMoreThan4Sides
+
+    def getConcaveFaces(self):
+        return self.checkConcaveFaces
+
+    def getFaceWithHoles(self):
+        return self.checkFaceWithHoles
+
+    def getNonPlanarFaces(self):
+        return self.checkNonPlanarFaces
+
+    def getLaminaFaces(self):
+        return self.checkLaminaFaces
+
+    def getNonmanifoldGeometry(self):
+        return self.checkNonmanifoldGeometry
+
+    def getEdgesWithZeroLenght(self):
+        return self.checkEdgesWithZeroLenght
+
+    def getFacesWithZeroGeometryArea(self):
+        return self.checkFacesWithZeroGeometryArea
+
+    def getFacesWithZeroMapArea(self):
+        return self.checkFacesWithZeroMapArea
+
+    def getInvalidComponents(self):
+        return self.checkInvalidComponents
     
 if __name__ == "__main__":
     geoList = getAllObjectUnderGroup(pm.ls(sl=True)[0])
