@@ -27,9 +27,6 @@ def checkUVInBoundaries(shell):
         vMax = int(v) + 1
         vMin = int(v)
 
-        # print 'uMax: ', uMax, 'uMin: ', uMin, 'vMax: ', vMax, 'vMin: ', vMin
-        # print 'UV: ', u, v
-
     return True
 
 
@@ -86,25 +83,37 @@ def getUVShell(geo):
     return shellList
 
 
-def setTexelDensity(geo, texelDensity=32, mapRes=1024):
+def setTexelDensity(geo, texelDensity=10.24, mapRes=1024):
     texSetTexelDensity = 'texSetTexelDensity ' + str(texelDensity) + ' ' + str(mapRes) + ';'
     pm.select(geo.f[:])
     mel.eval(texSetTexelDensity)
 
 
-def uvLayoutNoScale(geoList, uCount, vCount, mapRes=1024):
-    pm.u3dLayout(geoList, res=1024, mutations=2, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
-                 tileMargin=0.001953125, layoutScaleMode=1, u=uCount, v=vCount)
+def uvLayoutNoScale(geoList, uCount, vCount, mapRes=1024, iteration=2):
+    pm.u3dLayout(geoList, res=mapRes, mutations=iteration, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
+                 tileMargin=0.001953125, layoutScaleMode=1, u=uCount, v=vCount, rst=90, rmn=0, rmx=360)
 
 
 def finalLayoutUV(geoList, area=1):
-    tileNumber = math.ceil(math.sqrt(area))
+    tileNumber = math.ceil(area)
     tileValue = tileNumber / 2
-    uCount = tileValue if tileValue % 2 else tileValue +1
-    vCount = tileValue
+    uCount = tileValue if tileValue % 2 else tileValue + 1
+    vCount = tileValue + 1
 
     print 'UV: ', math.ceil(uCount), math.ceil(vCount)
     uvLayoutNoScale(geoList, math.ceil(uCount), math.ceil(vCount))
+
+    badShellList = []
+    for geo in geoList:
+        for shell in getUVShell(geo):
+            if not checkUVInBoundaries(shell):
+                badShellList.append(shell)
+    if len(badShellList) > 0:
+        print 'Bad Shells'
+        uvLayoutNoScale(badShellList, 1, 1)
+        pm.polyEditUV(badShellList, u=0, v=vCount)
+
+    print 'Auto UV Complete!'
 
 
 def autoSeamUV(geo, angle=0):
@@ -114,9 +123,13 @@ def autoSeamUV(geo, angle=0):
         pm.unfold(geo)
 
 
-def unfoldOptimizeUV(geo):
-    # fixNonManifoldUV(geo)
+def unfoldOptimizeUV(geo, normalizeShell=False):
     pm.u3dUnfold(geo, mapsize=1024, iterations=2, pack=0, borderintersection=True, triangleflip=True, roomspace=0)
+    if normalizeShell:
+        shellList = getUVShell(geo)
+        for shell in shellList:
+            pm.polyNormalizeUV(shell, normalizeType=1, preserveAspectRatio=False, centerOnTile=True,
+                               normalizeDirection=0)
 
 
 def fixNonManifoldUV(geo):
@@ -125,7 +138,7 @@ def fixNonManifoldUV(geo):
         'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
 
 
-def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=10.24, autoSeam=0):
+def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
     # Default TexelDensity
     # texelDensity = mapRes/100;
     area = 0
@@ -145,7 +158,7 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=10.24, autoSeam=0):
         unfoldOptimizeUV(geo)
 
         # Layout
-        pm.u3dLayout(geo, res=1024, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1])
+        pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1])
 
         # set Texel Density
         setTexelDensity(geo, texelDensity, mapRes)
@@ -157,7 +170,7 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=10.24, autoSeam=0):
 
         area = area + pm.polyEvaluate(geo, uvArea=True)
 
-    print 'Total Area: ', area, ' -- RoundUp: ', round(area)
+    print 'Total Area: ', area, ' -- RoundUp: ', math.ceil(area)
 
     # Layout with TexelDensity
     finalLayoutUV(geoList, area)
@@ -166,4 +179,4 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=10.24, autoSeam=0):
 
 if __name__ == "__main__":
     geos = getAllObjectUnderGroup(pm.ls(sl=True)[0])
-    autoUV(geos)
+    autoUV(geos, texelDensity=32)
