@@ -166,6 +166,7 @@ def autoUV(geoList=pm.ls(sl=True), mapRes=1024, texelDensity=32, autoSeam=0):
         # check UV boundaries
         recursiveCutUV(geo)
 
+        # delete history
         pm.delete(geo, ch=1)
 
         area = area + pm.polyEvaluate(geo, uvArea=True)
