@@ -143,6 +143,17 @@ class AutoUV():
         pm.u3dLayout(geoList, res=mapRes, mutations=iteration, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
                      tileMargin=0.001953125, layoutScaleMode=1, u=uCount, v=vCount, rst=90, rmn=0, rmx=360)
 
+    def uvLayoutFast(self, geo):
+        pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
+                     tileMargin=0.0009765625, layoutScaleMode=1)
+
+        shellList = self.getUVShell(geo)
+        pm.select(shellList)
+        mel.eval('texStackShells {};')
+        mel.eval('texSnapShells bottomLeft;')
+        mel.eval('texAlignShells minV {} "";')
+        mel.eval('texAlignShells minU {} "";')
+
     def finalLayoutUV(self, geoList, area=1):
         tileNumber = math.ceil(area)
         tileValue = tileNumber / 2
