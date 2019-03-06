@@ -38,11 +38,11 @@ class AutoUV():
             # Unfold3D Optimize
             self.unfoldOptimizeUV(geo)
 
-            # Layout
-            pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1])
-
             # set Texel Density
             self.setTexelDensity(geo, texelDensity, mapRes)
+
+            # Layout
+            self.uvLayoutFast(geo)
 
             # check UV boundaries
             if autoCutUV:
@@ -124,6 +124,7 @@ class AutoUV():
         for shell in shellList:
             if not self.checkUVInBoundaries(shell):
                 self.cutUVTile(shell)
+                #self.recursiveCutUV(geo)
 
     def getUVShell(self, geo):
         shellNumber = pm.polyEvaluate(geo, uvShell=True)
@@ -144,7 +145,7 @@ class AutoUV():
                      tileMargin=0.001953125, layoutScaleMode=1, u=uCount, v=vCount, rst=90, rmn=0, rmx=360)
 
     def uvLayoutFast(self, geo):
-        pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=1, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
+        pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=0, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
                      tileMargin=0.0009765625, layoutScaleMode=1)
 
         shellList = self.getUVShell(geo)
