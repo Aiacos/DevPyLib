@@ -155,6 +155,8 @@ class AutoUV():
         mel.eval('texAlignShells minV {} "";')
         mel.eval('texAlignShells minU {} "";')
 
+        pm.polyEditUV(shellList, u=0.001, v=0.001)
+
     def finalLayoutUV(self, geoList, area=1):
         tileNumber = math.ceil(area)
         tileValue = tileNumber / 2
