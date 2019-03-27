@@ -69,6 +69,9 @@ class DynamicCurve():
     def getOutputCurve(self):
         return self.outputCrv
 
+    def getInputCurve(self):
+        return self.inputCrv
+
     def getSystemGrp(self):
         return self.systemGrp
 
