@@ -140,7 +140,7 @@ class AutoUV():
         pm.select(geo.f[:])
         mel.eval(texSetTexelDensity)
 
-    def uvLayoutNoScale(self, geoList, uCount, vCount, mapRes=1024, iteration=2):
+    def uvLayoutNoScale(self, geoList, uCount, vCount, mapRes=1024, iteration=1):
         pm.u3dLayout(geoList, res=mapRes, mutations=iteration, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
                      tileMargin=0.001953125, layoutScaleMode=1, u=uCount, v=vCount, rst=90, rmn=0, rmx=360)
 
