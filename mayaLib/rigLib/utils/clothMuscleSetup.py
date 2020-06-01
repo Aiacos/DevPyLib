@@ -10,14 +10,13 @@ def getAllObjectUnderGroup(group, type='mesh'):
     :return: object list
     """
     objList = None
-
     if type == 'mesh':
         objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-
     if type == 'transform':
         geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
         objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
-
+    objList = list(set(objList))
+    objList.sort()
     return objList
     
 def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
@@ -65,6 +64,12 @@ class ClothMuscle:
         self.nucleus.enable.set(1)
         self.nucleus.spaceScale.set(0.01)
         self.nucleus.subSteps.set(12)
+        
+        # setup Colliders
+        self.collisionSetup(self.skeletonGrp)
+        
+        for clothShape in self.clothShapeList:
+            self.paintInputAttract(clothShape)
             
              
     def createNCloth(self, muscleList):
@@ -73,7 +78,7 @@ class ClothMuscle:
         muscleSimGrp = pm.group(muscleSim, n='muscleSim_GRP', p=self.muscleSystemGrp)
         
         for mus in muscleSim:
-            pm.rename(mus, str(mus.name()).replace(str(mus.name())[-1], '_SIM'))
+            pm.rename(mus, str(mus.name()).replace('_GEO1', '_SIM'))
         
         
         pm.select(muscleSim)
@@ -86,7 +91,9 @@ class ClothMuscle:
             pm.parent(cloth.getParent(), muscleSimGeo)
             
             # connect inputmeshShape and restShape
-            muscleGeo = pm.ls(str(muscleSimGeo.name()).replace('_SIM', ''))[0]
+            print '###############################################'
+            print str(muscleSimGeo.name()).replace('_SIM', '_GEO')
+            muscleGeo = pm.ls(str(muscleSimGeo.name()).replace('_SIM', '_GEO'))[0]
             pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.inputMesh, f=True)
             pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.restShapeMesh, f=True)
                
@@ -104,53 +111,60 @@ class ClothMuscle:
             # Pressure
             cloth.pressureMethod.set(1)
             
+            # trap checked
+            
         return clothShapeList, nucleus
     
-    def creteCollision(self, geo):
-        pm.select(geo)
-        collisionShapeList = pm.ls(mel.eval('makeCollideNCloth;'))
+    def createCollision(self, geo):
+        #pm.select(geo)
+        #collisionShapeList = pm.ls(mel.eval('makeCollideNCloth;'))
         
-        for collision in collisionShapeList:
-            collisionGeo = pm.listConnections(collision.inputMesh)[0]
-            pm.rename(collision.getParent(), str(collisionGeo.name()) + '_collider')
-            pm.parent(collision.getParent(), collisionGeo)
-            
-            collision.thickness.set(0.005)
-            collision.trappedCheck.set(1)
-            #collision.pushOut.set(0)
-            #collision.pushOutRadius.set(0.5)
-            
-        return collisionShapeList
-    
-    def deltaMushSetup(self, geo, valueList=(1, 0), frameList=(1, 20)):
-        deltaMushNode = pm.deltaMush(geo, smoothingIterations=10, smoothingStep=0.5)
-        print deltaMushNode
-        deltaMushNode.displacement.set(0)
-        for val, frame in zip(valueList, frameList):
-            pm.currentTime(frame)
-            deltaMushNode.envelope.set(val)
-            pm.setKeyframe(deltaMushNode.envelope)
+        timerNode = pm.ls('time1')[0]
+        colliderNode = pm.createNode('nRigid', n=geo.name() + '_collider' + '_Shape')
+        pm.rename(colliderNode.getParent(), geo.name() + '_collider')
+        
+        pm.connectAttr(timerNode.outTime, colliderNode.currentTime, f=True)
+        pm.connectAttr(geo.getShape().worldMesh[0], colliderNode.inputMesh, f=True)
+        
+        pm.connectAttr(colliderNode.currentState, self.nucleus.inputPassive[0], f=True)
+        pm.connectAttr(colliderNode.startState, self.nucleus.inputPassiveStart[0], f=True)
 
-    def setPressure(self, clothShape, valueList=(-1, 0), frameList=(1, 20)):
-        for val, frame in zip(valueList, frameList):
-            pm.currentTime(frame)
-            clothShape.pressure.set(val)
-            pm.setKeyframe(clothShape.pressure)
+        pm.parent(colliderNode, geo)
         
-    def collisionSetup(self, collisionGrp='skeleton_grp'):
-        collisionGrp = pm.ls(collisionGrp)
-        collisionDuplicate = pm.duplicate(collisionGrp)[0]
-        collisionGeo = pm.polyUnite(collisionDuplicate, ch=False, mergeUVSets=0, centerPivot=True, name=collisionGrp[0].name() + '_collision')
+        colliderNode.thickness.set(0.005)
+        #colliderNode.trappedCheck.set(1)
+        #colliderNode.pushOut.set(0)
+        #colliderNode.pushOutRadius.set(0.5)
+            
+        return colliderNode
+    
+    def collisionSetup(self, collisionGrp):
+        collisionGrp = pm.ls(collisionGrp)[0]
+        collisionGeoList = getAllObjectUnderGroup(collisionGrp)
         
-        creteCollision(collisionGeo)
+        for collisionGeo in collisionGeoList:
+            self.createCollision(collisionGeo)
         
-    def paintInputAttract(self, clothNode):
+    def paintInputAttract(self, clothNode, growSelection=5):
         geo = pm.listConnections(clothNode.inputMesh, s=True)[0]
         print 'PAINT: ', geo
         
-        vtxList = geo.vtx
+        # paint middle
+        pm.select(geo)
+        mel.eval('doMenuComponentSelectionExt("' + geo.name() + '", "vertex", 0);')
+        mel.eval('SelectAll;')
+        mel.eval('polySelectConstraint -pp 3;')
+        edges = pm.ls(sl=True)
+        #mel.eval('polySelectContraint -dis;')
         
-        clothPaintInputAttract(clothNode, vtxList, 0, smoothIteration=1)
+        for i in range(growSelection):
+            mel.eval('select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;')        
+            
+        mel.eval('invertSelection;')
+        
+        vtxList = pm.ls(sl=True)
+        
+        clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
         
     def runSolve(self):
         # setup nCloth
@@ -190,7 +204,7 @@ class ClothMuscle:
         self.nucleus.enable.set(1)
 
 if __name__ == "__main__":    
-    mel.eval('file -f -options "v=0;"  -ignoreVersion  -typ "mayaAscii" -o "/Users/lorenzoargentieri/Qsync/Project/Warewolf/scenes/00_model/anatomy_reference.ma";addRecentFile("/Users/lorenzoargentieri/Qsync/Project/Warewolf/scenes/00_model/anatomy_reference.ma", "mayaAscii");')
+    #mel.eval('file -f -options "v=0;"  -ignoreVersion  -typ "mayaAscii" -o "/Users/lorenzoargentieri/Qsync/Project/Warewolf/scenes/00_model/anatomy_reference.ma";addRecentFile("/Users/lorenzoargentieri/Qsync/Project/Warewolf/scenes/00_model/anatomy_reference.ma", "mayaAscii");')
     
     cSolver = ClothMuscle()
     #cSolver.runSolve()
