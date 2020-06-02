@@ -151,7 +151,7 @@ class ClothMuscle:
         
         # paint middle
         pm.select(geo)
-        mel.eval('doMenuComponentSelectionExt("' + geo.name() + '", "vertex", 0);')
+        mel.eval('changeSelectMode -component;')
         mel.eval('SelectAll;')
         mel.eval('polySelectConstraint -pp 3;')
         edges = pm.ls(sl=True)
