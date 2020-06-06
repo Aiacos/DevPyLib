@@ -59,6 +59,3 @@ def makeControlFollowSkin(geo, ctrlTop):
     multDivideNode.input2Z.set(-1)
 
     return followGrp, follicle
-    
-    
-makeControlFollowSkin('Cape_Mesh', 'capeC6Offset_GRP')
