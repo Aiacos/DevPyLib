@@ -40,6 +40,8 @@ def findClosestUVCoordinate(geo, obj):
     return u, v
 
 def makeControlFollowSkin(geo, ctrlTop):
+    geo = pm.ls(geo)[0]
+    ctrlTop = pm.ls(ctrlTop)[0]
     uv = findClosestUVCoordinate(geo, ctrlTop)
     prefix = name.removeSuffix(ctrlTop.name())
     follicle = createFollicle(geo, uv[0], uv[1], prefix)
@@ -57,3 +59,6 @@ def makeControlFollowSkin(geo, ctrlTop):
     multDivideNode.input2Z.set(-1)
 
     return followGrp, follicle
+    
+    
+makeControlFollowSkin('Cape_Mesh', 'capeC6Offset_GRP')
