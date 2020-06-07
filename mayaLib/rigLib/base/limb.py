@@ -179,8 +179,13 @@ class Limb():
 
         #ikFngCnst.target[1].targetWeight.set(0)
 
-        pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
-        pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
+        #pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
+        #pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
+
+        #tmp
+        pm.connectAttr(reverseNode.outputX, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[1] + 'W1'), f=True)
+        pm.connectAttr(switchLoc + '.' + ctrlAttr, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[0] + 'W0'), f=True)
+
 
         #pm.connectAttr(partReverseNode.outputX, ikFngCnst.target[2].targetWeight, f=True)
         #pm.connectAttr(switchLoc + '.' + partCtrlAttr, ikFngCnst.target[0].targetWeight, f=True)

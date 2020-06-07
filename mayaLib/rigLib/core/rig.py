@@ -104,7 +104,7 @@ class BaseRig(object):
         # control shape
         if pm.objExists('controlShapes_GRP'):
             controlShapeList = pm.ls('*_shape_CTRL*')
-            controlList = pm.ls('*_CTRL?', '*_CTRL')
+            controlList = [cv for cv in pm.ls('*_CTRL', '*_CTRL?') if cv not in controlShapeList]
             for ctrl in controlList:
                 for ctrlshape in controlShapeList:
                     if str(ctrlshape.name()).replace('_shape_CTRL', '_CTRL') == str(ctrl.name()):

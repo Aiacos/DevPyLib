@@ -5,18 +5,23 @@ from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import deform
 
 
-def copyShape(source, destination):
+def copyShape(source, destination, mode=''):
     """
     Copy Shape from source to destination transform
     :param source: obj
     :param destination: obj
     :return:
     """
-    sourceShapes = pm.ls(source)[0].getShapes()
-    destinationShapes = pm.ls(destination)[0].getShapes()
-    pm.delete(destinationShapes)
-    pm.parent(sourceShapes, destination, r=True, s=True)
-    pm.delete(source)
+    if mode == 'blendShape':
+        blendshapeNode = pm.blendShape([source], destination, frontOfChain=True, weight=(0,1))
+        pm.delete(blendshapeNode, ch=True)
+    else:
+        sourceShapes = pm.ls(source)[0].getShapes()
+        destinationShapes = pm.ls(destination)[0].getShapes()
+        pm.delete(destinationShapes)
+
+        pm.parent(sourceShapes, destination, r=True, s=True)
+        pm.delete(source)
 
 def extractCtrlShape():
     controlShapeGrp = pm.group(n='controlShapes_GRP', em=True)
