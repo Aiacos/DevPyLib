@@ -103,11 +103,12 @@ class BaseRig(object):
 
         # control shape
         if pm.objExists('controlShapes_GRP'):
-            controlShapeList = util.getAllObjectUnderGroup('controlShapes_GRP', type='transform')
-            controlList = [cv for cv in pm.ls('*_CTRL') if cv not in controlShapeList]
+            controlShapeList = pm.ls('*_shape_CTRL*')
+            controlList = pm.ls('*_CTRL?', '*_CTRL')
             for ctrl in controlList:
                 for ctrlshape in controlShapeList:
-                    if ctrlshape.name().split('|')[-1] == ctrl.name().split('|')[-1]:
+                    if str(ctrlshape.name()).replace('_shape_CTRL', '_CTRL') == str(ctrl.name()):
+                        print 'Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name())
                         ctrlShape.copyShape(ctrlshape, ctrl)
             pm.delete('controlShapes_GRP')
 
