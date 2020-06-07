@@ -3,23 +3,27 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 
-def color_control(controls=pm.ls('*_ctrl*', type='nurbsCurve')):
+def color_control(controls=pm.ls('*_CTRL', type='nurbsCurve')):
     """
-    Color all selected control based on theis prefix (L_ , R_)
+    Color all selected control based on their prefix (L_ , R_)
     :param controls:
     :return:
 
-    Usage: color_control(controls=pm.ls('*_ctrl*', type='nurbsCurve'))
+    Usage: color_control(controls=pm.listRelatives('controlShapes_GRP', c=True))
     """
     for ctrlObject in controls:
-        name = ctrlObject.name().encode('utf8')
-        pm.setAttr(name + '.ove', 1)
-        if name.startswith('L_'):
-            pm.setAttr(name + '.ovc', 6)
-        elif name.startswith('R_'):
-            pm.setAttr(name + '.ovc', 13)
+        name = str(ctrlObject.name())
+        ctrlObject.getShape().ove.set(0)
+        ctrlObject.ove.set(1)
+
+        print ctrlObject.overrideColor.get()
+
+        if 'LF_' in name:
+            ctrlObject.overrideColor.set(6)
+        elif 'RT_' in name:
+            ctrlObject.overrideColor.set(13)
         else:
-            pm.setAttr(name + '.ovc', 22)
+            ctrlObject.overrideColor.set(22)
 
 
 if __name__ == "__main__":

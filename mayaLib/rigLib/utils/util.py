@@ -132,15 +132,18 @@ def lock_and_hide_all(node):
     lock and hide all transform attributes of selected node
     :param node: node to be affected
     """
-    node.tx.set(l=1, k=0, cb=0)
-    node.ty.set(l=1, k=0, cb=0)
-    node.tz.set(l=1, k=0, cb=0)
-    node.rx.set(l=1, k=0, cb=0)
-    node.ry.set(l=1, k=0, cb=0)
-    node.rz.set(l=1, k=0, cb=0)
-    node.sx.set(l=1, k=0, cb=0)
-    node.sy.set(l=1, k=0, cb=0)
-    node.sz.set(l=1, k=0, cb=0)
+    nodeList = pm.ls(node)
+
+    for node in nodeList:
+        node.tx.set(l=1, k=0, cb=0)
+        node.ty.set(l=1, k=0, cb=0)
+        node.tz.set(l=1, k=0, cb=0)
+        node.rx.set(l=1, k=0, cb=0)
+        node.ry.set(l=1, k=0, cb=0)
+        node.rz.set(l=1, k=0, cb=0)
+        node.sx.set(l=1, k=0, cb=0)
+        node.sy.set(l=1, k=0, cb=0)
+        node.sz.set(l=1, k=0, cb=0)
 
 
 # function to unlock and unhide attributes
@@ -149,15 +152,18 @@ def unlock_and_unhide_all(node):
     unlock and unhide all transform attributes of selected node
     :param node: node to be affected
     """
-    node.tx.set(l=0, k=1, cb=0)
-    node.ty.set(l=0, k=1, cb=0)
-    node.tz.set(l=0, k=1, cb=0)
-    node.rx.set(l=0, k=1, cb=0)
-    node.ry.set(l=0, k=1, cb=0)
-    node.rz.set(l=0, k=1, cb=0)
-    node.sx.set(l=0, k=1, cb=0)
-    node.sy.set(l=0, k=1, cb=0)
-    node.sz.set(l=0, k=1, cb=0)
+    nodeList = pm.ls(node)
+
+    for node in nodeList:
+        node.tx.set(l=0, k=1, cb=0)
+        node.ty.set(l=0, k=1, cb=0)
+        node.tz.set(l=0, k=1, cb=0)
+        node.rx.set(l=0, k=1, cb=0)
+        node.ry.set(l=0, k=1, cb=0)
+        node.rz.set(l=0, k=1, cb=0)
+        node.sx.set(l=0, k=1, cb=0)
+        node.sy.set(l=0, k=1, cb=0)
+        node.sz.set(l=0, k=1, cb=0)
 
 
 # function to make surface not render

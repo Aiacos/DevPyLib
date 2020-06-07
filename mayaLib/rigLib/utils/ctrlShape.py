@@ -26,7 +26,7 @@ def extractCtrlShape():
         deleteList = pm.listRelatives(ctrlShape, c=True, type='transform')
         pm.delete(deleteList)
         pm.parent(ctrlShape, controlShapeGrp)
-        newName = ctrlShape.name().replace('_CTRL1', '_CTRL')
+        newName = str(ctrlShape.name()).replace('_CTRL1', '_CTRL')
         pm.rename(ctrlShape, newName)
 
 
