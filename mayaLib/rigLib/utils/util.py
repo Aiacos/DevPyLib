@@ -213,3 +213,22 @@ def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
                   '3D': hypotenuseXYZ / radiusFactor}
 
     return radiusDict
+
+def matrixConstrain(driver, driven, translate=True, rotate=True, scale=False):
+    driver = pm.ls(driver)[0]
+    driven = pm.ls(driven)[0]
+    parent = driven.getParent()
+
+    mulMatrix = pm.shadingNode('multMatrix', asUtility=True)
+    decomposeMatrix = pm.shadingNode('decomposeMatrix', asUtility=True)
+
+    pm.connectAttr(mulMatrix.matrixSum, decomposeMatrix.inputMatrix)
+    pm.connectAttr(driver.worldMatrix[0], mulMatrix.matrixIn[0])
+    pm.connectAttr(parent.worldInverseMatrix[0], mulMatrix.matrixIn[1])
+
+    if translate:
+        pm.connectAttr(decomposeMatrix.outputTranslate, driven.translate)
+    if rotate:
+        pm.connectAttr(decomposeMatrix.outputRotate, driven.rotate)
+    if scale:
+        pm.connectAttr(decomposeMatrix.outputScale, driven.scale)

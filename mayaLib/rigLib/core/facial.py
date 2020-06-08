@@ -4,6 +4,8 @@ import pymel.core as pm
 from maya import mel
 
 from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import util
 
 
 def createFollicle(geo, u, v, prefix):
@@ -42,20 +44,29 @@ def findClosestUVCoordinate(geo, obj):
 def makeControlFollowSkin(geo, ctrlTop):
     geo = pm.ls(geo)[0]
     ctrlTop = pm.ls(ctrlTop)[0]
+    ctrl = ctrlTop.getChildren()[0]
     uv = findClosestUVCoordinate(geo, ctrlTop)
     prefix = name.removeSuffix(ctrlTop.name())
     follicle = createFollicle(geo, uv[0], uv[1], prefix)
 
-    followGrp = pm.group(ctrlTop, n=prefix + 'Follow_GRP')
-    compensateGrp = pm.group(ctrlTop, n=prefix + 'Compensate_GRP')
+    followGrp = pm.group(em=True, n=prefix + 'Follow_GRP', w=True)
+    compensateGrp = pm.group(em=True, n=prefix + 'Compensate_GRP', w=True)
 
-    pm.pointConstraint(follicle, followGrp, mo=True)
+    common.centerPivot(compensateGrp, ctrl)
+    common.centerPivot(followGrp, ctrl)
+
+    pm.parent(compensateGrp, followGrp)
+    pm.parent(followGrp, ctrlTop)
+    pm.parent(ctrl, compensateGrp)
+
+    #pm.pointConstraint(follicle, followGrp, mo=True)
+    util.matrixConstrain(follicle, followGrp, rotate=False)
 
     multDivideNode = pm.createNode('multiplyDivide', n=prefix+'CompensateNode')
-    pm.connectAttr(followGrp.translate, multDivideNode.input1)
+    pm.connectAttr(ctrl.translate, multDivideNode.input1)
     pm.connectAttr(multDivideNode.output, compensateGrp.translate)
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
     multDivideNode.input2Z.set(-1)
 
-    return followGrp, follicle
+    return ctrl, follicle
