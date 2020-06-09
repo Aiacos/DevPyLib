@@ -174,21 +174,22 @@ class Limb():
             attr = pm.listConnections(cnst.target[0].targetWeight, p=True, s=True)[0]
             pm.connectAttr(switchLoc + '.' + partCtrlAttr, attr)
 
-        fkFngCnst = pm.parentConstraint(mainIKCtrl.C, fkHandsFeetCtrls[0].getTop().getParent(), mo=True)
-        #ikFngCnst = pm.parentConstraint(fkLimbCtrls[-1].C, fngCtrls[0][0].getTop(), mo=True)
+        if len(fkLimbCtrls) > 0 and len(fkHandsFeetCtrls) > 0 and len(fkHandsFeetCnst) > 0 and len(fkLimbCnst) > 0:
+            fkFngCnst = pm.parentConstraint(mainIKCtrl.C, fkHandsFeetCtrls[0].getTop().getParent(), mo=True)
+            #ikFngCnst = pm.parentConstraint(fkLimbCtrls[-1].C, fngCtrls[0][0].getTop(), mo=True)
 
-        #ikFngCnst.target[1].targetWeight.set(0)
+            #ikFngCnst.target[1].targetWeight.set(0)
 
-        #pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
-        #pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
+            #pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
+            #pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
 
-        #tmp
-        pm.connectAttr(reverseNode.outputX, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[1] + 'W1'), f=True)
-        pm.connectAttr(switchLoc + '.' + ctrlAttr, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[0] + 'W0'), f=True)
+            #tmp
+            pm.connectAttr(reverseNode.outputX, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[1] + 'W1'), f=True)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[0] + 'W0'), f=True)
 
 
-        #pm.connectAttr(partReverseNode.outputX, ikFngCnst.target[2].targetWeight, f=True)
-        #pm.connectAttr(switchLoc + '.' + partCtrlAttr, ikFngCnst.target[0].targetWeight, f=True)
+            #pm.connectAttr(partReverseNode.outputX, ikFngCnst.target[2].targetWeight, f=True)
+            #pm.connectAttr(switchLoc + '.' + partCtrlAttr, ikFngCnst.target[0].targetWeight, f=True)
 
     def makeSimpleScapula(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         scapulaCtrl = control.Control(prefix=prefix + 'Scapula', translateTo=scapulaJnt, rotateTo=scapulaJnt,
