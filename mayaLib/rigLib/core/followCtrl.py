@@ -41,12 +41,12 @@ def findClosestUVCoordinate(geo, obj):
 
     return u, v
 
-def makeControlFollowSkin(geo, ctrlTop):
+def makeControlFollowSkin(geo, ctrl, drivenObj):
     geo = pm.ls(geo)[0]
-    ctrlTop = pm.ls(ctrlTop)[0]
-    ctrl = ctrlTop.getChildren()[0]
-    uv = findClosestUVCoordinate(geo, ctrlTop)
-    prefix = name.removeSuffix(ctrlTop.name())
+    ctrl = pm.ls(ctrl)[0]
+    drivenObj = pm.ls(drivenObj)[0]
+    uv = findClosestUVCoordinate(geo, ctrl)
+    prefix = name.removeSuffix(ctrl.name())
     follicle = createFollicle(geo, uv[0], uv[1], prefix)
 
     followGrp = pm.group(em=True, n=prefix + 'Follow_GRP', w=True)
@@ -56,7 +56,7 @@ def makeControlFollowSkin(geo, ctrlTop):
     common.centerPivot(followGrp, ctrl)
 
     pm.parent(compensateGrp, followGrp)
-    pm.parent(followGrp, ctrlTop)
+    pm.parent(followGrp, ctrl.getParent())
     pm.parent(ctrl, compensateGrp)
 
     #pm.pointConstraint(follicle, followGrp, mo=True)
@@ -68,5 +68,7 @@ def makeControlFollowSkin(geo, ctrlTop):
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
     multDivideNode.input2Z.set(-1)
+    
+    pm.connectAttr(ctrl.translate, drivenObj.translate, f=True)
 
     return ctrl, follicle
