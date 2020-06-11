@@ -87,6 +87,12 @@ def cMuscleConnectMuscle(muscleMainObj, muscleObjList):
     pm.select(muscleMainObj, add=1)
     mel.eval('cMuscle_connectToSystem();')
 
+def softModDeformer(vertex):
+    deformerNode = pm.softMod(vertex)[0]
+    deformerNode.falloffMasking.set(0)
+
+    return deformerNode
+
 
 if __name__ == "__main__":
     pass
