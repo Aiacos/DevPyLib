@@ -70,11 +70,11 @@ class IKFKSwitch():
         if blend == 0:
             pm.setAttr(self.driverLoc, 0)
             self.toFK()
-            print 'Snap FK CTRL To IK'
+            print('Snap FK CTRL To IK')
         elif blend == 1:
             pm.setAttr(self.driverLoc, 0)
             self.toIK()
-            print 'Snap IK CTRL To FK'
+            print('Snap IK CTRL To FK')
 
         self.reconnect()
 
@@ -104,7 +104,7 @@ def installIKFK(ikList):
     cmdString = '\n'.join(cmdList)
     pm.scriptNode(st=2, bs=cmdString, n='switch_IKFK', stp='python')
 
-    print 'INSTALLED IKFK SWITCH!'
+    print('INSTALLED IKFK SWITCH!')
 
 
 
@@ -112,9 +112,9 @@ if __name__ == "__main__":
     ikList = pm.ls('l_shoulder1_IKH', 'r_shoulder1_IKH', 'l_hip1_IKH', 'r_hip1_IKH')
     ikInstanceList = [IKFKSwitch(ik) for ik in ikList]
     ikScriptJobList = [i.addScriptJob() for i in ikInstanceList]
-    print ikScriptJobList
+    print(ikScriptJobList)
 
     c = IKFKSwitch(ikList[0])
     c.switchIKFK()
-    print c.addScriptJob()
+    print(c.addScriptJob())
 

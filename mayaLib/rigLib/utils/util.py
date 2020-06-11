@@ -214,10 +214,12 @@ def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
 
     return radiusDict
 
-def matrixConstrain(driver, driven, translate=True, rotate=True, scale=False):
+def matrixConstrain(driver, driven, parent=None, translate=True, rotate=True, scale=False):
     driver = pm.ls(driver)[0]
     driven = pm.ls(driven)[0]
-    parent = driven.getParent()
+
+    if not parent:
+        parent = driven.getParent()
 
     mulMatrix = pm.shadingNode('multMatrix', asUtility=True)
     decomposeMatrix = pm.shadingNode('decomposeMatrix', asUtility=True)
