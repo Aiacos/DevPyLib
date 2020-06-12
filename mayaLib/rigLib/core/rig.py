@@ -40,7 +40,7 @@ class BaseRig(object):
         """
 
         start = pm.timerX()
-        print '-- START --'
+        print('-- START --')
 
         # New Scene
         if buildScene_filePath:
@@ -108,31 +108,31 @@ class BaseRig(object):
             for ctrl in controlList:
                 for ctrlshape in controlShapeList:
                     if str(ctrlshape.name()).replace('_shape_CTRL', '_CTRL') == str(ctrl.name()):
-                        print 'Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name())
+                        print('Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name()))
                         ctrlShape.copyShape(ctrlshape, ctrl)
             pm.delete('controlShapes_GRP')
 
         self.finalize()
 
         totalTime = pm.timerX(startTime=start)
-        print '-- END --'
-        print 'Total time: ', totalTime
+        print('-- END --')
+        print('Total time: ', totalTime)
 
     def prepare(self):
         pass
-        print '-- PREPARE --'
+        print('-- PREPARE --')
 
     def rig(self):
         pass
-        print '-- RIG --'
+        print('-- RIG --')
 
     def upgrade(self):
         pass
-        print '-- UPGRADE --'
+        print('-- UPGRADE --')
 
     def finalize(self):
         pass
-        print '-- FINALIZE --'
+        print('-- FINALIZE --')
 
     def makeSpine(self, prefix, rootJnt, spineJoints, sceneScale):
         """
@@ -247,7 +247,7 @@ class HumanoidRig(BaseRig):
         super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
 
     def rig(self):
-        print '-- RIG HUMANOID --'
+        print('-- RIG HUMANOID --')
 
         if self.goToTPose:
             joint.loadTPose(self.rootJnt)
