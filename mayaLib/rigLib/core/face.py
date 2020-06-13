@@ -48,7 +48,7 @@ class Face():
         #pm.parent(faceGeo, baseRig.baseModule.modelGrp)
         faceWrapNode = deform.wrapDeformer(skinGeo, faceGeo)
         faceWrapBaseGeo = pm.ls(str(faceGeo.name()) + 'Base')[0]
-        #pm.parent([faceGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
+        pm.parent([faceGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
 
         # joints setup
         headFaceJnt = pm.duplicate(headJnt, renameChildren=True)[0]
@@ -97,7 +97,7 @@ class Face():
             #pm.parent(sphereShape, joint, r=True, s=True)
             #pm.delete(sphereObj)
 
-            locGrp = pm.group(locatorList, n=cvName + 'loc_GRP', p=self.rigmodule.partsNoTransGrp)
+        locGrp = pm.group(locatorList, n=cvName + 'loc_GRP', p=self.rigmodule.partsNoTransGrp)
 
         return locatorList
 
