@@ -1,2 +1,1 @@
-import Qt
 import bSkinSaver

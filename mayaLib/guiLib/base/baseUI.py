@@ -3,7 +3,7 @@ __author__ = 'Lorenzo Argentieri'
 import inspect
 import ast
 import mayaLib.pipelineLib.utility.docs as doc
-from mayaLib.utility.Qt import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets
 import pymel.core as pm
 
 
