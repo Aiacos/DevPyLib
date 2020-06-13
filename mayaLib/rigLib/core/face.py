@@ -53,7 +53,7 @@ class Face():
         # joints setup
         headFaceJnt = pm.duplicate(headJnt, renameChildren=True)[0]
         jointsDuplicates = pm.listRelatives(headFaceJnt, c=True, ad=True)
-        print(jointsDuplicates)
+
         for jnt in jointsDuplicates:
             pm.rename(jnt, str(jnt.name()).replace('_JNT1', 'Face_JNT'))
         pm.parent(jointsDuplicates[0], self.rigmodule.jointsGrp)
@@ -62,7 +62,6 @@ class Face():
         pm.connectAttr(jawJnt.rotate, baseJawJnt.rotate)
 
         pm.skinCluster(skinGeo, edit=True, ai=cvList)
-
 
         for cv in pm.ls(cvList):
             pm.rebuildCurve(cv, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.01)
@@ -76,12 +75,14 @@ class Face():
         for p in range(0, pointsNumber):
             # place locator
             locator = pm.spaceLocator(n=cvName + str(p + 1) + '_LOC')
-            locator.localScale.set(locSize)
+            locator.localScaleX.set(locSize)
+            locator.localScaleY.set(locSize)
+            locator.localScaleZ.set(locSize)
 
-            motionPath = pm.pathAnimation(locator, c=cv, f=follow)
+            motionPath = pm.ls(pm.pathAnimation(locator, c=cv, f=follow))[0]
             self.deleteConnection(motionPath.u)
             motionPath.uValue.set(self.spacing * p)
-            locatorList.append(locator[0])
+            locatorList.append(locator)
 
             # place joint
             if offsetActive:
@@ -89,7 +90,7 @@ class Face():
                 jointOffset.radius.set(jointRadius)
 
             joint = pm.joint(n=cvName + str(p + 1) + '_JNT', r=jointRadius)
-            jointOffset.radius.set(jointRadius)
+            joint.radius.set(jointRadius)
 
             #sphereObj = pm.sphere(r=sphereSize, axis=(0, 1, 0))
             #sphereShape = pm.listRelatives(sphereObj, children=True, shapes=True)
