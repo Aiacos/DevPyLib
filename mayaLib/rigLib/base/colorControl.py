@@ -16,11 +16,11 @@ def color_control(controls=pm.ls('*_CTRL', type='nurbsCurve')):
         ctrlObject.getShape().ove.set(0)
         ctrlObject.ove.set(1)
 
-        print ctrlObject.overrideColor.get()
+        print(ctrlObject.overrideColor.get())
 
-        if 'LF_' in name:
+        if 'L_' in name:
             ctrlObject.overrideColor.set(6)
-        elif 'RT_' in name:
+        elif 'R_' in name:
             ctrlObject.overrideColor.set(13)
         else:
             ctrlObject.overrideColor.set(22)
