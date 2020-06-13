@@ -3,11 +3,11 @@ face @ rig
 """
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import name
+
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.base import control
 from mayaLib.rigLib.utils import deform
-from mayaLib.rigLib.core import followCtrl
+from mayaLib.rigLib.utils import followCtrl
 
 
 class Face():
@@ -19,7 +19,6 @@ class Face():
                  headJnt='head_JNT',
                  jawJnt='jaw_JNT',
                  pointsNumber=5,
-                 rigScale=1.0,
                  baseRig=None
                  ):
         """
