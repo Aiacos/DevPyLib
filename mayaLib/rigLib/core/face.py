@@ -43,9 +43,9 @@ class Face():
 
         # setup deformation
         # geo setup
-        faceBaseGeo = pm.duplicate(faceGeo)[0]
+        faceBaseGeo = pm.duplicate(faceGeo, n=str(faceGeo.name()).replace('_GEO', 'Base_GEO'))[0]
         pm.parent(faceBaseGeo, self.rigmodule.partsNoTransGrp)
-        #pm.parent(faceGeo, baseRig.baseModule.modelGrp)
+        deform.blendShapeDeformer(faceGeo, [faceBaseGeo], 'face_BS')
         faceWrapNode = deform.wrapDeformer(skinGeo, faceGeo)
         faceWrapBaseGeo = pm.ls(str(faceGeo.name()) + 'Base')[0]
         pm.parent([faceGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
@@ -53,10 +53,11 @@ class Face():
         # joints setup
         headFaceJnt = pm.duplicate(headJnt, renameChildren=True)[0]
         jointsDuplicates = pm.listRelatives(headFaceJnt, c=True, ad=True)
+        jointsDuplicates.append(headFaceJnt)
 
         for jnt in jointsDuplicates:
             pm.rename(jnt, str(jnt.name()).replace('_JNT1', 'Face_JNT'))
-        pm.parent(jointsDuplicates[0], self.rigmodule.jointsGrp)
+        pm.parent(jointsDuplicates[-1], self.rigmodule.jointsGrp)
 
         baseJawJnt = pm.ls(str(jawJnt.name()).replace('_JNT', 'Face_JNT'))[0]
         pm.connectAttr(jawJnt.rotate, baseJawJnt.rotate)

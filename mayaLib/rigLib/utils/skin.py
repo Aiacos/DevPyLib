@@ -59,7 +59,7 @@ def copyBind(source, destination, sa='closestPoint', ia='closestJoint'):
     if skinCluster:
         skin = skinCluster
     else:
-        print 'Missing source SkinCluster'
+        print('Missing source SkinCluster')
 
     # Get joint influence of the skin
     influnces = skin.getInfluence(q=True)  # influences is joint
@@ -118,7 +118,7 @@ def saveSkinWeights(characterName, geoList,
         if doDirectory:
             os.makedirs(directory)
         else:
-            print 'Path to save SkinCluster not found!'
+            print('Path to save SkinCluster not found!')
             return
 
     if not isinstance(geoList, list):
@@ -141,7 +141,7 @@ def loadSkinWeights(characterName, geoList,
     # check folder
     directory = os.path.join(projectPath, characterName, skinWeightsDir)
     if not os.path.exists(directory):
-        print 'Path to load SkinCluster not found!'
+        print('Path to load SkinCluster not found!')
         return
 
     if not isinstance(geoList, list):
@@ -174,7 +174,16 @@ def loadSkinWeights(characterName, geoList,
         fullpathWtFile = os.path.join(wtDir, wtFile)
         bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
 
+def ngSkinToolInit(geo):
+    pass
+
+def ngSkinToolRaplceLayer(geo, sourceLayer, destinationLayer):
+    pass
+
+def ngSkinToolDeleteNode(geo):
+    pass
+
 
 if __name__ == "__main__":
     copySkinWeightBetweenMesh()
-    print 'Done!'
+    print('Done!')
