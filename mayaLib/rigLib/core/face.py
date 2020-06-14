@@ -72,7 +72,9 @@ class Face():
         fullLocList = []
         fullClusterList = []
         for cv in pm.ls(cvList):
-            pm.rebuildCurve(cv, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.01)
+            pm.rebuildCurve(cv, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=1, tol=0.01)
+            pm.rebuildCurve(cv, ch=0, rpo=1, rt=0, end=1, kr=0, kcp=1, kep=1, kt=0, s=4, d=3, tol=0.01)
+
             pm.parent(cv, self.rigmodule.partsNoTransGrp)
             locList = self.setupCurve(cv, pointsNumber)
             fullLocList.extend(locList)
@@ -83,14 +85,14 @@ class Face():
 
             curveClusters = []
             for i in range(numChainCVs):
-                if not (i == 1 or i == numChainCVs-2):
-                    cls = pm.cluster(chainCurveCVs[i], n=str(cv.name()) + 'Cluster%d' % (i + 1))[1]
-                    curveClusters.append(cls)
+                cls = pm.cluster(chainCurveCVs[i], n=str(cv.name()) + 'Cluster%d' % (i + 1))[1]
+                curveClusters.append(cls)
 
             fullClusterList.extend(curveClusters)
 
         clusterGrp = pm.group(fullClusterList, n='faceCluster_GRP', p=self.rigmodule.partsNoTransGrp)
 
+        follicleList = []
         for loc, cls in zip(fullLocList, fullClusterList):
             currentJnt = pm.listRelatives(loc, c=True, ad=True)[1]
             #currentJnt.inheritsTransform.set(0)
@@ -101,7 +103,9 @@ class Face():
                                    parent=self.rigmodule.controlsGrp,
                                    doModify=True)
             #pm.connectAttr(ctrl.getControl().translate, cls.translate, f=True)
-            followCtrl.makeControlFollowSkin(faceGeo, ctrl.getControl(), cls)
+            follicle = followCtrl.makeControlFollowSkin(faceGeo, ctrl.getControl(), cls)[-1]
+            follicleList.extend([follicle])
+        follicleGrp = pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
 
     def setupCurve(self, cv, pointsNumber, sphereSize=0.1, offsetActive=False, locSize=0.1, jointRadius=0.1, follow=False):
         cvName = str(cv.name()).replace('_CRV', '')
@@ -136,7 +140,7 @@ class Face():
             #pm.parent(sphereShape, joint, r=True, s=True)
             #pm.delete(sphereObj)
 
-        locGrp = pm.group(locatorList, n=cvName + 'loc_GRP', p=self.rigmodule.partsNoTransGrp)
+        locGrp = pm.group(locatorList, n=cvName + 'Loc_GRP', p=self.rigmodule.partsNoTransGrp)
 
         return locatorList
 
