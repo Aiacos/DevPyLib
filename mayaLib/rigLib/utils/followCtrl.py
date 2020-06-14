@@ -68,7 +68,8 @@ def makeControlFollowSkin(geo, ctrl, drivenObj):
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
     multDivideNode.input2Z.set(-1)
-    
+
+    ctrl.translate.set(0,0,0)
     pm.connectAttr(ctrl.translate, drivenObj.translate, f=True)
 
     return ctrl, follicle
