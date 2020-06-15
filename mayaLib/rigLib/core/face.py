@@ -15,11 +15,10 @@ class Face():
     def __init__(self,
                  cvList,
                  skinGeo,
-                 faceGeo='face_GEO',
                  prefix='face',
                  headJnt='head_JNT',
-                 jawJnt='jaw_JNT',
                  pointsNumber=5,
+                 scale=0.1,
                  baseRig=None
                  ):
         """
@@ -32,9 +31,7 @@ class Face():
 
         cvList = pm.ls(cvList)
         skinGeo = pm.ls(skinGeo)[0]
-        #faceGeo = pm.ls(faceGeo)[0]
         headJnt = pm.ls(headJnt)[0]
-        jawJnt = pm.ls(jawJnt)[0]
 
         # make rig module
         self.rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
@@ -44,12 +41,9 @@ class Face():
 
         # setup deformation
         # geo setup
-        faceBaseGeo = pm.duplicate(skinGeo, n=str(skinGeo.name()).replace('_GEO', 'Base_GEO'))[0]
-        pm.parent(faceBaseGeo, self.rigmodule.partsNoTransGrp)
-        deform.blendShapeDeformer(skinGeo, [faceBaseGeo], 'face_BS', frontOfChain=True)
-        #faceWrapNode = deform.wrapDeformer(skinGeo, faceGeo)
-        #faceWrapBaseGeo = pm.ls(str(faceBaseGeo.name()) + 'Base')[0]
-        #pm.parent([faceBaseGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
+        faceGeo = pm.duplicate(skinGeo, n=prefix + '_GEO')[0]
+        pm.parent(faceGeo, self.rigmodule.partsNoTransGrp)
+        deform.blendShapeDeformer(skinGeo, [faceGeo], 'face_BS', frontOfChain=True)
 
         # joints setup
         headFaceJnt = pm.duplicate(headJnt, renameChildren=True)[0]
@@ -60,13 +54,10 @@ class Face():
             pm.rename(jnt, str(jnt.name()).replace('_JNT1', 'Face_JNT'))
         pm.parent(jointsDuplicates[-1], self.rigmodule.jointsGrp)
 
-        baseJawJnt = pm.ls(str(jawJnt.name()).replace('_JNT', 'Face_JNT'))[0]
-        #pm.connectAttr(jawJnt.rotate, baseJawJnt.rotate)
-        pm.skinCluster(faceBaseGeo, headFaceJnt)
+        pm.skinCluster(faceGeo, headFaceJnt)
 
-        #skin.copyBind(skinGeo, faceGeo)
-        faceGeoSkincluster = skin.findRelatedSkinCluster(faceBaseGeo)
-        pm.skinCluster(faceBaseGeo, edit=True, ai=cvList, ug=True)
+        faceGeoSkincluster = skin.findRelatedSkinCluster(faceGeo)
+        pm.skinCluster(faceGeo, edit=True, ai=cvList, ug=True)
         faceGeoSkincluster.useComponents.set(1)
 
         pm.parent(pm.ls('*_CRVBase'), self.rigmodule.partsNoTransGrp)
@@ -96,15 +87,13 @@ class Face():
 
         follicleList = []
         for loc, cls in zip(fullLocList, fullClusterList):
-            currentJnt = pm.listRelatives(loc, c=True, ad=True)[1]
-            #currentJnt.inheritsTransform.set(0)
-            #pm.parent(currentJnt, self.rigmodule.jointsGrp)
             ctrl = control.Control(str(loc.name()).replace('_LOC', ''),
                                    translateTo=loc,
                                    shape='sphere',
                                    parent=self.rigmodule.controlsGrp,
-                                   doModify=True)
-            #pm.connectAttr(ctrl.getControl().translate, cls.translate, f=True)
+                                   doModify=True,
+                                   scale=scale)
+
             follicle = followCtrl.makeControlFollowSkin(skinGeo, ctrl.getControl(), cls)[-1]
             follicleList.extend([follicle])
         follicleGrp = pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
