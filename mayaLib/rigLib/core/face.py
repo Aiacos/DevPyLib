@@ -32,7 +32,7 @@ class Face():
 
         cvList = pm.ls(cvList)
         skinGeo = pm.ls(skinGeo)[0]
-        faceGeo = pm.ls(faceGeo)[0]
+        #faceGeo = pm.ls(faceGeo)[0]
         headJnt = pm.ls(headJnt)[0]
         jawJnt = pm.ls(jawJnt)[0]
 
@@ -44,12 +44,12 @@ class Face():
 
         # setup deformation
         # geo setup
-        faceBaseGeo = pm.duplicate(faceGeo, n=str(faceGeo.name()).replace('_GEO', 'Base_GEO'))[0]
+        faceBaseGeo = pm.duplicate(skinGeo, n=str(skinGeo.name()).replace('_GEO', 'Base_GEO'))[0]
         pm.parent(faceBaseGeo, self.rigmodule.partsNoTransGrp)
-        deform.blendShapeDeformer(faceGeo, [faceBaseGeo], 'face_BS', frontOfChain=True)
-        faceWrapNode = deform.wrapDeformer(skinGeo, faceGeo)
-        faceWrapBaseGeo = pm.ls(str(faceGeo.name()) + 'Base')[0]
-        pm.parent([faceGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
+        deform.blendShapeDeformer(skinGeo, [faceBaseGeo], 'face_BS', frontOfChain=True)
+        #faceWrapNode = deform.wrapDeformer(skinGeo, faceGeo)
+        #faceWrapBaseGeo = pm.ls(str(faceBaseGeo.name()) + 'Base')[0]
+        #pm.parent([faceBaseGeo, faceWrapBaseGeo], self.rigmodule.partsNoTransGrp)
 
         # joints setup
         headFaceJnt = pm.duplicate(headJnt, renameChildren=True)[0]
@@ -64,10 +64,12 @@ class Face():
         #pm.connectAttr(jawJnt.rotate, baseJawJnt.rotate)
         pm.skinCluster(faceBaseGeo, headFaceJnt)
 
-        skin.copyBind(skinGeo, faceGeo)
-        faceGeoSkincluster = skin.findRelatedSkinCluster(faceGeo)
+        #skin.copyBind(skinGeo, faceGeo)
+        faceGeoSkincluster = skin.findRelatedSkinCluster(faceBaseGeo)
+        pm.skinCluster(faceBaseGeo, edit=True, ai=cvList, ug=True)
         faceGeoSkincluster.useComponents.set(1)
-        pm.skinCluster(faceBaseGeo, edit=True, ai=cvList)
+
+        pm.parent(pm.ls('*_CRVBase'), self.rigmodule.partsNoTransGrp)
 
         fullLocList = []
         fullClusterList = []
@@ -103,7 +105,7 @@ class Face():
                                    parent=self.rigmodule.controlsGrp,
                                    doModify=True)
             #pm.connectAttr(ctrl.getControl().translate, cls.translate, f=True)
-            follicle = followCtrl.makeControlFollowSkin(faceGeo, ctrl.getControl(), cls)[-1]
+            follicle = followCtrl.makeControlFollowSkin(skinGeo, ctrl.getControl(), cls)[-1]
             follicleList.extend([follicle])
         follicleGrp = pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
 
