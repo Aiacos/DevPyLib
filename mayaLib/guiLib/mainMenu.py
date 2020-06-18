@@ -279,7 +279,7 @@ class MainMenu(QtWidgets.QWidget):
         self.libMenu.addAction(self.wAction)
         QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
         self.libMenu.triggered.connect(self.showWidget)
-        print 'Reloaded MayaLib!'
+        print('Reloaded MayaLib!')
 
     def showWidget(self):
         self.libWindow.adjustSize()

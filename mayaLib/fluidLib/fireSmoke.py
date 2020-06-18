@@ -1,7 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-import numpy as np
 
 from mayaLib.fluidLib.base.baseFluid import BaseFluid
 from mayaLib.fluidLib.utility import mathFunction
@@ -93,8 +92,8 @@ class FireSmoke(BaseFluid):
         self.fluidContainer.opacityInputBias.set(0.35)
 
     def opacityGraph(self, sampling=20):
-        step = 1.0 / sampling
-        for i in np.arange(0.0, 1.0 + step, step):
+        step = 100/sampling
+        for i in [round(x * 0.01, 4) for x in range(0, 100+1, step)]:
             y = mathFunction.repartFunction(i, l=15)
             self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
             self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)
