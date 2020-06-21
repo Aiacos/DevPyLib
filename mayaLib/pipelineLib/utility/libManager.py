@@ -4,7 +4,7 @@ import sys
 from sys import platform as _platform
 import os.path
 import os
-import pip
+#import pip
 import time
 import urllib
 import mayaLib.installCmd as installCmd
@@ -101,7 +101,7 @@ class InstallLibrary():
         self.installInMayaUserSetup()
 
         # install dependency pkg
-        pip.main(['install', 'numpy'])
+        #pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath
