@@ -64,7 +64,7 @@ class InstallLibrary():
             # Windows
             self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
 
-        print self.mayaScriptPath
+        print(self.mayaScriptPath)
 
     def updateDevMode(self, devPath=False):
         self.devMode = True if devPath != '' else False
@@ -92,7 +92,7 @@ class InstallLibrary():
                 f.write(self.installCommand)
                 f.close()
         else:
-            print 'ERROR: Directory not exist!'
+            print('ERROR: Directory not exist!')
 
     def install(self):
         self.uninstall()

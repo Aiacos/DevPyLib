@@ -4,7 +4,7 @@ import sys
 from sys import platform as _platform
 import os.path
 import os
-import pip
+#import pip
 import time
 from PySide2 import QtCore, QtWidgets, QtGui
 import urllib
@@ -65,7 +65,7 @@ class InstallLibrary(QtCore.QObject):
             # Windows
             self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
 
-        print self.mayaScriptPath
+        print(self.mayaScriptPath)
 
     def updateDevMode(self, devPath=False):
         self.devMode = True if devPath != '' else False
@@ -93,7 +93,7 @@ class InstallLibrary(QtCore.QObject):
                 f.write(self.installCommand)
                 f.close()
         else:
-            print 'ERROR: Directory not exist!'
+            print('ERROR: Directory not exist!')
 
     def install(self):
         self.uninstall()
@@ -102,7 +102,7 @@ class InstallLibrary(QtCore.QObject):
         self.installInMayaUserSetup()
 
         # install dependency pkg
-        pip.main(['install', 'numpy'])
+        #pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath

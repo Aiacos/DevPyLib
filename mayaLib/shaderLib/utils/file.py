@@ -25,7 +25,7 @@ class TextureFile():  # ToDo: move in util?
         try:
             self._partition()
         except:
-            print 'No matching pattern for texture'
+            print('No matching pattern for texture')
 
     def _partition(self):
         name, self.texture_set, self.ext = self.filename.split('.')
@@ -119,4 +119,4 @@ class TextureFileManager():
 if __name__ == "__main__":
     path = 'testPath'
     test_dict = TextureFileManager() #PATH
-    print test_dict.texture_dict
+    print(test_dict.texture_dict)

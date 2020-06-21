@@ -25,7 +25,7 @@ class TextureShader():
         elif self.renderer == 'renderman':
             self.shader = self.build_pxrSurface(texture_path, geo_name, textureset_dict)
         else:
-            print 'No valid active render engine'
+            print('No valid active render engine')
 
     def build_aiStandard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         if single_place_node:
