@@ -11,7 +11,7 @@ class MuscleConnect():
             self.mainSkinGeo = pm.ls(mainSkinGeo)[0]
             self.mainMuscleGeo = pm.ls(muscleGeo)[0]
         else:
-            print 'No valid Geo!'
+            print('No valid Geo!')
 
         # apply Muscle Deformer
         self.cMuscleDeformer = deform.cMuscleSystemDeformer(self.mainMuscleGeo)
@@ -71,7 +71,7 @@ class MuscleUtil():
 
     def cMCUI_createMirrorPm(self, search='l_', replace='r_', nAxis=0, musIdentifier='Mus'):
         if search == '' or replace == '':
-            print 'no side specified!'
+            print('no side specified!')
             return
 
         creators = pm.ls(pm.mel.eval('cMuscle_getSelectedDeformers("cMuscleCreator") ;'))
@@ -152,7 +152,7 @@ class MuscleUtil():
                         nAxis) + '", "' + search + '", "' + replace + '") ;')
 
             else:
-                print 'invalid startLoc or endLoc: ', startLocA, startLocB, endLocA, endLocB
+                print('invalid startLoc or endLoc: ', startLocA, startLocB, endLocA, endLocB)
 
 
 
