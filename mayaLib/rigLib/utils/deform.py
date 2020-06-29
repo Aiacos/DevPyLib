@@ -109,6 +109,8 @@ def meshCollision(deformer, deformed):
 
     deformerNode = pm.listConnections(deformer.worldMesh[0], c=True, p=False)[-1][1]
 
+    pm.select(cl=True)
+
     return deformerNode
 
 
