@@ -93,6 +93,24 @@ def softModDeformer(vertex):
 
     return deformerNode
 
+def meshCollision(deformer, deformed):
+    """
+    Mesh Collision Solver
+    :param deformer: deforming mesh
+    :param deformed: deformed mesh
+    :return: deformer node
+    """
+    deformer = pm.ls(deformer)[0]
+    deformed = pm.ls(deformed)[0]
+
+    pm.select(deformer)
+    pm.select(deformed, add=1)
+    mel.eval('collisionDeformer()')
+
+    deformerNode = pm.listConnections(deformer.worldMesh[0], c=True, p=False)[-1][1]
+
+    return deformerNode
+
 
 if __name__ == "__main__":
     pass
