@@ -1,33 +1,8 @@
 '''
-########################################################################
-#                                                                      #
-#             jlCollisionDeformer.py                                   #
-#                                                                      #
-#             Version 0.9.6.0 , last modified 2016-04-08               #
-#                                                                      #
-#             Copyright (C) 2010  Jan Lachauer                         #
-#                                                                      #
-#             Email: janlachauer@googlemail.com                        #
-#                                                                      #
-# This program is free software: you can redistribute it and/or modify #
-# it under the terms of the GNU General Public License as published by #
-# the Free Software Foundation, either version 3 of the License, or    #
-# (at your option) any later version.                                  #
-#                                                                      #
-# This program is distributed in the hope that it will be useful,      #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        #
-# GNU General Public License for more details.                         #
-#                                                                      #
-# See http://www.gnu.org/licenses/gpl.html for a copy of the GNU       #
-# General Public License.                                              #
-#                                                                      #
-########################################################################
-
 
 I N S T A L L:
 
-Copy the "jlCollisionDeformer.py" to your Maya plugins directory
+Copy the "collisionDeformer.py" to your Maya plugins directory
 and load the plugin via the plugin manager
 
 Windows: Program Files\Autodesk\MayaXXXX\bin\plug-ins\
@@ -39,7 +14,7 @@ U S E:
 First load the plugin via Window->Settings/Prefs->Plug-in Manager
 Then select the collidermesh followed by the mesh that should be deformed.
 Finally execute following MEL command:
-  jlCollisionDeformer()
+  collisionDeformer()
 
 
 For bugreports/questions/suggestions please don't hesitate
@@ -59,9 +34,9 @@ import maya.OpenMayaAnim as OpenMayaAnim
 import maya.OpenMayaMPx as OpenMayaMPx
 from maya.mel import eval as meval
 
-kPluginNodeTypeName = "jlCollisionDeformer"
+kPluginNodeTypeName = "collisionDeformer"
 
-jlCollisionDeformerId = OpenMaya.MTypeId(0x0010A52B)
+collisionDeformerId = OpenMaya.MTypeId(0x0010A52B)
 
 # Some global variables were moved from MPxDeformerNode to MPxGeometryFilter.
 # Set some constants to the proper C++ cvars based on the API version.
@@ -83,7 +58,7 @@ else:
 
 
 # Node definition
-class jlCollisionDeformer(OpenMayaMPx.MPxDeformerNode):
+class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
     # class variables
     mmAccelParams = OpenMaya.MMeshIsectAccelParams()
     intersector = OpenMaya.MMeshIntersector()
@@ -418,67 +393,67 @@ def floatMMatrixToMMatrix_(fm):
 
 
 def nodeCreator():
-    return OpenMayaMPx.asMPxPtr(jlCollisionDeformer())
+    return OpenMayaMPx.asMPxPtr(collisionDeformer())
 
 
 # initializer
 def nodeInitializer():
     gAttr = OpenMaya.MFnGenericAttribute()
 
-    jlCollisionDeformer.collider = gAttr.create("collider", "coll")
+    collisionDeformer.collider = gAttr.create("collider", "coll")
     gAttr.addDataAccept(OpenMaya.MFnData.kMesh)
     gAttr.setHidden(True)
 
     nAttr = OpenMaya.MFnNumericAttribute()
 
-    jlCollisionDeformer.bulgeextend = nAttr.create("bulgeextend", "bex", OpenMaya.MFnNumericData.kDouble, 0.0)
+    collisionDeformer.bulgeextend = nAttr.create("bulgeextend", "bex", OpenMaya.MFnNumericData.kDouble, 0.0)
     nAttr.setKeyable(True)
     nAttr.setStorable(True)
     nAttr.setSoftMin(0)
     nAttr.setSoftMax(10)
 
-    jlCollisionDeformer.bulge = nAttr.create("bulge", "blg", OpenMaya.MFnNumericData.kDouble, 1.0)
+    collisionDeformer.bulge = nAttr.create("bulge", "blg", OpenMaya.MFnNumericData.kDouble, 1.0)
     nAttr.setKeyable(True)
     nAttr.setStorable(True)
     nAttr.setSoftMin(0)
     nAttr.setSoftMax(10)
 
-    jlCollisionDeformer.offset = nAttr.create("offset", "off", OpenMaya.MFnNumericData.kDouble, 0.0)
+    collisionDeformer.offset = nAttr.create("offset", "off", OpenMaya.MFnNumericData.kDouble, 0.0)
     nAttr.setKeyable(True)
     nAttr.setStorable(True)
     nAttr.setSoftMin(0)
     nAttr.setSoftMax(1)
 
-    jlCollisionDeformer.colliderBBoxX = nAttr.create("colliderBBoxX", "cbbX", OpenMaya.MFnNumericData.kDouble, 0.0)
-    jlCollisionDeformer.colliderBBoxY = nAttr.create("colliderBBoxY", "cbbY", OpenMaya.MFnNumericData.kDouble, 0.0)
-    jlCollisionDeformer.colliderBBoxZ = nAttr.create("colliderBBoxZ", "cbbZ", OpenMaya.MFnNumericData.kDouble, 0.0)
+    collisionDeformer.colliderBBoxX = nAttr.create("colliderBBoxX", "cbbX", OpenMaya.MFnNumericData.kDouble, 0.0)
+    collisionDeformer.colliderBBoxY = nAttr.create("colliderBBoxY", "cbbY", OpenMaya.MFnNumericData.kDouble, 0.0)
+    collisionDeformer.colliderBBoxZ = nAttr.create("colliderBBoxZ", "cbbZ", OpenMaya.MFnNumericData.kDouble, 0.0)
 
     cAttr = OpenMaya.MFnCompoundAttribute()
-    jlCollisionDeformer.colliderBBoxSize = cAttr.create("colliderBBoxSize", "cbb")
+    collisionDeformer.colliderBBoxSize = cAttr.create("colliderBBoxSize", "cbb")
 
-    cAttr.addChild(jlCollisionDeformer.colliderBBoxX)
-    cAttr.addChild(jlCollisionDeformer.colliderBBoxY)
-    cAttr.addChild(jlCollisionDeformer.colliderBBoxZ)
+    cAttr.addChild(collisionDeformer.colliderBBoxX)
+    cAttr.addChild(collisionDeformer.colliderBBoxY)
+    cAttr.addChild(collisionDeformer.colliderBBoxZ)
 
     mAttr = OpenMaya.MFnMatrixAttribute()
 
-    jlCollisionDeformer.colliderMatrix = mAttr.create("colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat)
+    collisionDeformer.colliderMatrix = mAttr.create("colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat)
     mAttr.setHidden(True)
 
     rAttr = OpenMaya.MRampAttribute()
 
-    jlCollisionDeformer.bulgeshape = rAttr.createCurveRamp("bulgeshape", "blgshp")
+    collisionDeformer.bulgeshape = rAttr.createCurveRamp("bulgeshape", "blgshp")
 
     eAttr = OpenMaya.MFnEnumAttribute()
 
-    jlCollisionDeformer.backface = eAttr.create("backface_culling", "bkcul", 0)
+    collisionDeformer.backface = eAttr.create("backface_culling", "bkcul", 0)
     eAttr.addField("off", 0);
     eAttr.addField("on", 1);
     eAttr.setHidden(False);
     eAttr.setKeyable(True);
     eAttr.setStorable(True);
 
-    jlCollisionDeformer.sculptmode = eAttr.create("sculpt_mode", "snmd", 0)
+    collisionDeformer.sculptmode = eAttr.create("sculpt_mode", "snmd", 0)
     eAttr.addField("off", 0);
     eAttr.addField("on", 1);
     eAttr.setHidden(False);
@@ -487,25 +462,25 @@ def nodeInitializer():
 
     # add attribute
     try:
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.collider)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.bulge)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.bulgeextend)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.colliderMatrix)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.backface)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.sculptmode)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.bulgeshape)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.offset)
-        jlCollisionDeformer.addAttribute(jlCollisionDeformer.colliderBBoxSize)
+        collisionDeformer.addAttribute(collisionDeformer.collider)
+        collisionDeformer.addAttribute(collisionDeformer.bulge)
+        collisionDeformer.addAttribute(collisionDeformer.bulgeextend)
+        collisionDeformer.addAttribute(collisionDeformer.colliderMatrix)
+        collisionDeformer.addAttribute(collisionDeformer.backface)
+        collisionDeformer.addAttribute(collisionDeformer.sculptmode)
+        collisionDeformer.addAttribute(collisionDeformer.bulgeshape)
+        collisionDeformer.addAttribute(collisionDeformer.offset)
+        collisionDeformer.addAttribute(collisionDeformer.colliderBBoxSize)
         outputGeom = kOutputGeom
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.collider, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.offset, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.colliderBBoxSize, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.bulge, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.bulgeextend, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.colliderMatrix, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.backface, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.sculptmode, outputGeom)
-        jlCollisionDeformer.attributeAffects(jlCollisionDeformer.bulgeshape, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.collider, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.offset, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.colliderBBoxSize, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.bulge, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.bulgeextend, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.colliderMatrix, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.backface, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.sculptmode, outputGeom)
+        collisionDeformer.attributeAffects(collisionDeformer.bulgeshape, outputGeom)
     except:
         sys.stderr.write("Failed to create attributes of %s node\n" % kPluginNodeTypeName)
 
@@ -514,7 +489,7 @@ def nodeInitializer():
 def initializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject, "Jan Lachauer", "0.9.5.0")
     try:
-        mplugin.registerNode(kPluginNodeTypeName, jlCollisionDeformerId, nodeCreator, nodeInitializer,
+        mplugin.registerNode(kPluginNodeTypeName, collisionDeformerId, nodeCreator, nodeInitializer,
                              OpenMayaMPx.MPxNode.kDeformerNode)
     except:
         sys.stderr.write("Failed to register node: %s\n" % kPluginNodeTypeName)
@@ -524,13 +499,13 @@ def initializePlugin(mobject):
 def uninitializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
-        mplugin.deregisterNode(jlCollisionDeformerId)
+        mplugin.deregisterNode(collisionDeformerId)
     except:
         sys.stderr.write("Failed to unregister node: %s\n" % kPluginNodeTypeName)
 
 
 mel = '''
-global proc jlCollisionDeformer()
+global proc collisionDeformer()
 {
     string $sel[] = `ls -sl -tr`;
     if (size($sel)==2)
@@ -538,7 +513,7 @@ global proc jlCollisionDeformer()
         string $collider = $sel[0];
         string $target = $sel[1];
         string $collidershape[] = `listRelatives -s $collider`;
-        string $collisiondeformer[] = `deformer -typ "jlCollisionDeformer" -n "collisionDeformer" $target`;
+        string $collisiondeformer[] = `deformer -typ "collisionDeformer" -n "collisionDeformer" $target`;
         connectAttr -f ($collidershape[0]+".worldMesh[0]") ($collisiondeformer[0]+".collider");
         connectAttr -f ($collider+".matrix") ($collisiondeformer[0]+".colliderMatrix");
         connectAttr -f ($collider+".boundingBox.boundingBoxSize") ($collisiondeformer[0]+".colliderBBoxSize");
@@ -550,7 +525,7 @@ global proc jlCollisionDeformer()
 }
 
 
-    global proc AEjlCollisionDeformerNew( string $attributeName1, string $attributeName2) {
+    global proc AEcollisionDeformerNew( string $attributeName1, string $attributeName2) {
         checkBoxGrp -numberOfCheckBoxes 1 -label "Backface Culling" culling;
         checkBoxGrp -numberOfCheckBoxes 1 -label "Sculpt Mode" sculpt;
 
@@ -558,19 +533,19 @@ global proc jlCollisionDeformer()
         connectControl -index 2 sculpt ($attributeName2);
     }
 
-    global proc AEjlCollisionDeformerReplace( string $attributeName1, string $attributeName2) {
+    global proc AEcollisionDeformerReplace( string $attributeName1, string $attributeName2) {
         connectControl -index 2 culling ($attributeName1);
         connectControl -index 2 sculpt ($attributeName2);
     }
 
-    global proc AEjlCollisionDeformerTemplate( string $nodeName )
+    global proc AEcollisionDeformerTemplate( string $nodeName )
     {
         // the following controls will be in a scrollable layout
         editorTemplate -beginScrollLayout;
 
             // add a bunch of common properties
             editorTemplate -beginLayout "Collision Deformer Attributes" -collapse 0;
-                editorTemplate -callCustom "AEjlCollisionDeformerNew" "AEjlCollisionDeformerReplace" "backface_culling" "sculpt_mode";
+                editorTemplate -callCustom "AEcollisionDeformerNew" "AEcollisionDeformerReplace" "backface_culling" "sculpt_mode";
                 editorTemplate -addSeparator;
                 editorTemplate -addControl  "bulge" ;
                 editorTemplate -addControl  "bulgeextend" ;
