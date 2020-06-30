@@ -487,7 +487,7 @@ def nodeInitializer():
 
 # initialize the script plug-in
 def initializePlugin(mobject):
-    mplugin = OpenMayaMPx.MFnPlugin(mobject, "Jan Lachauer", "0.9.5.0")
+    mplugin = OpenMayaMPx.MFnPlugin(mobject, "Lorenzo Argentieri", "0.1")
     try:
         mplugin.registerNode(kPluginNodeTypeName, collisionDeformerId, nodeCreator, nodeInitializer,
                              OpenMayaMPx.MPxNode.kDeformerNode)
