@@ -200,7 +200,7 @@ class ModelFix():
 if __name__ == "__main__":
     geoList = getAllObjectUnderGroup(pm.ls(sl=True)[0])
     for geo in geoList:
-        print geo.name()
+        print(geo.name())
         modelFix = ModelFix(geo)
         modelFix.autoFix()
     
