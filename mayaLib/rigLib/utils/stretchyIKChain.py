@@ -1,9 +1,8 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import name, flexiplane
 from mayaLib.rigLib.utils import util
-from mayaLib.rigLib.base import flexiplane
 
 
 class StretchyIKChain():
