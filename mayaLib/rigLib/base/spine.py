@@ -4,7 +4,8 @@ spine @ rig
 
 import pymel.core as pm
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.base import control
+from mayaLib.rigLib.utils import control
+
 
 class Spine():
     """
@@ -65,7 +66,7 @@ class Spine():
 
         # make controls
         self.bodyCtrl = control.Control(prefix=prefix + 'Body', translateTo=bodyLocator, rotateTo=spineJoints[-1], scale=rigScale * 4,
-                                   parent=self.rigmodule.controlsGrp, shape='spine')
+                                        parent=self.rigmodule.controlsGrp, shape='spine')
 
         chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, rotateTo=spineJoints[-1], scale=rigScale * 6,
                                     parent=self.bodyCtrl.C, shape='chest')

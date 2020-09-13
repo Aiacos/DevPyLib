@@ -2,12 +2,10 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 from mayaLib.rigLib.base.module import Base
-from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import skin
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import joint
 
-from mayaLib.rigLib.base import control
 from mayaLib.rigLib.base import spine
 from mayaLib.rigLib.base import neck
 from mayaLib.rigLib.base import ikChain

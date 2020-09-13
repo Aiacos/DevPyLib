@@ -5,9 +5,8 @@ leg @ rig
 import pymel.core as pm
 
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.base import control
 
-from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import common, control
 from mayaLib.rigLib.utils import util
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
@@ -205,8 +204,8 @@ class Limb():
 
     def makeClavicle(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         clavicleCtrl = control.Control(prefix=prefix + 'Clavicle', translateTo=scapulaJnt, rotateTo=scapulaJnt,
-                                      parent=rigmodule.controlsGrp, shape='sphere',
-                                      lockChannels=['t', 's', 'v'])
+                                       parent=rigmodule.controlsGrp, shape='sphere',
+                                       lockChannels=['t', 's', 'v'])
         scapulaIk = pm.ikHandle(n=prefix + 'Scapula_IKH', sol='ikSCsolver', sj=scapulaJnt, ee=limbJoints[0])[0]
         pm.hide(scapulaIk)
         pm.parentConstraint(self.baseAttachGrp, clavicleCtrl.Off, mo=1)

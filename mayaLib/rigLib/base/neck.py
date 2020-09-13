@@ -4,7 +4,7 @@ neck @ rig
 
 import pymel.core as pm
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.base import control
+from mayaLib.rigLib.utils import control
 
 
 class Neck():

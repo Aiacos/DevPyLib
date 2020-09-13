@@ -3,9 +3,8 @@ ikChain @ rig
 """
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import name, control
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.base import control
 from mayaLib.rigLib.utils import dynamic
 from mayaLib.rigLib.utils import deform
 

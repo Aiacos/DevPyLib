@@ -3,8 +3,7 @@ module for making top rig structure and rig module
 """
 
 import pymel.core as pm
-from mayaLib.rigLib.base import control
-from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import common, control
 from mayaLib.rigLib.utils import util
 
 class Base():
