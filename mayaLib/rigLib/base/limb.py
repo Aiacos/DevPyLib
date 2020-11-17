@@ -449,3 +449,122 @@ class Limb():
             pm.connectAttr(toeWiggleAttr, toeTapGrp.rotateX)
 
         return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl], toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint
+
+class Arm():
+    def __init__(self,
+                 clavicleJoint,
+                 shoulderJoint,
+                 forearmJoint,
+                 wristJoint,
+                 scapulaJnt='',
+                 visibilityIKFKCtrl='ikfk_CTRL',
+                 doFK=True,
+                 doIK=True,
+                 prefix=None,
+                 rigScale=1.0,
+                 baseRig=None):
+
+        """
+        :param clavicleJoint: pynode
+        :param shoulderJoint: pynode
+        :param forearmJoint: pynode
+        :param scapulaJnt: pynode
+        :param wristJoint: pynode
+        :param doFK: bool, do FK controls
+        :param doIK: bool, do IK controls
+        :param prefix: str, prefix to name new objects
+        :param rigScale: float, scale factor for size of controls
+        :param baseRig: baseRig: instance of base.module.Base class
+        :return: dictionary with rig module objects
+        """
+        # :param pvLocator: str, reference locator for position of Pole Vector control
+
+        # prefix
+        if not prefix:
+            prefix = name.removeSuffix(pm.ls(clavicleJoint, shoulderJoint, forearmJoint, wristJoint, scapulaJnt))
+
+        # make rig module
+        rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
+
+        # make attach groups
+        bodyAttachGrp = pm.group(n=prefix + 'BodyAttach_GRP', em=1, p=rigmodule.partsGrp)
+        baseAttachGrp = pm.group(n=prefix + 'BaseAttach_GRP', em=1, p=rigmodule.partsGrp)
+
+        self.rigmodule = rigmodule
+        self.baseAttachGrp = baseAttachGrp
+        self.bodyAttachGrp = bodyAttachGrp
+
+
+        def makeFK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
+            """
+            Do FK Arm/Leg, Metacarpal and Finger/Toe ctrl
+            :param limbJoints: list(str), Arm/leg joints
+            :param topFingerJoints: list(str), Metacarpal joints
+            :param rigScale: float
+            :param rigmodule: dict
+            :return:
+            """
+
+            limbCtrlInstanceList = []
+            handFeetCtrlInstanceList = []
+
+            limbCtrlConstraintList = []
+            handFeetCtrlConstraintList = []
+
+            # Arm/Leg
+            for jnt in limbJoints:
+                prefix = name.removeSuffix(jnt)
+
+                parent = rigmodule.controlsGrp
+                if len(limbCtrlInstanceList) > 0:
+                    parent = limbCtrlInstanceList[-1].C
+
+                ctrl = control.Control(prefix=prefix, translateTo=jnt, rotateTo=jnt, parent=parent, shape='circleX')
+
+                orientCnst = pm.orientConstraint(ctrl.getControl(), jnt, mo=True)
+
+                limbCtrlConstraintList.append(orientCnst)
+                limbCtrlInstanceList.append(ctrl)
+
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True, lSide='l_'):
+        """
+        Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
+        :param limbJoints: list(str), Arm/leg joints
+        :param topFingerJoints: list(str), Metacarpal joints
+        :param rigScale: float
+        :param rigmodule: dict
+        :return:
+        """
+
+        metacarpalJointList = topFingerJoints
+        topFngJntList = []
+        endFngJntList = []
+        for mtJnt in metacarpalJointList:
+            if useMetacarpalJoint:
+                fngJnt = pm.listRelatives(mtJnt, type='joint', children=True)[0]
+            else:
+                fngJnt = mtJnt
+
+            fngEndJnt = joint.listHierarchy(mtJnt, withEndJoints=True)[-1]
+            topFngJntList.append(fngJnt)
+            endFngJntList.append(fngEndJnt)
+
+        footRoolInstance = footRoll.FootRoll(limbJoints[0], limbJoints[2], topFngJntList, endFngJntList)
+        footRollGrpList = footRoolInstance.getGroupList()
+        pm.parent(footRollGrpList[-1], rigmodule.partsNoTransGrp)
+
+        prefix = name.removeSuffix(limbJoints[2])
+
+        # make controls
+        mainIKCtrl = control.Control(prefix=prefix + 'IK', translateTo=limbJoints[2], rotateTo=limbJoints[2]
+                                     , parent=rigmodule.controlsGrp, shape='circleY')
+
+        midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList()) / 2.0)) - 1
+        midFngJnt = footRoolInstance.getIkFingerList()[midFngIKIndex].getJointList()[0]
+        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt, parent=rigmodule.controlsGrp, shape='circleZ')
+
+        #pm.parentConstraint(mainIKCtrl.C, ballCtrl.getTop(), mo=True)
+
+        pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
+        pm.parentConstraint(footRollGrpList[1], ballCtrl.getOffsetGrp(), mo=True)
+        handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
