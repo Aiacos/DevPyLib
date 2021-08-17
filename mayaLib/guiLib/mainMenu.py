@@ -71,8 +71,6 @@ class MenuLibWidget(QtWidgets.QWidget):
         update_icon_path = str(libPath / 'mayaLib' / 'icons' / 'update.png')
         reload_icon_path = str(libPath / 'mayaLib' / 'icons' / 'reload.png')
 
-        print('iconPath:: ', close_icon_path, close_icon_path)
-
         self.libStructure = lm.StructureManager(mayaLib)
         self.libDict = self.libStructure.getStructLib()['mayaLib']
 
