@@ -99,7 +99,8 @@ class StructureManager():
     def listAllPackage(self):
         package_list = []
         for p in pkgutil.walk_packages(self.root_package.__path__):
-            package_list.append(p[1])
+            if 'utility' not in p[1]:
+                package_list.append(p[1])
 
         return  package_list
 
@@ -129,7 +130,8 @@ class StructureManager():
     def listAllModule(self):
         module_list = []
         for package in self.package_list:
-            if 'utility' not in package:
+            print('PACKAGE:: ', str(package))
+            if ('utility' not in str(package)) and ('licenseRegister' not in str(package)):
                 package_name = self.root_package.__name__ + '.' + str(package)
                 modules_list = self.explore_package(package_name)
                 if len(modules_list) != 0:
@@ -138,9 +140,12 @@ class StructureManager():
         return module_list
 
     def getAllClass(self, module_str):
-        module = __import__(module_str, fromlist=[''])
-        class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
-        return class_list
+        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and ('paintable_maps' not in module_str):
+            module = __import__(module_str, fromlist=[''])
+            class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
+            return class_list
+        else:
+            return ''
 
     def getAllMethod(self, module_str):
         module = __import__(module_str, fromlist=[''])
@@ -148,20 +153,24 @@ class StructureManager():
         return method_list
 
     def getAllFunction(self, module_str):
-        module = __import__(module_str, fromlist=[''])
-        functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
-        return functions_list
+        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and ('paintable_maps' not in module_str):
+            module = __import__(module_str, fromlist=[''])
+            functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
+            return functions_list
+        else:
+            return ''
 
     def explore_package(self, module_name):
         package_list = []
-        loader = pkgutil.get_loader(module_name)
+        if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
+            loader = pkgutil.get_loader(module_name)
 
-        if loader != None:
-            for sub_module in pkgutil.walk_packages([loader.filename]):
-                _, sub_module_name, _ = sub_module
-                qname = module_name + "." + sub_module_name
-                package_list.append(qname)
-                self.explore_package(qname)
+            if loader != None:
+                for sub_module in pkgutil.walk_packages([loader.filename]):
+                    _, sub_module_name, _ = sub_module
+                    qname = module_name + "." + sub_module_name
+                    package_list.append(qname)
+                    self.explore_package(qname)
 
         return package_list
 

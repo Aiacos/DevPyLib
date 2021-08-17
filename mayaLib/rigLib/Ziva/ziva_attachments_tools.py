@@ -36,7 +36,7 @@ def zivaSlidingAttachment(stiffness=8):
     
     return zAttachment
     
-def paintProximity(zAttachement, min, max):
+def paintProximity(zAttachement, min=0.0001, max=1):
     pm.select(zAttachement)
     mel.eval('zPaintAttachmentsByProximity -min ' + str(min) + ' -max ' + str(max) + ';')
 

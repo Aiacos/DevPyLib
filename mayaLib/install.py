@@ -47,7 +47,7 @@ class InstallLibrary(QtCore.QObject):
 
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = os.getenv("HOME")
-        self.winPath = ''
+        self.winPath = '\Documents'
         self.linuxPath = ''
         self.osxPath = '/Library/Preferences/Autodesk'
         self.mayaScriptPath = '/maya/scripts/'

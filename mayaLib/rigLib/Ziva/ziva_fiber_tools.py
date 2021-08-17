@@ -29,6 +29,7 @@ def addZivaFiber(obj):
     return zFiber
     
 def createLoACurve(obj):
+    obj = pm.ls(obj)[-1]
     pm.select(obj)
     curve = pm.ls(mel.eval('zLineOfActionUtil;'))[0].getParent()
     
@@ -46,8 +47,6 @@ def rivetCurve(curve, skeleton):
         
         rivet_name = str(curve.name()).replace('_CV', '') + '_' + str(n)
         pm.rename(zRivet, rivet_name)
-        
-        print zRivet, rivet_name
         
         rivet_list.append(zRivet)
         
