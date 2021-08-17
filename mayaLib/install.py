@@ -63,7 +63,7 @@ class InstallLibrary(QtCore.QObject):
             self.mayaScriptPath = self.homeUser + self.osxPath + self.mayaScriptPath
         elif _platform == "win32" or _platform == "win64":
             # Windows
-            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
+            self.mayaScriptPath = self.homeUser + self.winPath + self.mayaScriptPath
 
         print(self.mayaScriptPath)
 
@@ -213,5 +213,5 @@ def main(devMode=False):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication.instance()
-    mayaLibInstallWindow = main(devMode=False)
+    mayaLibInstallWindow = main(devMode=True)
     app.exec_()

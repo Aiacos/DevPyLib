@@ -18,3 +18,5 @@ Python/\.idea/
 *.xml
 
 \.DS_Store
+
+.idea/

@@ -103,6 +103,11 @@ class StructureManager():
 
         return  package_list
 
+    def listAllPackage2(self):
+        package_list = [o[1] for o in inspect.getmembers(self.root_package) if '__' not in o[0]]
+        print(package_list)
+        return package_list
+
     def listSubPackages(self, package_str):
         package_list = []
         package = __import__(package_str, fromlist=[''])
@@ -124,10 +129,11 @@ class StructureManager():
     def listAllModule(self):
         module_list = []
         for package in self.package_list:
-            package_name = self.root_package.__name__ + '.' + package
-            modules_list = self.explore_package(package_name)
-            if len(modules_list) != 0:
-                module_list.append(modules_list)
+            if 'utility' not in package:
+                package_name = self.root_package.__name__ + '.' + str(package)
+                modules_list = self.explore_package(package_name)
+                if len(modules_list) != 0:
+                    module_list.append(modules_list)
 
         return module_list
 
@@ -149,17 +155,18 @@ class StructureManager():
     def explore_package(self, module_name):
         package_list = []
         loader = pkgutil.get_loader(module_name)
-        for sub_module in pkgutil.walk_packages([loader.filename]):
-            _, sub_module_name, _ = sub_module
-            qname = module_name + "." + sub_module_name
-            package_list.append(qname)
-            self.explore_package(qname)
+
+        if loader != None:
+            for sub_module in pkgutil.walk_packages([loader.filename]):
+                _, sub_module_name, _ = sub_module
+                qname = module_name + "." + sub_module_name
+                package_list.append(qname)
+                self.explore_package(qname)
 
         return package_list
 
     def nested_dict_iter(self, dictionary):
         for k, v in dictionary.iteritems():
-            print v
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:
