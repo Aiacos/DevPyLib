@@ -4,6 +4,7 @@ import sys
 from sys import platform as _platform
 import os.path
 import os
+import pathlib
 #import pip
 import time
 from PySide2 import QtCore, QtWidgets, QtGui
@@ -46,24 +47,24 @@ class InstallLibrary(QtCore.QObject):
         super(InstallLibrary, self).__init__(parent)
 
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
-        self.homeUser = os.getenv("HOME")
-        self.winPath = '\Documents'
+        self.homeUser = pathlib.Path.home()
+        self.winPath = self.homeUser / 'Documents'
         self.linuxPath = ''
-        self.osxPath = '/Library/Preferences/Autodesk'
-        self.mayaScriptPath = '/maya/scripts/'
+        self.osxPath = self.homeUser / 'Library' / 'Preferences' / 'Autodesk'
+        self.mayaScriptPath = ''
 
         self.port = ':4434'
         self.libName = 'mayaLib'
 
         if _platform == "linux" or _platform == "linux2":
             # linux
-            self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
+            self.mayaScriptPath = str(self.linuxPath / 'maya' / 'scripts')
         elif _platform == "darwin":
             # MAC OS X
-            self.mayaScriptPath = self.homeUser + self.osxPath + self.mayaScriptPath
+            self.mayaScriptPath = str(self.osxPath / 'maya' / 'scripts')
         elif _platform == "win32" or _platform == "win64":
             # Windows
-            self.mayaScriptPath = self.homeUser + self.winPath + self.mayaScriptPath
+            self.mayaScriptPath = str(self.winPath / 'maya' / 'scripts')
 
         print(self.mayaScriptPath)
 

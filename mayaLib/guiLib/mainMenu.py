@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
+import pathlib
 import types
 import importlib
 
@@ -64,6 +65,14 @@ class MenuLibWidget(QtWidgets.QWidget):
     def __init__(self, libPath, parent=None):
         super(MenuLibWidget, self).__init__(parent)
 
+        libPath = pathlib.Path(libPath)
+
+        close_icon_path = str(libPath / 'mayaLib' / 'icons' / 'close.png')
+        update_icon_path = str(libPath / 'mayaLib' / 'icons' / 'update.png')
+        reload_icon_path = str(libPath / 'mayaLib' / 'icons' / 'reload.png')
+
+        print('iconPath:: ', close_icon_path, close_icon_path)
+
         self.libStructure = lm.StructureManager(mayaLib)
         self.libDict = self.libStructure.getStructLib()['mayaLib']
 
@@ -76,7 +85,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.mainMenu)
 
         # search bar
-        self.searchLineEdit = SearchLineEdit(libPath + '/mayaLib/icons/close.png')
+        self.searchLineEdit = SearchLineEdit(str(close_icon_path))
         self.layout.addWidget(self.searchLineEdit)
 
         # WidgetList
@@ -100,8 +109,8 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.docLabel.setText('')
 
         # update Button
-        self.updateButton = self.addIconButton('update', libPath + '/mayaLib/icons/update.png')
-        self.reloadButton = self.addIconButton('reload', libPath + '/mayaLib/icons/reload.png')
+        self.updateButton = self.addIconButton('update', update_icon_path)
+        self.reloadButton = self.addIconButton('reload', reload_icon_path)
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
         self.buttonLayout.addWidget(self.reloadButton)
