@@ -108,7 +108,7 @@ class MuscleUtil():
                     pm.mel.eval('cMuscle_strSearchReplace("' + creator.name() + '", "cMuscleCreator", "") ;'))
                 baseName = baseName[:baseName.rfind(musIdentifier) + len(musIdentifier)]
                 endNumber = baseName[baseName.rfind(musIdentifier) + len(musIdentifier):]
-                # print baseName, ' ', endNumber
+                # print(baseName, ' ', endNumber)
                 baseName = str(baseName).replace(search, replace, 1)
                 ## endNumber = match("[0-9]+$", $creator) ;
                 ## $baseName = cMuscle_strSearchReplace($baseName, $endNumber, "") ;

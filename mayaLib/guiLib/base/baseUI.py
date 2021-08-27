@@ -18,15 +18,15 @@ def test(a, b, c, d='ciao', e='stronzo', f=1):
     :param f:
     :return:
     """
-    print a, b, c, d, e, f
+    print(a, b, c, d, e, f)
 
 
 class Prova():
     def __init__(self, ciccia, pupu=2048):
-        print 'Questa e una prova'
+        print('Questa e una prova')
 
     def motodo(self):
-        print 'test method'
+        print('test method')
 
 
 class FunctionUI(QtWidgets.QWidget):
@@ -208,6 +208,6 @@ if __name__ == "__main__":
     # button = QtWidgets.QPushButton("Hello World")
     # button.show()
     # app.exec_()
-    #print inspect.getargspec(Prova)
+    #print(inspect.getargspec(Prova))
     t = FunctionUI(Prova)
     t.show()

@@ -27,7 +27,7 @@ class PxrStyleCtrl():
         if skinCluster:
             self.skin = skinCluster
         else:
-            print 'Missing SkinCluster'
+            print('Missing SkinCluster')
 
         # Get joint influence of the skin
         influnces = self.skin.getInfluence(q=True)  # influences is joint
@@ -59,7 +59,7 @@ class PxrStyleCtrl():
         if deleteOldShapeGrp:
             pm.delete(self.shapeGrp)
 
-        print 'DONE!'
+        print('DONE!')
 
     def duplicateSourceMesh(self, obj, ctrl):
         """

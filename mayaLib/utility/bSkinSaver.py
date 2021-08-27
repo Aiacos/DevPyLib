@@ -169,17 +169,17 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
     selectionList.getDagPath(0, node, component);
 
     if not node.hasFn(OpenMaya.MFn.kTransform):
-        print 'select a skinned object'
+        print('select a skinned object')
 
     NewTransform = OpenMaya.MFnTransform(node)
     if not NewTransform.childCount() or not NewTransform.child(0).hasFn(OpenMaya.MFn.kMesh):
-        print 'select a skinned object..'
+        print('select a skinned object..')
 
     mesh = NewTransform.child(0);
     objectName = OpenMaya.MFnDagNode(mesh).name()
     skinCluster = bFindSkinCluster(objectName)
     if not skinCluster.hasFn(OpenMaya.MFn.kSkinClusterFilter):
-        print 'select a skinned object'
+        print('select a skinned object')
 
     fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
     input = open(inputFile, 'r')
@@ -205,7 +205,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
         if filePosition == 0:
             vertexCount = int(line)
             if OpenMaya.MItGeometry(node).count() != vertexCount:
-                print "vertex counts don't match!"
+                print("vertex counts don't match!")
                 return
             filePosition = 1
 
@@ -246,7 +246,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
 
             bindVertCount += 1
 
-    # print 'fileWeightFloats: ', fileWeightFloats
+    # print('fileWeightFloats: ', fileWeightFloats)
 
     # getting mayaJoints
     #
@@ -286,7 +286,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
             missingInfluencesList.append(fileJoints[i])
 
     if not allInfluencesInScene:
-        print 'There are influences missing:', missingInfluencesList
+        print('There are influences missing:', missingInfluencesList)
         return
 
     # getting allExistInMaya
@@ -298,7 +298,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
                 allExistInMaya[i] = k
                 break
 
-    # print 'allExistInMaya: ', allExistInMaya
+    # print('allExistInMaya: ', allExistInMaya)
 
     # getting joint locks
     #
@@ -311,7 +311,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
 
     # copy weights from fileWeightFloats and oldWeightDoubles into weightDoubles (include joint locks) and softWeights lists
     #
-    print 'bindVertCount: ', bindVertCount
+    print('bindVertCount: ', bindVertCount)
     for i in range(bindVertCount):
         for k in range(len(allJoints)):
 
@@ -376,7 +376,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
     # print 'allJoints: ', allJoints
     # print 'weightDoubles before: ', weightDoubles
 
-    print 'setting weights...'
+    print('setting weights...')
     fnSkinCluster.setWeights(bSkinPath, vtxComponents, allJointsIndices, weightDoubles, 0)
 
     # select the vertices
@@ -385,7 +385,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
     pointSelectionList.add(OpenMaya.MDagPath(node), vtxComponents)
     OpenMaya.MGlobal.setActiveSelectionList(pointSelectionList)
 
-    print 'done, it took', (time.time() - timeBefore), ' seconds'
+    print('done, it took', (time.time() - timeBefore), ' seconds')
 
 
 def vertexToId(vertex):
@@ -402,7 +402,7 @@ def vertexToIdList(verts):
 def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
     timeBefore = time.time()
 
-    print 'saving Vertex skinWeights.. '
+    print('saving Vertex skinWeights.. ')
 
     if not ignoreSoftSelection:
         verts, softWeights = getSoftSelection()
@@ -422,7 +422,7 @@ def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
     fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
 
     if not skinCluster.hasFn(OpenMaya.MFn.kSkinClusterFilter):
-        print 'no skinCluster found on selected vertices'
+        print('no skinCluster found on selected vertices')
         return
 
     output = open(inputFile, 'w')
@@ -489,7 +489,7 @@ def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
 
     output.close()
 
-    print 'done, it took', (time.time() - timeBefore), ' seconds'
+    print('done, it took', (time.time() - timeBefore), ' seconds')
 
 
 def bSaveSkinValues(inputFile):
@@ -507,8 +507,8 @@ def bSaveSkinValues(inputFile):
         component = OpenMaya.MObject()
         iterate.getDagPath(node, component)
         if not node.hasFn(OpenMaya.MFn.kTransform):
-            print OpenMaya.MFnDagNode(
-                node).name() + ' is not a Transform node (need to select transform node of polyMesh)'
+            print(OpenMaya.MFnDagNode(
+                node).name() + ' is not a Transform node (need to select transform node of polyMesh)')
         else:
             objectName = OpenMaya.MFnDagNode(node).name()
             newTransform = OpenMaya.MFnTransform(node)
@@ -559,12 +559,12 @@ def bSaveSkinValues(inputFile):
         iterate.next()
 
     output.close()
-    print 'done saving weights, it took ', (time.time() - timeBefore), ' seconds.'
+    print('done saving weights, it took ', (time.time() - timeBefore), ' seconds.')
 
 
 def bSkinObject(objectName, fileJoints, weights):
     if not cmds.objExists(objectName):
-        print objectName, " doesn't exist - skipping. "
+        print(objectName, " doesn't exist - skipping. ")
         return
 
     it = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kJoint);
@@ -586,10 +586,10 @@ def bSkinObject(objectName, fileJoints, weights):
 
         if not jointHere:
             allInfluencesInScene = False;
-            print 'missing influence: ', fileJoints[jointIndex]
+            print('missing influence: ', fileJoints[jointIndex])
 
     if not allInfluencesInScene:
-        print objectName, " can't be skinned because of missing influences."
+        print(objectName, " can't be skinned because of missing influences.")
         return
 
     # create some arrays
@@ -614,7 +614,7 @@ def bSkinObject(objectName, fileJoints, weights):
         allJointsHere = True
         for joint in fileJoints:
             if joint not in influenceStringArray:
-                print 'missing a joint (', joint, ', ..)'
+                print('missing a joint (', joint, ', ..)')
                 allJointsHere = False
                 break
 
@@ -751,7 +751,7 @@ def bLoadSkinValues(loadOnSelection, inputFile):
                         PolygonObject = str(OpenMaya.MFnDagNode(NewTransform.child(0)).partialPathName())
 
     if loadOnSelection and len(PolygonObject) == 0:
-        print "You need to select a polygon object"
+        print("You need to select a polygon object")
         return
 
     input = open(inputFile, 'r')
@@ -792,7 +792,7 @@ def bLoadSkinValues(loadOnSelection, inputFile):
                 maya.mel.eval("select " + PolygonObject)
                 maya.mel.eval("refresh")
 
-    print 'done loading weights, it took ', (time.time() - timeBefore), ' seconds.'
+    print('done loading weights, it took ', (time.time() - timeBefore), ' seconds.')
 
 
 def getSoftSelection():

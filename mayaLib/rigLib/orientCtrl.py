@@ -5,7 +5,7 @@ import pymel.core as pm
 def renameCtrl(joint, control):
     jointName = joint
     controlName = jointName.replace('_jnt', '_ctrl')
-    print controlName
+    print(controlName)
     return control.rename(controlName)
 
 def orientCtrl_constrain(control, joint):
@@ -35,13 +35,13 @@ def main_orientCtrl():
 
     sel1, sel2 = pm.ls(sl=True)
 
-    print sel2.nodeType()
+    print(sel2.nodeType())
 
     if sel2.nodeType() == 'joint':
-        print 'parent'
+        print('parent')
         orientCtrl_parent(sel1, sel2)
     else:
-        print 'costrain'
+        print('costrain')
         orientCtrl_constrain(sel2, sel1)
 
 

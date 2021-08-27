@@ -19,7 +19,7 @@ class SlidingCloth():
             self.mainSkinGeo = pm.ls(mainSkinGeo)[0]
             self.mainClothGeo = pm.ls(mainClothGeo)[0]
         else:
-            print 'No valid Geo!'
+            print('No valid Geo!')
 
         if proxySkinGeo:
             self.proxySkinGeo = pm.ls(proxySkinGeo)[0]

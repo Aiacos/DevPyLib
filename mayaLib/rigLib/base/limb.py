@@ -237,6 +237,8 @@ class Limb():
         :return:
         """
 
+        topFingerJoints = pm.ls(topFingerJoints)
+
         limbCtrlInstanceList = []
         handFeetCtrlInstanceList = []
 
@@ -320,6 +322,8 @@ class Limb():
         :param rigmodule: dict
         :return:
         """
+
+        topFingerJoints = pm.ls(topFingerJoints)
 
         metacarpalJointList = topFingerJoints
         topFngJntList = []

@@ -22,7 +22,7 @@ class AutoUV():
         area = 0
 
         for geo in geoList:
-            print 'Current Geo: ', geo.name()
+            print('Current Geo: ', geo.name())
 
             # fi non Manifold UV
             self.fixNonManifoldUV(geo)
@@ -53,12 +53,12 @@ class AutoUV():
 
             area = area + pm.polyEvaluate(geo, uvArea=True)
 
-        print 'Total Area: ', area, ' -- RoundUp: ', math.ceil(area)
+        print('Total Area: ', area, ' -- RoundUp: ', math.ceil(area))
         # Layout with TexelDensity
         self.finalLayoutUV(geoList, area)
         # pm.select(geoList)
 
-        print 'Auto UV Complete!'
+        print('Auto UV Complete!')
 
     def checkUVInBoundaries(self, shell):
         uvs = pm.polyListComponentConversion(shell, tuv=True)
@@ -163,7 +163,7 @@ class AutoUV():
         uCount = tileValue if tileValue % 2 else tileValue + 1
         vCount = tileValue + 1
 
-        print 'UV: ', math.ceil(uCount), math.ceil(vCount)
+        print('UV: ', math.ceil(uCount), math.ceil(vCount))
         self.uvLayoutNoScale(geoList, math.ceil(uCount), math.ceil(vCount))
 
         badShellList = []
@@ -172,7 +172,7 @@ class AutoUV():
                 if not self.checkUVInBoundaries(shell):
                     badShellList.append(shell)
         if len(badShellList) > 0:
-            print 'Bad Shells'
+            print('Bad Shells')
             self.uvLayoutNoScale(badShellList, 1, 1)
             pm.polyEditUV(badShellList, u=0, v=vCount)
 

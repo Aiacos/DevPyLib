@@ -12,6 +12,6 @@ def getObjectsInDisplayLayer(layer):
 if __name__ == "__main__":  
     #layerEditorSelectObjects layer1;
     for layer in listAllDisplayLayer():
-        print 'Layer: ', layer.color.set(3)
-        print getObjectsInDisplayLayer(layer)
+        print('Layer: ', layer.color.set(3))
+        print(getObjectsInDisplayLayer(layer))
     

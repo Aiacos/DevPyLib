@@ -67,9 +67,9 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         libPath = pathlib.Path(libPath)
 
-        close_icon_path = str(libPath / 'mayaLib' / 'icons' / 'close.png')
-        update_icon_path = str(libPath / 'mayaLib' / 'icons' / 'update.png')
-        reload_icon_path = str(libPath / 'mayaLib' / 'icons' / 'reload.png')
+        close_icon_path = libPath / 'mayaLib' / 'icons' / 'close.png'
+        update_icon_path = libPath / 'mayaLib' / 'icons' / 'update.png'
+        reload_icon_path = libPath / 'mayaLib' / 'icons' / 'reload.png'
 
         self.libStructure = lm.StructureManager(mayaLib)
         self.libDict = self.libStructure.getStructLib()['mayaLib']
@@ -107,8 +107,8 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.docLabel.setText('')
 
         # update Button
-        self.updateButton = self.addIconButton('update', update_icon_path)
-        self.reloadButton = self.addIconButton('reload', reload_icon_path)
+        self.updateButton = self.addIconButton('update', str(update_icon_path))
+        self.reloadButton = self.addIconButton('reload', str(reload_icon_path))
 
         self.buttonLayout = QtWidgets.QHBoxLayout()
         self.buttonLayout.addWidget(self.reloadButton)
@@ -319,4 +319,4 @@ def reload_package(package):
 
 
 if __name__ == "__main__":
-    menuPanel = MainMenu('/Users/lorenzo/Dropbox/3D/Maya/Script_DEF/DevPyLib')
+    menuPanel = MainMenu('C:\Users\Lorenzo\Documents\workspace\DevPyLib')

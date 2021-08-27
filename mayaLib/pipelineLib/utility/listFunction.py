@@ -62,9 +62,9 @@ class StructureManager():
 
 
         #for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
-        #    print k, v
+        #    print(k, v)
         #func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
-        #print 'FUNCTION: ', func
+        #print('FUNCTION: ', func)
         #func()
 
 
@@ -106,7 +106,7 @@ class StructureManager():
 
     def listAllPackage2(self):
         package_list = [o[1] for o in inspect.getmembers(self.root_package) if '__' not in o[0]]
-        print(package_list)
+        #print(package_list)
         return package_list
 
     def listSubPackages(self, package_str):
@@ -130,7 +130,7 @@ class StructureManager():
     def listAllModule(self):
         module_list = []
         for package in self.package_list:
-            print('PACKAGE:: ', str(package))
+            #print('PACKAGE:: ', str(package))
             if ('utility' not in str(package)) and ('licenseRegister' not in str(package)):
                 package_name = self.root_package.__name__ + '.' + str(package)
                 modules_list = self.explore_package(package_name)

@@ -236,7 +236,7 @@ class BVHImporterDialog(object):
                     if "CHANNELS" in line:
                         chan = line.strip().split(" ")
                         if self._debug:
-                            print chan
+                            print(chan)
 
                         # Append the channels that are animated
                         for i in range(int(chan[1])):
@@ -245,7 +245,7 @@ class BVHImporterDialog(object):
                     if "OFFSET" in line:
                         offset = line.strip().split(" ")
                         if self._debug:
-                            print offset
+                            print(offset)
                         jntName = str(myParent)
 
                         # When End Site is reached, name it "_tip"
@@ -270,7 +270,7 @@ class BVHImporterDialog(object):
 
                     if self._debug:
                         if myParent is not None:
-                            print "parent: %s" % myParent._fullPath()
+                            print("parent: %s" % myParent._fullPath())
 
                 else:
                     # We don't really need to use Framecount and time(since Python handles file reads nicely)
@@ -280,13 +280,13 @@ class BVHImporterDialog(object):
                             if data[0] == "": data.pop(0)
 
                         if self._debug:
-                            print "Animating.."
-                            print "Data size: %d" % len(data)
-                            print "Channels size: %d" % len(self._channels)
+                            print("Animating..")
+                            print("Data size: %d" % len(data))
+                            print("Channels size: %d" % len(self._channels))
                         # Set the values to channels
                         for x in range(0, len(data) - 1):
                             if self._debug:
-                                print "Set Attribute: %s %f" % (self._channels[x], float(data[x]))
+                                print("Set Attribute: %s %f" % (self._channels[x], float(data[x])))
                             mc.setKeyframe(self._channels[x], time=frame, value=float(data[x]))
 
                         frame = frame + 1

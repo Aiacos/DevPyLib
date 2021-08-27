@@ -13,12 +13,12 @@ def getDocs(element, advanced=True):
     if advanced:
         docs = inspect.getdoc(element)
         return docs
-        print 'advanced'
+        print('advanced')
     else:
-        print element.__doc__
-        print help(element)
-        print 'base'
+        print(element.__doc__)
+        print(help(element))
+        print('base')
 
 
 if __name__ == "__main__":
-    print getDocs(getDocs)
+    print(getDocs(getDocs))

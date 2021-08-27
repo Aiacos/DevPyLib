@@ -169,7 +169,7 @@ def rp_create_control(s, i):
     ct = []
     cct = pm.circle(ch=0, nr=(1, 0, 0), r=1, d=3, n=(s[0] + "_" + str((i + 1)) + "_CT"))
     ct[0] = cct[0]
-    print ct
+    print(ct)
     ct[1] = str(pm.group(ct[0], n=("ctGrp_" + s[0] + "_" + str((i + 1)))))
     pm.setAttr((ct[0] + "Shape.ove"),
                1)
@@ -426,7 +426,7 @@ def rp_cr():
     pm.ToggleLocalRotationAxes()
     pm.select(s[0])
     pm.mel.rp_Twist()
-    print " :) > rope riging curve > " + s[0] + "\n"
+    print(" :) > rope riging curve > " + s[0] + "\n")
 
 
 def rp_mixTwist():

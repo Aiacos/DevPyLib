@@ -16,7 +16,7 @@ class Compensation():
         elif pm.objectType(self.hdriNode, isType='PxrDomeLight'):
             self.setPxrGain(r, g, b)
         else:
-            print 'invalid node'
+            print('invalid node')
 
     def compensationFormula(self, plateR, plateG, plateB, renderR, renderG, renderB):
         r = plateR / renderR
@@ -41,10 +41,10 @@ if __name__ == "__main__":
     sel = pm.ls('PxrDomeLightShape1', 'aiSkyDomeLightShape1')
 
     for s in sel:
-        # print type(s)
-        print pm.objectType(s, isType='aiSkyDomeLight')
+        # print(type(s))
+        print(pm.objectType(s, isType='aiSkyDomeLight'))
         # Result: True #
 
     sel2 = pm.ls(type='PxrDomeLight')
-    print sel2
+    print(sel2)
 

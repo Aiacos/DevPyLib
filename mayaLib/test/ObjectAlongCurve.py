@@ -58,7 +58,7 @@ def pathMode(path):
 
 locList = []
 for cv in curve:
-    print cv
+    print(cv)
     locList.extend(pathMode(cv))
 cmds.group(locList, n='locator_grp')
 ## --ToDo

@@ -21,7 +21,7 @@ class ProxyGeo():
         # Get Shape and skin from Object
         skinCluster = skin.findRelatedSkinCluster(geo)
         if not skinCluster:
-            print 'Missing SkinCluster'
+            print('Missing SkinCluster')
         else:
             self.skin = skinCluster
 

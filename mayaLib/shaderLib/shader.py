@@ -54,7 +54,7 @@ class TextureShader():
 
 if __name__ == "__main__":
     path = '/Users/lorenzoargentieri/Desktop/testTexture'
-    tx = file.TextureFileManager(dirname=path)
-    texdict = tx.texture_dict['Skull']
-    shaderdict = texdict['Skull']
-    ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
+    #tx = file.TextureFileManager(dirname=path)
+    #texdict = tx.texture_dict['Skull']
+    #shaderdict = texdict['Skull']
+    #ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
