@@ -120,15 +120,15 @@ def rp_check(s):
     """..............................................................................................//"""
 
     if pm.mel.gmatch(s[0], "*CT*"):
-        pm.pm.mel.error(" :( > this is not a rope curve")
+        pm.mel.error(" :( > this is not a rope curve")
 
     if len(s) == 0:
-        pm.pm.mel.error(" :( > nothing is selected")
+        pm.mel.error(" :( > nothing is selected")
 
     ss = pm.listRelatives(s[0], s=1)
     # > selection shape
     if len(ss) == 0:
-        pm.pm.mel.error(" :( > this is not a curve")
+        pm.mel.error(" :( > this is not a curve")
 
     tss = str(pm.objectType(ss[0]))
     # > type selection shape
@@ -137,7 +137,7 @@ def rp_check(s):
         typ = 1
 
     if typ == 0:
-        pm.pm.mel.error(" :( > this is not a curve")
+        pm.mel.error(" :( > this is not a curve")
 
 
 def rp_del():
@@ -249,7 +249,7 @@ def rp_cr():
         pm.setAttr((sj[i] + ".ro"),
                    3)
 
-    pm.pm.cmds.rotate(oj, 0, 0, sj[0], r=1, os=1)
+    pm.rotate(oj, 0, 0, sj[0], r=1, os=1)
     pm.makeIdentity(sj[0], a=1, r=1)
     h = pm.ikHandle(c=s[0], ee=sj[nj], ccv=0,
                     sol="ikSplineSolver", n=(s[0] + "_tw_hl"),
@@ -601,7 +601,7 @@ def rp_surface():
         z = float(1)
 
     su = pm.extrude(s[0], upn=0, dl=3, ch=bz, d=(x, y, z), n=(s[0] + "_surface"), et=0, rn=0, po=0)
-    pm.pm.cmds.move(((-1) * (x / 2)), ((-1) * (y / 2)), ((-1) * (z / 2)),
+    pm.move(((-1) * (x / 2)), ((-1) * (y / 2)), ((-1) * (z / 2)),
                     su[0])
     pm.makeIdentity(su[0], a=1, t=1)
     sj = pm.ls((s[0] + "_tw_*"),
