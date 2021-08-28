@@ -319,4 +319,4 @@ def reload_package(package):
 
 
 if __name__ == "__main__":
-    menuPanel = MainMenu('C:\Users\Lorenzo\Documents\workspace\DevPyLib')
+    menuPanel = MainMenu(r'C:\Users\Lorenzo\Documents\workspace\DevPyLib')
