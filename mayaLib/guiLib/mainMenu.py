@@ -263,7 +263,7 @@ class MainMenu(QtWidgets.QWidget):
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
         ptr = omui.MQtUtil.findControl(widgetStr)
-        menuWidget = wrapInstance(ptr, QtWidgets.QMainWindow)
+        menuWidget = wrapInstance(long(ptr), QtWidgets.QMainWindow)
         self.mayaMenu = menuWidget.menuBar()
         self.libMenu = self.mayaMenu.addMenu(menuName)
 
@@ -303,8 +303,8 @@ def reload_package(package):
     del fn
 
     def reload_recursive_ex(module):
-        importlib.reload(module)
-        #reload(module)
+        #importlib.reload(module)
+        reload(module)
 
         for module_child in vars(module).values():
             if isinstance(module_child, types.ModuleType):
