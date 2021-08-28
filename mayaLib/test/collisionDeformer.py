@@ -159,16 +159,16 @@ def initializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj, 'Grover', '1.0', 'Any')  
     try:  
          plugin.registerNode('collisionDeformer', collisionDeformer.kPluginNodeId, creator, initialize, OpenMayaMPx.MPxNode.kDeformerNode)  
-    except:  
-         raise RuntimeError, 'Failed to register node'  
+    except:
+        raise RuntimeError('Failed to register node')
 
 
 def uninitializePlugin(obj):  
     plugin = OpenMayaMPx.MFnPlugin(obj)  
     try:  
          plugin.deregisterNode(collisionDeformer.kPluginNodeId)  
-    except:  
-         raise RuntimeError, 'Failed to deregister node'  
+    except:
+        raise RuntimeError('Failed to deregister node')
              
 if __name__ == "__main__":  
   #simply create two polygon spheres. Move the second away from the first, select the first and run the code below.  

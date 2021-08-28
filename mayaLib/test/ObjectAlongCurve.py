@@ -6,8 +6,8 @@ import maya.cmds as cmds
 pointsNumber = 5
 
 curve = cmds.ls(sl=True)
-#nameBuilder_locator = curve[0] + "_loc"  #in function, lacal variables
-#nameBuilder_joint = curve[0] + "_jnt"  #in function, local variables
+nameBuilder_locator = curve[0] + "_loc"  #in function, lacal variables
+nameBuilder_joint = curve[0] + "_jnt"  #in function, local variables
 
 spacing = 1.0/(pointsNumber-1)
 
