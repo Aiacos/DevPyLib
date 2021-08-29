@@ -1,10 +1,10 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
 
-import mayaLib.fluidLib.base.baseEmitter
 import mayaLib.fluidLib.base.baseContainer
+import mayaLib.fluidLib.base.baseEmitter
 
 
 class BaseFluid():
@@ -60,7 +60,7 @@ class BaseFluid():
 
         # Resize
         self.fluidShape.autoResize.set(1)
-        self.fluidShape.maxResolution.set(baseRes**2)
+        self.fluidShape.maxResolution.set(baseRes ** 2)
         self.fluidShape.autoResizeMargin.set(4)
 
         # Lighting

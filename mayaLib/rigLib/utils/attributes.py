@@ -18,11 +18,13 @@ def addVectorAttribute(object, name, defaultValue=[0, 0, 0]):
     attribute = pm.Attribute(object + '.' + name)
     return attribute
 
+
 def addFloatAttribute(object, name, defaultValue=0, keyable=False, minValue=None, maxValue=None):
     attributeList = pm.ls(object + '.' + name)
     if len(attributeList) == 0:
         if minValue != None and maxValue != None:
-            pm.addAttr(object, longName=name, attributeType='float', k=keyable, dv=defaultValue, min=minValue, max=maxValue)
+            pm.addAttr(object, longName=name, attributeType='float', k=keyable, dv=defaultValue, min=minValue,
+                       max=maxValue)
         else:
             pm.addAttr(object, longName=name, attributeType='float', k=keyable, dv=defaultValue)
     else:

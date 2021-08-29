@@ -6,8 +6,8 @@ import pymel.core as pm
 
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.utils import deform, control
-from mayaLib.rigLib.utils import skin
 from mayaLib.rigLib.utils import followCtrl
+from mayaLib.rigLib.utils import skin
 
 
 class Face():
@@ -97,7 +97,8 @@ class Face():
             follicleList.extend([follicle])
         follicleGrp = pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
 
-    def setupCurve(self, cv, pointsNumber, sphereSize=0.1, offsetActive=False, locSize=0.1, jointRadius=0.1, follow=False):
+    def setupCurve(self, cv, pointsNumber, sphereSize=0.1, offsetActive=False, locSize=0.1, jointRadius=0.1,
+                   follow=False):
         cvName = str(cv.name()).replace('_CRV', '')
 
         locatorList = []
@@ -124,16 +125,14 @@ class Face():
             if not offsetActive:
                 pm.delete(pm.pointConstraint(locator, joint))
 
-
-            #sphereObj = pm.sphere(r=sphereSize, axis=(0, 1, 0))
-            #sphereShape = pm.listRelatives(sphereObj, children=True, shapes=True)
-            #pm.parent(sphereShape, joint, r=True, s=True)
-            #pm.delete(sphereObj)
+            # sphereObj = pm.sphere(r=sphereSize, axis=(0, 1, 0))
+            # sphereShape = pm.listRelatives(sphereObj, children=True, shapes=True)
+            # pm.parent(sphereShape, joint, r=True, s=True)
+            # pm.delete(sphereObj)
 
         locGrp = pm.group(locatorList, n=cvName + 'Loc_GRP', p=self.rigmodule.partsNoTransGrp)
 
         return locatorList
-
 
     def deleteConnection(self, plug):
         # """ Equivalent of MEL: CBdeleteConnection """
@@ -147,4 +146,3 @@ class Face():
                 pm.disconnectAttr(source, plug)
             else:
                 pm.delete(plug, icn=True)
-

@@ -1,27 +1,25 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
-import pathlib
 import types
-import importlib
 
-#from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
+import maya.OpenMayaUI as omui
+import pathlib
+# from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtCore import QObject, SIGNAL
-from shiboken2 import wrapInstance
-import maya.OpenMayaUI as omui
 from maya import mel
+from shiboken2 import wrapInstance
 
 import mayaLib
-from mayaLib.pipelineLib.utility import listFunction as lm
+from mayaLib.guiLib.base import baseUI as ui
 from mayaLib.pipelineLib.utility import docs as doc
 from mayaLib.pipelineLib.utility import libManager
-from mayaLib.guiLib.base import baseUI as ui
+from mayaLib.pipelineLib.utility import listFunction as lm
 
 
 class SearchLineEdit(QtWidgets.QLineEdit):
-
-    #buttonClicked = QtCore.pyqtSignal(bool)
+    # buttonClicked = QtCore.pyqtSignal(bool)
     speak = QtCore.Signal(str)
 
     def __init__(self, icon_file, parent=None):
@@ -31,10 +29,10 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         self.button.setIcon(QtGui.QIcon(icon_file))
         self.button.setStyleSheet('border: 0px; padding: 0px;')
         self.button.setCursor(QtCore.Qt.ArrowCursor)
-        self.button.clicked.connect(self.clear) #self.buttonClicked.emit
+        self.button.clicked.connect(self.clear)  # self.buttonClicked.emit
 
         layout = QtWidgets.QHBoxLayout(self)
-        layout.addWidget(self.button,0,QtCore.Qt.AlignRight)
+        layout.addWidget(self.button, 0, QtCore.Qt.AlignRight)
         layout.setSpacing(0)
         layout.setMargin(5)
 
@@ -42,8 +40,8 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         buttonSize = self.button.sizeHint()
 
         self.setStyleSheet('QLineEdit {padding-right: %dpx; }' % (buttonSize.width() + frameWidth + 1))
-        self.setMinimumSize(max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth*2 + 3),
-                            max(self.minimumSizeHint().height(), buttonSize.height() + frameWidth*2 + 3))
+        self.setMinimumSize(max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 3),
+                            max(self.minimumSizeHint().height(), buttonSize.height() + frameWidth * 2 + 3))
 
         self.textChanged.connect(self.replaceText)
 
@@ -59,7 +57,6 @@ class SearchLineEdit(QtWidgets.QLineEdit):
 
 
 class MenuLibWidget(QtWidgets.QWidget):
-
     updateWidget = QtCore.Signal()
 
     def __init__(self, libPath, parent=None):
@@ -92,17 +89,19 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.setStyleSheet('background: transparent;')
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.adjustSize()
-        #self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        #self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
-        #self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
-        #self.buttonListWidget.setMinimumHeight(75)
-        #self.buttonListWidget.setMaximumHeight(100)
+        # self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                            QtWidgets.QSizePolicy.MinimumExpanding)
+        # self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
+        # self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
+        # self.buttonListWidget.setMinimumHeight(75)
+        # self.buttonListWidget.setMaximumHeight(100)
         self.layout.addWidget(self.buttonListWidget)
 
         # Docs Label
         self.docLabel = QtWidgets.QLabel()
-        self.docLabel.setStyleSheet("background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
+        self.docLabel.setStyleSheet(
+            "background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
         self.layout.addWidget(self.docLabel)
         self.docLabel.setText('')
 
@@ -183,7 +182,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lookdev']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
-            #fileMenu.addAction(self.addMenuAction(disci))
+            # fileMenu.addAction(self.addMenuAction(disci))
             for action in self.addMultipleMenuAction(fileMenu, disci):
                 fileMenu.addAction(action)
 
@@ -194,18 +193,17 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def buttonClicked(self, func):
         self.functionWindow = None
-        #try:
+        # try:
         self.functionWindow = ui.FunctionUI(func)
         self.functionWindow.show()
         self.functionWindow.setFocus()
-        #except:
+        # except:
         #    func()
 
     def addMenuAction(self, discipline, function):
         extractAction = QtWidgets.QAction(discipline, self)
-        #extractAction.setShortcut("Ctrl+Q")
-        #extractAction.setStatusTip('Leave The App')
-
+        # extractAction.setShortcut("Ctrl+Q")
+        # extractAction.setStatusTip('Leave The App')
 
         extractAction.triggered.connect(lambda: self.buttonClicked(function))
 
@@ -220,7 +218,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
     def addRecursiveMenu(self, upMenu, libDict):
         for key, value in libDict.iteritems():
-            if isinstance(value,dict):
+            if isinstance(value, dict):
                 subMenu = self.addSubMenu(upMenu, key)
                 self.addRecursiveMenu(subMenu, value)
 
@@ -258,7 +256,7 @@ class MainMenu(QtWidgets.QWidget):
         super(MainMenu, self).__init__(parent)
 
         self.wAction = QtWidgets.QWidgetAction(self)
-        self.libWindow = MenuLibWidget(libPath) # ql
+        self.libWindow = MenuLibWidget(libPath)  # ql
         self.wAction.setDefaultWidget(self.libWindow)
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
@@ -276,11 +274,11 @@ class MainMenu(QtWidgets.QWidget):
         reload_package(mayaLib)
         self.libMenu.removeAction(self.wAction)
         self.libWindow.destroy()
-        #self.wAction.deleteWidget()
-        #self.libMenu.clear()
+        # self.wAction.deleteWidget()
+        # self.libMenu.clear()
 
         self.wAction = QtWidgets.QWidgetAction(self)
-        self.libWindow = MenuLibWidget(libPath) # ql
+        self.libWindow = MenuLibWidget(libPath)  # ql
         self.wAction.setDefaultWidget(self.libWindow)
 
         self.libMenu.addAction(self.wAction)
@@ -296,14 +294,14 @@ class MainMenu(QtWidgets.QWidget):
 
 
 def reload_package(package):
-    assert(hasattr(package, "__package__"))
+    assert (hasattr(package, "__package__"))
     fn = package.__file__
     fn_dir = os.path.dirname(fn) + os.sep
     module_visit = {fn}
     del fn
 
     def reload_recursive_ex(module):
-        #importlib.reload(module)
+        # importlib.reload(module)
         reload(module)
 
         for module_child in vars(module).values():

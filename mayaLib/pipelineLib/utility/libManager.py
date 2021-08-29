@@ -1,25 +1,24 @@
 __author__ = 'Lorenzo Argentieri'
 
-import sys
-from sys import platform as _platform
-import os.path
 import os
-#import pip
+import os.path
+import sys
+# import pip
 import time
 import urllib
-import mayaLib.installCmd as installCmd
+from sys import platform as _platform
 
 
 # import installCmd
 def buildInstallCmd(libDir, libName, port):
     installCommand = \
-"""
-# Install mayaLib
-import sys
-import maya.cmds as cmds
-import maya.utils
-
-libDir = '""" + libDir + """'
+        """
+        # Install mayaLib
+        import sys
+        import maya.cmds as cmds
+        import maya.utils
+        
+        libDir = '""" + libDir + """'
 port = '""" + str(port) + """'
 libName = '""" + libName + """'
 
@@ -39,6 +38,7 @@ cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
 """
 
     return installCommand
+
 
 class InstallLibrary():
     def __init__(self, devMode=False, parent=None, libDir=None):
@@ -101,7 +101,7 @@ class InstallLibrary():
         self.installInMayaUserSetup()
 
         # install dependency pkg
-        #pip.main(['install', 'numpy'])
+        # pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath

@@ -1,7 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import inspect
+
 import pymel.core as pm
+
 from mayaLib.rigLib.utils import util
 
 
@@ -26,8 +28,6 @@ class IKFKSwitch():
         orientConstraintFK3 = self.joint3.outputs(type='constraint')[0]
         self.joint3FKCtrl = util.getDriverDrivenFromConstraint(orientConstraintFK3)[0][0]
 
-
-
         # IK control
         if simpleIK:
             # IK control
@@ -46,8 +46,7 @@ class IKFKSwitch():
             poleVectorConstraint = pm.listConnections(ikHandle, type='poleVectorConstraint', et=True)[0]
             poleVectorLoc = util.getDriverDrivenFromConstraint(poleVectorConstraint)[0][0]
             poleVectorLocConstraint = poleVectorLoc.getChildren()[1]
-            self.poleVector =  util.getDriverDrivenFromConstraint(poleVectorLocConstraint)[0][0]
-
+            self.poleVector = util.getDriverDrivenFromConstraint(poleVectorLocConstraint)[0][0]
 
         self.ikHandle = ikHandle
         self.driverLoc = self.ikHandle.inputs(scn=True, type='reverse')[0].inputs(scn=True, plugs=True)[0]
@@ -87,6 +86,7 @@ class IKFKSwitch():
     def reconnect(self):
         pm.connectAttr(self.driverAttribute, self.driverLoc)
 
+
 def installIKFK(ikList):
     from mayaLib.rigLib.utils import ikfkSwitch
     classDefinitionString = inspect.getsource(ikfkSwitch.IKFKSwitch)
@@ -107,7 +107,6 @@ def installIKFK(ikList):
     print('INSTALLED IKFK SWITCH!')
 
 
-
 if __name__ == "__main__":
     ikList = pm.ls('l_shoulder1_IKH', 'r_shoulder1_IKH', 'l_hip1_IKH', 'r_hip1_IKH')
     ikInstanceList = [IKFKSwitch(ik) for ik in ikList]
@@ -117,4 +116,3 @@ if __name__ == "__main__":
     c = IKFKSwitch(ikList[0])
     c.switchIKFK()
     print(c.addScriptJob())
-

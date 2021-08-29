@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
 
 
 def getDriverDrivenFromConstraint(constraint):
@@ -186,6 +186,7 @@ def invertSelection():
     # runtime.InvertSelection()
     return pm.ls(sl=True)
 
+
 def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
     """
     Returns radius bounding box as a dict for: planarX, planarY, planarZ, 3D;
@@ -197,7 +198,7 @@ def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
     BBox = transform.getBoundingBox()
     xmin, ymin, zmin = BBox[0]
     xmax, ymax, zmax = BBox[1]
-    
+
     hypotenuseX = get_distance_from_coords([0, ymin, zmin], [0, ymin, zmax])
     hypotenuseY = get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax])
     hypotenuseZ = get_distance_from_coords([xmin, ymin, 0], [xmax, ymin, 0])
@@ -213,6 +214,7 @@ def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
                   '3D': hypotenuseXYZ / radiusFactor}
 
     return radiusDict
+
 
 def matrixConstrain(driver, driven, parent=None, translate=True, rotate=True, scale=False):
     driver = pm.ls(driver)[0]

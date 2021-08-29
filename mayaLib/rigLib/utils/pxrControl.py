@@ -1,16 +1,18 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import util
+
 from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import skin
+from mayaLib.rigLib.utils import util
 
 
 def invertSelection(shape, faces):
-    pm.select(shape+'.f[*]')
+    pm.select(shape + '.f[*]')
     pm.select(faces, deselect=True)
-    #mel.eval('InvertSelection;')
+    # mel.eval('InvertSelection;')
     return pm.ls(sl=True)
+
 
 class PxrStyleCtrl():
     """
@@ -97,7 +99,7 @@ class PxrStyleCtrl():
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)
-        #pm.select(faces)
+        # pm.select(faces)
         toDelete = invertSelection(newShape, faces)
         pm.polyDelFacet(toDelete, ch=False)
 
@@ -124,4 +126,3 @@ class PxrStyleCtrl():
 
 if __name__ == "__main__":
     pxrCtrl = PxrStyleCtrl()
-

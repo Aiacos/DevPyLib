@@ -4,11 +4,11 @@ import pymel.core as pm
 
 
 def replacePath(fileName, oldPath, newPath):
-    newString = fileName.replace(oldPath,newPath)
+    newString = fileName.replace(oldPath, newPath)
     return newString
 
 
-def changeExtension(filename,newExtension):
+def changeExtension(filename, newExtension):
     (prefix, sep, suffix) = filename.rpartition('.')
     return prefix + newExtension
 
@@ -30,6 +30,7 @@ def replace_ext(ext, file_name_attribute, file_type):
         texture_filename = pm.getAttr(f + file_name_attribute)
         new_tex = changeExtension(texture_filename, ext)
         pm.setAttr(f + file_name_attribute, new_tex, type="string")
+
 
 def replace_path(oldPath, path, file_name_attribute, file_type):
     """

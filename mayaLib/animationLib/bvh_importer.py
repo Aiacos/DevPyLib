@@ -31,9 +31,10 @@ __maintainer__ = "Jeroen Hoolmans"
 __email__ = "jhoolmans@gmail.com"
 __status__ = "Production"
 
-import pymel.core as pm
-import maya.cmds as mc
 import os
+
+import maya.cmds as mc
+import pymel.core as pm
 
 # This maps the BVH naming convention to Maya
 translationDict = {

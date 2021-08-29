@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
 
 
 def centerPivot(obj, targetPivot=None):
@@ -19,13 +19,16 @@ def freezeTranform(obj):
 def deleteHistory(obj):
     pm.delete(obj, ch=True)
 
+
 def deleteNonDeformerHistory(obj):
-    pm.bakePartialHistory(obj, pre=True) # prePostDeformers=True
+    pm.bakePartialHistory(obj, pre=True)  # prePostDeformers=True
+
 
 def deleteConnection(objAttrList):
     objAttrList = pm.ls(objAttrList)
     for objAttr in objAttrList:
         mel.eval("CBdeleteConnection " + str(objAttr.name()) + ";")
+
 
 def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linear'):
     """
@@ -38,4 +41,5 @@ def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linea
     :return:
     """
     for driverV, drivenV in zip(driverValueList, drivenValueList):
-        pm.setDrivenKeyframe(driven, currentDriver=driver, driverValue=driverV, value=drivenV, inTangentType=cvType, outTangentType=cvType)
+        pm.setDrivenKeyframe(driven, currentDriver=driver, driverValue=driverV, value=drivenV, inTangentType=cvType,
+                             outTangentType=cvType)

@@ -1,9 +1,10 @@
 __author__ = 'Lorenzo Argentieri'
 
+import collections
 import inspect
 import pkgutil
+
 import mayaLib as mLib
-import collections
 
 
 class StructureManager():
@@ -11,7 +12,7 @@ class StructureManager():
     Manage Lib Structure
     """
 
-    #root_package = ''
+    # root_package = ''
 
     def __init__(self, lib):
         self.root_package = lib
@@ -33,7 +34,6 @@ class StructureManager():
                 self.moduleClassList.extend(subPack)
             except:
                 self.moduleClassList.append(mod)
-
 
         for item in self.moduleClassList:
             # Class OR Function Case
@@ -57,16 +57,14 @@ class StructureManager():
                 else:
                     tmpDict = self.incapsulateDict(tmpDict, key)
 
-            #print tmpDict
+            # print tmpDict
             self.dict_merge(self.structLib, tmpDict)
 
-
-        #for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
+        # for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
         #    print(k, v)
-        #func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
-        #print('FUNCTION: ', func)
-        #func()
-
+        # func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
+        # print('FUNCTION: ', func)
+        # func()
 
     def dict_merge(self, dct, merge_dct):
         """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
@@ -87,7 +85,6 @@ class StructureManager():
     def incapsulateDict(self, dict, key):
         return {key: dict}
 
-
     def getStructLib(self):
         return self.structLib
 
@@ -102,11 +99,11 @@ class StructureManager():
             if 'utility' not in p[1]:
                 package_list.append(p[1])
 
-        return  package_list
+        return package_list
 
     def listAllPackage2(self):
         package_list = [o[1] for o in inspect.getmembers(self.root_package) if '__' not in o[0]]
-        #print(package_list)
+        # print(package_list)
         return package_list
 
     def listSubPackages(self, package_str):
@@ -115,7 +112,7 @@ class StructureManager():
         for p in pkgutil.iter_modules(package.__path__):
             package_list.append(package_str + '.' + p[1])
 
-        return  package_list
+        return package_list
 
     def listModules(self, package):
         module_list = []
@@ -130,7 +127,7 @@ class StructureManager():
     def listAllModule(self):
         module_list = []
         for package in self.package_list:
-            #print('PACKAGE:: ', str(package))
+            # print('PACKAGE:: ', str(package))
             if ('utility' not in str(package)) and ('licenseRegister' not in str(package)):
                 package_name = self.root_package.__name__ + '.' + str(package)
                 modules_list = self.explore_package(package_name)
@@ -140,7 +137,8 @@ class StructureManager():
         return module_list
 
     def getAllClass(self, module_str):
-        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and ('paintable_maps' not in module_str):
+        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
+                'paintable_maps' not in module_str):
             module = __import__(module_str, fromlist=[''])
             class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
             return class_list
@@ -153,7 +151,8 @@ class StructureManager():
         return method_list
 
     def getAllFunction(self, module_str):
-        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and ('paintable_maps' not in module_str):
+        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
+                'paintable_maps' not in module_str):
             module = __import__(module_str, fromlist=[''])
             functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
             return functions_list
@@ -179,7 +178,7 @@ class StructureManager():
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:
-                #print("{0} : {1}".format(k, v))
+                # print("{0} : {1}".format(k, v))
                 module = v
                 class_list = self.getAllClass(module)
                 function_list = self.getAllFunction(module)

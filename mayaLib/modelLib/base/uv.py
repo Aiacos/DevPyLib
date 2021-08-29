@@ -1,7 +1,7 @@
 import math
-import pymel.core as pm
+
 import maya.mel as mel
-from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
+import pymel.core as pm
 
 
 class AutoUV():
@@ -124,7 +124,7 @@ class AutoUV():
         for shell in shellList:
             if not self.checkUVInBoundaries(shell):
                 self.cutUVTile(shell)
-                #self.recursiveCutUV(geo)
+                # self.recursiveCutUV(geo)
 
     def getUVShell(self, geo):
         shellNumber = pm.polyEvaluate(geo, uvShell=True)
@@ -192,7 +192,8 @@ class AutoUV():
 
     def fixNonManifoldUV(self, geo):
         pm.select(geo)
-        mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
+        mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
 
 
 if __name__ == "__main__":

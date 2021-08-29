@@ -1,5 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
+
 def wispySmokeColor():
     """
     Wispy Smoke Color in RGB
@@ -10,6 +11,7 @@ def wispySmokeColor():
     b = 0.114084
     return r, g, b
 
+
 def smokeColor():
     """
     Smoke Color in RGB
@@ -19,6 +21,7 @@ def smokeColor():
     g = 0.122141
     b = 0.122141
     return r, g, b
+
 
 def explosionSmokeColor():
     """

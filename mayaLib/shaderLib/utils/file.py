@@ -1,7 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
+
 import pymel.core as pm
+
 
 class TextureFile():  # ToDo: move in util?
     """
@@ -118,5 +120,5 @@ class TextureFileManager():
 
 if __name__ == "__main__":
     path = 'testPath'
-    test_dict = TextureFileManager() #PATH
+    test_dict = TextureFileManager()  # PATH
     print(test_dict.texture_dict)

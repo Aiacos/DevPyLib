@@ -1,4 +1,4 @@
 import docs
-import listFunction
 import libManager
+import listFunction
 import nameCheck

@@ -3,6 +3,7 @@ neck @ rig
 """
 
 import pymel.core as pm
+
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.utils import control
 
@@ -11,7 +12,7 @@ class Neck():
     def __init__(self,
                  neckJoints,
                  headJnt,
-                 #neckCurve,
+                 # neckCurve,
                  prefix='neck',
                  rigScale=1.0,
                  baseRig=None
@@ -30,11 +31,12 @@ class Neck():
         self.rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
 
         # make IK handle
-        neckIk, effector, neckCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=neckJoints[0], ee=neckJoints[-1],
-                             createCurve=True, numSpans=2)
+        neckIk, effector, neckCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=neckJoints[0],
+                                                  ee=neckJoints[-1],
+                                                  createCurve=True, numSpans=2)
 
         # rename curve
-        pm.rename(neckCurve, prefix+'_CRV')
+        pm.rename(neckCurve, prefix + '_CRV')
 
         # make neck curve clusters
         neckCurveCVs = pm.ls(neckCurve + '.cv[*]', fl=1)
@@ -57,14 +59,16 @@ class Neck():
         pm.delete(pm.pointConstraint(neckJoints[0], self.baseAttachGrp))
 
         # make controls
-        headMainCtrl = control.Control(prefix=prefix + 'HeadMain', translateTo=neckJoints[-1], rotateTo=headJnt, scale=rigScale * 5,
+        headMainCtrl = control.Control(prefix=prefix + 'HeadMain', translateTo=neckJoints[-1], rotateTo=headJnt,
+                                       scale=rigScale * 5,
                                        parent=self.rigmodule.controlsGrp, shape='head')
 
         headLocalCtrl = control.Control(prefix=prefix + 'HeadLocal', translateTo=headJnt, rotateTo=headJnt,
                                         scale=rigScale * 4, parent=headMainCtrl.C, shape='circleX', lockChannels=['t'])
 
         middleCtrl = control.Control(prefix=prefix + 'Middle', translateTo=neckCurveClusters[2], rotateTo=neckJoints[2],
-                                     scale=rigScale * 4, parent=self.rigmodule.controlsGrp, shape='circleX', lockChannels=['r'])
+                                     scale=rigScale * 4, parent=self.rigmodule.controlsGrp, shape='circleX',
+                                     lockChannels=['r'])
 
         # attach controls
         pm.parentConstraint(headMainCtrl.C, self.baseAttachGrp, middleCtrl.Off, sr=['x', 'y', 'z'], mo=1)

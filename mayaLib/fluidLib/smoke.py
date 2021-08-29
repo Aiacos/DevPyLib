@@ -3,8 +3,9 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.baseFluid import BaseFluid
-from mayaLib.fluidLib.utility import mathFunction
 from mayaLib.fluidLib.utility import densityColor
+from mayaLib.fluidLib.utility import mathFunction
+
 
 class WispySmoke(BaseFluid):
     """
@@ -53,7 +54,6 @@ class WispySmoke(BaseFluid):
         self.fluidContainer.tensionForce.set(0.1)
         self.fluidContainer.densityGradientForce.set(10)
 
-
     def setVelocity(self):
         self.fluidContainer.velocitySwirl.set(5)
 
@@ -70,10 +70,10 @@ class WispySmoke(BaseFluid):
         # Density Color
         dr, dg, db = densityColor.wispySmokeColor()
         self.fluidContainer.color[0].color_Color.set(dr, dg, db, type="double3")
-        self.fluidContainer.colorInput.set(0) # Constant
+        self.fluidContainer.colorInput.set(0)  # Constant
 
         # Opacity
-        self.fluidContainer.opacityInput.set(5) # density
+        self.fluidContainer.opacityInput.set(5)  # density
         self.opacityGraph()
         self.fluidContainer.opacityInputBias.set(0.4)
 
@@ -97,6 +97,7 @@ class WispySmoke(BaseFluid):
         self.fluidContainer.opacity[4].opacity_Position.set(1)
         self.fluidContainer.opacity[4].opacity_FloatValue.set(0)
         self.fluidContainer.opacity[4].opacity_Interp.set(3)
+
 
 class ThickSmoke(BaseFluid):
     """
@@ -149,7 +150,6 @@ class ThickSmoke(BaseFluid):
         self.fluidContainer.tensionForce.set(0.05)
         self.fluidContainer.densityGradientForce.set(35)
 
-
     def setVelocity(self):
         self.fluidContainer.velocitySwirl.set(6)
         self.fluidContainer.velocityNoise.set(1)
@@ -166,16 +166,16 @@ class ThickSmoke(BaseFluid):
         # Density Color
         dr, dg, db = densityColor.wispySmokeColor()
         self.fluidContainer.color[0].color_Color.set(dr, dg, db, type="double3")
-        self.fluidContainer.colorInput.set(0) # Constant
+        self.fluidContainer.colorInput.set(0)  # Constant
 
         # Opacity
-        self.fluidContainer.opacityInput.set(5) # density
+        self.fluidContainer.opacityInput.set(5)  # density
         self.opacityGraph()
         self.fluidContainer.opacityInputBias.set(0.4)
 
     def opacityGraph(self, sampling=20):
-        step = 100/sampling
-        for i in [round(x * 0.01, 4) for x in range(0, 100+1, step)]:
+        step = 100 / sampling
+        for i in [round(x * 0.01, 4) for x in range(0, 100 + 1, step)]:
             y = mathFunction.repartFunction(i, l=15)
             self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
             self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)

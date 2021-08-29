@@ -1,3 +1,3 @@
 import base
-import utility
 import fire
+import utility

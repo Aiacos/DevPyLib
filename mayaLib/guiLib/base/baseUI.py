@@ -1,10 +1,12 @@
 __author__ = 'Lorenzo Argentieri'
 
-import inspect
 import ast
-import mayaLib.pipelineLib.utility.docs as doc
-from PySide2 import QtCore, QtWidgets
+import inspect
+
 import pymel.core as pm
+from PySide2 import QtCore, QtWidgets
+
+import mayaLib.pipelineLib.utility.docs as doc
 
 
 def test(a, b, c, d='ciao', e='stronzo', f=1):
@@ -208,6 +210,6 @@ if __name__ == "__main__":
     # button = QtWidgets.QPushButton("Hello World")
     # button.show()
     # app.exec_()
-    #print(inspect.getargspec(Prova))
+    # print(inspect.getargspec(Prova))
     t = FunctionUI(Prova)
     t.show()

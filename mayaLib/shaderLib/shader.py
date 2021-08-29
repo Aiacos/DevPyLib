@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 from pymel import core as pm
+
 from mayaLib.shaderLib.base import texture
 from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
 from mayaLib.shaderLib.base.renderman import PxrSurface_shaderBase
@@ -52,9 +53,10 @@ class TextureShader():
     def getShader(self):
         return self.shader
 
+
 if __name__ == "__main__":
     path = '/Users/lorenzoargentieri/Desktop/testTexture'
-    #tx = file.TextureFileManager(dirname=path)
-    #texdict = tx.texture_dict['Skull']
-    #shaderdict = texdict['Skull']
-    #ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)
+    # tx = file.TextureFileManager(dirname=path)
+    # texdict = tx.texture_dict['Skull']
+    # shaderdict = texdict['Skull']
+    # ts = TextureShader(texture_path=path, geo_name='Skull', textureset_dict=shaderdict)

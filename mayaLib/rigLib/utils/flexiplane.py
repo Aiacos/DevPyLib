@@ -1,10 +1,12 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 from string import letters
+
+import pymel.core as pm
+
 from mayaLib.pipelineLib.utility import nameCheck
-from mayaLib.shaderLib.base import shader_base
 from mayaLib.rigLib.utils import util
+from mayaLib.shaderLib.base import shader_base
 
 
 class Flexiplane():
@@ -46,7 +48,6 @@ class Flexiplane():
         # delete the flexiplane
         delete_flex = [pm.delete(f.getParent()) for f in flex]
         return flex, curve_name
-
 
     def create_plane(self, name, width=10, lengthratio=0.2):
         """
@@ -284,7 +285,7 @@ class Flexiplane():
         """
 
         fp_name = '%sflexiPlane' % prefix
-        fp_name = nameCheck.nameCheck(fp_name+'*_GRP').replace('_GRP', '', 1)# flexiPlane_GRP
+        fp_name = nameCheck.nameCheck(fp_name + '*_GRP').replace('_GRP', '', 1)  # flexiPlane_GRP
 
         fp_surf = self.create_plane('%s_NURBS' % (fp_name))[0]
         fp_surf.overrideEnabled.set(1)
@@ -294,7 +295,7 @@ class Flexiplane():
         self.create_lambret(fp_surf, color=(0.067, 0.737, 0.749), transparency=(0.75, 0.75, 0.75))
 
         # Create Follicles
-        #flc_name = 'flexiPlane'
+        # flc_name = 'flexiPlane'
         v = 0.1  # 1/width
         flcs = []
         how_many_flc = 5  # width/2
@@ -380,8 +381,8 @@ class Flexiplane():
 
         # groups everything under 1 group then locks and hides the transform attrs of that group #flexiPlane_wire_surface0101BaseWire
         self.fp_grp = pm.group(fp_surf, flc_grp, fp_bshp, fp_wire,
-                          #'%s_wire_%s_BaseWire_GRP' % (fp_name, self.surfaceSuffix),
-                          cl_grp, ctrl_grp, n='%s_GRP' % (fp_name))
+                               # '%s_wire_%s_BaseWire_GRP' % (fp_name, self.surfaceSuffix),
+                               cl_grp, ctrl_grp, n='%s_GRP' % (fp_name))
         util.lock_and_hide_all(self.fp_grp)
 
         # creates global move group and extraNodes
@@ -393,7 +394,6 @@ class Flexiplane():
         pm.parent(fp_xnodes_grp, self.fp_grp)
         fp_xnodes_grp.overrideEnabled.set(1)
         fp_xnodes_grp.overrideDisplayType.set(2)
-
 
         # scale constrains follicles to global move group
         for follicle in flcs:
@@ -475,4 +475,3 @@ class Flexiplane():
 
 if __name__ == "__main__":
     fp1 = Flexiplane()
-

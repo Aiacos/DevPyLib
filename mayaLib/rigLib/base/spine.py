@@ -3,6 +3,7 @@ spine @ rig
 """
 
 import pymel.core as pm
+
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.utils import control
 
@@ -13,15 +14,15 @@ class Spine():
     """
 
     def __init__(self,
-                spineJoints,
-                rootJnt,
-                prefix='spine',
-                rigScale=1.0,
-                baseRig=None,
-                bodyLocator='',
-                chestLocator='',
-                pelvisLocator=''
-    ):
+                 spineJoints,
+                 rootJnt,
+                 prefix='spine',
+                 rigScale=1.0,
+                 baseRig=None,
+                 bodyLocator='',
+                 chestLocator='',
+                 pelvisLocator=''
+                 ):
         """
         :param spineJoints: list( str ), list of 6 spine joints
         :param rootJnt: str, root joint
@@ -44,11 +45,12 @@ class Spine():
         bodyLocator, chestLocator, pelvisLocator = self.makeControlLocatorReferencePosition(spineJoints)
 
         # make IK handle
-        spineIk, effector, spineCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=spineJoints[0], ee=spineJoints[-1], # -2
+        spineIk, effector, spineCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=spineJoints[0],
+                                                    ee=spineJoints[-1],  # -2
                                                     createCurve=True, numSpans=2)
 
         # rename curve
-        pm.rename(spineCurve, prefix+'_CRV')
+        pm.rename(spineCurve, prefix + '_CRV')
 
         # make spine curve clusters
         spineCurveCVs = pm.ls(spineCurve + '.cv[*]', fl=1)
@@ -65,13 +67,16 @@ class Spine():
         pm.parent(spineCurve, self.rigmodule.partsNoTransGrp)
 
         # make controls
-        self.bodyCtrl = control.Control(prefix=prefix + 'Body', translateTo=bodyLocator, rotateTo=spineJoints[-1], scale=rigScale * 4,
+        self.bodyCtrl = control.Control(prefix=prefix + 'Body', translateTo=bodyLocator, rotateTo=spineJoints[-1],
+                                        scale=rigScale * 4,
                                         parent=self.rigmodule.controlsGrp, shape='spine')
 
-        chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, rotateTo=spineJoints[-1], scale=rigScale * 6,
+        chestCtrl = control.Control(prefix=prefix + 'Chest', translateTo=chestLocator, rotateTo=spineJoints[-1],
+                                    scale=rigScale * 6,
                                     parent=self.bodyCtrl.C, shape='chest')
 
-        pelvisCtrl = control.Control(prefix=prefix + 'Pelvis', translateTo=pelvisLocator, rotateTo=pelvisLocator, scale=rigScale * 6,
+        pelvisCtrl = control.Control(prefix=prefix + 'Pelvis', translateTo=pelvisLocator, rotateTo=pelvisLocator,
+                                     scale=rigScale * 6,
                                      parent=self.bodyCtrl.C, shape='hip')
 
         middleCtrl = control.Control(prefix=prefix + 'Middle', translateTo=spineCurveClusters[2], scale=rigScale * 3,
@@ -86,7 +91,7 @@ class Spine():
         pm.parent(spineCurveClusters[:2], pelvisCtrl.C)
 
         # attach chest joint
-        pm.orientConstraint(chestCtrl.C, spineJoints[-1], mo=1) # -2
+        pm.orientConstraint(chestCtrl.C, spineJoints[-1], mo=1)  # -2
 
         pm.hide(spineIk)
         pm.parent(spineIk, self.rigmodule.partsNoTransGrp)
@@ -103,14 +108,12 @@ class Spine():
         # clean locators
         pm.delete(bodyLocator, chestLocator, pelvisLocator)
 
-
     def getModuleDict(self):
         return {'module': self.rigmodule, 'bodyCtrl': self.bodyCtrl}
 
-
     def makeControlLocatorReferencePosition(self, spineJoints):
         numJoints = len(spineJoints)
-        midJoint = numJoints/2
+        midJoint = numJoints / 2
         bodyLocator = pm.spaceLocator(n='body_LOC')
         chestLocator = pm.spaceLocator(n='chest_LOC')
         pelvisLocator = pm.spaceLocator(n='pelvis_LOC')

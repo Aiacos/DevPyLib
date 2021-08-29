@@ -1,26 +1,27 @@
 __author__ = 'Lorenzo Argentieri'
 
-import sys
-from sys import platform as _platform
-import os.path
 import os
-import pathlib
-#import pip
+import os.path
+import sys
+# import pip
 import time
-from PySide2 import QtCore, QtWidgets, QtGui
 import urllib
+from sys import platform as _platform
+
+import pathlib
+from PySide2 import QtCore, QtWidgets
 
 
 # import installCmd
 def buildInstallCmd(libDir, libName, port):
     installCommand = \
-"""
-# Install mayaLib
-import sys
-import maya.cmds as cmds
-import maya.utils
-
-libDir = '""" + libDir + """'
+        """
+        # Install mayaLib
+        import sys
+        import maya.cmds as cmds
+        import maya.utils
+        
+        libDir = '""" + libDir + """'
 port = '""" + str(port) + """'
 libName = '""" + libName + """'
 
@@ -103,7 +104,7 @@ class InstallLibrary(QtCore.QObject):
         self.installInMayaUserSetup()
 
         # install dependency pkg
-        #pip.main(['install', 'numpy'])
+        # pip.main(['install', 'numpy'])
 
     def uninstall(self):
         userSetup_path = self.mayaScriptPath

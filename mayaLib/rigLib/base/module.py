@@ -3,8 +3,10 @@ module for making top rig structure and rig module
 """
 
 import pymel.core as pm
+
 from mayaLib.rigLib.utils import common, control
 from mayaLib.rigLib.utils import util
+
 
 class Base():
     """
@@ -30,7 +32,7 @@ class Base():
         self.topGrp = pm.group(n=characterName + '_rig_GRP', em=1)
         self.rigCtrlLoc = pm.spaceLocator(n='rigCtrl_LOC')
         pm.rotate(self.rigCtrlLoc, [0, -90, 0], r=True, ws=True)
-        #common.freezeTranform(self.rigCtrlLoc)
+        # common.freezeTranform(self.rigCtrlLoc)
         pm.delete(pm.pointConstraint(mainCtrlAttachObj, self.rigCtrlLoc))
 
         characterNameAt = 'characterName'
@@ -134,13 +136,13 @@ class Base():
         common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[0] + '.v', [1, 0, 0])
         common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[1] + '.v', [0, 1, 0])
         common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[2] + '.v', [0, 0, 1])
-        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v', [0, 1, 1])
+        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v',
+                            [0, 1, 1])
 
         # create display control
         self.displayCtrl = self.createDisplay(mainCtrlAttachObj, 1)
         self.ikfkCtrl = self.createIKFK(mainCtrlAttachObj, 1)
         pm.delete(self.rigCtrlLoc)
-
 
     def getScaleLocator(self):
         return self.scaleLocator
@@ -177,7 +179,7 @@ class Base():
             shape='display',
             doOffset=True,
             doModify=True,
-            objBBox = mainCtrlAttachObj
+            objBBox=mainCtrlAttachObj
         )
 
         if pm.objExists(mainCtrlAttachObj):
@@ -213,6 +215,7 @@ class Base():
 
         return ikfkCtrl
 
+
 class Module():
     """
     class for building module rig structure
@@ -241,7 +244,7 @@ class Module():
 
         pm.setAttr(self.partsNoTransGrp + '.it', 0, l=1)
 
-        if(pm.objExists('display_CTRL')):
+        if (pm.objExists('display_CTRL')):
             displayCtrl = pm.ls('display_CTRL')[0]
 
             levelGrp = [self.controlsGrp, self.secControlsGrp]
@@ -249,7 +252,6 @@ class Module():
             pm.setAttr(displayCtrl + '.' + prefix, cb=1)
             common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[0] + '.v', [0, 1, 1])
             common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[1] + '.v', [0, 0, 1])
-
 
         # parent module
         if baseObj:

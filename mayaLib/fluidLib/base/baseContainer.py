@@ -1,7 +1,8 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
+
 
 class FluidContainer():
     def __init__(self):

@@ -1,20 +1,19 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.base.module import Base
-from mayaLib.rigLib.utils import skin
-from mayaLib.rigLib.utils import util
-from mayaLib.rigLib.utils import joint
 
-from mayaLib.rigLib.base import spine
-from mayaLib.rigLib.base import neck
 from mayaLib.rigLib.base import ikChain
 from mayaLib.rigLib.base import limb
-from mayaLib.rigLib.utils import ikfkSwitch
+from mayaLib.rigLib.base import neck
+from mayaLib.rigLib.base import spine
+from mayaLib.rigLib.base.module import Base
 from mayaLib.rigLib.utils import ctrlShape
-from mayaLib.rigLib.utils import stretchyIKChain
-
+from mayaLib.rigLib.utils import ikfkSwitch
+from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import proxyGeo
+from mayaLib.rigLib.utils import skin
+from mayaLib.rigLib.utils import stretchyIKChain
+from mayaLib.rigLib.utils import util
 
 
 class BaseRig(object):
@@ -167,7 +166,8 @@ class BaseRig(object):
 
         return tailRig
 
-    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint='', useMetacarpalJoint=False):
+    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint='',
+                 useMetacarpalJoint=False):
         """
         Make general Limb
         :param spineRig: instance
@@ -179,7 +179,8 @@ class BaseRig(object):
         :param useMetacarpalJoint: bool
         :return: instance, limbRig
         """
-        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt, scapulaJnt=scapulaJoint,
+        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt,
+                            scapulaJnt=scapulaJoint,
                             baseRig=self.baseModule, useMetacarpalJoint=useMetacarpalJoint)
 
         if clavicleJnt:
@@ -198,6 +199,7 @@ class HumanoidRig(BaseRig):
     """
     Rig
     """
+
     def __init__(self, characterName='new',
                  model_filePath='', buildScene_filePath='',
                  sceneScale=1,
@@ -242,7 +244,8 @@ class HumanoidRig(BaseRig):
 
         self.sceneScale = sceneScale
 
-        super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt, loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
+        super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt,
+                                          loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
 
     def rig(self):
         print('-- RIG HUMANOID --')
@@ -260,46 +263,58 @@ class HumanoidRig(BaseRig):
 
         if self.doSpine and self.doNeck:
             pm.parentConstraint(spineJoints[-1], self.neckRig.getModuleDict()['baseAttachGrp'], mo=1)
-            pm.parentConstraint(self.spineRig.getModuleDict()['bodyCtrl'].C, self.neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
+            pm.parentConstraint(self.spineRig.getModuleDict()['bodyCtrl'].C,
+                                self.neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
 
         if self.doTail:
             tailJoints = pm.ls('tail*_JNT')
             pelvisJnt = pm.ls(self.rootJnt)[0]
             self.tailRig = self.makeTail(pelvisJnt, tailJoints, self.doDynamicTail, self.sceneScale)
 
-
         # left arm
         lClavicleJoint = pm.ls('l_clavicleJA_JNT')[0]
         lScapulaJoint = ''
         lArmJoints = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
-        lTopFngJoints = pm.ls('l_fngThumbJA_JNT', 'l_fngIndexJA_JNT', 'l_fngMiddleJA_JNT', 'l_fngRingJA_JNT', 'l_fngPinkyJA_JNT')
-        self.lArmRig = self.makeLimb(self.spineRig, lClavicleJoint, lScapulaJoint, lArmJoints, lTopFngJoints, spineJoints[-1])
+        lTopFngJoints = pm.ls('l_fngThumbJA_JNT', 'l_fngIndexJA_JNT', 'l_fngMiddleJA_JNT', 'l_fngRingJA_JNT',
+                              'l_fngPinkyJA_JNT')
+        self.lArmRig = self.makeLimb(self.spineRig, lClavicleJoint, lScapulaJoint, lArmJoints, lTopFngJoints,
+                                     spineJoints[-1])
 
         # right arm
         rClavicleJoint = pm.ls('r_clavicleJA_JNT')[0]
         rScapulaJoint = ''
         rArmJoints = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
-        rTopFngJoints = pm.ls('r_fngThumbJA_JNT', 'r_fngIndexJA_JNT', 'r_fngMiddleJA_JNT', 'r_fngRingJA_JNT', 'r_fngPinkyJA_JNT')
-        self.rArmRig = self.makeLimb(self.spineRig, rClavicleJoint, rScapulaJoint, rArmJoints, rTopFngJoints, spineJoints[-1])
+        rTopFngJoints = pm.ls('r_fngThumbJA_JNT', 'r_fngIndexJA_JNT', 'r_fngMiddleJA_JNT', 'r_fngRingJA_JNT',
+                              'r_fngPinkyJA_JNT')
+        self.rArmRig = self.makeLimb(self.spineRig, rClavicleJoint, rScapulaJoint, rArmJoints, rTopFngJoints,
+                                     spineJoints[-1])
 
         # left leg
         lLegJoints = pm.ls('l_legJ?_JNT', 'l_footJA_JNT')
-        lTopToeJoints = pm.ls('l_toeThumbJA_JNT', 'l_toeIndexJA_JNT', 'l_toeMiddleJA_JNT', 'l_toeRingJA_JNT', 'l_toePinkyJA_JNT')
+        lTopToeJoints = pm.ls('l_toeThumbJA_JNT', 'l_toeIndexJA_JNT', 'l_toeMiddleJA_JNT', 'l_toeRingJA_JNT',
+                              'l_toePinkyJA_JNT')
         self.lLegRig = self.makeLimb(self.spineRig, '', '', lLegJoints, lTopToeJoints, spineJoints[0])
 
         # right leg
         rLegJoints = pm.ls('r_legJ?_JNT', 'r_footJA_JNT')
-        rTopToeJoints = pm.ls('r_toeThumbJA_JNT', 'r_toeIndexJA_JNT', 'r_toeMiddleJA_JNT', 'r_toeRingJA_JNT', 'r_toePinkyJA_JNT')
+        rTopToeJoints = pm.ls('r_toeThumbJA_JNT', 'r_toeIndexJA_JNT', 'r_toeMiddleJA_JNT', 'r_toeRingJA_JNT',
+                              'r_toePinkyJA_JNT')
         self.rLegRig = self.makeLimb(self.spineRig, '', '', rLegJoints, rTopToeJoints, spineJoints[0])
 
         if self.doStretchy:
-            stretchyIKChain.StretchyIKChain(self.lArmRig.getMainLimbIK(), self.lArmRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.rArmRig.getMainLimbIK(), self.rArmRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.lLegRig.getMainLimbIK(), self.lLegRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.rLegRig.getMainLimbIK(), self.rLegRig.getMainIKControl().getControl(), doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.lArmRig.getMainLimbIK(), self.lArmRig.getMainIKControl().getControl(),
+                                            doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.rArmRig.getMainLimbIK(), self.rArmRig.getMainIKControl().getControl(),
+                                            doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.lLegRig.getMainLimbIK(), self.lLegRig.getMainIKControl().getControl(),
+                                            doFlexyplane=self.doFlexyplane)
+            stretchyIKChain.StretchyIKChain(self.rLegRig.getMainLimbIK(), self.rLegRig.getMainIKControl().getControl(),
+                                            doFlexyplane=self.doFlexyplane)
 
         # install IKFK Switch
-        ikfkSwitch.installIKFK([self.lArmRig.getMainLimbIK(), self.rArmRig.getMainLimbIK(), self.lLegRig.getMainLimbIK(), self.rLegRig.getMainLimbIK()])
+        ikfkSwitch.installIKFK(
+            [self.lArmRig.getMainLimbIK(), self.rArmRig.getMainLimbIK(), self.lLegRig.getMainLimbIK(),
+             self.rLegRig.getMainLimbIK()])
 
 
 if __name__ == "__main__":

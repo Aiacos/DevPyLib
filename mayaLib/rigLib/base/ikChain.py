@@ -3,14 +3,15 @@ ikChain @ rig
 """
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import name, control
+
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.utils import dynamic
 from mayaLib.rigLib.utils import deform
+from mayaLib.rigLib.utils import dynamic
+from mayaLib.rigLib.utils import name, control
 
 
 class IKChain():
-    def __init__(self, 
+    def __init__(self,
                  chainJoints,
                  prefix='tail',
                  rigScale=1.0,
@@ -30,7 +31,7 @@ class IKChain():
         :return: dictionary with rig module objects
         """
         # :param chainCurve: str, name of chain cubic curve
-    
+
         # make rig module
         self.rigmodule = module.Module(prefix=prefix, baseObj=baseRig)
 
@@ -38,14 +39,15 @@ class IKChain():
         collisionPoint = int(len(chainJoints))
 
         # make IK handle
-        chainIk, effector, chainCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=chainJoints[0], ee=chainJoints[-1], # -2
+        chainIk, effector, chainCurve = pm.ikHandle(n=prefix + '_IKH', sol='ikSplineSolver', sj=chainJoints[0],
+                                                    ee=chainJoints[-1],  # -2
                                                     createCurve=True, numSpans=collisionPoint)
 
         # rename curve
-        pm.rename(chainCurve, prefix+'_CRV')
+        pm.rename(chainCurve, prefix + '_CRV')
 
         # create ctrlCurve
-        ctrlCurve = pm.duplicate(chainCurve, n=prefix+'Ctrl_CRV')[0]
+        ctrlCurve = pm.duplicate(chainCurve, n=prefix + 'Ctrl_CRV')[0]
 
         # make chain curve clusters
         chainCurveCVs = pm.ls(ctrlCurve + '.cv[*]', fl=1)
@@ -70,7 +72,7 @@ class IKChain():
         # make controls
         chainControls = []
         controlScaleIncrement = (1.0 - smallestScalePercent) / numChainCVs
-        mainCtrlScaleFactor = 1.0 # 5.0
+        mainCtrlScaleFactor = 1.0  # 5.0
 
         for i in range(numChainCVs):
             ctrlScale = rigScale * mainCtrlScaleFactor * (1.0 - (i * controlScaleIncrement))
@@ -108,12 +110,13 @@ class IKChain():
         if doDynamic:
             self.dynCurve = self.makeDynamic(prefix, baseRig, self.rigmodule, chainControls, chainCurveClusters)
 
-            deform.blendShapeDeformer(self.dynCurve.getInputCurve(), [self.controlCurve], nodeName=prefix+'BlendShape', frontOfChain=True)
-            deform.blendShapeDeformer(self.chainCurve, [self.dynCurve.getOutputCurve()], nodeName=prefix+'BlendShape', frontOfChain=True)
+            deform.blendShapeDeformer(self.dynCurve.getInputCurve(), [self.controlCurve],
+                                      nodeName=prefix + 'BlendShape', frontOfChain=True)
+            deform.blendShapeDeformer(self.chainCurve, [self.dynCurve.getOutputCurve()], nodeName=prefix + 'BlendShape',
+                                      frontOfChain=True)
         else:
-            deform.blendShapeDeformer(self.chainCurve, [self.controlCurve], nodeName=prefix+'BlendShape', frontOfChain=True)
-
-
+            deform.blendShapeDeformer(self.chainCurve, [self.controlCurve], nodeName=prefix + 'BlendShape',
+                                      frontOfChain=True)
 
     def getModuleDict(self):
         return {'module': self.rigmodule, 'baseAttachGrp': self.baseAttachGrp}
@@ -129,4 +132,4 @@ class IKChain():
         # reparent
         pm.parent(dynCurve.getSystemGrp(), basemodule.partsNoTransGrp)
 
-	return dynCurve
+        return dynCurve

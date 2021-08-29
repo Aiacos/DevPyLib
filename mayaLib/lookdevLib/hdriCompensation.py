@@ -1,7 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.shaderLib.utils import file
 
 
 class Compensation():
@@ -47,4 +46,3 @@ if __name__ == "__main__":
 
     sel2 = pm.ls(type='PxrDomeLight')
     print(sel2)
-

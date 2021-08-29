@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 from pymel import core as pm
+
 from mayaLib.shaderLib.base.shader_base import Shader_base
 from mayaLib.shaderLib.utils import config
 
@@ -22,7 +23,7 @@ class PxrSurface_shaderBase(Shader_base):
         self.shader = Shader_base.get_shader(self)
 
         # init Specular model type
-        self.shader.specularModelType.set(1) # set GGX reflection
+        self.shader.specularModelType.set(1)  # set GGX reflection
         if physicalSpecular:
             self.shader.specularFresnelMode.set(1)
         else:
@@ -39,14 +40,13 @@ class PxrSurface_shaderBase(Shader_base):
             self.pxrDisplace = self.makePxrDisplace(shader_name, file_node_dict[config.displace])
             pm.connectAttr(self.pxrDisplace.outColor, self.shading_group.displacementShader)
 
-
     def makePxrDisplace(self, shader_name, pxrtexture_node):
-        pxrDisplace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name+'Displace')
-        pxrDispTransform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name+'DispTransform')
+        pxrDisplace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name + 'Displace')
+        pxrDispTransform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name + 'DispTransform')
 
         pm.connectAttr(pxrDispTransform.resultF, pxrDisplace.dispScalar)
         pm.connectAttr(pxrtexture_node[config.displace].resultA, pxrDispTransform.dispScalar)
-        
+
         pxrDisplace.dispAmount.set(0.1)
 
         return pxrDisplace
@@ -69,9 +69,11 @@ class PxrSurface_shaderBase(Shader_base):
             pass
         try:
             if physicalSpecular:
-                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularExtinctionCoeff')
+                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic],
+                                          slot_name='specularExtinctionCoeff')
             else:
-                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic], slot_name='specularFaceColor')
+                connect_specularFaceColor(pxrtexture_node[config.specularColor], pxrtexture_node[config.metallic],
+                                          slot_name='specularFaceColor')
         except:
             pass
         try:
@@ -97,7 +99,7 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_pxrnormal(self, pxrtexture_node, slot_name, directx_normal=True, adjustNormal=True):
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
 
-        #self.pxrnormalmap_node.invertBump.set(directx_normal) # OLD
+        # self.pxrnormalmap_node.invertBump.set(directx_normal) # OLD
 
         if directx_normal:
             self.pxrnormalmap_node.orientation.set(1)
@@ -116,7 +118,7 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_physical_specular(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # blend
         self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
-        self.pxrblend.operation.set(18)# 18 multiply
+        self.pxrblend.operation.set(18)  # 18 multiply
 
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
         pm.connectAttr(pxrtexture_metallic_node.resultRGB, self.pxrblend.bottomRGB)
@@ -126,7 +128,7 @@ class PxrSurface_shaderBase(Shader_base):
     def connect_artistic_specular(self, pxrtexture_node, pxrtexture_metallic_node, slot_name):
         # blend
         self.pxrblend = pm.shadingNode("PxrBlend", asTexture=True)
-        self.pxrblend.operation.set(19)# 19 normal
+        self.pxrblend.operation.set(19)  # 19 normal
 
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrblend.topRGB)
         pm.connectAttr(pxrtexture_metallic_node.resultR, self.pxrblend.topA)

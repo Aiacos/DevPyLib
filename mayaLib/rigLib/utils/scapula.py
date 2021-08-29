@@ -1,7 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import util
+
 from mayaLib.rigLib.utils import name
 
 
@@ -20,11 +20,11 @@ class Scapula():
         scapula_jnt = pm.listRelatives(scapulaShoulder_jnt, type='joint')[0]
 
         # create ik
-        ikhandle = pm.ikHandle(n=side+'scapula_IKH', sj=scapulaShoulder_jnt, ee=scapula_jnt)
+        ikhandle = pm.ikHandle(n=side + 'scapula_IKH', sj=scapulaShoulder_jnt, ee=scapula_jnt)
         effector = pm.listConnections(ikhandle[0].endEffector, source=True)
 
         # group ik
-        grpName = name.removeSuffix(side+'scapula_GRP')
+        grpName = name.removeSuffix(side + 'scapula_GRP')
         self.scapulaGrp = pm.group(ikhandle, n=grpName)
 
         # parent constraint group
@@ -45,4 +45,3 @@ if __name__ == "__main__":
     # classeProva = IKFKSwitch('ikHandle1', forearmMidJnt=True)
     # classeProva.toIK()
     # classeProva.toFK()
-

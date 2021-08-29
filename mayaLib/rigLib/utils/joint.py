@@ -5,11 +5,14 @@ Various joint utility functions
 """
 
 import math
+
 import pymel.core as pm
+
+from mayaLib.rigLib.utils import attributes
+from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
-from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import attributes
+
 
 def jointDirection(joint):
     """
@@ -23,12 +26,13 @@ def jointDirection(joint):
     maxsign = 0
     for tv in t:
         if abs(tv) > max:
-              max = abs(tv)
-              if tv < 0.0:
-                  maxsign = -1
-              else:
-                  maxsign = 1
+            max = abs(tv)
+            if tv < 0.0:
+                maxsign = -1
+            else:
+                maxsign = 1
     return maxsign
+
 
 def listHierarchy(topJoint, withEndJoints=True):
     """
@@ -70,6 +74,7 @@ def savePose(topJoint, poseName):
         jointOrient = jnt.jointOrient.get()
         attributes.addVectorAttribute(jnt, poseName + 'JointOrient', jointOrient)
 
+
 def loadPose(topJoint, poseName):
     jointList = pm.ls(listHierarchy(topJoint))
     for jnt in jointList:
@@ -104,21 +109,26 @@ def loadPose(topJoint, poseName):
             jointOrientPose = attribute.get()
             jnt.jointOrient.set(jointOrientPose)
 
+
 def saveProjectionPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'projectionPose')
+
 
 def saveTPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'TPose')
 
+
 def loadProjectionPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'projectionPose')
 
+
 def loadTPose(topJnt='rootJA_JNT'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'TPose')
+
 
 def setJointParallelToGrid(p1, p2):
     p1x, p1y, p1z = pm.xform(p1, query=True, translation=True, worldSpace=True)
@@ -130,36 +140,38 @@ def setJointParallelToGrid(p1, p2):
 
     return math.degrees(angle)
 
+
 def setArmParallelToGrid():
     leftClavicleJntList = pm.ls('l_clavicleJA_JNT', 'l_armJA_JNT')
     for i, jnt in enumerate(leftClavicleJntList[:-1]):
-        angle = setJointParallelToGrid(leftClavicleJntList[i], leftClavicleJntList[i+1])
+        angle = setJointParallelToGrid(leftClavicleJntList[i], leftClavicleJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
     rightClavicleJntList = pm.ls('r_clavicleJA_JNT', 'r_armJA_JNT')
     for i, jnt in enumerate(rightClavicleJntList[:-1]):
-        angle = setJointParallelToGrid(rightClavicleJntList[i], rightClavicleJntList[i+1])
+        angle = setJointParallelToGrid(rightClavicleJntList[i], rightClavicleJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
     leftArmJntList = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
     for i, jnt in enumerate(leftArmJntList[:-1]):
-        angle = setJointParallelToGrid(leftArmJntList[i], leftArmJntList[i+1])
+        angle = setJointParallelToGrid(leftArmJntList[i], leftArmJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
     rightArmJntList = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
     for i, jnt in enumerate(rightArmJntList[:-1]):
-        angle = setJointParallelToGrid(rightArmJntList[i], rightArmJntList[i+1])
+        angle = setJointParallelToGrid(rightArmJntList[i], rightArmJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
     leftHandJntList = pm.ls('l_handJA_JNT', 'l_fngMiddleJA_JNT')
     for i, jnt in enumerate(leftHandJntList[:-1]):
-        angle = setJointParallelToGrid(leftHandJntList[i], leftHandJntList[i+1])
+        angle = setJointParallelToGrid(leftHandJntList[i], leftHandJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
 
     rightHandJntList = pm.ls('r_handJA_JNT', 'r_fngMiddleJA_JNT')
     for i, jnt in enumerate(rightHandJntList[:-1]):
-        angle = setJointParallelToGrid(rightHandJntList[i], rightHandJntList[i+1])
+        angle = setJointParallelToGrid(rightHandJntList[i], rightHandJntList[i + 1])
         pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
 
 class TwistJoint():
     """
@@ -168,6 +180,7 @@ class TwistJoint():
     :param n_twist_joint:
     :return:
     """
+
     def __init__(self, parentJoint, parentGrp='rig_GRP', nTwistJoint=3, rotAxis='X'):
         if not pm.objExists(parentGrp):
             pm.group(n=parentGrp, em=True)
@@ -243,8 +256,8 @@ class TwistJoint():
 
             # connect to mulDoubleLinear node
             multiplyNode = pm.shadingNode('multDoubleLinear', asUtility=True)
-            pm.connectAttr(startJnt.name()+'.rotate'+rotAxis, multiplyNode.input1, f=True)
-            pm.connectAttr(multiplyNode.output, new_joint.name()+'.rotate'+rotAxis)
+            pm.connectAttr(startJnt.name() + '.rotate' + rotAxis, multiplyNode.input1, f=True)
+            pm.connectAttr(multiplyNode.output, new_joint.name() + '.rotate' + rotAxis)
             weight = (1.0 / (nTwistJoint + 1.0)) * (i + 1)
             multiplyNode.input2.set(weight)
 

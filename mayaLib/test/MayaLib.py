@@ -1,9 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
-
 import sys
-import maya.cmds as cmds
+
 import maya.api.OpenMaya as om
+
 import mayaLib.guiLib.mainMenu as mm
 
 

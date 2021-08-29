@@ -1,15 +1,14 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from maya import mel
 
-from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
 
 
 def createFollicle(geo, u, v, prefix):
-    follicleShape = pm.createNode('follicle', n=prefix+'_FLCShape')
+    follicleShape = pm.createNode('follicle', n=prefix + '_FLCShape')
     geoShape = geo.getShape()
     follicle = follicleShape.getParent()
     follicle.rename(prefix + '_FLC')
@@ -25,12 +24,13 @@ def createFollicle(geo, u, v, prefix):
 
     return follicle
 
+
 def findClosestUVCoordinate(geo, obj):
     closestPointOnMesh = pm.createNode("closestPointOnMesh")
     geoShape = geo.getShape()
     pm.connectAttr(geoShape.worldMesh, closestPointOnMesh.inMesh)
     pm.connectAttr(geoShape.worldMatrix, closestPointOnMesh.inputMatrix)
-    loc = pm.spaceLocator(n=name.removeSuffix(geo.name())+'_LOC')
+    loc = pm.spaceLocator(n=name.removeSuffix(geo.name()) + '_LOC')
     pm.matchTransform(loc, obj)
     pm.connectAttr(loc.translate, closestPointOnMesh.inPosition)
 
@@ -40,6 +40,7 @@ def findClosestUVCoordinate(geo, obj):
     pm.delete(closestPointOnMesh, loc)
 
     return u, v
+
 
 def makeControlFollowSkin(geo, ctrl, drivenObj):
     geo = pm.ls(geo)[0]
@@ -59,17 +60,17 @@ def makeControlFollowSkin(geo, ctrl, drivenObj):
     pm.parent(followGrp, ctrl.getParent())
     pm.parent(ctrl, compensateGrp)
 
-    #pm.pointConstraint(follicle, followGrp, mo=True)
+    # pm.pointConstraint(follicle, followGrp, mo=True)
     util.matrixConstrain(follicle, followGrp, rotate=False)
 
-    multDivideNode = pm.createNode('multiplyDivide', n=prefix+'CompensateNode')
+    multDivideNode = pm.createNode('multiplyDivide', n=prefix + 'CompensateNode')
     pm.connectAttr(ctrl.translate, multDivideNode.input1)
     pm.connectAttr(multDivideNode.output, compensateGrp.translate)
     multDivideNode.input2X.set(-1)
     multDivideNode.input2Y.set(-1)
     multDivideNode.input2Z.set(-1)
 
-    ctrl.translate.set(0,0,0)
+    ctrl.translate.set(0, 0, 0)
     pm.connectAttr(ctrl.translate, drivenObj.translate, f=True)
 
     return ctrl, follicle

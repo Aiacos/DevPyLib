@@ -32,6 +32,7 @@ def laplaceDistribution(x, beta=0.5, mu=0.5):
     y = (math.e * core) / (2 * beta)
     return y
 
+
 def laplaceDistribution2(x, beta=0.5, mu=5):
     """
     Laplace distribution Function
@@ -41,6 +42,6 @@ def laplaceDistribution2(x, beta=0.5, mu=5):
     :return: float
     """
     x = x * 10
-    core = math.e ** (-1 * abs(x - mu)/beta)
+    core = math.e ** (-1 * abs(x - mu) / beta)
     y = core / (2 * beta)
     return y

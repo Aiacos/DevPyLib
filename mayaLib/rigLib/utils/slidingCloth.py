@@ -1,10 +1,12 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import skin
+
+from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.utils import name
-from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import skin
+
 
 class SlidingCloth():
     def __init__(self, mainSkinGeo, mainClothGeo, proxySkinGeo='', proxyClothGeo='', rigModelGrp=None):
@@ -81,7 +83,7 @@ class SlidingCloth():
         proxyName = name.removeSuffix(geo.name()) + 'Proxy_GEO'
         proxyGeo = pm.duplicate(geo, n=proxyName)[0]
         pm.polyReduce(proxyGeo, p=percentage,
-                      ver=1,trm=0, shp=0, keepBorder=1, keepMapBorder=1, keepColorBorder=1, keepFaceGroupBorder=1,
+                      ver=1, trm=0, shp=0, keepBorder=1, keepMapBorder=1, keepColorBorder=1, keepFaceGroupBorder=1,
                       keepHardEdge=1, keepCreaseEdge=1, keepBorderWeight=0.5, keepMapBorderWeight=0.5,
                       keepColorBorderWeight=0.5, keepFaceGroupBorderWeight=0.5, keepHardEdgeWeight=0.5,
                       keepCreaseEdgeWeight=0.5, useVirtualSymmetry=0, symmetryTolerance=0.01, sx=0, sy=1, sz=0, sw=0,

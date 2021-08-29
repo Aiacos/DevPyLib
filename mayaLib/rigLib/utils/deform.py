@@ -4,7 +4,7 @@ import pymel.core as pm
 from maya import mel
 
 
-def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1,], frontOfChain=False):
+def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1, ], frontOfChain=False):
     """
     Apply BlendShape on selected mesh or curve
     :param base: str
@@ -23,6 +23,7 @@ def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1,], frontO
 
     return blendshapeNode
 
+
 def wrapDeformer(wrappedObjs, wrapperObj):
     """
     Apply Wrap Deformer on selected mesh
@@ -32,9 +33,10 @@ def wrapDeformer(wrappedObjs, wrapperObj):
     """
     pm.select(wrappedObjs)
     pm.select(wrapperObj, add=1)
-    #deformerNode = pm.deformer(type='wrap')
+    # deformerNode = pm.deformer(type='wrap')
     deformerNode = mel.eval('doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }')
     return pm.ls(deformerNode)[0]
+
 
 def deltaMushDeformer(geo, smoothingIterations=10, smoothingStep=0.5):
     """
@@ -47,6 +49,7 @@ def deltaMushDeformer(geo, smoothingIterations=10, smoothingStep=0.5):
     deformerNode = pm.deltaMush(geo, smoothingIterations=smoothingIterations, smoothingStep=smoothingStep)[0]
     return deformerNode
 
+
 def shrinkWrapDeformer(wrappedObj, wrapperObj):
     """
     Apply ShrinkWrap Deformer on selected mesh
@@ -58,6 +61,7 @@ def shrinkWrapDeformer(wrappedObj, wrapperObj):
     pm.PyNode(wrapperObj).worldMesh[0] >> shrinkWrapNode.targetGeom
     shrinkWrapNode.closestIfNoIntersection.set(True)
     return shrinkWrapNode
+
 
 def cMuscleSystemDeformer(obj, relativeSticky=True):
     """
@@ -76,6 +80,7 @@ def cMuscleSystemDeformer(obj, relativeSticky=True):
 
     return deformerNode
 
+
 def cMuscleConnectMuscle(muscleMainObj, muscleObjList):
     """
     Connect Muscle to Mesh
@@ -87,11 +92,13 @@ def cMuscleConnectMuscle(muscleMainObj, muscleObjList):
     pm.select(muscleMainObj, add=1)
     mel.eval('cMuscle_connectToSystem();')
 
+
 def softModDeformer(vertex):
     deformerNode = pm.softMod(vertex)[0]
     deformerNode.falloffMasking.set(0)
 
     return deformerNode
+
 
 def meshCollision(deformer, deformed):
     """

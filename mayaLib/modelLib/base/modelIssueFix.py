@@ -1,80 +1,111 @@
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
+
 from mayaLib.rigLib.utils.util import unlock_and_unhide_all, getAllObjectUnderGroup
 
-    
+
 def mergeDuplicatedVertex(geo, threshold=0.001, only2Vertex=False):
     pm.polyMergeVertex(geo, am=only2Vertex, ch=False, distance=threshold)
-    
+
+
 def fixFaceWithMoreThan4Sides(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+
+
 def fixConcaveFaces(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+
+
 def fixFaceWithHoles(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+
 
 def fixNonPlanarFaces(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+
+
 def removeLaminaFaces(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
+
+
 def removeNonmanifoldGeometry(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
-    
-def removeEdgesWithZeroLenght(geo, query=True):    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
+
+
+def removeEdgesWithZeroLenght(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
+
+
 def removeFacesWithZeroGeometryArea(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+
+
 def removeFacesWithZeroMapArea(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
-    
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
+
+
 def removeInvalidComponents(geo, query=True):
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
     else:
-        return pm.ls(mel.eval('polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
+        return pm.ls(mel.eval(
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
 
 
 class ModelFix():
@@ -196,11 +227,11 @@ class ModelFix():
 
     def getInvalidComponents(self):
         return self.checkInvalidComponents
-    
+
+
 if __name__ == "__main__":
     geoList = getAllObjectUnderGroup(pm.ls(sl=True)[0])
     for geo in geoList:
         print(geo.name())
         modelFix = ModelFix(geo)
         modelFix.autoFix()
-    

@@ -28,9 +28,10 @@ https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7KFXBVDNNMW
 
 '''
 
-import math, sys, array, copy
+import copy
+import sys
+
 import maya.OpenMaya as OpenMaya
-import maya.OpenMayaAnim as OpenMayaAnim
 import maya.OpenMayaMPx as OpenMayaMPx
 from maya.mel import eval as meval
 
@@ -341,11 +342,11 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
                     # set the point position for indirect collision deformation
                     self.newpoints[i].x += inMeshNormal.x * bulgeExtendValue * (
-                                bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
+                            bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
                     self.newpoints[i].y += inMeshNormal.y * bulgeExtendValue * (
-                                bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
+                            bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
                     self.newpoints[i].z += inMeshNormal.z * bulgeExtendValue * (
-                                bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
+                            bulgeValue / 5) * envelopeValue * bulgeAmount * maxDeformation * weight
 
             outMeshFn.setPoints(self.newpoints, OpenMaya.MSpace.kWorld)
             dataBlock.setClean(self.outputGeom)

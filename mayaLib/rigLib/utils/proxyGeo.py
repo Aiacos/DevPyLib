@@ -1,15 +1,18 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.rigLib.utils import util, common
+
+from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import skin
 
+
 def invertSelection(shape, faces):
-    pm.select(shape+'.f[*]')
+    pm.select(shape + '.f[*]')
     pm.select(faces, deselect=True)
-    #mel.eval('InvertSelection;')
+    # mel.eval('InvertSelection;')
     return pm.ls(sl=True)
+
 
 class ProxyGeo():
     def __init__(self, geo, doParentCnst=True, threshold=0.45):
@@ -52,7 +55,6 @@ class ProxyGeo():
             # delete pivot locator
             pm.delete(pivotLocator)
 
-
     def duplicateSourceMesh(self, obj, joint):
         """
 
@@ -61,7 +63,7 @@ class ProxyGeo():
         :return: Mesh Shape for the Control
         """
         dupliObj = pm.duplicate(obj)
-        pm.rename(dupliObj, name.removeSuffix(joint)+'_PRX')
+        pm.rename(dupliObj, name.removeSuffix(joint) + '_PRX')
 
         return dupliObj[0], dupliObj[0].getShape()
 
@@ -84,8 +86,6 @@ class ProxyGeo():
 
     def getFastGeoGroup(self):
         return self.shapeGrp
-
-
 
 
 if __name__ == "__main__":

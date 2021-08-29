@@ -12,17 +12,12 @@
     
 """
 
-import maya.OpenMayaMPx as OpenMayaMPx
+import time
+
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
-import maya.mel
-import sys
 import maya.cmds as cmds
-import maya.OpenMayaUI as mui
-from PySide2 import QtCore, QtGui, QtWidgets
-from shiboken2 import wrapInstance
-import os
-import time
+import maya.mel
 
 
 # def showUI():
@@ -134,9 +129,6 @@ import time
 #
 #     def saveVertices(self):
 #         bSaveVertexSkinValues(str(self.verticesFileLine.text()), self.ignoreSoftSelectionWhenSaving.isChecked())
-
-
-
 
 
 def bFindSkinCluster(objectName, bSkinPath=OpenMaya.MDagPath()):

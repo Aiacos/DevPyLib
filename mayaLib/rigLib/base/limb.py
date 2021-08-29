@@ -5,16 +5,15 @@ leg @ rig
 import pymel.core as pm
 
 from mayaLib.rigLib.base import module
-
+from mayaLib.rigLib.utils import attributes
 from mayaLib.rigLib.utils import common, control
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import footRoll
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils import name
-from mayaLib.rigLib.utils import scapula
-from mayaLib.rigLib.utils import footRoll
 from mayaLib.rigLib.utils import poleVector
+from mayaLib.rigLib.utils import scapula
 from mayaLib.rigLib.utils import spaces
-from mayaLib.rigLib.utils import attributes
+from mayaLib.rigLib.utils import util
 
 
 class Limb():
@@ -62,10 +61,13 @@ class Limb():
         self.bodyAttachGrp = bodyAttachGrp
 
         if doFK:
-            fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst = self.makeFK(limbJoints, topFingerJoints, rigScale, rigmodule)
+            fkLimbCtrls, fkLimbCnst, fkHandsFeetCtrls, fkHandsFeetCnst = self.makeFK(limbJoints, topFingerJoints,
+                                                                                     rigScale, rigmodule)
 
         if doIK:
-            mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, handIKOrientCnst = self.makeIK(limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint)
+            mainIKCtrl, ikHandle, fngCtrls, fngIKs, ballIKs, handIKOrientCnst = self.makeIK(limbJoints, topFingerJoints,
+                                                                                            rigScale, rigmodule,
+                                                                                            useMetacarpalJoint)
             poleVectorCtrl, poleVectorLoc = self.makePoleVector(ikHandle, mainIKCtrl.getControl(), rigScale, rigmodule)
 
         if doFK and doIK:
@@ -126,13 +128,17 @@ class Limb():
         pm.addAttr(visCtrl, longName=prefix, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
 
         if part == 'Hand':
-            pm.addAttr(switchLoc, longName=prefix + part, attributeType='double', defaultValue=1, minValue=0, maxValue=1, k=True)
-            pm.addAttr(visCtrl, longName=prefix + part, attributeType='double', defaultValue=1, minValue=0, maxValue=1, k=True)
+            pm.addAttr(switchLoc, longName=prefix + part, attributeType='double', defaultValue=1, minValue=0,
+                       maxValue=1, k=True)
+            pm.addAttr(visCtrl, longName=prefix + part, attributeType='double', defaultValue=1, minValue=0, maxValue=1,
+                       k=True)
         else:
-            pm.addAttr(switchLoc, longName=prefix + part, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
-            pm.addAttr(visCtrl, longName=prefix + part, attributeType='double', defaultValue=0, minValue=0, maxValue=1, k=True)
+            pm.addAttr(switchLoc, longName=prefix + part, attributeType='double', defaultValue=0, minValue=0,
+                       maxValue=1, k=True)
+            pm.addAttr(visCtrl, longName=prefix + part, attributeType='double', defaultValue=0, minValue=0, maxValue=1,
+                       k=True)
 
-        ctrlAttr = prefix#.lower()
+        ctrlAttr = prefix  # .lower()
         partCtrlAttr = prefix + part
         pm.connectAttr(visCtrl + '.' + ctrlAttr, switchLoc + '.' + ctrlAttr)
         pm.connectAttr(visCtrl + '.' + partCtrlAttr, switchLoc + '.' + partCtrlAttr)
@@ -175,20 +181,21 @@ class Limb():
 
         if len(fkLimbCtrls) > 0 and len(fkHandsFeetCtrls) > 0 and len(fkHandsFeetCnst) > 0 and len(fkLimbCnst) > 0:
             fkFngCnst = pm.parentConstraint(mainIKCtrl.C, fkHandsFeetCtrls[0].getTop().getParent(), mo=True)
-            #ikFngCnst = pm.parentConstraint(fkLimbCtrls[-1].C, fngCtrls[0][0].getTop(), mo=True)
+            # ikFngCnst = pm.parentConstraint(fkLimbCtrls[-1].C, fngCtrls[0][0].getTop(), mo=True)
 
-            #ikFngCnst.target[1].targetWeight.set(0)
+            # ikFngCnst.target[1].targetWeight.set(0)
 
-            #pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
-            #pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
+            # pm.connectAttr(partReverseNode.outputX, fkFngCnst.target[0].targetWeight, f=True)
+            # pm.connectAttr(switchLoc + '.' + partCtrlAttr, fkFngCnst.target[1].targetWeight, f=True)
 
-            #tmp
-            pm.connectAttr(reverseNode.outputX, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[1] + 'W1'), f=True)
-            pm.connectAttr(switchLoc + '.' + ctrlAttr, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[0] + 'W0'), f=True)
+            # tmp
+            pm.connectAttr(reverseNode.outputX, str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[1] + 'W1'),
+                           f=True)
+            pm.connectAttr(switchLoc + '.' + ctrlAttr,
+                           str(fkFngCnst.name()) + '.' + str(fkFngCnst.getTargetList()[0] + 'W0'), f=True)
 
-
-            #pm.connectAttr(partReverseNode.outputX, ikFngCnst.target[2].targetWeight, f=True)
-            #pm.connectAttr(switchLoc + '.' + partCtrlAttr, ikFngCnst.target[0].targetWeight, f=True)
+            # pm.connectAttr(partReverseNode.outputX, ikFngCnst.target[2].targetWeight, f=True)
+            # pm.connectAttr(switchLoc + '.' + partCtrlAttr, ikFngCnst.target[0].targetWeight, f=True)
 
     def makeSimpleScapula(self, prefix, limbJoints, scapulaJnt, rigScale, rigmodule):
         scapulaCtrl = control.Control(prefix=prefix + 'Scapula', translateTo=scapulaJnt, rotateTo=scapulaJnt,
@@ -271,7 +278,7 @@ class Limb():
             for jnt in fnjJntList:
                 prefix = name.removeSuffix(jnt)
 
-                parent = fingerFootFKOffsetGrp #limbCtrlInstanceList[-1].C
+                parent = fingerFootFKOffsetGrp  # limbCtrlInstanceList[-1].C
                 if len(fingerJointList) > 0:
                     parent = fingerJointList[-1].C
 
@@ -294,8 +301,9 @@ class Limb():
         poleVectorCtrl = control.Control(prefix=prefix + 'PV', translateTo=poleVectorLoc,
                                          scale=rigScale, parent=rigmodule.controlsGrp, shape='sphere')
 
-        #pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
-        spaces.spaces([self.bodyAttachGrp, autoElbowCtrl], ['body', 'control'], poleVectorCtrl.Off, poleVectorCtrl.getControl())
+        # pm.parentConstraint(self.bodyAttachGrp, poleVectorCtrl.Off, mo=1)
+        spaces.spaces([self.bodyAttachGrp, autoElbowCtrl], ['body', 'control'], poleVectorCtrl.Off,
+                      poleVectorCtrl.getControl())
         poleVectorCtrl.getControl().space.set(1)
 
         pm.parentConstraint(poleVectorCtrl.getControl(), poleVectorLoc)
@@ -313,7 +321,8 @@ class Limb():
 
         return poleVectorCtrl, poleVectorLoc
 
-    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True, lSide='l_'):
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True,
+               lSide='l_'):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
         :param limbJoints: list(str), Arm/leg joints
@@ -350,9 +359,10 @@ class Limb():
 
         midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList()) / 2.0)) - 1
         midFngJnt = footRoolInstance.getIkFingerList()[midFngIKIndex].getJointList()[0]
-        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt, parent=rigmodule.controlsGrp, shape='circleZ')
+        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt,
+                                   parent=rigmodule.controlsGrp, shape='circleZ')
 
-        #pm.parentConstraint(mainIKCtrl.C, ballCtrl.getTop(), mo=True)
+        # pm.parentConstraint(mainIKCtrl.C, ballCtrl.getTop(), mo=True)
 
         toeIkControls = []
         for topToeJnt in topFingerJoints:
@@ -377,19 +387,22 @@ class Limb():
         tippyToeGrp = footRollGrpList[2]
         frontRollGrp, backRollGrp, innerRollGrp, outerRollGrp = footRollGrpList[3:-1]
         if smartFootRoll and frontRollGrp and ballRollGrp and innerRollGrp and outerRollGrp:
-            rollAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'roll', defaultValue=0, keyable=True, minValue=-120, maxValue=120)
-            bendLimitAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'bendLimitAngle', defaultValue=45, keyable=False)
-            straightAngleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeStraightAngle', defaultValue=70, keyable=False)
+            rollAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'roll', defaultValue=0, keyable=True,
+                                                    minValue=-120, maxValue=120)
+            bendLimitAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'bendLimitAngle', defaultValue=45,
+                                                         keyable=False)
+            straightAngleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeStraightAngle',
+                                                             defaultValue=70, keyable=False)
 
-            heelClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix+'_heelRotClamp')
+            heelClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix + '_heelRotClamp')
             pm.connectAttr(rollAttr, heelClampNode.inputR)
             heelClampNode.minR.set(-90)
             pm.connectAttr(heelClampNode.outputR, backRollGrp.rotateX)
 
             ballClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix + '_zeroToBendClamp')
             pm.connectAttr(rollAttr, ballClampNode.inputR)
-            #heelClampNode.maxR.set(90)
-            #pm.connectAttr(ballClampNode.outputR, ballRollGrp.rotateX)
+            # heelClampNode.maxR.set(90)
+            # pm.connectAttr(ballClampNode.outputR, ballRollGrp.rotateX)
 
             bendToStraightClampNode = pm.shadingNode('clamp', asUtility=True, n=prefix + '_bendToStraightClamp')
             pm.connectAttr(bendLimitAttr, bendToStraightClampNode.minR)
@@ -431,7 +444,8 @@ class Limb():
             pm.connectAttr(ballRollMultDivNode.outputX, ballRollGrp.rotateX)
 
             # Tilt
-            tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True,
+                                                    minValue=-90, maxValue=90)
             if lSide in prefix:
                 common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
                 common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
@@ -440,19 +454,24 @@ class Limb():
                 common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, 90])
 
             # lean
-            leanAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'lean', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            leanAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'lean', defaultValue=0, keyable=True,
+                                                    minValue=-90, maxValue=90)
             pm.connectAttr(leanAttr, ballRollGrp.rotateZ)
 
             # toeSpin
-            toeSpinAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeSpin', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            toeSpinAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeSpin', defaultValue=0, keyable=True,
+                                                       minValue=-90, maxValue=90)
             pm.connectAttr(toeSpinAttr, tippyToeGrp.rotateY)
             tippyToeGrp.rotateOrder.set(2)
 
             # toeWiggle
-            toeWiggleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeWiggle', defaultValue=0, keyable=True, minValue=-90, maxValue=90)
+            toeWiggleAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'toeWiggle', defaultValue=0,
+                                                         keyable=True, minValue=-90, maxValue=90)
             pm.connectAttr(toeWiggleAttr, toeTapGrp.rotateX)
 
-        return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl], toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint
+        return mainIKCtrl, footRoolInstance.getLimbIK(), [[ballCtrl],
+                                                          toeIkControls], footRoolInstance.getIkFingerList(), footRoolInstance.getIkBallList(), handIKOrientContraint
+
 
 class Arm():
     def __init__(self,
@@ -498,7 +517,6 @@ class Arm():
         self.baseAttachGrp = baseAttachGrp
         self.bodyAttachGrp = bodyAttachGrp
 
-
         def makeFK(self, limbJoints, topFingerJoints, rigScale, rigmodule):
             """
             Do FK Arm/Leg, Metacarpal and Finger/Toe ctrl
@@ -530,7 +548,8 @@ class Arm():
                 limbCtrlConstraintList.append(orientCnst)
                 limbCtrlInstanceList.append(ctrl)
 
-    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True, lSide='l_'):
+    def makeIK(self, limbJoints, topFingerJoints, rigScale, rigmodule, useMetacarpalJoint=False, smartFootRoll=True,
+               lSide='l_'):
         """
         Do IK Arm/Leg, Metacarpal and Finger/Toe ctrl
         :param limbJoints: list(str), Arm/leg joints
@@ -565,9 +584,10 @@ class Arm():
 
         midFngIKIndex = int(round(len(footRoolInstance.getIkFingerList()) / 2.0)) - 1
         midFngJnt = footRoolInstance.getIkFingerList()[midFngIKIndex].getJointList()[0]
-        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt, parent=rigmodule.controlsGrp, shape='circleZ')
+        ballCtrl = control.Control(prefix=prefix + 'BallIK', translateTo=midFngJnt, rotateTo=midFngJnt,
+                                   parent=rigmodule.controlsGrp, shape='circleZ')
 
-        #pm.parentConstraint(mainIKCtrl.C, ballCtrl.getTop(), mo=True)
+        # pm.parentConstraint(mainIKCtrl.C, ballCtrl.getTop(), mo=True)
 
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
         pm.parentConstraint(footRollGrpList[1], ballCtrl.getOffsetGrp(), mo=True)

@@ -1,8 +1,10 @@
 __author__ = 'Lorenzo Argentieri'
 
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
+
 from mayaLib.rigLib.utils import util
+
 
 class DynamicCurve():
     def __init__(self, curve, prefix='new', baseRig=None):
@@ -16,7 +18,8 @@ class DynamicCurve():
             pm.parent(self.dynamicSystemGrp, baseRig.rigGrp)
 
         # dynamic Curve
-        self.follicleGrp, self.follicle, self.inputCrv, self.outputCrvGrp, self.outputCrv, self.hairSystem = self.makeCurveDynamic(curve, prefix)
+        self.follicleGrp, self.follicle, self.inputCrv, self.outputCrvGrp, self.outputCrv, self.hairSystem = self.makeCurveDynamic(
+            curve, prefix)
 
         # nucleus
         self.nucleus = pm.listConnections(self.hairSystem.getShape().currentState, destination=True)
@@ -26,7 +29,8 @@ class DynamicCurve():
             pass
 
         # regroup
-        self.systemGrp = pm.group(self.hairSystem, self.follicleGrp, self.outputCrvGrp, n=prefix + 'Dynamic_GRP', p=self.dynamicSystemGrp)
+        self.systemGrp = pm.group(self.hairSystem, self.follicleGrp, self.outputCrvGrp, n=prefix + 'Dynamic_GRP',
+                                  p=self.dynamicSystemGrp)
 
     def makeCurveDynamic(self, crv, name):
         crvInfo = []
@@ -57,12 +61,12 @@ class DynamicCurve():
 
         crvInfo.append(folicleGroup)
         crvInfo.append(follicleBuffer)
-        #crvInfo.append(shapeBuffer[0])
+        # crvInfo.append(shapeBuffer[0])
         crvInfo.append(inputCurveBuffer)
         crvInfo.append(outputCrvsGroup)
         crvInfo.append(outputCurveBuffer)
         crvInfo.append(hairSystemBuffer)
-        #crvInfo.append(hairSystemBuffer.getShape())
+        # crvInfo.append(hairSystemBuffer.getShape())
 
         return crvInfo
 

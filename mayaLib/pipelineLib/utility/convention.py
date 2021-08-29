@@ -1,9 +1,5 @@
 __author__ = 'Lorenzo Argentieri'
 
-import inspect
-import pymel.core as pm
-from mayaLib.pipelineLib.utility import type
-
 
 class Convention():
     def __init__(self, uppercase=True,
@@ -19,7 +15,6 @@ class Convention():
                  ikHandle='IKH',
                  control='CTRL'
                  ):
-
         # general
         self.separator = '_'
 
@@ -60,7 +55,6 @@ class Convention():
                                'joint': joint,
                                'ikHandle': ikHandle,
                                'control': control}
-
 
     def toLower(self, s):
         return s.lower()

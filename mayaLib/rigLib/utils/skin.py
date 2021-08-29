@@ -1,8 +1,10 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
-import pymel.core as pm
+
 import maya.mel as mel
+import pymel.core as pm
+
 from mayaLib.utility import bSkinSaver
 
 
@@ -106,7 +108,7 @@ def findRelatedSkinCluster(geo):
 
 
 def saveSkinWeights(characterName, geoList,
-                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/')+'rig/',
+                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/') + 'rig/',
                     skinWeightsDir='weights/skinCluster', swExt='.swt',
                     doDirectory=True):
     """
@@ -132,8 +134,9 @@ def saveSkinWeights(characterName, geoList,
         pm.select(obj)
         bSkinSaver.bSaveSkinValues(wtFile)
 
+
 def loadSkinWeights(characterName, geoList,
-                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/')+'rig/',
+                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/') + 'rig/',
                     skinWeightsDir='weights/skinCluster', swExt='.swt'):
     """
     load skin weights for character geometry objects
@@ -174,11 +177,14 @@ def loadSkinWeights(characterName, geoList,
         fullpathWtFile = os.path.join(wtDir, wtFile)
         bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
 
+
 def ngSkinToolInit(geo):
     pass
 
+
 def ngSkinToolRaplceLayer(geo, sourceLayer, destinationLayer):
     pass
+
 
 def ngSkinToolDeleteNode(geo):
     pass

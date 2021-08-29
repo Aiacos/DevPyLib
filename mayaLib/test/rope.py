@@ -244,7 +244,7 @@ def rp_cr():
 
     for i in range(0, nj):
         t = (pm.xform((ds + ".cv[" + str(i) + "]"),
-                            q=1, ws=1, t=1))
+                      q=1, ws=1, t=1))
         sj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=1, n=(s[0] + "_tw_" + str((i + 1)))))
         pm.setAttr((sj[i] + ".ro"),
                    3)
@@ -511,7 +511,6 @@ def rp_Twist():
 # > end
 
 
-
 def rp_grip():
     """..............................................................................................//"""
 
@@ -602,7 +601,7 @@ def rp_surface():
 
     su = pm.extrude(s[0], upn=0, dl=3, ch=bz, d=(x, y, z), n=(s[0] + "_surface"), et=0, rn=0, po=0)
     pm.move(((-1) * (x / 2)), ((-1) * (y / 2)), ((-1) * (z / 2)),
-                    su[0])
+            su[0])
     pm.makeIdentity(su[0], a=1, t=1)
     sj = pm.ls((s[0] + "_tw_*"),
                typ="joint")

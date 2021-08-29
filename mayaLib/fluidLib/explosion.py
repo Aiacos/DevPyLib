@@ -3,8 +3,9 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.baseFluid import BaseFluid
-from mayaLib.fluidLib.utility import mathFunction
 from mayaLib.fluidLib.utility import densityColor
+from mayaLib.fluidLib.utility import mathFunction
+
 
 class Explosion(BaseFluid):
     """
@@ -63,7 +64,6 @@ class Explosion(BaseFluid):
         self.fluidEmitter.turbulenceSpeed.set(0.25)
         self.fluidEmitter.detailTurbulence.set(1)
 
-
     def setDensity(self):
         self.fluidContainer.densityScale.set(0.75)
         self.fluidContainer.densityBuoyancy.set(2.5)
@@ -72,18 +72,17 @@ class Explosion(BaseFluid):
         self.fluidContainer.densityNoise.set(0.1)
         self.fluidContainer.densityGradientForce.set(35)
 
-
     def setVelocity(self):
         # self.fluidContainer.velocitySwirl.set(6) # al frame 1
         pm.setKeyframe(self.fluidContainer, attribute='velocitySwirl', time=1, value=6)
-        #self.fluidContainer.velocitySwirl.set(2.5) # al frame 50
+        # self.fluidContainer.velocitySwirl.set(2.5) # al frame 50
         pm.setKeyframe(self.fluidContainer, attribute='velocitySwirl', time=50, value=2.5)
         self.fluidContainer.velocityNoise.set(1)
 
     def setTurbolence(self):
-        #self.fluidContainer.turbulenceStrength.set(3.5) # al frame 1
+        # self.fluidContainer.turbulenceStrength.set(3.5) # al frame 1
         pm.setKeyframe(self.fluidContainer, attribute='turbulenceStrength', time=1, value=3.5)
-        #self.fluidContainer.turbulenceStrength.set(0.1) # al frame 6
+        # self.fluidContainer.turbulenceStrength.set(0.1) # al frame 6
         pm.setKeyframe(self.fluidContainer, attribute='turbulenceStrength', time=6, value=0.1)
         self.fluidContainer.turbulenceFrequency.set(0.5)
         self.fluidContainer.turbulenceSpeed.set(0.5)
@@ -91,16 +90,16 @@ class Explosion(BaseFluid):
     def setTemperature(self):
         self.fluidContainer.temperatureScale.set(2.5)
 
-        #self.fluidContainer.buoyancy.set(1) # frame 1
+        # self.fluidContainer.buoyancy.set(1) # frame 1
         pm.setKeyframe(self.fluidContainer, attribute='buoyancy', time=1, value=1)
-        #self.fluidContainer.buoyancy.set(125) #frame 10
+        # self.fluidContainer.buoyancy.set(125) #frame 10
         pm.setKeyframe(self.fluidContainer, attribute='buoyancy', time=10, value=125)
 
-        #self.fluidContainer.temperaturePressure.set(0)# frame 1
+        # self.fluidContainer.temperaturePressure.set(0)# frame 1
         pm.setKeyframe(self.fluidContainer, attribute='temperaturePressure', time=1, value=0)
-        #self.fluidContainer.temperaturePressure.set(6)# frame 3
+        # self.fluidContainer.temperaturePressure.set(6)# frame 3
         pm.setKeyframe(self.fluidContainer, attribute='temperaturePressure', time=3, value=6)
-        #self.fluidContainer.temperaturePressure.set(0)# temperaturePressure 6
+        # self.fluidContainer.temperaturePressure.set(0)# temperaturePressure 6
         pm.setKeyframe(self.fluidContainer, attribute='temperaturePressure', time=6, value=0)
         self.fluidContainer.temperaturePressureThreshold.set(0.5)
 
@@ -152,13 +151,13 @@ class Explosion(BaseFluid):
         self.fluidContainer.incandescenceInputBias.set(0.35)
 
         # Opacity
-        self.fluidContainer.opacityInput.set(5) # density
+        self.fluidContainer.opacityInput.set(5)  # density
         self.opacityGraph()
         self.fluidContainer.opacityInputBias.set(0.65)
 
     def opacityGraph(self, sampling=20):
-        step = 100/sampling
-        for i in [round(x * 0.01, 4) for x in range(0, 100+1, step)]:
+        step = 100 / sampling
+        for i in [round(x * 0.01, 4) for x in range(0, 100 + 1, step)]:
             y = mathFunction.repartFunction(i, l=15)
             self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
             self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)

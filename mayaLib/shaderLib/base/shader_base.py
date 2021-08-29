@@ -1,7 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.shaderLib.utils import file
 
 
 def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
@@ -115,4 +114,4 @@ class Shader_base():
 if __name__ == "__main__":
     pass
 
-#ToDo: gui for signle shader maker main passing geo name
+# ToDo: gui for signle shader maker main passing geo name

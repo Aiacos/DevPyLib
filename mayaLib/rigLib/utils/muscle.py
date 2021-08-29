@@ -1,7 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
+
 import pymel.core as pm
+
 from mayaLib.rigLib.utils import deform
 
 
@@ -60,7 +62,7 @@ class MuscleUtil():
             self.cMCUI_createMirrorPm(search='_L_', replace='_R_')
         else:
             pm.mel.eval('cMCUI_createMirror();')
-            
+
         if (pm.objExists(pm.ls('*TEMPPASTE*'))):
             pm.delete(pm.ls('*TEMPPASTE*'))
 
@@ -153,6 +155,3 @@ class MuscleUtil():
 
             else:
                 print('invalid startLoc or endLoc: ', startLocA, startLocB, endLocA, endLocB)
-
-
-

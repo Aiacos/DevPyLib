@@ -1,8 +1,9 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
-from mayaLib.shaderLib.utils import file
+
 from mayaLib.shaderLib.utils import config
+from mayaLib.shaderLib.utils import file
 
 
 class TextureFileNode():
@@ -69,18 +70,18 @@ class TextureFileNode():
 
         # alphaIsLuminance
         if (self.texture_recongition.channel == config.backlight
-            or self.texture_recongition.channel == config.specularWeight
-            or self.texture_recongition.channel == config.specularRoughness
-            or self.texture_recongition.channel == config.fresnel
-            or self.texture_recongition.channel == config.normal
-            or self.texture_recongition.channel == config.height):
+                or self.texture_recongition.channel == config.specularWeight
+                or self.texture_recongition.channel == config.specularRoughness
+                or self.texture_recongition.channel == config.fresnel
+                or self.texture_recongition.channel == config.normal
+                or self.texture_recongition.channel == config.height):
             file_node.alphaIsLuminance.set(True)
         else:
             file_node.alphaIsLuminance.set(False)
 
         # Gamma
         if (self.texture_recongition.channel == config.diffuse
-            or self.texture_recongition.channel == config.specularColor):
+                or self.texture_recongition.channel == config.specularColor):
             file_node.colorSpace.set('sRGB')
         else:
             file_node.colorSpace.set('Raw')
@@ -93,6 +94,7 @@ class TextureFileNode():
             self.connect_placement(self.place_node, file_node)
 
         return file_node
+
 
 class TexturePxrTexture():
     def __init__(self, path, filename):
@@ -134,12 +136,9 @@ class TexturePxrTexture():
 
         # Gamma
         if (self.texture_recongition.channel == config.diffuse
-            or self.texture_recongition.channel == config.specularColor):
+                or self.texture_recongition.channel == config.specularColor):
             pxrtexture_node.linearize.set(True)
         else:
             pxrtexture_node.linearize.set(False)
 
         return pxrtexture_node
-
-
-

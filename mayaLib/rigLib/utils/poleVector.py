@@ -55,12 +55,13 @@ class PoleVector():
         selJoints.append(newJoints[0])
         loc0 = pm.spaceLocator()
         loc1 = pm.spaceLocator()
-        constraint0 = pm.pointConstraint(selJoints[0],loc0)
-        constraint1 = pm.pointConstraint(selJoints[2],loc1)
-        def ctr_dist( objA, objB ):
+        constraint0 = pm.pointConstraint(selJoints[0], loc0)
+        constraint1 = pm.pointConstraint(selJoints[2], loc1)
+
+        def ctr_dist(objA, objB):
             Ax, Ay, Az = objA.getTranslation(space="world")
             Bx, By, Bz = objB.getTranslation(space="world")
-            return (  (Ax-Bx)**2 + (Ay-By)**2 + (Az-Bz)**2  )**0.5
+            return ((Ax - Bx) ** 2 + (Ay - By) ** 2 + (Az - Bz) ** 2) ** 0.5
 
         distance = ctr_dist(loc0, loc1)
         pm.delete(constraint0, constraint1, loc0, loc1)
@@ -70,7 +71,7 @@ class PoleVector():
         poleVector_locator_grp = self.createPV(ikHandle)
 
         # Calculate ikHandle lenght to set as pv -X axis
-        distance = int(self.getJointDistance(ikHandle)/2)
+        distance = int(self.getJointDistance(ikHandle) / 2)
         # Move the Locator Group in the -X axis (Object Space)
         pm.move(distance, 0, 0, poleVector_locator_grp, objectSpace=True, relative=True)
 
@@ -86,4 +87,3 @@ class PoleVector():
 
 if __name__ == "__main__":
     PoleVector()
-

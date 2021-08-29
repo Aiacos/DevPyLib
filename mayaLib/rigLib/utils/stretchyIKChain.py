@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
+
 from mayaLib.rigLib.utils import name, flexiplane
 from mayaLib.rigLib.utils import util
 
@@ -46,7 +47,7 @@ class StretchyIKChain():
         for jnt in jointList[:-1]:
             pm.connectAttr(conditionNode.outColorR, jnt.scaleX, f=True)
 
-        self.stretchyGrp = pm.group(startLoc, endLoc, distanceDimensionShape.getParent(), n=prefix+'Stretchy_GRP')
+        self.stretchyGrp = pm.group(startLoc, endLoc, distanceDimensionShape.getParent(), n=prefix + 'Stretchy_GRP')
         self.stretchyGrp.visibility.set(0)
 
         # save attributes
@@ -65,7 +66,7 @@ class StretchyIKChain():
             globalCtrl, ctrlA, ctrlB, ctrlMid = flex.getControls()
             pm.pointConstraint([self.jointList[i], self.jointList[i + 1]], globalCtrl)
             pm.parentConstraint(self.jointList[i], ctrlA)
-            pm.parentConstraint(self.jointList[i+1], ctrlB)
+            pm.parentConstraint(self.jointList[i + 1], ctrlB)
 
             globalCtrl.enable.set(stretchy)
 

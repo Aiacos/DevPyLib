@@ -3,11 +3,13 @@ module for making rig controls
 """
 
 import pymel.core as pm
+
 import mayaLib.pipelineLib.utility.nameCheck as nc
-from mayaLib.rigLib.utils import ctrlShape
 from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import ctrlShape
 from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import util
+
 
 class Control():
     """
@@ -26,7 +28,7 @@ class Control():
             doOffset=True,
             doModify=False,
             doDynamicPivot=False,
-            objBBox = ''
+            objBBox=''
     ):
 
         """
@@ -51,7 +53,6 @@ class Control():
         circleNormal = [1, 0, 0]
 
         scale = self.calculateScale(scale, translateTo=translateTo, objBBox=objBBox)
-
 
         # custom shape
         if shape in ['circle', 'circleX']:
@@ -88,7 +89,6 @@ class Control():
 
         elif shape == 'ikfk':
             ctrlObject = ctrlShape.ikfkCtrlShape(name=prefix + '_CTRL', scale=scale)
-
 
         # default ctrl
         if not ctrlObject:
@@ -192,7 +192,7 @@ class Control():
         :return: float, scale
         """
         if scale == 1:
-            if useBBox and pm.objExists(objBBox): # customGeo
+            if useBBox and pm.objExists(objBBox):  # customGeo
                 objBBox = pm.ls(objBBox)[0]
                 scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
 
@@ -211,7 +211,7 @@ class Control():
 
                 elif isinstance(translateTo, pm.nodetypes.Joint):
                     scale = self.ctrlRadiusFromJoint(translateTo)
-                    if scale < 1 or (scale/3) < 0.01:
+                    if scale < 1 or (scale / 3) < 0.01:
                         scale = 1
                     else:
                         scale = scale / 3
@@ -222,10 +222,11 @@ class Control():
         return self.scale
 
     def makeDynamicPivot(self, prefix, scale, translateTo, rotateTo):
-        pivotCtrl = Control(prefix=prefix+'Pivot', scale=scale/5, translateTo=translateTo, rotateTo=rotateTo, parent=self.C,
+        pivotCtrl = Control(prefix=prefix + 'Pivot', scale=scale / 5, translateTo=translateTo, rotateTo=rotateTo,
+                            parent=self.C,
                             shape='sphere', doOffset=True, doDynamicPivot=False)
         pm.connectAttr(pivotCtrl.getControl().translate, self.C.rotatePivot, f=True)
-        control = pm.group(n=prefix+'Con_GRP', p=self.getControl(), em=True)
+        control = pm.group(n=prefix + 'Con_GRP', p=self.getControl(), em=True)
 
         # add visibility Attribute on CTRL
         pm.addAttr(self.C, ln='PivotVisibility', at='enum', enumName='off:on', k=1, dv=0)
@@ -274,4 +275,3 @@ class Control():
             return self.Modify
         else:
             return self.C
-

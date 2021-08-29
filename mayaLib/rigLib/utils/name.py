@@ -23,6 +23,7 @@ def removeSuffix(name):
 
     return nameNoSuffix
 
+
 def getSide(name):
     edits = name.split('_')
     if len(edits) < 3:
@@ -30,6 +31,7 @@ def getSide(name):
 
     side = edits[0] + '_'
     return side
+
 
 def getAlpha(i):
     if i >= 0 and i <= 25:
