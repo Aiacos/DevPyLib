@@ -140,8 +140,18 @@ def setJointParallelToGrid(p1, p2):
 
     return math.degrees(angle)
 
+def setArmParallelToGrid(arm_transforms=[]):
+    """
+    Set Clavicle, Shoulder, Elbow and Wrist parallel to grid
+    :param arm_transforms: str or obj list, list of transform to orient
+    """
 
-def setArmParallelToGrid():
+    arm_transforms = pm.ls(arm_transforms)
+    for i, jnt in enumerate(arm_transforms[:-1]):
+        angle = setJointParallelToGrid(arm_transforms[i], arm_transforms[i + 1])
+        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+
+def setArmParallelToGrid_old():
     leftClavicleJntList = pm.ls('l_clavicleJA_JNT', 'l_armJA_JNT')
     for i, jnt in enumerate(leftClavicleJntList[:-1]):
         angle = setJointParallelToGrid(leftClavicleJntList[i], leftClavicleJntList[i + 1])
