@@ -115,4 +115,4 @@ if __name__ == "__main__":
 
     c = IKFKSwitch(ikList[0])
     c.switchIKFK()
-    print(c.addScriptJob())
+    print((c.addScriptJob()))

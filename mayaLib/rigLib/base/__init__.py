@@ -1,4 +1,4 @@
-import ikChain
-import module
-import neck
-import spine
+from . import ikChain
+from . import module
+from . import neck
+from . import spine

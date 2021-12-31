@@ -426,7 +426,7 @@ def rp_cr():
     pm.ToggleLocalRotationAxes()
     pm.select(s[0])
     pm.mel.rp_Twist()
-    print(" :) > rope riging curve > " + s[0] + "\n")
+    print((" :) > rope riging curve > " + s[0] + "\n"))
 
 
 def rp_mixTwist():

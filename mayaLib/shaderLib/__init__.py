@@ -1,2 +1,2 @@
-import base
-import utils
+from . import base
+from . import utils

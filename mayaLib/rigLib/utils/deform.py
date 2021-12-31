@@ -15,7 +15,7 @@ def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1, ], front
 
     w = (0, float(defaultValue[0]))
     if isinstance(blendshapeList, list):
-        for i, df in zip(range(0, len(blendshapeList)), defaultValue):
+        for i, df in zip(list(range(0, len(blendshapeList))), defaultValue):
             w = (i, float(df))
 
     blendshapeNode = pm.blendShape(blendshapeList, base, n=nodeName, frontOfChain=frontOfChain,

@@ -1,1 +1,1 @@
-import hdriCompensation
+from . import hdriCompensation

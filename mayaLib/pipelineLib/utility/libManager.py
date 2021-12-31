@@ -5,7 +5,7 @@ import os.path
 import sys
 # import pip
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from sys import platform as _platform
 
 
@@ -64,7 +64,7 @@ class InstallLibrary():
             # Windows
             self.mayaScriptPath = self.homeUser + self.linuxPath + self.mayaScriptPath
 
-        print(self.mayaScriptPath)
+        print((self.mayaScriptPath))
 
     def updateDevMode(self, devPath=False):
         self.devMode = True if devPath != '' else False
@@ -141,7 +141,7 @@ class InstallLibrary():
             os.system(rm_cmd)
 
         # download
-        urllib.urlretrieve(self.libUrl, self.mayaScriptPath + zipFilename, self.reporthook)
+        urllib.request.urlretrieve(self.libUrl, self.mayaScriptPath + zipFilename, self.reporthook)
 
         # unzip
         unzip_cmd = cd_cmd + 'unzip ' + zipFilename

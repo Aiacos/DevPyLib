@@ -190,7 +190,7 @@ class TwistJoint():
         else:
             self.twistJointsMainGrp = pm.ls('twistJoints_GRP')[0]
 
-        if isinstance(parentJoint, basestring):
+        if isinstance(parentJoint, str):
             self.maketwistJoints(pm.ls(parentJoint)[0], nTwistJoint, rotAxis)
         else:
             for jnt in parentJoint:
@@ -273,25 +273,25 @@ class TwistJoint():
 def renameHumanIKJoint(element='Character1', deleteHumanIK=True):
     # Hip - Spine
     spineList = pm.ls(element + '_Hips', element + '_Spine*')
-    for jnt, i in zip(spineList, range(0, len(spineList))):
+    for jnt, i in zip(spineList, list(range(0, len(spineList)))):
         newName = 'spineJ' + name.getAlpha(i) + '_JNT'
         pm.rename(jnt, newName)
 
     # Neck
     neckList = pm.ls(element + '_Neck*')
-    for jnt, i in zip(neckList, range(0, len(neckList))):
+    for jnt, i in zip(neckList, list(range(0, len(neckList)))):
         newName = 'neckJ' + name.getAlpha(i) + '_JNT'
         pm.rename(jnt, newName)
 
     # Head
     headList = pm.ls(element + '_Head*')
-    for jnt, i in zip(headList, range(0, len(headList))):
+    for jnt, i in zip(headList, list(range(0, len(headList)))):
         newName = 'headJ' + name.getAlpha(i) + '_JNT'
         pm.rename(jnt, newName)
 
     # Jaw
     jawList = pm.ls(element + '_Jaw*')
-    for jnt, i in zip(jawList, range(0, len(jawList))):
+    for jnt, i in zip(jawList, list(range(0, len(jawList)))):
         newName = 'jawJ' + name.getAlpha(i) + '_JNT'
         pm.rename(jnt, newName)
 
@@ -299,7 +299,7 @@ def renameHumanIKJoint(element='Character1', deleteHumanIK=True):
     leftList = pm.ls(element + '_Left*')
     rightList = pm.ls(element + '_Right*')
 
-    for sideList, i in zip([leftList, rightList], range(0, 2)):
+    for sideList, i in zip([leftList, rightList], list(range(0, 2))):
         if i == 0:
             side = 'l_'
             oldSide = 'Left'
@@ -314,92 +314,92 @@ def renameHumanIKJoint(element='Character1', deleteHumanIK=True):
 
         # Clavicle
         clavicleList = pm.ls(side + 'Shoulder_JNT')
-        for jnt, i in zip(clavicleList, range(0, len(clavicleList))):
+        for jnt, i in zip(clavicleList, list(range(0, len(clavicleList)))):
             newName = side + 'clavicleJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Arms
         armList = pm.ls(side + 'Arm_JNT', side + 'ForeArm_JNT')
-        for jnt, i in zip(armList, range(0, len(armList))):
+        for jnt, i in zip(armList, list(range(0, len(armList)))):
             newName = side + 'armJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Hand
         handList = pm.ls(side + '*Hand_JNT')
-        for jnt, i in zip(handList, range(0, len(handList))):
+        for jnt, i in zip(handList, list(range(0, len(handList)))):
             newName = side + 'handJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Fng - HandThumb
         fngThumbList = pm.ls(side + '*HandThumb*_JNT')
-        for jnt, i in zip(fngThumbList, range(0, len(fngThumbList))):
+        for jnt, i in zip(fngThumbList, list(range(0, len(fngThumbList)))):
             newName = side + 'fngThumbJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Fng - HandIndex
         fngIndexList = pm.ls(side + '*HandIndex*_JNT')
-        for jnt, i in zip(fngIndexList, range(0, len(fngIndexList))):
+        for jnt, i in zip(fngIndexList, list(range(0, len(fngIndexList)))):
             newName = side + 'fngIndexJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Fng - HandMiddle
         fngMidList = pm.ls(side + '*HandMiddle*_JNT')
-        for jnt, i in zip(fngMidList, range(0, len(fngMidList))):
+        for jnt, i in zip(fngMidList, list(range(0, len(fngMidList)))):
             newName = side + 'fngMiddleJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Fng - HandRing
         fngRingList = pm.ls(side + '*HandRing*_JNT')
-        for jnt, i in zip(fngRingList, range(0, len(fngRingList))):
+        for jnt, i in zip(fngRingList, list(range(0, len(fngRingList)))):
             newName = side + 'fngRingJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Fng - HandPinky
         fngPinkyList = pm.ls(side + '*HandPinky*_JNT')
-        for jnt, i in zip(fngPinkyList, range(0, len(fngPinkyList))):
+        for jnt, i in zip(fngPinkyList, list(range(0, len(fngPinkyList)))):
             newName = side + 'fngPinkyJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         ###
         # Legs
         legList = pm.ls(side + 'UpLeg_JNT', side + 'Leg_JNT')
-        for jnt, i in zip(legList, range(0, len(legList))):
+        for jnt, i in zip(legList, list(range(0, len(legList)))):
             newName = side + 'legJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Foot
         footList = pm.ls(side + '*Foot_JNT')
-        for jnt, i in zip(footList, range(0, len(footList))):
+        for jnt, i in zip(footList, list(range(0, len(footList)))):
             newName = side + 'footJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Toe - FootExtraFinger
         fngThumbList = pm.ls(side + '*FootExtraFinger*_JNT')
-        for jnt, i in zip(fngThumbList, range(0, len(fngThumbList))):
+        for jnt, i in zip(fngThumbList, list(range(0, len(fngThumbList)))):
             newName = side + 'toeThumbJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Toe - FootIndex
         fngIndexList = pm.ls(side + '*FootIndex*_JNT')
-        for jnt, i in zip(fngIndexList, range(0, len(fngIndexList))):
+        for jnt, i in zip(fngIndexList, list(range(0, len(fngIndexList)))):
             newName = side + 'toeIndexJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Toe - FootMiddle
         fngMidList = pm.ls(side + '*FootMiddle*_JNT')
-        for jnt, i in zip(fngMidList, range(0, len(fngMidList))):
+        for jnt, i in zip(fngMidList, list(range(0, len(fngMidList)))):
             newName = side + 'toeMiddleJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Toe - FootRing
         fngRingList = pm.ls(side + '*FootRing*_JNT')
-        for jnt, i in zip(fngRingList, range(0, len(fngRingList))):
+        for jnt, i in zip(fngRingList, list(range(0, len(fngRingList)))):
             newName = side + 'toeRingJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 
         # Toe - FootPinky
         fngPinkyList = pm.ls(side + '*FootPinky*_JNT')
-        for jnt, i in zip(fngPinkyList, range(0, len(fngPinkyList))):
+        for jnt, i in zip(fngPinkyList, list(range(0, len(fngPinkyList)))):
             newName = side + 'toePinkyJ' + name.getAlpha(i) + '_JNT'
             pm.rename(jnt, newName)
 

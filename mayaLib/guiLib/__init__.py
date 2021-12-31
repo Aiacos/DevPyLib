@@ -1,3 +1,3 @@
-import base
-import mainMenu
-import utils
+from . import base
+from . import mainMenu
+from . import utils

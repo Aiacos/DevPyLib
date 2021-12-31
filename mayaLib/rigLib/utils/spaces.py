@@ -24,7 +24,7 @@ def spaces(driverList, driverNames, destinationConstraint, destinationAttribute,
         constraintList.append(cnst)
 
     for counter, cnst in enumerate(constraintList):
-        sourceValue = range(0, len(constraintList))
+        sourceValue = list(range(0, len(constraintList)))
         targetValue = [0] * len(constraintList)
         targetValue[counter] = 1
 

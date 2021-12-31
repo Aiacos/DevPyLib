@@ -1,2 +1,2 @@
-import densityColor
-import mathFunction
+from . import densityColor
+from . import mathFunction

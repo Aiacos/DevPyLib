@@ -16,7 +16,7 @@ def color_control(controls=pm.ls('*_CTRL', type='nurbsCurve')):
         ctrlObject.getShape().ove.set(0)
         ctrlObject.ove.set(1)
 
-        print(ctrlObject.overrideColor.get())
+        print((ctrlObject.overrideColor.get()))
 
         if 'L_' in name:
             ctrlObject.overrideColor.set(6)

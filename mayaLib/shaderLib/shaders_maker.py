@@ -16,9 +16,9 @@ class ShadersManager():
         self.texture_dict = self.file_manager.texture_dict
 
         # for all geo
-        for geo_key in self.texture_dict.keys():
+        for geo_key in list(self.texture_dict.keys()):
             # check if is UDIM or, for all texture set
-            for texture_set in self.texture_dict[geo_key].keys():
+            for texture_set in list(self.texture_dict[geo_key].keys()):
                 if texture_set == 'UDIM':
                     textureset_dict = self.texture_dict[geo_key][texture_set]
                     currentShader = shader.TextureShader(texture_path=self.file_manager.path,

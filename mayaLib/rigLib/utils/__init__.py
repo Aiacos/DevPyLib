@@ -1,15 +1,15 @@
-import attributes
-import common
-import ctrlShape
-import dynamic
-import followCtrl
-import footRoll
-import ikfkSwitch
-import joint
-import name
-import poleVector
-import pxrControl
-import spaces
-import stretchyIKChain
-import transform
-import util
+from . import attributes
+from . import common
+from . import ctrlShape
+from . import dynamic
+from . import followCtrl
+from . import footRoll
+from . import ikfkSwitch
+from . import joint
+from . import name
+from . import poleVector
+from . import pxrControl
+from . import spaces
+from . import stretchyIKChain
+from . import transform
+from . import util

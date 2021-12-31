@@ -1,1 +1,1 @@
-import bvh_importer
+from . import bvh_importer

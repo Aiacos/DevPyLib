@@ -1,1 +1,1 @@
-import bSkinSaver
+from . import bSkinSaver

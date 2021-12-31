@@ -271,7 +271,7 @@ class BVHImporterDialog(object):
 
                     if self._debug:
                         if myParent is not None:
-                            print("parent: %s" % myParent._fullPath())
+                            print(("parent: %s" % myParent._fullPath()))
 
                 else:
                     # We don't really need to use Framecount and time(since Python handles file reads nicely)

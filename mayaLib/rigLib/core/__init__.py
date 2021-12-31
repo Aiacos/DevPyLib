@@ -1,1 +1,1 @@
-import rig
+from . import rig

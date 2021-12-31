@@ -16,6 +16,7 @@ from mayaLib.guiLib.base import baseUI as ui
 from mayaLib.pipelineLib.utility import docs as doc
 from mayaLib.pipelineLib.utility import libManager
 from mayaLib.pipelineLib.utility import listFunction as lm
+import importlib
 
 
 class SearchLineEdit(QtWidgets.QLineEdit):
@@ -217,7 +218,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         return upMenu.addMenu(libname)
 
     def addRecursiveMenu(self, upMenu, libDict):
-        for key, value in libDict.iteritems():
+        for key, value in libDict.items():
             if isinstance(value, dict):
                 subMenu = self.addSubMenu(upMenu, key)
                 self.addRecursiveMenu(subMenu, value)
@@ -261,7 +262,7 @@ class MainMenu(QtWidgets.QWidget):
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
         ptr = omui.MQtUtil.findControl(widgetStr)
-        menuWidget = wrapInstance(long(ptr), QtWidgets.QMainWindow)
+        menuWidget = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         self.mayaMenu = menuWidget.menuBar()
         self.libMenu = self.mayaMenu.addMenu(menuName)
 
@@ -302,9 +303,9 @@ def reload_package(package):
 
     def reload_recursive_ex(module):
         # importlib.reload(module)
-        reload(module)
+        importlib.reload(module)
 
-        for module_child in vars(module).values():
+        for module_child in list(vars(module).values()):
             if isinstance(module_child, types.ModuleType):
                 fn_child = getattr(module_child, "__file__", None)
                 if (fn_child is not None) and fn_child.startswith(fn_dir):

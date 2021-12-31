@@ -9,7 +9,7 @@ from shiboken2 import wrapInstance
 
 def getMayaMainWindow():
     accessMainWindow = omui.MQtUtil.mainWindow()
-    return wrapInstance(long(accessMainWindow), QtWidgets.QMainWindow)
+    return wrapInstance(int(accessMainWindow), QtWidgets.QMainWindow)
 
 
 class PyQtMayaWindow(QtWidgets.QMainWindow):

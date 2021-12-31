@@ -60,6 +60,7 @@ class StructureManager():
             # print tmpDict
             self.dict_merge(self.structLib, tmpDict)
 
+        # print(self.structLib)
         # for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
         #    print(k, v)
         # func = self.importAndExec('mayaLib.fluidLib.fire', 'Fire')
@@ -75,7 +76,7 @@ class StructureManager():
         :param merge_dct: dct merged into dct
         :return: None
         """
-        for k, v in merge_dct.iteritems():
+        for k, v in merge_dct.items():
             if (k in dct and isinstance(dct[k], dict)
                     and isinstance(merge_dct[k], collections.Mapping)):
                 self.dict_merge(dct[k], merge_dct[k])
@@ -130,9 +131,10 @@ class StructureManager():
             # print('PACKAGE:: ', str(package))
             if ('utility' not in str(package)) and ('licenseRegister' not in str(package)):
                 package_name = self.root_package.__name__ + '.' + str(package)
-                modules_list = self.explore_package(package_name)
-                if len(modules_list) != 0:
-                    module_list.append(modules_list)
+                if not ((package_name == 'mayaLib.install') or (package_name == 'mayaLib.installCmd')):
+                    modules_list = self.listSubPackages(package_name)
+                    if len(modules_list) != 0:
+                        module_list.append(modules_list)
 
         return module_list
 
@@ -165,7 +167,8 @@ class StructureManager():
             loader = pkgutil.get_loader(module_name)
 
             if loader != None:
-                for sub_module in pkgutil.walk_packages([loader.filename]):
+                for sub_module in pkgutil.iter_modules([module_name]):
+                    print('SubMod: ', sub_module)
                     _, sub_module_name, _ = sub_module
                     qname = module_name + "." + sub_module_name
                     package_list.append(qname)
@@ -174,7 +177,7 @@ class StructureManager():
         return package_list
 
     def nested_dict_iter(self, dictionary):
-        for k, v in dictionary.iteritems():
+        for k, v in dictionary.items():
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:

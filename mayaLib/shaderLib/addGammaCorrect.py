@@ -21,7 +21,7 @@ def gammaNodePM():
 
 
 def connectGammaPM(selection):  ##toDo in pymel
-    print(selection.outputs(c=1))
+    print((selection.outputs(c=1)))
     # find source and destination
     # source, destination = selection.connections(c=True, p=True)
     # create gamma node

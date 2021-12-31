@@ -87,14 +87,14 @@ class TextureFileManager():
 
         # build dictionary
         d = {}
-        for geo_key in geo_dict.keys():
+        for geo_key in list(geo_dict.keys()):
             d[geo_key] = {}
-            for textureset_key in material_dict.keys():
+            for textureset_key in list(material_dict.keys()):
                 if textureset_key.isdigit():
                     d[geo_key]['UDIM'] = {}
                 else:
                     d[geo_key][textureset_key] = {}
-                for channel_key in channel_dict.keys():
+                for channel_key in list(channel_dict.keys()):
                     d[geo_key][textureset_key][channel_key] = {}
 
         for texture in self.tex_list:
@@ -105,8 +105,8 @@ class TextureFileManager():
                 d[texture.mesh][texture.texture_set][texture.channel] = texture.filename
 
         # clean up dict
-        for geo_key in geo_dict.keys():
-            for textureset_key in material_dict.keys():
+        for geo_key in list(geo_dict.keys()):
+            for textureset_key in list(material_dict.keys()):
                 if d[geo_key][textureset_key]['Diffuse'] == {}:
                     try:
                         d[geo_key].pop(textureset_key)
@@ -121,4 +121,4 @@ class TextureFileManager():
 if __name__ == "__main__":
     path = 'testPath'
     test_dict = TextureFileManager()  # PATH
-    print(test_dict.texture_dict)
+    print((test_dict.texture_dict))

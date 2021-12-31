@@ -43,7 +43,7 @@ def createLoACurve(obj):
 
 def rivetCurve(curve, skeleton):
     rivet_list = []
-    for cv, n in zip(curve.cv[:], range(0, len(pm.ls(curve.cv[:])) + 1)):
+    for cv, n in zip(curve.cv[:], list(range(0, len(pm.ls(curve.cv[:])) + 1))):
         pm.select(cv)
         pm.select(skeleton, add=True)
         zRivet = pm.ls(mel.eval('zRivetToBone;'))[-1]

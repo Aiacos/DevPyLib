@@ -105,7 +105,7 @@ class BaseRig(object):
             for ctrl in controlList:
                 for ctrlshape in controlShapeList:
                     if str(ctrlshape.name()).replace('_shape_CTRL', '_CTRL') == str(ctrl.name()):
-                        print('Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name()))
+                        print(('Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name())))
                         ctrlShape.copyShape(ctrlshape, ctrl)
             pm.delete('controlShapes_GRP')
 
@@ -113,7 +113,7 @@ class BaseRig(object):
 
         totalTime = pm.timerX(startTime=start)
         print('-- END --')
-        print('Total time: ', totalTime)
+        print(('Total time: ', totalTime))
 
     def prepare(self):
         pass

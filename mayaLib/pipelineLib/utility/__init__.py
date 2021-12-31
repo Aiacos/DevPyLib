@@ -1,4 +1,4 @@
-import docs
-import libManager
-import listFunction
-import nameCheck
+from . import docs
+from . import libManager
+from . import listFunction
+from . import nameCheck

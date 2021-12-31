@@ -20,7 +20,7 @@ def test(a, b, c, d='ciao', e='stronzo', f=1):
     :param f:
     :return:
     """
-    print(a, b, c, d, e, f)
+    print((a, b, c, d, e, f))
 
 
 class Prova():

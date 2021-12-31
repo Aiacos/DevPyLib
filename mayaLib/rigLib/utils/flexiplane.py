@@ -1,6 +1,6 @@
 __author__ = 'Lorenzo Argentieri'
 
-from string import letters
+from string import ascii_letters as letters
 
 import pymel.core as pm
 

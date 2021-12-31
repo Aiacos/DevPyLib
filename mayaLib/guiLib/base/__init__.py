@@ -1,3 +1,3 @@
-import baseUI
-import menu
-import shelf
+from . import baseUI
+from . import menu
+from . import shelf

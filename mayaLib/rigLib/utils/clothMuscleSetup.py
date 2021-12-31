@@ -91,7 +91,7 @@ class ClothMuscle:
 
             # connect inputmeshShape and restShape
             print('###############################################')
-            print(str(muscleSimGeo.name()).replace('_SIM', '_GEO'))
+            print((str(muscleSimGeo.name()).replace('_SIM', '_GEO')))
             muscleGeo = pm.ls(str(muscleSimGeo.name()).replace('_SIM', '_GEO'))[0]
             pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.inputMesh, f=True)
             pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.restShapeMesh, f=True)
@@ -146,7 +146,7 @@ class ClothMuscle:
 
     def paintInputAttract(self, clothNode, growSelection=5):
         geo = pm.listConnections(clothNode.inputMesh, s=True)[0]
-        print('PAINT: ', geo)
+        print(('PAINT: ', geo))
 
         # paint middle
         pm.select(geo)

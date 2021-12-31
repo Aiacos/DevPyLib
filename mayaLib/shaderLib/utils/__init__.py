@@ -1,3 +1,3 @@
-import config
-import file
-import texture_ext_path
+from . import config
+from . import file
+from . import texture_ext_path

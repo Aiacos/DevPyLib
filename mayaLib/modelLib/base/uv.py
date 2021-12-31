@@ -22,7 +22,7 @@ class AutoUV():
         area = 0
 
         for geo in geoList:
-            print('Current Geo: ', geo.name())
+            print(('Current Geo: ', geo.name()))
 
             # fi non Manifold UV
             self.fixNonManifoldUV(geo)
@@ -53,7 +53,7 @@ class AutoUV():
 
             area = area + pm.polyEvaluate(geo, uvArea=True)
 
-        print('Total Area: ', area, ' -- RoundUp: ', math.ceil(area))
+        print(('Total Area: ', area, ' -- RoundUp: ', math.ceil(area)))
         # Layout with TexelDensity
         self.finalLayoutUV(geoList, area)
         # pm.select(geoList)
@@ -67,7 +67,7 @@ class AutoUV():
         uMin = 0
         vMax = 1
         vMin = 0
-        for i, uv in zip(range(len(pm.ls(uvs, fl=True))), pm.ls(uvs, fl=True)):
+        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True)):
             u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
 
             if i > 0:
@@ -89,7 +89,7 @@ class AutoUV():
         uvs = pm.polyListComponentConversion(shell, tuv=True)
         uvTileRange = []
 
-        for i, uv in zip(range(len(pm.ls(uvs, fl=True))), pm.ls(uvs, fl=True)):
+        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True)):
             u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
 
             uMax = int(u) + 1
@@ -163,7 +163,7 @@ class AutoUV():
         uCount = tileValue if tileValue % 2 else tileValue + 1
         vCount = tileValue + 1
 
-        print('UV: ', math.ceil(uCount), math.ceil(vCount))
+        print(('UV: ', math.ceil(uCount), math.ceil(vCount)))
         self.uvLayoutNoScale(geoList, math.ceil(uCount), math.ceil(vCount))
 
         badShellList = []

@@ -154,4 +154,4 @@ class MuscleUtil():
                         nAxis) + '", "' + search + '", "' + replace + '") ;')
 
             else:
-                print('invalid startLoc or endLoc: ', startLocA, startLocB, endLocA, endLocB)
+                print(('invalid startLoc or endLoc: ', startLocA, startLocB, endLocA, endLocB))
