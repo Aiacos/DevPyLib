@@ -22,7 +22,7 @@ def install_required(REQUIRED):
 
 from pathlib import Path
 
-libDir = (Path('C:/Users/Lorenzo') / 'Documents' / 'workspace' / 'DevPyLib').as_posix()
+libDir = (Path.home() / 'workspace' / 'DevPyLib').as_posix()
 port = '4434'
 libName = 'mayaLib'
 
