@@ -4,6 +4,16 @@ import maya.mel as mel
 import pymel.core as pm
 
 
+reference_joint_joint_default = 'god_M:godnode_srt'
+hip_joint_joint_default = 'spine_M:fk00'
+spine_joint_list_default = ['spine_M:fk01', 'spine_M:fk02', 'spine_M:fk03', 'spine_M:fk04', 'spine_M:fk05']
+neck_joint_list_default = ['head_joint_M:neck_srt']
+head_joint_joint_default = 'head_joint_M:head_joint_srt'
+left_arm_joint_list_default = ['clavicle_L:fk00', 'arm_L:upr_srt', 'arm_L:mid_srt', 'arm_L:end_srt']
+left_leg_joint_list_default = ['leg_L:upr_srt', 'leg_L:mid_srt', 'leg_L:end_srt', 'leg_L:ball_srt']
+right_arm_joint_list_default = ['clavicle_R:fk00', 'arm_R:upr_srt', 'arm_R:mid_srt', 'arm_R:end_srt']
+right_leg_joint_list_default = ['leg_R:upr_srt', 'leg_R:mid_srt', 'leg_R:end_srt', 'leg_R:ball_srt']
+
 class HumanIK(object):
 
     humanIK_joint_dict = {
@@ -30,30 +40,37 @@ class HumanIK(object):
         'RightHand': 14
     }
 
-    def __init__(self, character_name, reference=None, hip=None, spine_list=None, neck_list=None, head=None,
-                 left_arm_list=None, left_leg_list=None, right_arm_list=None, right_leg_list=None):
+    def __init__(self, character_name, reference_joint=reference_joint_joint_default,
+                 hip_joint=hip_joint_joint_default,
+                 spine_joint_list=spine_joint_list_default,
+                 neck_joint_list=neck_joint_list_default,
+                 head_joint=head_joint_joint_default,
+                 left_arm_joint_list=left_arm_joint_list_default,
+                 left_leg_joint_list=left_leg_joint_list_default,
+                 right_arm_joint_list=right_arm_joint_list_default,
+                 right_leg_joint_list=right_leg_joint_list_default):
         self.charecter_name = str(character_name)
 
         mel.eval('hikCreateCharacter("' + self.charecter_name + '")')
 
-        if reference:
-            self.add_reference(reference)
-        if hip:
-            self.add_hip(hip)
-        if spine_list:
-            self.add_spine(spine_list)
-        if neck_list:
-            self.add_neck(neck_list)
-        if head:
-            self.add_head(head)
-        if left_arm_list:
-            self.add_left_arm(*left_arm_list)
-        if left_leg_list:
-            self.add_left_leg(*left_leg_list)
-        if right_arm_list:
-            self.add_right_arm(*right_arm_list)
-        if right_leg_list:
-            self.add_right_leg(*right_leg_list)
+        if reference_joint:
+            self.add_reference(reference_joint)
+        if hip_joint:
+            self.add_hip(hip_joint)
+        if spine_joint_list:
+            self.add_spine(spine_joint_list)
+        if neck_joint_list:
+            self.add_neck(neck_joint_list)
+        if head_joint:
+            self.add_head(head_joint)
+        if left_arm_joint_list:
+            self.add_left_arm(*left_arm_joint_list)
+        if left_leg_joint_list:
+            self.add_left_leg(*left_leg_joint_list)
+        if right_arm_joint_list:
+            self.add_right_arm(*right_arm_joint_list)
+        if right_leg_joint_list:
+            self.add_right_leg(*right_leg_joint_list)
 
     def setCharacterObject(self, joint, joint_id):
         joint = str(pm.ls(joint)[-1].name())
@@ -166,9 +183,12 @@ class HumanIK(object):
             self.add_rightToeBase(ball)
 
 if __name__ == "__main__":
-    humanIk = HumanIK('Test', reference='god_M:godnode_srt', hip='spine_M:fk00',
-                    spine_list=['spine_M:fk04', 'spine_M:fk05'], neck_list=['head_M:neck_srt'], head='head_M:head_srt',
-                    left_arm_list=['clavicle_L:fk00', 'arm_L:upr_srt', 'arm_L:mid_srt', 'arm_L:end_srt'],
-                    left_leg_list=['leg_L:upr_srt', 'leg_L:mid_srt', 'leg_L:end_srt', 'leg_L:ball_srt'],
-                    right_arm_list=['clavicle_R:fk00', 'arm_R:upr_srt', 'arm_R:mid_srt', 'arm_R:end_srt'],
-                    right_leg_list=['leg_R:upr_srt', 'leg_R:mid_srt', 'leg_R:end_srt', 'leg_R:ball_srt'])
+    humanIk = HumanIK('Test', reference_joint='god_M:godnode_srt',
+                    hip_joint='spine_M:fk00',
+                    spine_joint_list=['spine_M:fk01', 'spine_M:fk02', 'spine_M:fk03', 'spine_M:fk04', 'spine_M:fk05'],
+                    neck_joint_list=['head_joint_M:neck_srt'],
+                    head_joint='head_joint_M:head_joint_srt',
+                    left_arm_joint_list=['clavicle_L:fk00', 'arm_L:upr_srt', 'arm_L:mid_srt', 'arm_L:end_srt'],
+                    left_leg_joint_list=['leg_L:upr_srt', 'leg_L:mid_srt', 'leg_L:end_srt', 'leg_L:ball_srt'],
+                    right_arm_joint_list=['clavicle_R:fk00', 'arm_R:upr_srt', 'arm_R:mid_srt', 'arm_R:end_srt'],
+                    right_leg_joint_list=['leg_R:upr_srt', 'leg_R:mid_srt', 'leg_R:end_srt', 'leg_R:ball_srt'])
