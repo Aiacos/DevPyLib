@@ -40,4 +40,4 @@ else:
 
 import mayaLib.guiLib.mainMenu as mm
 command = str("libmenu = mm.MainMenu('" + str(libDir) + "')")
-cmds.evalDeferred(command, lowestPriority=True)
+cmds.evalDeferred(command)
