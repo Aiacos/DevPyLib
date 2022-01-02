@@ -7,12 +7,24 @@ import pymel.core as pm
 reference_joint_joint_default = 'god_M:godnode_srt'
 hip_joint_joint_default = 'spine_M:fk00'
 spine_joint_list_default = ['spine_M:fk01', 'spine_M:fk02', 'spine_M:fk03', 'spine_M:fk04', 'spine_M:fk05']
-neck_joint_list_default = ['head_joint_M:neck_srt']
-head_joint_joint_default = 'head_joint_M:head_joint_srt'
+neck_joint_list_default = ['head_M:neck_srt']
+head_joint_joint_default = 'head_M:head_srt'
 left_arm_joint_list_default = ['clavicle_L:fk00', 'arm_L:upr_srt', 'arm_L:mid_srt', 'arm_L:end_srt']
 left_leg_joint_list_default = ['leg_L:upr_srt', 'leg_L:mid_srt', 'leg_L:end_srt', 'leg_L:ball_srt']
 right_arm_joint_list_default = ['clavicle_R:fk00', 'arm_R:upr_srt', 'arm_R:mid_srt', 'arm_R:end_srt']
 right_leg_joint_list_default = ['leg_R:upr_srt', 'leg_R:mid_srt', 'leg_R:end_srt', 'leg_R:ball_srt']
+
+left_hand_thumb_joint_list_default = ['finger_thumb_L:fk00', 'finger_thumb_L:fk01', 'finger_thumb_L:fk02']
+left_hand_index_joint_list_default = ['finger_pointer_L:fk00', 'finger_pointer_L:fk01', 'finger_pointer_L:fk02', 'finger_pointer_L:fk03']
+left_hand_middle_joint_list_default = ['finger_middle_L:fk00', 'finger_middle_L:fk01', 'finger_middle_L:fk02', 'finger_middle_L:fk03']
+left_hand_ring_joint_list_default = ['finger_ring_L:fk00', 'finger_ring_L:fk01', 'finger_ring_L:fk02', 'finger_ring_L:fk03']
+left_hand_pinky_joint_list_default = ['finger_pinky_L:fk00', 'finger_pinky_L:fk01', 'finger_pinky_L:fk02', 'finger_pinky_L:fk03']
+
+right_hand_thumb_joint_list_default = ['finger_thumb_R:fk00', 'finger_thumb_R:fk01', 'finger_thumb_R:fk02']
+right_hand_index_joint_list_default = ['finger_pointer_R:fk00', 'finger_pointer_R:fk01', 'finger_pointer_R:fk02', 'finger_pointer_R:fk03']
+right_hand_middle_joint_list_default = ['finger_middle_R:fk00', 'finger_middle_R:fk01', 'finger_middle_R:fk02', 'finger_middle_R:fk03']
+right_hand_ring_joint_list_default = ['finger_ring_R:fk00', 'finger_ring_R:fk01', 'finger_ring_R:fk02', 'finger_ring_R:fk03']
+right_hand_pinky_joint_list_default = ['finger_pinky_R:fk00', 'finger_pinky_R:fk01', 'finger_pinky_R:fk02', 'finger_pinky_R:fk03']
 
 class HumanIK(object):
 
@@ -37,7 +49,17 @@ class HumanIK(object):
         'RightShoulder': 19,
         'RightArm': 12,
         'RightForeArm': 13,
-        'RightHand': 14
+        'RightHand': 14,
+        'LeftHandThumb': (50, 51, 52),
+        'LeftHandIndex': (147, 54, 55, 56),
+        'LeftHandMiddle': (148, 58, 59, 60),
+        'LeftHandRing': (149, 62, 63, 64),
+        'LeftHandPinky': (150, 66, 67, 68),
+        'RightHandThumb': (74, 75, 76),
+        'RightHandIndex': (153, 78, 79, 80),
+        'RightHandMiddle': (154, 82, 83, 84),
+        'RightHandRing': (155, 86, 87, 88),
+        'RightHandPinky': (156, 90, 91, 92),
     }
 
     def __init__(self, character_name, reference_joint=reference_joint_joint_default,
@@ -48,7 +70,18 @@ class HumanIK(object):
                  left_arm_joint_list=left_arm_joint_list_default,
                  left_leg_joint_list=left_leg_joint_list_default,
                  right_arm_joint_list=right_arm_joint_list_default,
-                 right_leg_joint_list=right_leg_joint_list_default):
+                 right_leg_joint_list=right_leg_joint_list_default,
+                 left_hand_thumb_joint_list=left_hand_thumb_joint_list_default,
+                 left_hand_index_joint_list=left_hand_index_joint_list_default,
+                 left_hand_middle_joint_list=left_hand_middle_joint_list_default,
+                 left_hand_ring_joint_list=left_hand_ring_joint_list_default,
+                 left_hand_pinky_joint_list=left_hand_pinky_joint_list_default,
+                 right_hand_thumb_joint_list=right_hand_thumb_joint_list_default,
+                 right_hand_index_joint_list=right_hand_index_joint_list_default,
+                 right_hand_middle_joint_list=right_hand_middle_joint_list_default,
+                 right_hand_ring_joint_list=right_hand_ring_joint_list_default,
+                 right_hand_pinky_joint_list=right_hand_pinky_joint_list_default,
+                 ):
         self.charecter_name = str(character_name)
 
         mel.eval('hikCreateCharacter("' + self.charecter_name + '")')
@@ -71,10 +104,32 @@ class HumanIK(object):
             self.add_right_arm(*right_arm_joint_list)
         if right_leg_joint_list:
             self.add_right_leg(*right_leg_joint_list)
+            
+        if left_hand_thumb_joint_list:
+            self.add_leftHandThumb(left_hand_thumb_joint_list)
+        if left_hand_index_joint_list:
+            self.add_leftHandIndex(left_hand_index_joint_list)
+        if left_hand_middle_joint_list:
+            self.add_leftHandMiddle(left_hand_middle_joint_list)
+        if left_hand_ring_joint_list:
+            self.add_leftHandRing(left_hand_ring_joint_list)
+        if left_hand_pinky_joint_list:
+            self.add_leftHandPinky(left_hand_pinky_joint_list)
+        if right_hand_thumb_joint_list:
+            self.add_rightHandThumb(right_hand_thumb_joint_list)
+        if right_hand_index_joint_list:
+            self.add_rightHandIndex(right_hand_index_joint_list)
+        if right_hand_middle_joint_list:
+            self.add_rightHandMiddle(right_hand_middle_joint_list)
+        if right_hand_ring_joint_list:
+            self.add_rightHandRing(right_hand_ring_joint_list)
+        if right_hand_pinky_joint_list:
+            self.add_rightHandPinky(right_hand_pinky_joint_list)
 
     def setCharacterObject(self, joint, joint_id):
-        joint = str(pm.ls(joint)[-1].name())
-        mel.eval('setCharacterObject("' + joint + '", "' + self.charecter_name + '", "' + str(joint_id) + '", 0);')
+        if pm.objExists(joint):
+            joint = str(pm.ls(joint)[-1].name())
+            mel.eval('setCharacterObject("' + joint + '", "' + self.charecter_name + '", "' + str(joint_id) + '", 0);')
 
     def add_reference(self, joint, joint_id=humanIK_joint_dict['Reference']):
         self.setCharacterObject(joint, joint_id)
@@ -140,7 +195,47 @@ class HumanIK(object):
         
     def add_rightToeBase(self, joint, joint_id=humanIK_joint_dict['RightToeBase']):
         self.setCharacterObject(joint, joint_id)
-        
+
+    def add_leftHandThumb(self, joint_list, joint_id_list=humanIK_joint_dict['LeftHandThumb']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_leftHandIndex(self, joint_list, joint_id_list=humanIK_joint_dict['LeftHandIndex']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_leftHandMiddle(self, joint_list, joint_id_list=humanIK_joint_dict['LeftHandMiddle']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_leftHandRing(self, joint_list, joint_id_list=humanIK_joint_dict['LeftHandRing']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_leftHandPinky(self, joint_list, joint_id_list=humanIK_joint_dict['LeftHandPinky']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_rightHandThumb(self, joint_list, joint_id_list=humanIK_joint_dict['RightHandThumb']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_rightHandIndex(self, joint_list, joint_id_list=humanIK_joint_dict['RightHandIndex']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_rightHandMiddle(self, joint_list, joint_id_list=humanIK_joint_dict['RightHandMiddle']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_rightHandRing(self, joint_list, joint_id_list=humanIK_joint_dict['RightHandRing']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
+    def add_rightHandPinky(self, joint_list, joint_id_list=humanIK_joint_dict['RightHandPinky']):
+        for i, joint in enumerate(joint_list):
+            self.setCharacterObject(joint, joint_id_list[i])
+
         
     def add_left_arm(self, clavicle=None, shoulder=None, forearm=None, hand=None):
         if clavicle:
@@ -183,12 +278,4 @@ class HumanIK(object):
             self.add_rightToeBase(ball)
 
 if __name__ == "__main__":
-    humanIk = HumanIK('Test', reference_joint='god_M:godnode_srt',
-                    hip_joint='spine_M:fk00',
-                    spine_joint_list=['spine_M:fk01', 'spine_M:fk02', 'spine_M:fk03', 'spine_M:fk04', 'spine_M:fk05'],
-                    neck_joint_list=['head_joint_M:neck_srt'],
-                    head_joint='head_joint_M:head_joint_srt',
-                    left_arm_joint_list=['clavicle_L:fk00', 'arm_L:upr_srt', 'arm_L:mid_srt', 'arm_L:end_srt'],
-                    left_leg_joint_list=['leg_L:upr_srt', 'leg_L:mid_srt', 'leg_L:end_srt', 'leg_L:ball_srt'],
-                    right_arm_joint_list=['clavicle_R:fk00', 'arm_R:upr_srt', 'arm_R:mid_srt', 'arm_R:end_srt'],
-                    right_leg_joint_list=['leg_R:upr_srt', 'leg_R:mid_srt', 'leg_R:end_srt', 'leg_R:ball_srt'])
+    humanIk = HumanIK('Test')

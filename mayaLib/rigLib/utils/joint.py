@@ -110,22 +110,22 @@ def loadPose(topJoint, poseName):
             jnt.jointOrient.set(jointOrientPose)
 
 
-def saveProjectionPose(topJnt='rootJA_JNT'):
+def saveProjectionPose(topJnt='god_M:godnode_srt'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'projectionPose')
 
 
-def saveTPose(topJnt='rootJA_JNT'):
+def saveTPose(topJnt='god_M:godnode_srt'):
     mainJoint = pm.ls(topJnt)[0]
     savePose(mainJoint, 'TPose')
 
 
-def loadProjectionPose(topJnt='rootJA_JNT'):
+def loadProjectionPose(topJnt='god_M:godnode_srt'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'projectionPose')
 
 
-def loadTPose(topJnt='rootJA_JNT'):
+def loadTPose(topJnt='god_M:godnode_srt'):
     mainJoint = pm.ls(topJnt)[0]
     loadPose(mainJoint, 'TPose')
 
