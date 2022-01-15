@@ -196,6 +196,24 @@ class AutoUV():
             'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
 
 
+def transferUV(source, destination):
+    source = pm.ls(source)[-1]
+    destination = pm.ls(destination)[-1]
+
+    pm.select(source)
+    pm.select(destination, add=True)
+
+    pm.transferAttributes(transferPositions=0, transferNormals=0, transferUVs=2, transferColors=2, sampleSpace=0,
+                          searchMethod=3, flipUVs=0, colorBorders=1, sourceUvSpace="map1", targetUvSpace="map1")
+
+
+def unwrella_unwrap_all(geo_list):
+    for geo in geo_list:
+        pm.select(geo)
+        mel.eval('unwrella -mc "map1" -t 0 -st 0.150000 -pad 2.000000 -w 1024 -h 1024 -ug 0 -ga 90.000000 -ur 0 -ra 90.000000 -ks 0 -tx 1 -ty 1 -p 1 -pr 1 -ro 1 -fr 0 -re 1 -c "" -ca 45.000000 -ce 0.000000 -co 0;')
+
+
+
 if __name__ == "__main__":
     geos = pm.ls(sl=True)
     a = AutoUV(geos)

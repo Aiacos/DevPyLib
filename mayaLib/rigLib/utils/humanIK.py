@@ -109,7 +109,7 @@ class HumanIK(object):
         'RightAnkle': 7,
     }
 
-    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=True,
+    def __init__(self, character_name, custom_ctrl_definition=False, use_ik=True,
                  reference_joint=reference_joint_joint_default,
                  hip_joint=hip_joint_joint_default,
                  spine_joint_list=spine_joint_list_default,
