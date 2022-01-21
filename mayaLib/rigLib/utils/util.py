@@ -77,6 +77,9 @@ def getAllObjectUnderGroup(group, type='mesh'):
         geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
         objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
 
+    objList = list(set(objList))
+    objList.sort()
+
     return objList
 
 
