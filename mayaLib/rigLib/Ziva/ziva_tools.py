@@ -2,33 +2,51 @@ import maya.mel as mel
 import pymel.core as pm
 import zBuilder.builders.ziva as zva
 import zBuilder.zMaya as zMaya
+import zBuilder.utils as utils
 
 
-def addTissue(obj):
-    pm.select(obj)
-    mel.eval('ziva -t;')
+def zPolyCombine(geos):
+    pm.select(pm.ls(geos))
+    zPolyCombine_node, zPolyCombine_mesh = pm.ls(mel.eval('zPolyCombine;'))
 
-def addBone(obj):
-    pm.select(obj)
-    mel.eval('ziva -b;')
+    return zPolyCombine_mesh
 
-def addCloth(obj):
-    pm.select(obj)
-    mel.eval('ziva -c;')
+def harmonic_warp(source, destination, transfer_geos, tet_size=1):
+    source_string = str(pm.ls(source)[-1].name())
+    destination_string = str(pm.ls(destination)[-1].name())
+    transfer_list = []
+    for geo in pm.ls(transfer_geos):
+        name = str(geo.name())
+        transfer_list.append(name)
+    transfer_string = ' '.join(transfer_list)
+
+    zArmonicWarp = pm.ls(mel.eval('zHarmonicWarp ' + source_string + ' ' + destination_string + ' ' + transfer_string + ';'))[0]
+    zArmonicWarp.maxResolution.set(512)
+    zArmonicWarp.tetSize.set(tet_size)
+
+def bone_warp(source, destination, transfer_geos, tet_size=1):
+    source_string = str(pm.ls(source)[-1].name())
+    destination_string = str(pm.ls(destination)[-1].name())
+    transfer_list = []
+    for geo in pm.ls(transfer_geos):
+        name = str(geo.name())
+        transfer_list.append(name)
+    transfer_string = ' '.join(transfer_list)
+
+    zBoneWarp = pm.ls(mel.eval('zBoneWarp ' + source_string + ' ' + destination_string + ' ' + transfer_string + ';'))[0]
+    zBoneWarp.maxResolution.set(512)
+    zBoneWarp.tetSize.set(tet_size)
+
+
+def ziva_check_intersection(geo1, geo2):
+    pm.select(geo1, geo2)
+    mel.eval('ZivaSelectIntersections;')
+
+    return pm.ls(sl=True)
 
 # Rename
 def zivaRenameAll():
     zMaya.rename_ziva_nodes()
-
-def harmonic_transfer(source, destination, transfer_geos, tet_size=1):
-    pm.select(source)
-    pm.select(destination, add=True)
-    pm.hide(source, destination)
-    pm.select(transfer_geos, tgl=True)
-
-    zArmonicWrap = pm.ls(mel.eval('zHarmonicWarp;'))[0]
-    zArmonicWrap.maxResolution.set(512)
-    zArmonicWrap.tetSize.set(tet_size)
 
 # Mirror
 def zivaMirror(from_side='L_', to_side='R_', suffix='_GEO'):
