@@ -30,9 +30,7 @@ class ZivaBase():
         self.character_name = character
         self.rig_type = rig_type
         self.rig_grp = pm.group(n=character + '_' + rig_type + '_rig_grp', em=True)
-        self.zSolver = pm.ls(type='zSolverTransform')[-1]
-
-        self.save_zBuilder('lol')
+        self.zSolver = pm.ls(type='zSolverTransform')[-1] if len(pm.ls(type='zSolverTransform')) > 0 else None
 
     def save_zBuilder(self, file_name=None):
         workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / 'scenes' / 'zBuilder'
