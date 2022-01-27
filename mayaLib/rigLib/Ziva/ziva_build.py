@@ -129,7 +129,6 @@ class ZivaMuscle(ZivaBase):
             curve, rivets = fiber.createLineOfAction(geo, self.skeleton)
             self.curve_list.append(curve)
             self.rivets_list.extend(rivets)
-            print(curve, rivets)
 
         pm.parent(self.curve_list, self.curve_grp)
         pm.parent(self.rivets_list, self.rivet_grp)
