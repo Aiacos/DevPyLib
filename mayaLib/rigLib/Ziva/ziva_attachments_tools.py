@@ -53,7 +53,7 @@ def addAttachment(source, dest, value, fixed=True):
     else:
         current_zAttachemnt = zivaSlidingAttachment(6)
 
-    paintProximity(current_zAttachemnt, 0.001, value)
+    paintProximity(current_zAttachemnt, 0.0001, value)
 
 
 if __name__ == "__main__":
