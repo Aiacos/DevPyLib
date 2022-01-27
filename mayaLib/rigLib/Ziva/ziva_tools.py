@@ -42,7 +42,7 @@ def ziva_check_intersection(geo1, geo2):
     pm.select(geo1, geo2)
     mel.eval('ZivaSelectIntersections;')
 
-    return pm.ls(sl=True)
+    return pm.ls(sl=True, o=True)
 
 # Rename
 def zivaRenameAll():

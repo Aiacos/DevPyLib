@@ -35,8 +35,9 @@ def createLoACurve(obj):
     pm.select(obj)
     curve = pm.ls(mel.eval('zLineOfActionUtil;'))[0].getParent()
 
-    cv_name = str(obj.name()).replace('_GEO', '_CV')
+    cv_name = str(obj.name()).replace('_geo', '_CV')
     pm.rename(curve, cv_name)
+    curve = pm.ls(cv_name)[-1]
 
     return curve
 
@@ -48,8 +49,9 @@ def rivetCurve(curve, skeleton):
         pm.select(skeleton, add=True)
         zRivet = pm.ls(mel.eval('zRivetToBone;'))[-1]
 
-        rivet_name = str(curve.name()).replace('_CV', '') + '_' + str(n)
+        rivet_name = str(curve.name()).replace('_CV', '') + '_' + str(n) + '_rivet'
         pm.rename(zRivet, rivet_name)
+        zRivet = pm.ls(rivet_name)[-1]
 
         rivet_list.append(zRivet)
 
@@ -70,15 +72,7 @@ def createLineOfAction(obj, skeleton):
     rivets = rivetCurve(curve, skeleton)
     zLineOfAction = addLoA(curve, obj)
 
-    if pm.objExists('loa_grp'):
-        pass
-    else:
-        pm.group(n='loa_grp', em=True, p='Muscle_rig_grp')
-        pm.group(n='curve_grp', em=True, p='loa_grp')
-        pm.group(n='rivet_grp', em=True, p='loa_grp')
-
-    pm.parent(curve, 'curve_grp')
-    pm.parent(rivets, 'rivet_grp')
+    return curve, rivets
 
 
 if __name__ == "__main__":
