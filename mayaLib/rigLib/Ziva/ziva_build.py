@@ -57,6 +57,7 @@ class ZivaBase():
 
         if self.zSolver:
             pm.group(self.zSolver, n='zSolver_grp', p=self.rig_grp)
+            self.zSolver.getShape().collisionDetection.set(1)
 
         if ziva_cache:
             self.add_zivaCache()
@@ -96,7 +97,7 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=6, attachment_radius=2):
+    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=6, attachment_radius=3):
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
 
