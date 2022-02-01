@@ -97,7 +97,9 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=6, attachment_radius=3):
+    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1):
+        self.skeleton_grp = skeleton_grp
+        self.muscle_grp = muscle_grp
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
 
@@ -134,12 +136,20 @@ class ZivaMuscle(ZivaBase):
         pm.parent(self.curve_list, self.curve_grp)
         pm.parent(self.rivets_list, self.rivet_grp)
 
+        # zOut
+        self.zMuscleCombined = tool.zPolyCombine(self.muscles)
+        self.zOut_grp = pm.group(self.zMuscleCombined, n='zOut_grp')
+
         # CleanUp
         super().__init__(character, rig_type='muscle')
         self.clean_muscle()
 
     def clean_muscle(self):
+        pm.parent(self.skeleton_grp, self.rig_grp)
+        pm.parent(self.muscle_grp, self.rig_grp)
         pm.parent(self.loa_grp, self.rig_grp)
+        pm.parent(self.zOut_grp, self.rig_grp)
+        pm.rename(self.zMuscleCombined, 'zMuscleCombined_geo')
 
     def muscle_to_muscle_attachemnt(self, value=1):
         for geo1 in self.muscles:
