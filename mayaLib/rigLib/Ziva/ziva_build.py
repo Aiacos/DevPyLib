@@ -97,11 +97,15 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1):
+    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, combine_skeleton=True):
         self.skeleton_grp = skeleton_grp
         self.muscle_grp = muscle_grp
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
+
+        # prepare skeleton
+        if len(self.skeleton) > 1 and combine_skeleton:
+            self.skeleton = tool.zPolyCombine(self.skeleton)
 
         # make bone
         self.ziva_bone = addBone(self.skeleton)
@@ -165,6 +169,10 @@ class ZivaSkin(ZivaBase):
         self.fascia = pm.ls(fascia_geo)[-1]
         self.fat = pm.ls(fat_geo)[-1]
         self.skin = pm.ls(skin_geo)[-1]
+
+        # prepare skeleton
+        if len(self.skeleton) > 1:
+            self.skeleton = tool.zPolyCombine(self.skeleton)
 
         super().__init__(character, rig_type='skin')
         self.clean_skin()
