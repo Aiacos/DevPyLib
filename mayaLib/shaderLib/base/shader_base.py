@@ -58,7 +58,7 @@ def assign_shader(geo, shader):
     pm.hyperShade(assign=shader)
 
 
-class Shader_base():
+class Shader_base(object):
     """
     Create general Shader
     """

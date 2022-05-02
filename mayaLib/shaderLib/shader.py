@@ -4,7 +4,7 @@ from pymel import core as pm
 
 from mayaLib.shaderLib.base import texture
 from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
-from mayaLib.shaderLib.base.renderman import PxrSurface_shaderBase
+from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
 
 
 class TextureShader():
@@ -16,7 +16,7 @@ class TextureShader():
         :param textureset_dict: material IDs used in Substance Painter or UDIM
         :param single_place_node: (bool)
         """
-        self.filenode_dict = {}
+
         # See active Renderer
         # renderManRIS, arnold
         self.renderer = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
@@ -24,7 +24,7 @@ class TextureShader():
         if self.renderer == 'arnold':
             self.shader = self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
         elif self.renderer == 'renderman':
-            self.shader = self.build_pxrSurface(texture_path, geo_name, textureset_dict)
+            self.shader = self.build_pxrDisneyBSDF(texture_path, geo_name, textureset_dict)
         else:
             print('No valid active render engine')
 
@@ -42,16 +42,37 @@ class TextureShader():
 
         return aiStandard_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
-    def build_pxrSurface(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
+    def build_pxrDisneyBSDF(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
         for texture_channel in textureset_dict:
             fn = texture.TexturePxrTexture(path=texture_path,
                                            filename=textureset_dict[texture_channel])
             self.filenode_dict[texture_channel] = fn.filenode
 
-        return PxrSurface_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
+        return PxrDisneyBSDF(shader_name, folder, shader_textures)
 
     def getShader(self):
         return self.shader
+
+class BuildAllShaders(object):
+    def __init__(self,  sourceimages, workspace=pm.workspace(q=True, dir=True, rd=True)):
+        # Build Texture List
+        texture_manager = texture.TextureFolder()
+        texture_dict = texture_manager.build_texture_catalog()
+
+        for key, value in texture_dict.items():
+            TextureShader()
+
+class ConvertShaders(object):
+    def __init__(self,  sourceimages, workspace=pm.workspace(q=True, dir=True, rd=True)):
+        # Build Texture List
+        texture_manager = texture.TextureFolder()
+        texture_dict = texture_manager.build_texture_catalog()
+
+        # Shader List
+
+
+        for key, value in texture_dict.items():
+            TextureShader()
 
 
 if __name__ == "__main__":
