@@ -43,3 +43,10 @@ def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linea
     for driverV, drivenV in zip(driverValueList, drivenValueList):
         pm.setDrivenKeyframe(driven, currentDriver=driver, driverValue=driverV, value=drivenV, inTangentType=cvType,
                              outTangentType=cvType)
+
+def delete_unknow_nodes():
+    unknow_list = pm.ls(mel.eval('ls -type unknown -type unknownDag -type unknownTransform'))
+    while len(unknow_list) > 0:
+        for node in unknow_list:
+            pm.lockNode(node, lock=False)
+            pm.delete(node)
