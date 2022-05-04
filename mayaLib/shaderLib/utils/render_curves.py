@@ -72,6 +72,10 @@ def add_ctrl_shader(ctrl_list):
             try:
                 rgb_color = pm.colorIndex(cv.overrideColor.get(), q=True)
             except:
+                if cv.getShape().overrideEnabled.get() == 0:
+                    cv.getShape().overrideEnabled.set(1)
+                    cv.getShape().ovc.set(1)
+                    
                 rgb_color = pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
 
             shader_name = str(ctrl_geo.name()).replace('geo', 'mat')
