@@ -10,11 +10,11 @@ import os, glob, pathlib
 
 
 class TextureFolder(object):
-    def __init__(self, worksapce=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
+    def __init__(self, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
         # pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/'
         self.home = pathlib.Path.home()
-        self.texture_folder = self.home / worksapce / sourceimages
-        self.scenes_folder = self.home / worksapce / scenes
+        self.texture_folder = self.home / workspace / sourceimages
+        self.scenes_folder = self.home / workspace / scenes
 
         self.imgList = self.buildImgList()
 
@@ -57,9 +57,20 @@ class TextureFolder(object):
     def build_texture_catalog(self):
         texture_dict = {}
         for img in self.imgList:
+            print(img)
             texture = pathlib.Path(img)
+            print(texture)
             texture_base_name = self.getTextureBaseName(texture.stem)
-            texture_dict[texture_base_name].append(img)
+            print(texture_base_name)
+
+            try:
+                txt_tmp_list = texture_dict[texture_base_name]
+            except:
+                txt_tmp_list = []
+
+            txt_tmp_list.append(img)
+            texture_dict[texture_base_name] = txt_tmp_list
+            print(texture_dict)
 
         return texture_dict
 
