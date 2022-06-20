@@ -66,6 +66,9 @@ class Principled_3dl(Shader_base):
         # init faceColor
         self.shader.color.set((0.2, 0.5, 0.8))
 
+        # place node
+        self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
+
         # connect texture
         self.connect_textures(shader_textures)
 
@@ -112,10 +115,12 @@ class Principled_3dl(Shader_base):
     def connect_color(self, texture, slot_name):
         texture_node = self.create_file_node(self.folder, texture, color=True)
         pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_noncolor(self, texture, slot_name):
         texture_node = self.create_file_node(self.folder, texture, color=False)
         pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_normal(self, texture, slot_name=normal, directx_normal=True):
         texture_node = self.create_file_node(self.folder, texture, color=True)
@@ -127,4 +132,4 @@ class Principled_3dl(Shader_base):
         else:
             self.shader.disp_normal_bump_type.set(2)
 
-
+        pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
