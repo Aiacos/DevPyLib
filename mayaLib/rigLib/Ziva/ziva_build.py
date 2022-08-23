@@ -3,6 +3,7 @@ import pymel.core as pm
 import maya.mel as mel
 
 from mayaLib.rigLib.utils import util as util
+from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.Ziva import ziva_fiber_tools as fiber
 from mayaLib.rigLib.Ziva import ziva_attachments_tools as attachment
 from mayaLib.rigLib.Ziva import ziva_tools as tool
@@ -163,22 +164,80 @@ class ZivaMuscle(ZivaBase):
                     attachment.addAttachment(intersecting_geos[0], intersecting_geos[1], value=value, fixed=False)
 
 class ZivaSkin(ZivaBase):
-    def __init__(self, character, skeleton_grp, muscle_grp, fascia_geo, fat_geo, skin_geo):
+    def __init__(self, character='', fascia_geo=[], fat_geo=[], skin_geo=[], skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, skip_build=False):
+        self.skeleton_grp = pm.ls(skeleton_grp)[-1]
+        self.muscle_grp = pm.ls(muscle_grp)[-1]
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
-        self.fascia = pm.ls(fascia_geo)[-1]
-        self.fat = pm.ls(fat_geo)[-1]
-        self.skin = pm.ls(skin_geo)[-1]
+        self.fascia_list = pm.ls(fascia_geo)
+        self.fat_list = pm.ls(fat_geo)
+        self.skin_list = pm.ls(skin_geo)
 
         # prepare skeleton
         if len(self.skeleton) > 1:
             self.skeleton = tool.zPolyCombine(self.skeleton)
+            pm.parent(self.skeleton, self.skeleton_grp.getParent())
+            pm.rename(self.skeleton, 'skeleton_combined_msh')
+            self.skeleton = pm.ls('skeleton_combined_msh')[-1]
 
-        super().__init__(character, rig_type='skin')
+        # prepare muscle
+        if len(self.muscles) > 1:
+            self.muscle_combined = tool.zPolyCombine(self.muscles)
+            pm.parent(self.muscle_combined, self.muscle_grp.getParent())
+            pm.rename(self.muscle_combined, 'muscle_combined_msh')
+            self.muscle_combined = pm.ls('muscle_combined_msh')[-1]
+
+        if not skip_build:
+            self.ziva_skeleton_bone = addBone(self.skeleton)
+            self.ziva_muscle_bone = addBone(self.muscle_combined)
+
+            # Fascia
+            for fascia_geo in self.fascia_list:
+                self.fascia_tissue = addTissue(fascia_geo, tet_size=tet_size)
+
+            # Fat
+            for fat_geo in self.fat_list:
+                self.fat_tissue = addTissue(fat_geo, tet_size=tet_size)
+
+            # Attechement
+            for fascia_geo in self.fascia_list:
+                attachment.addAttachment(self.skeleton, fascia_geo, value=attachment_radius, fixed=False)
+                attachment.addAttachment(self.muscle_combined, fascia_geo, value=attachment_radius, fixed=True)
+
+            for fascia_geo, fat_geo in zip(self.fascia_list, self.fat_list):
+                attachment.addAttachment(fascia_geo, fat_geo, value=attachment_radius, fixed=True)
+
+        # Wrap geo
+        wrap_geo_list = []
+        for fat_geo, skin_geo in zip(self.fat_list, self.skin_list):
+            wrap_geo = pm.duplicate(skin_geo, n=str(skin_geo.name()).replace('_geo', 'wrap_msh'))[-1]
+            wrap_node = deform.wrapDeformer(wrap_geo, fat_geo)
+            bs_node = deform.blendShapeDeformer(skin_geo, [wrap_geo], str(skin_geo.name()).replace('_geo', '_wrap_BS'))
+
+            wrap_geo_list.append(wrap_geo)
+
+        self.wrap_grp = pm.group(wrap_geo_list, n='wrap_grp')
+
+
+        super(ZivaSkin, self).__init__(character, rig_type='skin', solver_scale=solver_scale, skip_build=skip_build)
         self.clean_skin()
 
     def clean_skin(self):
-        pass
+        pm.parent(self.wrap_grp, self.rig_grp)
+
+        if pm.objExists('muscle_grp'):
+            pm.parentConstraint(self.root_obj, 'muscle_grp', mo=True)
+
+        if pm.objExists('fascia_grp'):
+            pm.parentConstraint(self.root_obj, 'fascia_grp', mo=True)
+
+        if pm.objExists('fat_grp'):
+            pm.parentConstraint(self.root_obj, 'fat_grp', mo=True)
+
+        if pm.objExists('wrap_grp'):
+            pm.parentConstraint(self.root_obj, 'wrap_grp', mo=True)
+            pm.hide('wrap_grp')
+
 
 
 if __name__ == "__main__":
