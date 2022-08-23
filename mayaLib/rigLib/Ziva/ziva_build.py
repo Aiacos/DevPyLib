@@ -10,7 +10,7 @@ from mayaLib.rigLib.Ziva import ziva_tools as tool
 import zBuilder.utils as zutils
 
 
-def addTissue(obj, tet_size=1):
+def addTissue(obj, tet_size=1, max_tet_resolution=512):
     pm.select(obj)
     nodes = pm.ls(mel.eval('ziva -t;'))
 
@@ -21,7 +21,7 @@ def addTissue(obj, tet_size=1):
     zMaterial = pm.ls(nodes, type='zMaterial')[-1]
 
     zTet.tetSize.set(tet_size)
-    zTet.maxResolution.set(512)
+    zTet.maxResolution.set(max_tet_resolution)
 
     return zGeo, zTissue, zTet, zMaterial
 
@@ -50,7 +50,7 @@ def addCloth(obj):
 
 
 class ZivaBase():
-    def __init__(self, character, rig_type='ziva', ziva_cache=True):
+    def __init__(self, character, rig_type='ziva', ziva_cache=True, solver_scale=100, skip_build=False):
         self.character_name = character
         self.rig_type = rig_type
         self.rig_grp = pm.group(n=character + '_' + rig_type + '_rig_grp', em=True)
@@ -58,6 +58,7 @@ class ZivaBase():
 
         if self.zSolver:
             pm.group(self.zSolver, n='zSolver_grp', p=self.rig_grp)
+            self.zSolver.scale.set(solver_scale, solver_scale, solver_scale)
             self.zSolver.getShape().collisionDetection.set(1)
 
         if ziva_cache:
@@ -164,14 +165,17 @@ class ZivaMuscle(ZivaBase):
                     attachment.addAttachment(intersecting_geos[0], intersecting_geos[1], value=value, fixed=False)
 
 class ZivaSkin(ZivaBase):
-    def __init__(self, character='', fascia_geo=[], fat_geo=[], skin_geo=[], skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, skip_build=False):
+    def __init__(self, character='', fascia_grp='Fascia_grp', fat_grp='Fat_grp', skin_grp='Model_grp', skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, max_tet_resolution=512, skip_build=False):
         self.skeleton_grp = pm.ls(skeleton_grp)[-1]
         self.muscle_grp = pm.ls(muscle_grp)[-1]
+        self.fascia_grp = pm.ls(fascia_grp)[-1]
+        self.fat_grp = pm.ls(fat_grp)[-1]
+        self.skin_grp = pm.ls(skin_grp)[-1]
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
-        self.fascia_list = pm.ls(fascia_geo)
-        self.fat_list = pm.ls(fat_geo)
-        self.skin_list = pm.ls(skin_geo)
+        self.fascia_list = util.getAllObjectUnderGroup(fascia_grp)
+        self.fat_list = util.getAllObjectUnderGroup(fat_grp)
+        self.skin_list = util.getAllObjectUnderGroup(skin_grp)
 
         # prepare skeleton
         if len(self.skeleton) > 1:
@@ -193,11 +197,11 @@ class ZivaSkin(ZivaBase):
 
             # Fascia
             for fascia_geo in self.fascia_list:
-                self.fascia_tissue = addTissue(fascia_geo, tet_size=tet_size)
+                self.fascia_tissue = addTissue(fascia_geo, tet_size=tet_size, max_tet_resolution=max_tet_resolution)
 
             # Fat
             for fat_geo in self.fat_list:
-                self.fat_tissue = addTissue(fat_geo, tet_size=tet_size)
+                self.fat_tissue = addTissue(fat_geo, tet_size=tet_size, max_tet_resolution=max_tet_resolution)
 
             # Attechement
             for fascia_geo in self.fascia_list:
@@ -224,20 +228,11 @@ class ZivaSkin(ZivaBase):
 
     def clean_skin(self):
         pm.parent(self.wrap_grp, self.rig_grp)
-
-        if pm.objExists('muscle_grp'):
-            pm.parentConstraint(self.root_obj, 'muscle_grp', mo=True)
-
-        if pm.objExists('fascia_grp'):
-            pm.parentConstraint(self.root_obj, 'fascia_grp', mo=True)
-
-        if pm.objExists('fat_grp'):
-            pm.parentConstraint(self.root_obj, 'fat_grp', mo=True)
-
-        if pm.objExists('wrap_grp'):
-            pm.parentConstraint(self.root_obj, 'wrap_grp', mo=True)
-            pm.hide('wrap_grp')
-
+        pm.parent(self.skeleton_grp, self.rig_grp)
+        pm.parent(self.muscle_grp, self.rig_grp)
+        pm.parent(self.fascia_grp, self.rig_grp)
+        pm.parent(self.fat_grp, self.rig_grp)
+        #pm.parent(self.skin_grp, self.rig_grp)
 
 
 if __name__ == "__main__":
