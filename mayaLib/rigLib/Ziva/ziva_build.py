@@ -47,6 +47,14 @@ def addCloth(obj):
     zMaterial = pm.ls(nodes, type='zMaterial')[-1]
 
     return zGeo, zCloth, zMaterial
+    
+def addMaterial(obj):
+    pm.select(obj)
+    nodes = pm.ls(mel.eval('ziva -m;'))
+
+    zMaterial = pm.ls(nodes, type='zMaterial')[-1]
+
+    return zMaterial
 
 
 class ZivaBase():
@@ -69,22 +77,30 @@ class ZivaBase():
     def save_zBuilder(self, file_name=None):
         workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / 'scenes' / 'zBuilder'
         workspace_dir.mkdir(parents=True, exist_ok=True)
+        
+        pm.select(self.zSolver)
+        z = zva.Ziva()
+        z.retrieve_from_scene()
 
         if file_name:
-            zutils.save_rig(file_name, solver_name=str(self.zSolver.name()))
+            z.write(file_name)
         else:
-            file_name = str(workspace_dir) + self.character_name + '_' + self.rig_type
-            zutils.save_rig(file_name, solver_name=str(self.zSolver.name()))
+            file_name = str(workspace_dir) + '/' + self.character_name + '_' + self.rig_type + '.zBuilder'
+            z.write(file_name)
 
     def load_zBuilder(self, file_name=None):
         workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / 'scenes' / 'zBuilder'
         workspace_dir.mkdir(parents=True, exist_ok=True)
 
+        z = zva.Ziva()
+
         if file_name:
-            zutils.load_rig(file_name, solver_name=str(self.zSolver.name()))
+            z.retrieve_from_file(file_name)
         else:
-            file_name = str(workspace_dir) + self.character_name + '_' + self.rig_type
-            zutils.load_rig(file_name, solver_name=str(self.zSolver.name()))
+            file_name = str(workspace_dir) + '/' + self.character_name + '_' + self.rig_type + '.zBuilder'
+            z.retrieve_from_file(file_name)
+            
+        z.build()
 
     def add_zivaCache(self, zSolver=None):
         if zSolver:
@@ -165,29 +181,31 @@ class ZivaMuscle(ZivaBase):
                     attachment.addAttachment(intersecting_geos[0], intersecting_geos[1], value=value, fixed=False)
 
 class ZivaSkin(ZivaBase):
-    def __init__(self, character='', fascia_grp='Fascia_grp', fat_grp='Fat_grp', skin_grp='Model_grp', skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, max_tet_resolution=512, skip_build=False):
+    def __init__(self, character='', fascia_grp='Fascia_grp', fat_grp='Fat_grp', skin_geo='', skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, max_tet_resolution=512, skip_build=False):
         self.skeleton_grp = pm.ls(skeleton_grp)[-1]
         self.muscle_grp = pm.ls(muscle_grp)[-1]
         self.fascia_grp = pm.ls(fascia_grp)[-1]
         self.fat_grp = pm.ls(fat_grp)[-1]
-        self.skin_grp = pm.ls(skin_grp)[-1]
+        #self.skin_grp = pm.ls(skin_grp)[-1]
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
         self.fascia_list = util.getAllObjectUnderGroup(fascia_grp)
         self.fat_list = util.getAllObjectUnderGroup(fat_grp)
-        self.skin_list = util.getAllObjectUnderGroup(skin_grp)
+        self.skin_list = pm.ls(skin_geo)
+        
+        self.zIn_grp = pm.group(n='zIn', em=True)
 
         # prepare skeleton
         if len(self.skeleton) > 1:
             self.skeleton = tool.zPolyCombine(self.skeleton)
-            pm.parent(self.skeleton, self.skeleton_grp.getParent())
+            pm.parent(self.skeleton, self.zIn_grp)
             pm.rename(self.skeleton, 'skeleton_combined_msh')
             self.skeleton = pm.ls('skeleton_combined_msh')[-1]
 
         # prepare muscle
         if len(self.muscles) > 1:
             self.muscle_combined = tool.zPolyCombine(self.muscles)
-            pm.parent(self.muscle_combined, self.muscle_grp.getParent())
+            pm.parent(self.muscle_combined, self.zIn_grp)
             pm.rename(self.muscle_combined, 'muscle_combined_msh')
             self.muscle_combined = pm.ls('muscle_combined_msh')[-1]
 
@@ -232,7 +250,7 @@ class ZivaSkin(ZivaBase):
         pm.parent(self.muscle_grp, self.rig_grp)
         pm.parent(self.fascia_grp, self.rig_grp)
         pm.parent(self.fat_grp, self.rig_grp)
-        #pm.parent(self.skin_grp, self.rig_grp)
+        pm.parent(self.zIn_grp, self.rig_grp)
 
 
 if __name__ == "__main__":
