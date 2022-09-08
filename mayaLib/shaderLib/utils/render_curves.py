@@ -75,8 +75,13 @@ def add_ctrl_shader(ctrl_list):
                 if cv.getShape().overrideEnabled.get() == 0:
                     cv.getShape().overrideEnabled.set(1)
                     cv.getShape().ovc.set(1)
-                    
-                rgb_color = pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
+
+                rgb = ('R', 'G', 'B')
+                color = []
+                for channel in rgb:
+                    color_channel = pm.getAttr(str(cv.getShape().name()) + ".overrideColor%s" % channel)
+                    color.append(color_channel)
+                rgb_color = color#pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
 
             shader_name = str(ctrl_geo.name()).replace('geo', 'mat')
             surface_shader = shader_base.build_surfaceshader(shaderName=shader_name,
