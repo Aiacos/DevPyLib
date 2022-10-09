@@ -59,31 +59,39 @@ def ctrl_paintEffect(cv_list):
     return ctrl_geo_list
 
 
-def add_ctrl_shader(ctrl_list):
+def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, smoothing=2):
     ctrl_list = pm.ls(ctrl_list)
-    sweep_geo_list = ctrl_paintEffect(ctrl_list)
 
-    for cv in ctrl_list:
-        cv_shape_list = cv.getShapes()
-        for cv_shape in cv_shape_list:
-            stroke = pm.listConnections(cv_shape.worldSpace)[-1]
-            ctrl_geo = pm.listConnections(stroke.worldMainMesh)[-1]
+    if sweep:
+        sweep_geo_list = add_sweep(ctrl_list)
+    else:
+        sweep_geo_list = ctrl_paintEffect(ctrl_list)
 
-            try:
-                rgb_color = pm.colorIndex(cv.overrideColor.get(), q=True)
-            except:
-                if cv.getShape().overrideEnabled.get() == 0:
-                    cv.getShape().overrideEnabled.set(1)
-                    cv.getShape().ovc.set(1)
+        for cv in ctrl_list:
+            cv_shape_list = cv.getShapes()
+            for cv_shape in cv_shape_list:
+                stroke = pm.listConnections(cv_shape.worldSpace)[-1]
+                brush = pm.listConnections(stroke.brush)[-1]
+                brush.brushWidth.set(brush_width)
+                stroke.sampleDensity.set(sample_density)
+                stroke.smoothing.set(smoothing)
+                ctrl_geo = pm.listConnections(stroke.worldMainMesh)[-1]
 
-                rgb = ('R', 'G', 'B')
-                color = []
-                for channel in rgb:
-                    color_channel = pm.getAttr(str(cv.getShape().name()) + ".overrideColor%s" % channel)
-                    color.append(color_channel)
-                rgb_color = color#pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
+                try:
+                    rgb_color = pm.colorIndex(cv.overrideColor.get(), q=True)
+                except:
+                    if cv.getShape().overrideEnabled.get() == 0:
+                        cv.getShape().overrideEnabled.set(1)
+                        cv.getShape().ovc.set(1)
 
-            shader_name = str(ctrl_geo.name()).replace('geo', 'mat')
-            surface_shader = shader_base.build_surfaceshader(shaderName=shader_name,
-                                                             color=(rgb_color[0], rgb_color[1], rgb_color[2]))
-            shader_base.assign_shader(ctrl_geo, surface_shader)
+                    rgb = ('R', 'G', 'B')
+                    color = []
+                    for channel in rgb:
+                        color_channel = pm.getAttr(str(cv.getShape().name()) + ".overrideColor%s" % channel)
+                        color.append(color_channel)
+                    rgb_color = color#pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
+
+                shader_name = str(ctrl_geo.name()).replace('geo', 'mat')
+                surface_shader = shader_base.build_surfaceshader(shaderName=shader_name,
+                                                                 color=(rgb_color[0], rgb_color[1], rgb_color[2]))
+                shader_base.assign_shader(ctrl_geo, surface_shader)
