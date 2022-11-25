@@ -404,11 +404,9 @@ class HumanIK(object):
     def createCustomRigMapping(self):
         # Unlock drawstyle
         joint_list = pm.listRelatives(reference_joint_joint_default, ad=True, type='joint')
-        print(joint_list)
         for jnt in joint_list:
             try:
                 source_connection = jnt.drawStyle.listConnections()[-1]
-                print(source_connection)
                 jnt.drawStyle.disconnect(source_connection)
             except:
                 pass
