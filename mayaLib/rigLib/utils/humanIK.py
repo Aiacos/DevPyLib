@@ -4,7 +4,7 @@ import maya.mel as mel
 import pymel.core as pm
 
 
-reference_joint_joint_default = 'Base_main_FS_jnt'
+reference_joint_default = 'Base_main_FS_jnt'
 hip_joint_joint_default = 'M_Spine_pelvis_FS_jnt'
 spine_joint_list_default = ['M_Spine_spine_ribbon_0_driven_FS_jnt', 'M_Spine_spine_ribbon_1_driven_FS_jnt', 'M_Spine_spine_ribbon_2_driven_FS_jnt', 'M_Spine_spine_ribbon_3_driven_FS_jnt', 'M_Spine_spine_ribbon_4_driven_FS_jnt', 'M_Spine_chest_FS_jnt']
 neck_joint_list_default = ['M_Head_neck_root_FS_jnt', 'M_Head_ribbon_driven_0_FS_jnt', 'M_Head_ribbon_driven_1_FS_jnt', 'M_Head_ribbon_driven_2_FS_jnt', 'M_Head_ribbon_driven_3_FS_jnt']
@@ -109,8 +109,8 @@ class HumanIK(object):
         'RightAnkle': 7,
     }
 
-    def __init__(self, character_name, custom_ctrl_definition=False, use_ik=True,
-                 reference_joint=reference_joint_joint_default,
+    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=False, skip_reference_joint=False,
+                 reference_joint=reference_joint_default,
                  hip_joint=hip_joint_joint_default,
                  spine_joint_list=spine_joint_list_default,
                  neck_joint_list=neck_joint_list_default,
@@ -157,7 +157,7 @@ class HumanIK(object):
 
         mel.eval('hikCreateCharacter("' + self.charecter_name + '")')
 
-        if reference_joint:
+        if reference_joint and not skip_reference_joint:
             self.add_reference(reference_joint)
         if hip_joint:
             self.add_hip(hip_joint)
@@ -401,13 +401,77 @@ class HumanIK(object):
         if ball:
             self.add_rightToeBase(ball)
 
+    def unlock_and_unhide_all(self, node):
+        """
+        unlock and unhide all transform attributes of selected node
+        :param node: node to be affected
+        """
+        nodeList = pm.ls(node)
+
+        for node in nodeList:
+            node.tx.set(l=0, k=1, cb=0)
+            node.ty.set(l=0, k=1, cb=0)
+            node.tz.set(l=0, k=1, cb=0)
+            node.rx.set(l=0, k=1, cb=0)
+            node.ry.set(l=0, k=1, cb=0)
+            node.rz.set(l=0, k=1, cb=0)
+            node.sx.set(l=0, k=1, cb=0)
+            node.sy.set(l=0, k=1, cb=0)
+            node.sz.set(l=0, k=1, cb=0)
+
     def createCustomRigMapping(self):
         # Unlock drawstyle
-        joint_list = pm.listRelatives(reference_joint_joint_default, ad=True, type='joint')
+        joint_list = pm.listRelatives(reference_joint_default, ad=True, type='joint')
+        reference_joint_default_pm = pm.ls(reference_joint_default)[-1]
+        joint_top_grp = pm.ls('skeleton_grp')[-1]
+        self.unlock_and_unhide_all(joint_top_grp)
+
+        try:
+            source_connection = pm.listConnections(reference_joint_default_pm.drawStyle, p=True, s=True)[-1]
+            pm.disconnectAttr(source_connection, reference_joint_default_pm.drawStyle)
+
+            reverse_node = pm.shadingNode('reverse', asUtility=True)
+
+            pm.connectAttr(source_connection, reverse_node.inputX)
+            pm.connectAttr(reverse_node.outputX, reference_joint_default_pm.visibility)
+
+            connections_translateX = pm.listConnections(reference_joint_default_pm.translateX, p=True, s=True)[-1]
+            connections_translateY = pm.listConnections(reference_joint_default_pm.translateY, p=True, s=True)[-1]
+            connections_translateZ = pm.listConnections(reference_joint_default_pm.translateZ, p=True, s=True)[-1]
+
+            pm.disconnectAttr(connections_translateX, reference_joint_default_pm.translateX)
+            pm.disconnectAttr(connections_translateY, reference_joint_default_pm.translateY)
+            pm.disconnectAttr(connections_translateZ, reference_joint_default_pm.translateZ)
+
+            pm.connectAttr(connections_translateX, joint_top_grp.translateX)
+            pm.connectAttr(connections_translateY, joint_top_grp.translateY)
+            pm.connectAttr(connections_translateZ, joint_top_grp.translateZ)
+
+            connections_rotateX = pm.listConnections(reference_joint_default_pm.rotateX, p=True, s=True)[-1]
+            connections_rotateY = pm.listConnections(reference_joint_default_pm.rotateY, p=True, s=True)[-1]
+            connections_rotateZ = pm.listConnections(reference_joint_default_pm.rotateZ, p=True, s=True)[-1]
+
+            pm.disconnectAttr(connections_rotateX, reference_joint_default_pm.rotateX)
+            pm.disconnectAttr(connections_rotateY, reference_joint_default_pm.rotateY)
+            pm.disconnectAttr(connections_rotateZ, reference_joint_default_pm.rotateZ)
+
+            pm.connectAttr(connections_rotateX, joint_top_grp.rotateX)
+            pm.connectAttr(connections_rotateY, joint_top_grp.rotateY)
+            pm.connectAttr(connections_rotateZ, joint_top_grp.rotateZ)
+        except:
+            pass
+
         for jnt in joint_list:
             try:
-                source_connection = jnt.drawStyle.listConnections()[-1]
-                jnt.drawStyle.disconnect(source_connection)
+                source_connection = pm.listConnections(jnt.drawStyle, p=True, s=True)[-1]
+                pm.disconnectAttr(source_connection, jnt.drawStyle)
+
+                reverse_node = pm.shadingNode('reverse', asUtility=True)
+
+                pm.connectAttr(source_connection, reverse_node.inputX)
+                pm.connectAttr(reverse_node.outputX, jnt.visibility)
+
+                self.unlock_and_unhide_all(jnt)
             except:
                 pass
 
