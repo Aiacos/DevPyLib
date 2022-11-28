@@ -401,81 +401,7 @@ class HumanIK(object):
         if ball:
             self.add_rightToeBase(ball)
 
-    def unlock_and_unhide_all(self, node):
-        """
-        unlock and unhide all transform attributes of selected node
-        :param node: node to be affected
-        """
-        nodeList = pm.ls(node)
-
-        for node in nodeList:
-            node.tx.set(l=0, k=1, cb=0)
-            node.ty.set(l=0, k=1, cb=0)
-            node.tz.set(l=0, k=1, cb=0)
-            node.rx.set(l=0, k=1, cb=0)
-            node.ry.set(l=0, k=1, cb=0)
-            node.rz.set(l=0, k=1, cb=0)
-            node.sx.set(l=0, k=1, cb=0)
-            node.sy.set(l=0, k=1, cb=0)
-            node.sz.set(l=0, k=1, cb=0)
-
     def createCustomRigMapping(self):
-        # Unlock drawstyle
-        joint_list = pm.listRelatives(reference_joint_default, ad=True, type='joint')
-        reference_joint_default_pm = pm.ls(reference_joint_default)[-1]
-        joint_top_grp = pm.ls('skeleton_grp')[-1]
-        self.unlock_and_unhide_all(joint_top_grp)
-        pm.connectAttr('Base_main_ctrl.joints_visibility', joint_top_grp.visibility)
-
-        source_connection = pm.listConnections(reference_joint_default_pm.drawStyle, p=True, s=True)[-1]
-        reverse_node = pm.listConnections(reference_joint_default_pm.drawStyle, s=True)[-1]
-        #reverse_node.outputMin.set(0)
-        #reverse_node.outputMin.set(1)
-        pm.disconnectAttr(source_connection, reference_joint_default_pm.drawStyle)
-        pm.connectAttr(source_connection, reference_joint_default_pm.visibility)
-
-        connections_translateX = pm.listConnections(reference_joint_default_pm.translateX, p=True, s=True)[-1]
-        connections_translateY = pm.listConnections(reference_joint_default_pm.translateY, p=True, s=True)[-1]
-        connections_translateZ = pm.listConnections(reference_joint_default_pm.translateZ, p=True, s=True)[-1]
-
-        pm.disconnectAttr(connections_translateX, reference_joint_default_pm.translateX)
-        pm.disconnectAttr(connections_translateY, reference_joint_default_pm.translateY)
-        pm.disconnectAttr(connections_translateZ, reference_joint_default_pm.translateZ)
-
-        pm.connectAttr(connections_translateX, joint_top_grp.translateX)
-        pm.connectAttr(connections_translateY, joint_top_grp.translateY)
-        pm.connectAttr(connections_translateZ, joint_top_grp.translateZ)
-
-        connections_rotateX = pm.listConnections(reference_joint_default_pm.rotateX, p=True, s=True)[-1]
-        connections_rotateY = pm.listConnections(reference_joint_default_pm.rotateY, p=True, s=True)[-1]
-        connections_rotateZ = pm.listConnections(reference_joint_default_pm.rotateZ, p=True, s=True)[-1]
-
-        pm.disconnectAttr(connections_rotateX, reference_joint_default_pm.rotateX)
-        pm.disconnectAttr(connections_rotateY, reference_joint_default_pm.rotateY)
-        pm.disconnectAttr(connections_rotateZ, reference_joint_default_pm.rotateZ)
-
-        pm.connectAttr(connections_rotateX, joint_top_grp.rotateX)
-        pm.connectAttr(connections_rotateY, joint_top_grp.rotateY)
-        pm.connectAttr(connections_rotateZ, joint_top_grp.rotateZ)
-
-        for jnt in joint_list:
-            try:
-                source_connection = pm.listConnections(jnt.drawStyle, p=True, s=True)[-1]
-                reverse_node = pm.listConnections(jnt.drawStyle, s=True)[-1]
-                #reverse_node.outputMin.set(0)
-                #reverse_node.outputMin.set(1)
-                pm.disconnectAttr(source_connection, jnt.drawStyle)
-
-                reverse_node = pm.shadingNode('reverse', asUtility=True)
-
-                pm.connectAttr(source_connection, reverse_node.inputX)
-                pm.connectAttr(reverse_node.outputX, jnt.visibility)
-
-                self.unlock_and_unhide_all(jnt)
-            except:
-                pass
-
-
         mel.eval('hikCreateCustomRig( hikGetCurrentCharacter() );')
 
     def add_ctrl(self, ctrl, ctrl_id):
@@ -539,7 +465,83 @@ class HumanIK(object):
 
     def add_rightAnkle_ctrl(self, ctrl, ctrl_id=humanIK_ctrl_dict['RightAnkle']):
         self.add_ctrl(ctrl, ctrl_id)
+
+
+def unlock_and_unhide_all(node):
+    """
+    unlock and unhide all transform attributes of selected node
+    :param node: node to be affected
+    """
+    nodeList = pm.ls(node)
+
+    for node in nodeList:
+        node.tx.set(l=0, k=1, cb=0)
+        node.ty.set(l=0, k=1, cb=0)
+        node.tz.set(l=0, k=1, cb=0)
+        node.rx.set(l=0, k=1, cb=0)
+        node.ry.set(l=0, k=1, cb=0)
+        node.rz.set(l=0, k=1, cb=0)
+        node.sx.set(l=0, k=1, cb=0)
+        node.sy.set(l=0, k=1, cb=0)
+        node.sz.set(l=0, k=1, cb=0)
+def unlock_arise():
+    # Unlock drawstyle
+    joint_list = pm.listRelatives(reference_joint_default, ad=True, type='joint')
+    reference_joint_default_pm = pm.ls(reference_joint_default)[-1]
+    joint_top_grp = pm.ls('skeleton_grp')[-1]
+    unlock_and_unhide_all(joint_top_grp)
+    pm.connectAttr('Base_main_ctrl.joints_visibility', joint_top_grp.visibility)
+
+    source_connection = pm.listConnections(reference_joint_default_pm.drawStyle, p=True, s=True)[-1]
+    reverse_node = pm.listConnections(reference_joint_default_pm.drawStyle, s=True)[-1]
+    # reverse_node.outputMin.set(0)
+    # reverse_node.outputMin.set(1)
+    pm.disconnectAttr(source_connection, reference_joint_default_pm.drawStyle)
+    pm.connectAttr(source_connection, reference_joint_default_pm.visibility)
+
+    connections_translateX = pm.listConnections(reference_joint_default_pm.translateX, p=True, s=True)[-1]
+    connections_translateY = pm.listConnections(reference_joint_default_pm.translateY, p=True, s=True)[-1]
+    connections_translateZ = pm.listConnections(reference_joint_default_pm.translateZ, p=True, s=True)[-1]
+
+    pm.disconnectAttr(connections_translateX, reference_joint_default_pm.translateX)
+    pm.disconnectAttr(connections_translateY, reference_joint_default_pm.translateY)
+    pm.disconnectAttr(connections_translateZ, reference_joint_default_pm.translateZ)
+
+    pm.connectAttr(connections_translateX, joint_top_grp.translateX)
+    pm.connectAttr(connections_translateY, joint_top_grp.translateY)
+    pm.connectAttr(connections_translateZ, joint_top_grp.translateZ)
+
+    connections_rotateX = pm.listConnections(reference_joint_default_pm.rotateX, p=True, s=True)[-1]
+    connections_rotateY = pm.listConnections(reference_joint_default_pm.rotateY, p=True, s=True)[-1]
+    connections_rotateZ = pm.listConnections(reference_joint_default_pm.rotateZ, p=True, s=True)[-1]
+
+    pm.disconnectAttr(connections_rotateX, reference_joint_default_pm.rotateX)
+    pm.disconnectAttr(connections_rotateY, reference_joint_default_pm.rotateY)
+    pm.disconnectAttr(connections_rotateZ, reference_joint_default_pm.rotateZ)
+
+    pm.connectAttr(connections_rotateX, joint_top_grp.rotateX)
+    pm.connectAttr(connections_rotateY, joint_top_grp.rotateY)
+    pm.connectAttr(connections_rotateZ, joint_top_grp.rotateZ)
+
+    for jnt in joint_list:
+        try:
+            source_connection = pm.listConnections(jnt.drawStyle, p=True, s=True)[-1]
+            reverse_node = pm.listConnections(jnt.drawStyle, s=True)[-1]
+            # reverse_node.outputMin.set(0)
+            # reverse_node.outputMin.set(1)
+            pm.disconnectAttr(source_connection, jnt.drawStyle)
+
+            reverse_node = pm.shadingNode('reverse', asUtility=True)
+
+            pm.connectAttr(source_connection, reverse_node.inputX)
+            pm.connectAttr(reverse_node.outputX, jnt.visibility)
+
+            unlock_and_unhide_all(jnt)
+        except:
+            pass
         
         
 if __name__ == "__main__":
-    humanIk = HumanIK('Test', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=False)
+    unlock_arise()
+    humanIk = HumanIK('MainCharacter_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=False)
+    humanIk = HumanIK('MainCharacter_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=False)
