@@ -497,7 +497,7 @@ def unlock_arise():
     # reverse_node.outputMin.set(0)
     # reverse_node.outputMin.set(1)
     pm.disconnectAttr(source_connection, reference_joint_default_pm.drawStyle)
-    pm.connectAttr(source_connection, reference_joint_default_pm.visibility)
+    #pm.connectAttr(source_connection, reference_joint_default_pm.visibility)
 
     connections_translateX = pm.listConnections(reference_joint_default_pm.translateX, p=True, s=True)[-1]
     connections_translateY = pm.listConnections(reference_joint_default_pm.translateY, p=True, s=True)[-1]
