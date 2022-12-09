@@ -50,6 +50,18 @@ right_knee_ctrl_default = 'R_Leg_fk_mid_ctrl'
 right_ankle_fk_ctrl_default = 'R_Leg_fk_tip_ctrl'
 right_ankle_ik_ctrl_default = 'R_Leg_ik_tip_ctrl'
 
+left_hand_thumb_ctrl_list_default = ['L_Fingers_thumb_0_0_ctrl', 'L_Fingers_thumb_0_1_ctrl', 'L_Fingers_thumb_0_2_ctrl']
+left_hand_index_ctrl_list_default = ['L_Fingers_finger_0_0_ctrl', 'L_Fingers_finger_0_1_ctrl', 'L_Fingers_finger_0_2_ctrl', 'L_Fingers_finger_0_3_ctrl']
+left_hand_middle_ctrl_list_default = ['L_Fingers_finger_1_0_ctrl', 'L_Fingers_finger_1_1_ctrl', 'L_Fingers_finger_1_2_ctrl', 'L_Fingers_finger_1_3_ctrl']
+left_hand_ring_ctrl_list_default = ['L_Fingers_finger_2_0_ctrl', 'L_Fingers_finger_2_1_ctrl', 'L_Fingers_finger_2_2_ctrl', 'L_Fingers_finger_2_3_ctrl']
+left_hand_pinky_ctrl_list_default = ['L_Fingers_finger_3_0_ctrl', 'L_Fingers_finger_3_1_ctrl', 'L_Fingers_finger_3_2_ctrl', 'L_Fingers_finger_3_3_ctrl']
+
+right_hand_thumb_ctrl_list_default = ['L_Fingers_thumb_0_0_ctrl', 'L_Fingers_thumb_0_1_ctrl', 'L_Fingers_thumb_0_2_ctrl']
+right_hand_index_ctrl_list_default = ['L_Fingers_finger_0_0_ctrl', 'L_Fingers_finger_0_1_ctrl', 'L_Fingers_finger_0_2_ctrl', 'L_Fingers_finger_0_3_ctrl']
+right_hand_middle_ctrl_list_default = ['L_Fingers_finger_1_0_ctrl', 'L_Fingers_finger_1_1_ctrl', 'L_Fingers_finger_1_2_ctrl', 'L_Fingers_finger_1_3_ctrl']
+right_hand_ring_ctrl_list_default = ['L_Fingers_finger_2_0_ctrl', 'L_Fingers_finger_2_1_ctrl', 'L_Fingers_finger_2_2_ctrl', 'L_Fingers_finger_2_3_ctrl']
+right_hand_pinky_ctrl_list_default = ['L_Fingers_finger_3_0_ctrl', 'L_Fingers_finger_3_1_ctrl', 'L_Fingers_finger_3_2_ctrl', 'L_Fingers_finger_3_3_ctrl']
+
 
 class HumanIK(object):
 
