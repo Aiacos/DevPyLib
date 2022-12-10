@@ -16,11 +16,11 @@ left_hand_middle_joint_list_default = ['L_Fingers_finger_1_0_FS_jnt', 'L_Fingers
 left_hand_ring_joint_list_default = ['L_Fingers_finger_2_0_FS_jnt', 'L_Fingers_finger_2_1_FS_jnt', 'L_Fingers_finger_2_2_FS_jnt', 'L_Fingers_finger_2_3_FS_jnt']
 left_hand_pinky_joint_list_default = ['L_Fingers_finger_3_0_FS_jnt', 'L_Fingers_finger_3_1_FS_jnt', 'L_Fingers_finger_3_2_FS_jnt', 'L_Fingers_finger_3_3_FS_jnt']
 
-right_hand_thumb_joint_list_default = ['L_Fingers_thumb_0_0_FS_jnt', 'L_Fingers_thumb_0_1_FS_jnt', 'L_Fingers_thumb_0_2_FS_jnt']
-right_hand_index_joint_list_default = ['L_Fingers_finger_0_0_FS_jnt', 'L_Fingers_finger_0_1_FS_jnt', 'L_Fingers_finger_0_2_FS_jnt', 'L_Fingers_finger_0_3_FS_jnt']
-right_hand_middle_joint_list_default = ['L_Fingers_finger_1_0_FS_jnt', 'L_Fingers_finger_1_1_FS_jnt', 'L_Fingers_finger_1_2_FS_jnt', 'L_Fingers_finger_1_3_FS_jnt']
-right_hand_ring_joint_list_default = ['L_Fingers_finger_2_0_FS_jnt', 'L_Fingers_finger_2_1_FS_jnt', 'L_Fingers_finger_2_2_FS_jnt', 'L_Fingers_finger_2_3_FS_jnt']
-right_hand_pinky_joint_list_default = ['L_Fingers_finger_3_0_FS_jnt', 'L_Fingers_finger_3_1_FS_jnt', 'L_Fingers_finger_3_2_FS_jnt', 'L_Fingers_finger_3_3_FS_jnt']
+right_hand_thumb_joint_list_default = ['R_Fingers_thumb_0_0_FS_jnt', 'R_Fingers_thumb_0_1_FS_jnt', 'R_Fingers_thumb_0_2_FS_jnt']
+right_hand_index_joint_list_default = ['R_Fingers_finger_0_0_FS_jnt', 'R_Fingers_finger_0_1_FS_jnt', 'R_Fingers_finger_0_2_FS_jnt', 'R_Fingers_finger_0_3_FS_jnt']
+right_hand_middle_joint_list_default = ['R_Fingers_finger_1_0_FS_jnt', 'R_Fingers_finger_1_1_FS_jnt', 'R_Fingers_finger_1_2_FS_jnt', 'R_Fingers_finger_1_3_FS_jnt']
+right_hand_ring_joint_list_default = ['R_Fingers_finger_2_0_FS_jnt', 'R_Fingers_finger_2_1_FS_jnt', 'R_Fingers_finger_2_2_FS_jnt', 'R_Fingers_finger_2_3_FS_jnt']
+right_hand_pinky_joint_list_default = ['R_Fingers_finger_3_0_FS_jnt', 'R_Fingers_finger_3_1_FS_jnt', 'R_Fingers_finger_3_2_FS_jnt', 'R_Fingers_finger_3_3_FS_jnt']
 
 class UnrealEngine_Skeleton(object):
     
@@ -128,7 +128,34 @@ class UnrealEngine_Skeleton(object):
             pm.rename(jnt, name)
         for jnt, name in zip(right_hand_pinky_joint_list, self.humanIK_joint_dict['RightHandPinky']):
             pm.rename(jnt, name)
-            
+
+    # def test(self):
+    #     def rot_to_jointOrient(jnt):
+    #         rotation = jnt.rotate.get()
+    #         jnt.jointOrient.set(rotation)
+    #         jnt.rotate.set(0, 0, 0)
+    #
+    #     def check_transform(jnt):
+    #         parent_node = jnt.getParent()
+    #         if type(parent_node) == pm.nodetypes.Transform:
+    #             print('GRP')
+    #             pm.parent(jnt, parent_node.getParent())
+    #             pm.delete(parent_node)
+    #
+    #     for jnt in pm.ls(sl=True, type='joint'):
+    #         rot_to_jointOrient(jnt)
+    #
+    #     pm.makeIdentity(root_jnt, apply=True, t=1, r=1, s=1, n=0)
+    #
+    #     for jnt in pm.ls(sl=True, type='joint'):
+    #         check_transform(jnt)
+    #
+    #     elbow_knee_jntlist = pm.ls('?*_ribbon_lower_driven_0_FS_jnt')
+    #     for jnt in elbow_knee_jnt_list:
+    #         jntname = str(jnt.name()).split('')[0:2]
+    #         jntname = ''.join(jnt_name)
+    #         parent_to_jnt = jnt_name + '_ribbon_upper_driven_0_FS_jnt'
+    #         pm.parent(jnt, parent_to_jnt)
 
 if __name__ == "__main__":
     UE_rename = UnrealEngine_Skeleton()
