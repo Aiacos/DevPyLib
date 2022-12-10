@@ -128,3 +128,7 @@ class UnrealEngine_Skeleton(object):
             pm.rename(jnt, name)
         for jnt, name in zip(right_hand_pinky_joint_list, self.humanIK_joint_dict['RightHandPinky']):
             pm.rename(jnt, name)
+            
+
+if __name__ == "__main__":
+    UE_rename = UnrealEngine_Skeleton()
