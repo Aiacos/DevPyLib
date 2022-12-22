@@ -84,10 +84,14 @@ class UnrealEngine_Skeleton(object):
         pm.rename(hip_joint, self.humanIK_joint_dict['Hips'])
         
         # Spine
+        del spine_joint_list[-2]
         for jnt, name in zip(spine_joint_list, self.humanIK_joint_dict['Spine']): # more joint in Arise rig
             pm.rename(jnt, name)
         
         # Neck
+        del neck_joint_list[1]
+        del neck_joint_list[-1]
+        del neck_joint_list[-2]
         for jnt, name in zip(neck_joint_list, self.humanIK_joint_dict['Neck']): # more joint in Arise rig
             pm.rename(jnt, name)
         
