@@ -10,12 +10,15 @@ def metaHuman_scene_fix(root_grp_name='MetaHuman_rig_grp'):
     headRig_grp = pm.ls('headRig_grp')[-1]
     # driver_skeleton_root = pm.ls('')[-1]
 
-    # pm.delete('export_geo_GRP', 'Lights')
+    pm.delete('export_geo_GRP', 'Lights')
 
     pm.upAxis(ax='y')
 
     driver_skeleton_root.jointOrientX.set(-90)
     headRig_grp.rotateX.set(-90)
+
+    pm.group(driver_skeleton_root, head_skeleton_root, body_skeleton_root, n='skeleton_grp', p=rig_grp)
+    pm.rename(rig_grp, root_grp_name)
 
 
 if __name__ == "__main__":
