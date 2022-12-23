@@ -1,8 +1,7 @@
 import maya.mel as mel
 import pymel.core as pm
 import zBuilder.builders.ziva as zva
-import zBuilder.zMaya as zMaya
-import zBuilder.utils as utils
+import zBuilder.commands as zva_cmds
 
 
 def zPolyCombine(geos):
@@ -46,7 +45,7 @@ def ziva_check_intersection(geo1, geo2):
 
 # Rename
 def zivaRenameAll():
-    zMaya.rename_ziva_nodes()
+    zva_cmds.rename_ziva_nodes()
 
 # Mirror
 def zivaMirror(from_side='L_', to_side='R_', suffix='_GEO'):

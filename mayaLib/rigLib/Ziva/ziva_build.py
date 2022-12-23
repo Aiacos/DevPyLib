@@ -7,7 +7,6 @@ from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.Ziva import ziva_fiber_tools as fiber
 from mayaLib.rigLib.Ziva import ziva_attachments_tools as attachment
 from mayaLib.rigLib.Ziva import ziva_tools as tool
-import zBuilder.utils as zutils
 
 
 def addTissue(obj, tet_size=1, max_tet_resolution=512):
