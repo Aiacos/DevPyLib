@@ -1,7 +1,7 @@
 import pymel.core as pm
 
 
-def metaHuman_scene_fix(root_grp_name='MetaHuman_rig_grp'):
+def metaHuman_scene_fix(root_grp_name='MetaHuman_rig_grp', delete_lights=True, delete_unused_grps=True):
     driver_skeleton_root = pm.ls('root_drv')[-1]
     head_skeleton_root = pm.ls('DHIhead:spine_04')[-1]
     body_skeleton_root = pm.ls('DHIbody:root')[-1]
@@ -10,7 +10,10 @@ def metaHuman_scene_fix(root_grp_name='MetaHuman_rig_grp'):
     headRig_grp = pm.ls('headRig_grp')[-1]
     # driver_skeleton_root = pm.ls('')[-1]
 
-    pm.delete('export_geo_GRP', 'Lights')
+    if delete_unused_grps:
+        pm.delete('export_geo_GRP')
+    if delete_lights:
+        pm.delete('Lights')
 
     pm.upAxis(ax='y')
 
