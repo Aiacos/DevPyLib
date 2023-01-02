@@ -121,5 +121,22 @@ def meshCollision(deformer, deformed):
     return deformerNode
 
 
+def tensionMap(obj=pm.ls(sl=True)[-1]):
+    obj = pm.ls(obj)[-1]
+    shape = obj.getShape()
+    shapeOrig = pm.ls(str(shape.name()) + 'Orig')[-1]
+    shape_input = pm.listConnections(shape.inMesh, source=True, destination=False, plugs=True)[-1]
+
+    # Create Tension map node
+    tensionmap_node = pm.createNode('tensionMap')
+
+    # Connections
+    pm.connectAttr(shapeOrig.worldMesh[0], tensionmap_node.orig, f=True)
+    pm.connectAttr(shape_input, tensionmap_node.deform, f=True)
+    pm.connectAttr(tensionmap_node.out, shape.inMesh, f=True)
+
+    return tensionmap_node
+
+
 if __name__ == "__main__":
     pass
