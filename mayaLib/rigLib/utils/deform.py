@@ -121,7 +121,7 @@ def meshCollision(deformer, deformed):
     return deformerNode
 
 
-def tensionMap(obj=pm.ls(sl=True)[-1]):
+def tensionMap(obj):
     obj = pm.ls(obj)[-1]
     shape = obj.getShape()
     shapeOrig = pm.ls(str(shape.name()) + 'Orig')[-1]
