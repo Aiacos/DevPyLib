@@ -121,7 +121,7 @@ class HumanIK(object):
         'RightAnkle': 7,
     }
 
-    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=False, skip_reference_joint=False,
+    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=False, use_hybrid=False, skip_reference_joint=False,
                  reference_joint=reference_joint_default,
                  hip_joint=hip_joint_joint_default,
                  spine_joint_list=spine_joint_list_default,
@@ -226,40 +226,69 @@ class HumanIK(object):
                 self.add_leftClavicle_ctrl(left_clavicle_ctrl)
             if right_clavicle_ctrl:
                 self.add_rightClavicle_ctrl(right_clavicle_ctrl)
-                
-            if use_ik and left_hand_ik_ctrl:
-                self.add_leftHand_ctrl(left_hand_ik_ctrl)
-            if not use_ik and left_shoulder_ctrl:
-                self.add_leftShoulder_ctrl(left_shoulder_ctrl)
-            if not use_ik and left_elbow_ctrl:
-                self.add_leftElbow_ctrl(left_elbow_ctrl)
-            if not use_ik and left_hand_fk_ctrl:
-                self.add_leftHand_ctrl(left_hand_fk_ctrl)
-            if use_ik and left_ankle_ik_ctrl:
-                self.add_leftAnkle_ctrl(left_ankle_ik_ctrl)
-            if not use_ik and left_hip_ctrl:
-                self.add_leftHip_ctrl(left_hip_ctrl)
-            if not use_ik and left_knee_ctrl:
-                self.add_leftKnee_ctrl(left_knee_ctrl)
-            if not use_ik and left_ankle_ik_ctrl:
-                self.add_leftAnkle_ctrl(left_ankle_fk_ctrl)
 
-            if use_ik and right_hand_ik_ctrl:
-                self.add_rightHand_ctrl(right_hand_ik_ctrl)
-            if not use_ik and right_shoulder_ctrl:
-                self.add_rightShoulder_ctrl(right_shoulder_ctrl)
-            if not use_ik and right_elbow_ctrl:
-                self.add_rightElbow_ctrl(right_elbow_ctrl)
-            if not use_ik and right_hand_fk_ctrl:
-                self.add_rightHand_ctrl(right_hand_fk_ctrl)
-            if use_ik and right_ankle_ik_ctrl:
-                self.add_rightAnkle_ctrl(right_ankle_ik_ctrl)
-            if not use_ik and right_hip_ctrl:
-                self.add_rightHip_ctrl(right_hip_ctrl)
-            if not use_ik and right_knee_ctrl:
-                self.add_rightKnee_ctrl(right_knee_ctrl)
-            if not use_ik and right_ankle_ik_ctrl:
-                self.add_rightAnkle_ctrl(right_ankle_fk_ctrl)
+            if not use_ik and not use_hybrid:
+                if left_shoulder_ctrl:
+                    self.add_leftShoulder_ctrl(left_shoulder_ctrl)
+                if left_elbow_ctrl:
+                    self.add_leftElbow_ctrl(left_elbow_ctrl)
+                if left_hand_fk_ctrl:
+                    self.add_leftHand_ctrl(left_hand_fk_ctrl)
+
+                if left_hip_ctrl:
+                    self.add_leftHip_ctrl(left_hip_ctrl)
+                if left_knee_ctrl:
+                    self.add_leftKnee_ctrl(left_knee_ctrl)
+                if left_ankle_fk_ctrl:
+                    self.add_leftAnkle_ctrl(left_ankle_fk_ctrl)
+
+                if right_shoulder_ctrl:
+                    self.add_rightShoulder_ctrl(right_shoulder_ctrl)
+                if right_elbow_ctrl:
+                    self.add_rightElbow_ctrl(right_elbow_ctrl)
+                if right_hand_fk_ctrl:
+                    self.add_rightHand_ctrl(right_hand_fk_ctrl)
+
+                if right_hip_ctrl:
+                    self.add_rightHip_ctrl(right_hip_ctrl)
+                if right_knee_ctrl:
+                    self.add_rightKnee_ctrl(right_knee_ctrl)
+                if right_ankle_fk_ctrl:
+                    self.add_rightAnkle_ctrl(right_ankle_fk_ctrl)
+
+            if use_ik and not use_hybrid:
+                if left_hand_ik_ctrl:
+                    self.add_leftHand_ctrl(left_hand_ik_ctrl)
+
+                if left_ankle_ik_ctrl:
+                    self.add_leftAnkle_ctrl(left_ankle_ik_ctrl)
+
+                if right_hand_ik_ctrl:
+                    self.add_rightHand_ctrl(right_hand_ik_ctrl)
+
+                if right_ankle_ik_ctrl:
+                    self.add_rightAnkle_ctrl(right_ankle_ik_ctrl)
+
+            if use_hybrid:
+                if left_shoulder_ctrl:
+                    self.add_leftShoulder_ctrl(left_shoulder_ctrl)
+                if left_elbow_ctrl:
+                    self.add_leftElbow_ctrl(left_elbow_ctrl)
+                if left_hand_fk_ctrl:
+                    self.add_leftHand_ctrl(left_hand_fk_ctrl)
+
+                if right_shoulder_ctrl:
+                    self.add_rightShoulder_ctrl(right_shoulder_ctrl)
+                if right_elbow_ctrl:
+                    self.add_rightElbow_ctrl(right_elbow_ctrl)
+                if right_hand_fk_ctrl:
+                    self.add_rightHand_ctrl(right_hand_fk_ctrl)
+
+                if left_ankle_ik_ctrl:
+                    self.add_leftAnkle_ctrl(left_ankle_ik_ctrl)
+
+                if right_ankle_ik_ctrl:
+                    self.add_rightAnkle_ctrl(right_ankle_ik_ctrl)
                 
 
     def setCharacterObject(self, joint, joint_id):
@@ -554,6 +583,8 @@ def unlock_arise():
         
         
 if __name__ == "__main__":
-    unlock_arise()
-    humanIk = HumanIK('MainCharacter_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=False)
-    humanIk = HumanIK('MainCharacter_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=False)
+    #unlock_arise()
+    char_name = 'Bomber_Male_S1'
+    humanIk = HumanIK(char_name + '_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=False)
+    humanIk = HumanIK(char_name + '_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=False)
+    humanIk = HumanIK(char_name + '_Hybird', custom_ctrl_definition=True, use_ik=False, use_hybrid=True, skip_reference_joint=False)
