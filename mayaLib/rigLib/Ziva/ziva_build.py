@@ -2,6 +2,8 @@ from pathlib import Path
 import pymel.core as pm
 import maya.mel as mel
 
+import zBuilder.builders.ziva as zva
+
 from mayaLib.rigLib.utils import util as util
 from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.Ziva import ziva_fiber_tools as fiber
@@ -76,7 +78,7 @@ class ZivaBase():
     def save_zBuilder(self, file_name=None):
         workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / 'scenes' / 'zBuilder'
         workspace_dir.mkdir(parents=True, exist_ok=True)
-        
+
         pm.select(self.zSolver)
         z = zva.Ziva()
         z.retrieve_from_scene()
@@ -98,7 +100,7 @@ class ZivaBase():
         else:
             file_name = str(workspace_dir) + '/' + self.character_name + '_' + self.rig_type + '.zBuilder'
             z.retrieve_from_file(file_name)
-            
+
         z.build()
 
     def add_zivaCache(self, zSolver=None):
