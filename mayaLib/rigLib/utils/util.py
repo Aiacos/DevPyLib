@@ -73,6 +73,9 @@ def getAllObjectUnderGroup(group, type='mesh'):
     if type == 'mesh':
         objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
 
+    if type == 'nurbsSurface':
+        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
+
     if type == 'transform':
         geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
         objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
