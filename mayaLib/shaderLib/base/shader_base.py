@@ -58,6 +58,10 @@ def assign_shader(geo, shader):
     pm.hyperShade(assign=shader)
 
 
+def connect_shader_to_shading_node(shader, shading_engine):
+    pm.connectAttr(shader.outColor, shading_engine.surfaceShader, f=True)
+
+
 class Shader_base(object):
     """
     Create general Shader

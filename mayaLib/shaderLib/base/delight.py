@@ -1,11 +1,6 @@
 import pymel.core as pm
 from mayaLib.shaderLib.base.shader_base import Shader_base
 
-def connect_shader_to_shading_node(shader, shading_engine):
-    pm.connectAttr(shader.outColor, shading_engine.surfaceShader, f=True)
-
-
-
 
 class Principled_3dl(Shader_base):
     """
