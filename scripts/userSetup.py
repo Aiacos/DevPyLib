@@ -1,14 +1,14 @@
-# Install mayaLib
-REQUIRED = {'pathlib', 'numpy'}
-
 import os
 import sys
+from pathlib import Path
 import subprocess
 import importlib
 import pip
 import maya.cmds as cmds
 import maya.utils
 
+# Install mayaLib
+REQUIRED = {'pathlib', 'numpy'}
 
 def install(package):
     # subprocess.check_call([sys.executable, "-m", "pip", "install", package])
@@ -19,8 +19,6 @@ def install_required(REQUIRED):
     for mod in REQUIRED:
         install(mod)
 
-
-from pathlib import Path
 
 libDir = (Path.home() / 'workspace' / 'DevPyLib').as_posix()
 port = '4434'
@@ -36,8 +34,7 @@ if not libDir in sys.path:
     __import__(libName)
 else:
     importlib.reload(__import__(libName))
-    #reload(__import__(libName))
+    # reload(__import__(libName))
 
-import mayaLib.guiLib.mainMenu as mm
 command = str("libmenu = mm.MainMenu('" + str(libDir) + "')")
 cmds.evalDeferred(command)
