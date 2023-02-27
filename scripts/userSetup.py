@@ -36,5 +36,6 @@ else:
     importlib.reload(__import__(libName))
     # reload(__import__(libName))
 
+import mayaLib.guiLib.mainMenu as mm
 command = str("libmenu = mm.MainMenu('" + str(libDir) + "')")
 cmds.evalDeferred(command)
