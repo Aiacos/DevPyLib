@@ -241,16 +241,15 @@ def mirrorCtlShapes_OLD(*args):
     mc.select(sel)
 
 
-def mirrorCtlShapes(ctrl, mode='x'):
-    sides = ['_L', '_R']
+def mirrorCtlShapes(ctrl, mode='x', sides=['_L', '_R']):
     for s in sides:
         if s in ctrl:
             side = s
             other_side = ''
-            if side == '_L':
-                other_side = '_R'
+            if side == sides[0]:
+                other_side = sides[1]
             else:
-                other_side = '_L'
+                other_side = sides[0]
 
         ctrl = pm.ls(ctrl)[-1]
         shape_list = ctrl.getShapes()
