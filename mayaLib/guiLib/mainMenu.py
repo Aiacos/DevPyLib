@@ -275,8 +275,8 @@ class MainMenu(QtWidgets.QWidget):
         reload_package(mayaLib)
         self.libMenu.removeAction(self.wAction)
         self.libWindow.destroy()
-        self.wAction.deleteWidget(self)
-        self.libMenu.clear()
+        # self.wAction.deleteWidget()
+        # self.libMenu.clear()
 
         self.wAction = QtWidgets.QWidgetAction(self)
         self.libWindow = MenuLibWidget(libPath)  # ql
