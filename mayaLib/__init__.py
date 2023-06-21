@@ -37,6 +37,7 @@ if not cmds.commandPort(port, q=True):
     cmds.commandPort(n=port)
 
 
-#import mayaLib.guiLib.mainMenu as mm
-command = str("libmenu = mm.MainMenu('" + str(libDir) + "')")
-cmds.evalDeferred(command, lowestPriority=True)
+import mayaLib.guiLib.mainMenu as mm
+command = str("libmenu = mayaLib.guiLib.MainMenu('" + str(libDir) + "')")
+if 'libmenu' not in locals():
+    cmds.evalDeferred(command, lowestPriority=True)
