@@ -275,8 +275,8 @@ class MainMenu(QtWidgets.QWidget):
         reload_package(mayaLib)
         self.libMenu.removeAction(self.wAction)
         self.libWindow.destroy()
-        # self.wAction.deleteWidget()
-        # self.libMenu.clear()
+        self.wAction.deleteWidget(self)
+        self.libMenu.clear()
 
         self.wAction = QtWidgets.QWidgetAction(self)
         self.libWindow = MenuLibWidget(libPath)  # ql
@@ -318,4 +318,4 @@ def reload_package(package):
 
 
 if __name__ == "__main__":
-    menuPanel = MainMenu(r'C:\Users\Lorenzo\Documents\workspace\DevPyLib')
+    pass
