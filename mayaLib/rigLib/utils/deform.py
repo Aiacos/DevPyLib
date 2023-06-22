@@ -3,6 +3,27 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 from maya import mel
 
+import maya.cmds as cmds
+import maya.internal.nodes.proximitywrap.node_interface as node_interface
+
+
+def createProximityWrap(source, target):
+    """
+    Creates a proximity with the given source and target transforms.
+    Args:
+        source (pm.nodetypes.Transform): Transform with skinned mesh that will drive given target.
+        target (pm.nodetypes.Transform): Transform with mesh shape that will be driven by given source.
+    Returns:
+        (pm.nodetypes.ProximityWrap): Proximity wrap node created.
+    """
+    # implementing with maya.cmds since PyMel raises the following warning for every attribute set.
+    # Warning: pymel.core.general : Could not create desired MFn. Defaulting to MFnDependencyNode.
+    deformer = cmds.deformer(target.name(), type='proximityWrap', name=target.name(stripNamespace=True) + '_pWrap')[0]
+
+    proximity_interface = node_interface.NodeInterface(deformer)
+    proximity_interface.addDriver(source.getShapes()[-1].name())  # last shape should be the deformed shape
+
+    return deformer
 
 def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1, ], frontOfChain=False):
     """

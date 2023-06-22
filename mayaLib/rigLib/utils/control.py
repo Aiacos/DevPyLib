@@ -28,7 +28,6 @@ class Control():
             doOffset=True,
             doModify=False,
             doDynamicPivot=False,
-            objBBox=''
     ):
 
         """
@@ -51,8 +50,6 @@ class Control():
 
         ctrlObject = None
         circleNormal = [1, 0, 0]
-
-        scale = self.calculateScale(scale, translateTo=translateTo, objBBox=objBBox)
 
         # custom shape
         if shape in ['circle', 'circleX']:
@@ -165,58 +162,6 @@ class Control():
         self.dynamicPivot = None
         if doDynamicPivot:
             self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
-
-    def ctrlRadiusFromJoint(self, jnt, useSphere=True):
-        childJnt = jnt.getChildren()
-
-        if len(childJnt) > 0:
-            radius = util.get_distance(jnt, childJnt[0])
-
-            if useSphere:
-                sphere = pm.polySphere(r=radius, sx=20, sy=20, ch=False)[0]
-                radius = util.getPlanarRadiusBBOXFromTransform(sphere, radiusFactor=3)['3D']
-                pm.delete(sphere)
-
-        else:
-            return 1
-
-        return radius
-
-    def calculateScale(self, scale, translateTo='', objBBox='', useBBox=False, useMean=False):
-        """
-        Calculate scale value
-        :param scale: float
-        :param objBBox: str, object where to calculate bounding box
-        :param autoBBox: bool, auto find proxy geo for bbox
-        :param translateTo: str, object where to search proxy geo
-        :return: float, scale
-        """
-        if scale == 1:
-            if useBBox and pm.objExists(objBBox):  # customGeo
-                objBBox = pm.ls(objBBox)[0]
-                scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
-
-            elif pm.objExists(translateTo):
-                translateTo = pm.ls(translateTo)[0]
-
-                proxyGeoName = name.removeSuffix(translateTo.name()) + '_PRX'
-                if useBBox and pm.objExists(proxyGeoName):
-                    objBBox = pm.ls(proxyGeoName)[0]
-                    scale = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)['3D']
-
-                elif useMean and pm.objExists(proxyGeoName):
-                    objBBox = pm.ls(proxyGeoName)[0]
-                    bboxValues = util.getPlanarRadiusBBOXFromTransform(objBBox, radiusFactor=3)
-                    scale = (bboxValues['planarX'] + bboxValues['planarY'] + bboxValues['planarZ']) / 3
-
-                elif isinstance(translateTo, pm.nodetypes.Joint):
-                    scale = self.ctrlRadiusFromJoint(translateTo)
-                    if scale < 1 or (scale / 3) < 0.01:
-                        scale = 1
-                    else:
-                        scale = scale / 3
-
-        return scale
 
     def getCtrlScale(self):
         return self.scale
