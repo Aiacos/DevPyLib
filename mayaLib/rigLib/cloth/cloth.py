@@ -280,20 +280,20 @@ def wrap_components(feather_geo_list):
 
         # Nurbs plane wraps barbs
 
+if __name__ == "__main__":
+    #### main
+    # wing_model_grp = pm.ls('*:prp_main_wings_default', 'prp_main_wings_default')[-1]
+    # if pm.objExists('rig_root_grp'):
+    #    pm.parent(wing_model_grp, 'geometry_grp')
 
-#### main
-# wing_model_grp = pm.ls('*:prp_main_wings_default', 'prp_main_wings_default')[-1]
-# if pm.objExists('rig_root_grp'):
-#    pm.parent(wing_model_grp, 'geometry_grp')
+    feather_grp = pm.ls('*:GRP_feathers', 'GRP_feathers')[-1]
+    feather_geo_list = getAllObjectUnderGroup(feather_grp)
+    collision_geo_list = pm.ls('model:MSH_skin', 'MSH_skin')
 
-feather_grp = pm.ls('*:GRP_feathers', 'GRP_feathers')[-1]
-feather_geo_list = getAllObjectUnderGroup(feather_grp)
-collision_geo_list = pm.ls('model:MSH_skin', 'MSH_skin')
+    cSolver = ClothFeather(feather_geo_list, collision_geo_list)
+    cSolver.updateSettings()
+    # pm.evalDeferred("cSolver.paintQuills(p_quill=0.75, p_feather=0.1)")
 
-cSolver = ClothFeather(feather_geo_list, collision_geo_list)
-cSolver.updateSettings()
-# pm.evalDeferred("cSolver.paintQuills(p_quill=0.75, p_feather=0.1)")
+    # pm.delete('rig_model_grp')
 
-# pm.delete('rig_model_grp')
-
-# wrap_components(feather_geo_list)
+    # wrap_components(feather_geo_list)
