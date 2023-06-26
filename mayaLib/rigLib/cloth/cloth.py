@@ -1,69 +1,8 @@
 import maya.mel as mel
 import pymel.core as pm
 
-
-def getAllObjectUnderGroup(group, type='mesh'):
-    """
-    Return all object of given type under group
-    :param group: str, group name
-    :param type: str, object type
-    :return: object list
-    """
-    objList = None
-    if type == 'mesh':
-        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-    if type == 'transform':
-        geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
-        objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
-    objList = list(set(objList))
-    objList.sort()
-    return objList
-
-
-def wrapDeformer(wrappedObjs, wrapperObj):
-    """
-    Apply Wrap Deformer on selected mesh
-    :param wrappedObjs: list(str)
-    :param wrapperObj: str
-    :return: deformer node
-    """
-    pm.select(wrappedObjs)
-    pm.select(wrapperObj, add=1)
-    # deformerNode = pm.deformer(type='wrap')
-    deformerNode = mel.eval('doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }')
-    return pm.ls(deformerNode)[0]
-
-
-def deltaMushDeformer(geo, smoothingIterations=10, smoothingStep=0.5):
-    """
-    Apply Mush Deformer
-    :param geo: str
-    :param smoothingIterations: float
-    :param smoothingStep: float
-    :return: deformer node
-    """
-    deformerNode = pm.deltaMush(geo, smoothingIterations=smoothingIterations, smoothingStep=smoothingStep)[0]
-    return deformerNode
-
-
-def blendShapeDeformer(base, blendshapeList, nodeName, defaultValue=[1, ], frontOfChain=False):
-    """
-    Apply BlendShape on selected mesh or curve
-    :param base: str
-    :param blendshapeList: list(str)
-    :param frontOfChain: bool
-    :return: deformer node
-    """
-
-    w = (0, float(defaultValue[0]))
-    if isinstance(blendshapeList, list):
-        for i, df in zip(list(range(0, len(blendshapeList))), defaultValue):
-            w = (i, float(df))
-
-    blendshapeNode = pm.blendShape(blendshapeList, base, n=nodeName, frontOfChain=frontOfChain,
-                                   weight=w)
-
-    return blendshapeNode
+from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import deform
 
 
 def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
@@ -88,7 +27,7 @@ def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
     pm.select(cl=True)
 
 
-class ClothFeather:
+class Cloth:
     def __init__(self, geo_list, collision_geo_list):
         self.cloth_system_grp = pm.group(n='ClothSystem_grp', em=True)
 
@@ -106,7 +45,7 @@ class ClothFeather:
         self.nucleus.enable.set(0)
 
         # setup Colliders
-        # self.collisionSetup(collision_geo_list)
+        self.collisionSetup(collision_geo_list)
 
         for geo, clothShape in zip(geo_list, self.clothShapeList):
             self.connect_inputMesh_restShape(geo, clothShape)
@@ -116,8 +55,8 @@ class ClothFeather:
             name = str(geo.name()).replace('_tmpgeo', '')
             pm.rename(geo, name)
 
-        sim_geo_list = getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
-        deltaMushDeformer(sim_geo_list)
+        sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
+        deform.deltaMushDeformer(sim_geo_list)
 
     def paintQuills(self, p_quill=0.75, p_feather=0.1):
         for clothShape in self.clothShapeList:
@@ -129,20 +68,20 @@ class ClothFeather:
             else:
                 self.paintInputAttract(clothShape, quill=0.75, feather=0.45)
 
-    def createNCloth(self, featherList):
+    def createNCloth(self, geo_list):
         clothShapeList = []
         sim_geo_list = []
         clothSimGrp = pm.group(n='clothSim_grp', p=self.cloth_system_grp, em=True)
         clothOutGrp = pm.group(n='clothOut_grp', p=self.cloth_system_grp, em=True)
 
-        for geo in featherList:
+        for geo in geo_list:
             geo_name = str(geo.name()).replace('_tmpgeo', '_SIM')
             out_name = str(geo.name()).replace('_tmpgeo', '_out_SIM_GEO')
             sim_geo = pm.duplicate(geo, n=geo_name)[0]
             out_geo = pm.duplicate(geo, n=out_name)[0]
             pm.parent(sim_geo, clothSimGrp)
             pm.parent(out_geo, clothOutGrp)
-            outBlendshape = blendShapeDeformer(out_geo, [sim_geo], geo_name + '_BS')[-1]
+            outBlendshape = deform.blendShapeDeformer(out_geo, [sim_geo], geo_name + '_BS')[-1]
             outBlendshape.origin.set(0)
 
             pm.select(sim_geo)
@@ -286,11 +225,17 @@ if __name__ == "__main__":
     # if pm.objExists('rig_root_grp'):
     #    pm.parent(wing_model_grp, 'geometry_grp')
 
+#### main
+if __name__ == '__main__':
+    # wing_model_grp = pm.ls('*:prp_main_wings_default', 'prp_main_wings_default')[-1]
+    # if pm.objExists('rig_root_grp'):
+    #    pm.parent(wing_model_grp, 'geometry_grp')
+
     feather_grp = pm.ls('*:GRP_feathers', 'GRP_feathers')[-1]
-    feather_geo_list = getAllObjectUnderGroup(feather_grp)
+    feather_geo_list = util.getAllObjectUnderGroup(feather_grp)
     collision_geo_list = pm.ls('model:MSH_skin', 'MSH_skin')
 
-    cSolver = ClothFeather(feather_geo_list, collision_geo_list)
+    cSolver = Cloth(feather_geo_list, collision_geo_list)
     cSolver.updateSettings()
     # pm.evalDeferred("cSolver.paintQuills(p_quill=0.75, p_feather=0.1)")
 
