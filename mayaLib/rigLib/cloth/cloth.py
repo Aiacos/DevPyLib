@@ -219,11 +219,6 @@ def wrap_components(feather_geo_list):
 
         # Nurbs plane wraps barbs
 
-if __name__ == "__main__":
-    #### main
-    # wing_model_grp = pm.ls('*:prp_main_wings_default', 'prp_main_wings_default')[-1]
-    # if pm.objExists('rig_root_grp'):
-    #    pm.parent(wing_model_grp, 'geometry_grp')
 
 #### main
 if __name__ == '__main__':
