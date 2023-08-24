@@ -2,15 +2,6 @@ import os
 import glob
 from PIL import Image
 
-tga_texture_list = []
-tga_texture_list.extend(glob.glob('*.TGA'))
-tga_texture_list.extend(glob.glob('*.tga'))
-print(tga_texture_list)
-
-images = []
-images.extend(glob.glob('*_MT_R_AO.png'))
-images.extend(glob.glob('*_OcclusionRoughnessMetallic.png'))
-
 
 def split_channels(image_file, image_name, extension='.png'):
     image_path = os.path.join(os.getcwd(), image_file)
@@ -34,17 +25,17 @@ def get_all_texture(extension_list=['png', 'tga', 'jpg']):
         texture_list.extend(glob.glob('*.' + ext))
         texture_list.extend(glob.glob('*.' + ext.upper()))
 
-    return texture_list
+    return set(texture_list)
 
 class Texture_Manager():
     """
     Texture Manager
     """
-    base_color_name_list = str('diffuse diff albedo base col color basecolor').split(' ')
+    base_color_name_list = str('diffuse diff albedo base col color basecolor bc').split(' ')
     subsurface_color_name_list = str('sss subsurface').split(' ')
     metallic_name_list = str('metallic metalness metal mtl mt').split(' ')
     specular_name_list = str('specularity specular spec spc').split(' ')
-    roughness_name_list = str('roughness rough rgh r').split(' ')
+    roughness_name_list = str('roughness rough rgh').split(' ')
     gloss_name_list = str('gloss glossy glossiness').split(' ')
     normal_name_list = str('normal nor nrm nrml norm n').split(' ')
     bump_name_list = str('bump bmp').split(' ')
@@ -53,10 +44,11 @@ class Texture_Manager():
     alpha_name_list = str('alpha').split(' ')
     emission_name_list = str('emission').split(' ')
 
-    def __init__(self, extension_list=['png', 'tga', 'jpg']):
-        texture_list = get_all_texture(extension_list)
+    def __init__(self, extension='.png', extension_search_list=['png', 'tga', 'jpg']):
+        self.extension = extension
+        self.texture_list = get_all_texture(extension_search_list)
 
-        for tex in texture_list:
+        for tex in self.texture_list:
             if ('_MT_R_AO' in tex) or ('_OcclusionRoughnessMetallic' in tex):
                 self.split_texture(tex)
             else:
@@ -64,7 +56,8 @@ class Texture_Manager():
 
     def split_texture(self, texture):
         channel = str(texture.split('.')[0]).split('_')[-1]
-        name = '_'.join(str(texture.split('.')[0]).split('_')[:-1])
+        name = str(texture.split('.')[0])
+        name = name.replace('_MT_R_AO', '').replace('_OcclusionRoughnessMetallic', '')
 
         split_channels(texture, name, extension='.png')
 
@@ -75,21 +68,27 @@ class Texture_Manager():
         print('Texture: ', texture, ' -- Name: ', name, ' -- Channel: ', channel)
 
         if channel.lower() in self.base_color_name_list:
-            pass
+            convert_to_png(texture, name + '_diffuse', self.extension)
         if channel.lower() in self.metallic_name_list:
-            pass
+            convert_to_png(texture, name + '_metallic', self.extension)
+        if channel.lower() in self.subsurface_color_name_list:
+            convert_to_png(texture, name + '_subsurface', self.extension)
         if channel.lower() in self.specular_name_list:
-            pass
+            convert_to_png(texture, name + '_specular', self.extension)
         if channel.lower() in self.roughness_name_list:
-            pass
+            convert_to_png(texture, name + '_roughness', self.extension)
         if channel.lower() in self.gloss_name_list:
-            pass
+            convert_to_png(texture, name + '_gloss', self.extension)
         if channel.replace('-OGL', '').lower() in self.normal_name_list:
-            pass
+            convert_to_png(texture, name + '_normal', self.extension)
         if channel.lower() in self.trasmission_name_list:
-            pass
+            convert_to_png(texture, name + '_trasmission', self.extension)
+        if channel.lower() in self.alpha_name_list:
+            convert_to_png(texture, name + '_opacity', self.extension)
+        if channel.lower() in self.emission_name_list:
+            convert_to_png(texture, name + '_emission', self.extension)
         if channel.lower() in self.displacement_name_list:
-            pass
+            convert_to_png(texture, name + '_displacement', self.extension)
 
 
 
