@@ -26,7 +26,7 @@ def split_channels(image_file, image_name, extension='.png', colorspace='None'):
     image_path = os.path.join(os.getcwd(), image_file)
     image = Image.open(image_path)
 
-    colorspace_conversion(image, colorspace)
+    image = colorspace_conversion(image, colorspace)
 
     r, g, b = image.split()
     r.save(image_name + '_metallic' + extension)
@@ -37,7 +37,7 @@ def convert_to_png(image_file, image_name, extension='.png', colorspace='None'):
     image_path = os.path.join(os.getcwd(), image_file)
     image = Image.open(image_path)
 
-    colorspace_conversion(image, colorspace)
+    image = colorspace_conversion(image, colorspace)
 
     image.save(image_name + extension)
 
