@@ -1,20 +1,44 @@
 import os
 import glob
-from PIL import Image
+from PIL import Image, ImageFilter
 
 
-def split_channels(image_file, image_name, extension='.png'):
+def gamma_correction(img, gamma):
+    #LUT = ImageFilter.Color3DLUT.generate((11, 11, 11), lambda r, g, b: (r ** gamma, g ** gamma, b ** gamma))
+    #img_out = img.filter(LUT)
+    img_out = img.point(lambda x: ((x / 255) ** gamma) * 255)
+
+    return img_out
+
+def colorspace_conversion(img, colorspace='None', gamma_to_srgb=10.2, gamma_to_linear=0.1454545):
+    print('Colorspace: ', colorspace)
+    if colorspace == 'None':
+        return img
+    elif colorspace == 'sRGB':
+        return gamma_correction(img, gamma_to_srgb)
+    elif colorspace == 'linear':
+        return gamma_correction(img, gamma_to_linear)
+    else:
+        print('Invalid colorspace')
+        return img
+
+
+def split_channels(image_file, image_name, extension='.png', colorspace='None'):
     image_path = os.path.join(os.getcwd(), image_file)
     image = Image.open(image_path)
+
+    colorspace_conversion(image, colorspace)
 
     r, g, b = image.split()
     r.save(image_name + '_metallic' + extension)
     g.save(image_name + '_roughness' + extension)
     b.save(image_name + '_ao' + extension)
 
-def convert_to_png(image_file, image_name, extension='.png'):
+def convert_to_png(image_file, image_name, extension='.png', colorspace='None'):
     image_path = os.path.join(os.getcwd(), image_file)
     image = Image.open(image_path)
+
+    colorspace_conversion(image, colorspace)
 
     image.save(image_name + extension)
 
