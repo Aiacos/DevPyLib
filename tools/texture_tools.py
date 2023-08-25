@@ -10,8 +10,7 @@ def gamma_correction(img, gamma):
 
     return img_out
 
-def colorspace_conversion(img, colorspace='None', gamma_to_srgb=10.2, gamma_to_linear=0.1454545):
-    print('Colorspace: ', colorspace)
+def colorspace_conversion(img, colorspace='None', gamma_to_srgb=2.2, gamma_to_linear=0.454545):
     if colorspace == 'None':
         return img
     elif colorspace == 'sRGB':
