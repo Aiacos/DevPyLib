@@ -204,7 +204,6 @@ class Shader_base(object):
         pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node, f=True)
 
     def create_file_node(self, path, name, color=True):
-        print(name, type(name))
         tex_name, ext = name.split('.')
 
         file_node = pm.shadingNode("file", name=tex_name + '_tex', asTexture=True, isColorManaged=True)
