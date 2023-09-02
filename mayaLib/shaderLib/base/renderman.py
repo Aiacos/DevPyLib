@@ -54,7 +54,7 @@ class PxrDisneyBSDF(Shader_base):
 
         # connect texture
         if standard:
-            self.connect_textures()
+            self.connect_textures(shader_textures)
         else:
             self.connect_textures_renderman(shader_textures)
 

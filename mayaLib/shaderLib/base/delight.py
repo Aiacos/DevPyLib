@@ -40,7 +40,7 @@ class Principled_3dl(Shader_base):
 
         # connect texture
         if standard:
-            self.connect_textures()
+            self.connect_textures(shader_textures)
         else:
             self.connect_textures_3dl(shader_textures)
 

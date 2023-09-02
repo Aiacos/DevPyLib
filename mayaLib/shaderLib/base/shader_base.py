@@ -130,13 +130,13 @@ class Shader_base(object):
                 self.connect_displace(self.shader_name, tex)
 
     def connect_color(self, texture, slot_name, colorspace=True):
-        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
-        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         file_node.alphaIsLuminance.set(True)
@@ -144,7 +144,7 @@ class Shader_base(object):
 
 
     def connect_normal(self, texture, slot_name, colorspace=False):
-        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         # create bump_node
@@ -160,7 +160,7 @@ class Shader_base(object):
         pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
 
     def connect_displace(self, texture, slot_name, colorspace=False):
-        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
     def create_place_node(self):

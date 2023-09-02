@@ -7,6 +7,7 @@ from pymel import core as pm
 from mayaLib.shaderLib.base import texture
 from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
 from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
+from mayaLib.shaderLib.base.delight import Principled_3dl
 
 
 class TextureShader():
@@ -72,11 +73,12 @@ class ConvertShaders(object):
             print(shader)
             shading_engine = shader.connections(type='shadingEngine')[-1]
             assigned_geometry = shading_engine.connections(type='mesh')
-            folder = self.get_main_texture(shader)
-            #print(folder)
 
-            texture_manager = texture.TextureFolder(folder)
-            #print(texture_manager.build_texture_catalog())
+            folder, texture_list = self.get_main_texture(shader)
+
+            delight_shader = Principled_3dl(shader.name(), folder, texture_list)
+
+
 
     def get_materials_in_scene(self):
         # No need to pass in a string to `type`, if you don't want to.
@@ -92,7 +94,13 @@ class ConvertShaders(object):
         texture_file_path = file_node_list[0].fileTextureName.get()
         file_path = pathlib.Path(texture_file_path).parent.absolute()
 
-        return file_path
+        texture_list = []
+        for file_node in file_node_list:
+            texture_full_path = file_node.fileTextureName.get()
+            texture = pathlib.Path(texture_full_path).name
+            texture_list.append(texture)
+
+        return str(file_path), texture_list
 
 
 if __name__ == "__main__":
