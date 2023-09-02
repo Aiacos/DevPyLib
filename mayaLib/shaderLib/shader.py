@@ -1,5 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
+import pathlib
+
 from pymel import core as pm
 
 from mayaLib.shaderLib.base import texture
@@ -54,7 +56,7 @@ class TextureShader():
         return self.shader
 
 class BuildAllShaders(object):
-    def __init__(self,  sourceimages, workspace=pm.workspace(q=True, dir=True, rd=True)):
+    def __init__(self,  folder):
         # Build Texture List
         texture_manager = texture.TextureFolder()
         texture_dict = texture_manager.build_texture_catalog()
@@ -63,16 +65,34 @@ class BuildAllShaders(object):
             TextureShader()
 
 class ConvertShaders(object):
-    def __init__(self,  sourceimages, workspace=pm.workspace(q=True, dir=True, rd=True)):
-        # Build Texture List
-        texture_manager = texture.TextureFolder()
-        texture_dict = texture_manager.build_texture_catalog()
+    def __init__(self, to_shader_type):
+        self.shader_list = self.get_materials_in_scene()
 
-        # Shader List
+        for shader in self.shader_list:
+            print(shader)
+            shading_engine = shader.connections(type='shadingEngine')[-1]
+            assigned_geometry = shading_engine.connections(type='mesh')
+            folder = self.get_main_texture(shader)
+            #print(folder)
 
+            texture_manager = texture.TextureFolder(folder)
+            #print(texture_manager.build_texture_catalog())
 
-        for key, value in texture_dict.items():
-            TextureShader()
+    def get_materials_in_scene(self):
+        # No need to pass in a string to `type`, if you don't want to.
+        for shading_engine in pm.ls(type=pm.nt.ShadingEngine):
+            # ShadingEngines are collections, so you can check against their length
+            if len(shading_engine):
+                # You can call listConnections directly on the attribute you're looking for.
+                for material in shading_engine.surfaceShader.listConnections():
+                    yield material
+
+    def get_main_texture(self, shader):
+        file_node_list = shader.connections(type='file')
+        texture_file_path = file_node_list[0].fileTextureName.get()
+        file_path = pathlib.Path(texture_file_path).parent.absolute()
+
+        return file_path
 
 
 if __name__ == "__main__":

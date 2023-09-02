@@ -10,11 +10,16 @@ import os, glob, pathlib
 
 
 class TextureFolder(object):
-    def __init__(self, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
+    def __init__(self, folder=None, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
         # pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/'
         self.home = pathlib.Path.home()
-        self.texture_folder = self.home / workspace / sourceimages
         self.scenes_folder = self.home / workspace / scenes
+
+        if folder:
+            self.texture_folder = pathlib.Path(folder)
+        else:
+            self.texture_folder = self.home / workspace / sourceimages
+
 
         self.imgList = self.buildImgList()
 
