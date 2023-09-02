@@ -25,11 +25,11 @@ class aiStandard_shaderBase(Shader_base):
         self.makeAiStandard(file_node_dict)
 
     def makeAiStandard(self, file_node):
-        connect_diffuse = Shader_base.connect_color_texture
-        connect_backlighting = Shader_base.connect_luminance_texture
-        connect_specularColor = Shader_base.connect_color_texture
-        connect_specularWeight = Shader_base.connect_luminance_texture
-        connect_specularRoughness = Shader_base.connect_luminance_texture
+        connect_diffuse = Shader_base.connect_color
+        connect_backlighting = Shader_base.connect_luminance
+        connect_specularColor = Shader_base.connect_color
+        connect_specularWeight = Shader_base.connect_luminance
+        connect_specularRoughness = Shader_base.connect_luminance
         connect_fresnel = Shader_base.connect_fresnel
         connect_normal = Shader_base.connect_normal
 

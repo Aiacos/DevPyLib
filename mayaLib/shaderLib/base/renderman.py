@@ -9,18 +9,6 @@ class PxrDisneyBSDF(Shader_base):
     """
     Create PxrSurface shader
     """
-    base_color_name_list = str('diffuse diff albedo base col color basecolor').split(' ')
-    subsurface_color_name_list = str('sss subsurface').split(' ')
-    metallic_name_list = str('metallic metalness metal mtl').split(' ')
-    specular_name_list = str('specularity specular spec spc').split(' ')
-    roughness_name_list = str('roughness rough rgh').split(' ')
-    gloss_name_list = str('gloss glossy glossiness').split(' ')
-    normal_name_list = str('normal nor nrm nrml norm').split(' ')
-    bump_name_list = str('bump bmp').split(' ')
-    displacement_name_list = str('displacement displace disp dsp height heightmap').split(' ')
-    trasmission_name_list = str('opacity').split(' ')
-    alpha_name_list = str('alpha').split(' ')
-    emission_name_list = str('emission').split(' ')
 
     diffuse = 'baseColor'
     subsurface = None
@@ -44,7 +32,7 @@ class PxrDisneyBSDF(Shader_base):
         :param shader_type:
         """
         # init base class
-        Shader_base.__init__(self, shader_name, shader_type=shader_type)
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type)
         self.shader = Shader_base.get_shader(self)
 
         self.channel_list = [self.base_color_name_list,
@@ -89,7 +77,7 @@ class PxrDisneyBSDF(Shader_base):
             if channel.lower() in self.displacement_name_list:
                 self.connect_displace(self.shader_name, tex)
 
-    def create_file_node(self, path, name, linearize=True):
+    def create_file_node_renderman(self, path, name, linearize=True):
         """
         Connect place node to file node
         :param path:
@@ -108,15 +96,15 @@ class PxrDisneyBSDF(Shader_base):
 
         return pxrtexture_node
 
-    def connect_color(self, texture, slot_name):
+    def connect_color_renderman(self, texture, slot_name):
         pxrtexture_node = self.create_file_node(self.folder, texture, linearize=True)
         pm.connectAttr(pxrtexture_node.resultRGB, '%s.%s' % (self.shader, slot_name))
 
-    def connect_noncolor(self, texture, slot_name):
+    def connect_noncolor_renderman(self, texture, slot_name):
         pxrtexture_node = self.create_file_node(self.folder, texture, linearize=False)
         pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
 
-    def connect_normal(self, texture, slot_name=normal, directx_normal=True):
+    def connect_normal_renderman(self, texture, slot_name=normal, directx_normal=True):
         pxrtexture_node = self.create_file_node(self.folder, texture, linearize=False)
         self.pxrnormalmap_node = pm.shadingNode("PxrNormalMap", asTexture=True)
 
@@ -129,7 +117,7 @@ class PxrDisneyBSDF(Shader_base):
 
         pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
         
-    def connect_displace(self, shader_name, texture):
+    def connect_displace_renderman(self, shader_name, texture):
         pxrTexture = self.create_file_node(self.folder, texture, linearize=False)
         pxrDisplace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name + 'Displace')
         pxrDispTransform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name + 'DispTransform')

@@ -6,18 +6,6 @@ class Principled_3dl(Shader_base):
     """
     Create 3Delight Principled shader
     """
-    base_color_name_list = str('diffuse diff albedo base col color basecolor').split(' ')
-    subsurface_color_name_list = str('sss subsurface').split(' ')
-    metallic_name_list = str('metallic metalness metal mtl').split(' ')
-    specular_name_list = str('specularity specular spec spc').split(' ')
-    roughness_name_list = str('roughness rough rgh').split(' ')
-    gloss_name_list = str('gloss glossy glossiness').split(' ')
-    normal_name_list = str('normal nor nrm nrml norm').split(' ')
-    bump_name_list = str('bump bmp').split(' ')
-    displacement_name_list = str('displacement displace disp dsp height heightmap').split(' ')
-    trasmission_name_list = str('opacity').split(' ')
-    alpha_name_list = str('alpha').split(' ')
-    emission_name_list = str('emission').split(' ')
 
     diffuse = 'color'
     subsurface = None
@@ -41,7 +29,7 @@ class Principled_3dl(Shader_base):
         :param shader_type:
         """
         # init base class
-        Shader_base.__init__(self, shader_name, shader_type=shader_type)
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type)
         self.shader = Shader_base.get_shader(self)
 
         self.channel_list = [self.base_color_name_list,
@@ -55,8 +43,6 @@ class Principled_3dl(Shader_base):
                              self.bump_name_list,
                              self.normal_name_list,
                              self.displacement_name_list]
-
-        self.folder = folder
 
         # init faceColor
         self.shader.color.set((0.2, 0.5, 0.8))
@@ -88,7 +74,7 @@ class Principled_3dl(Shader_base):
             if channel.lower() in self.displacement_name_list:
                 self.connect_displace(self.shader_name, tex)
 
-    def create_file_node(self, path, name, color=True):
+    def create_file_node_3dl(self, path, name, color=True):
         print(name, type(name))
         tex_name, ext = name.split('.')
 
@@ -107,18 +93,18 @@ class Principled_3dl(Shader_base):
 
         return plug
 
-    def connect_color(self, texture, slot_name):
-        texture_node = self.create_file_node(self.folder, texture, color=True)
+    def connect_color_3dl(self, texture, slot_name):
+        texture_node = self.create_file_node_3dl(self.folder, texture, color=True)
         pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
-    def connect_noncolor(self, texture, slot_name):
-        texture_node = self.create_file_node(self.folder, texture, color=False)
+    def connect_noncolor_3dl(self, texture, slot_name):
+        texture_node = self.create_file_node_3dl(self.folder, texture, color=False)
         pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
-    def connect_normal(self, texture, slot_name=normal, directx_normal=True):
-        texture_node = self.create_file_node(self.folder, texture, color=True)
+    def connect_normal_3dl(self, texture, slot_name=normal, directx_normal=True):
+        texture_node = self.create_file_node_3dl(self.folder, texture, color=True)
         pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
         texture_node.node().textureFile_meta_colorspace.set('linear')
 
