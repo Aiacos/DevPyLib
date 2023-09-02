@@ -93,7 +93,7 @@ class Shader_base(object):
     alpha = 'opacity'
     normal = 'normalCamera'
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='standardSurface', single_place_node=True):
+    def __init__(self, shader_name, folder, shader_textures, shader_type='standardSurface', single_place_node=True, shading_engine=None):
         self.shader_name = shader_name
         self.folder = folder
         self.shader_textures = shader_textures
@@ -102,9 +102,13 @@ class Shader_base(object):
         self.shader = pm.shadingNode(shader_type, asShader=True, name=shader_name)
 
         # create a shading group
-        self.shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=self.shader_name)
+        if not shading_engine:
+            self.shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=self.shader_name)
+        else:
+            self.shading_group = shading_engine
+
         # connect shader to sg surface shader
-        pm.connectAttr(self.shader.outColor, self.shading_group.surfaceShader)
+        pm.connectAttr(self.shader.outColor, self.shading_group.surfaceShader, f=True)
 
         if single_place_node:
             self.place_node = self.create_place_node()
@@ -218,6 +222,70 @@ class Shader_base(object):
         self.connect_placement(self.place_node, file_node)
 
         return file_node
+
+class UsdPreviewSurface(Shader_base):
+    diffuse = 'diffuseColor'
+    subsurface = 'subsurfaceColor'
+
+    metallic = 'metallic'
+    specular = None
+
+    roughness = 'roughness'
+
+    trasmission = 'trasmission'
+    emission = 'emission'
+    alpha = 'opacity'
+    normal = 'normal'
+
+    def __init__(self, shader_name, folder, shader_textures, shader_type='usdPreviewSurface', standard=True, shading_engine=None):
+        """
+        Create usdPreviewSurface shader
+        :param shader_name: Geo or Texture set (String)
+        :param folder: Texture forlder Path (String/Path)
+        :param shader_textures: Texture List (List od String/Path)
+        :param shader_type:
+        """
+        # init base class
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        self.shader = Shader_base.get_shader(self)
+
+        # init faceColor
+        self.shader.diffuseColor.set((0.2, 0.5, 0.8))
+
+        # place node
+        self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
+
+        # connect texture
+        self.connect_textures(shader_textures)
+
+
+    def connect_textures(self, textures):
+        for tex in textures:
+            channel = str(tex.split('.')[0]).split('_')[-1]
+
+            #print('Texture: ', tex, ' -- Channel: ', channel)
+            if channel.lower() in self.base_color_name_list:
+                self.connect_color(tex, self.diffuse)
+            if channel.lower() in self.metallic_name_list:
+                self.connect_noncolor(tex, self.metallic)
+            if channel.lower() in self.specular_name_list:
+                self.connect_noncolor(tex, self.specular)
+            if channel.lower() in self.roughness_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.lower() in self.gloss_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.replace('-OGL', '').lower() in self.normal_name_list:
+                self.connect_normal(tex)
+            if channel.lower() in self.trasmission_name_list:
+                self.connect_noncolor(tex, self.trasmission)
+            if channel.lower() in self.displacement_name_list:
+                self.connect_displace(self.shader_name, tex)
+
+    def connect_normal(self, texture, slot_name, colorspace=False):
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
+        self.connect_placement(self.place_node, file_node)
+
+        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
 
 
 if __name__ == "__main__":

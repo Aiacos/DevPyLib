@@ -20,7 +20,7 @@ class Principled_3dl(Shader_base):
     alpha = 'opacity'
     normal = 'disp_normal_bump_value'
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='dlPrincipled', standard=True):
+    def __init__(self, shader_name, folder, shader_textures, shader_type='dlPrincipled', standard=True, shading_engine=None):
         """
         Create 3Delight Principled shader
         :param shader_name: Geo or Texture set (String)
@@ -29,7 +29,7 @@ class Principled_3dl(Shader_base):
         :param shader_type:
         """
         # init base class
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type)
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
         self.shader = Shader_base.get_shader(self)
 
         # init faceColor
@@ -108,7 +108,7 @@ class Principled_3dl(Shader_base):
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_normal(self, texture, slot_name, colorspace=False, directx_normal=True):
-        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         if directx_normal:
@@ -117,3 +117,23 @@ class Principled_3dl(Shader_base):
             self.shader.disp_normal_bump_type.set(2)
 
         pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
+
+    def connect_textures(self, textures):
+        for tex in textures:
+            channel = str(tex.split('.')[0]).split('_')[-1]
+
+            #print('Texture: ', tex, ' -- Channel: ', channel)
+            if channel.lower() in self.base_color_name_list:
+                self.connect_color(tex, self.diffuse)
+            if channel.lower() in self.metallic_name_list:
+                self.connect_noncolor(tex, self.metallic)
+            if channel.lower() in self.specular_name_list:
+                self.connect_noncolor(tex, self.specular)
+            if channel.lower() in self.roughness_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.lower() in self.gloss_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.replace('-OGL', '').lower() in self.normal_name_list:
+                self.connect_normal(tex, self.normal)
+            if channel.lower() in self.trasmission_name_list:
+                self.connect_noncolor(tex, self.trasmission)

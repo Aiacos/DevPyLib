@@ -71,15 +71,19 @@ class ConvertShaders(object):
 
         for shader in self.shader_list:
             shader_name = str(shader.name())
-            pm.rename(shader, shader_name + '_OLD')
-
             shading_engine = shader.connections(type='shadingEngine')[-1]
             assigned_geometry = shading_engine.connections(type='mesh')
 
-            folder, texture_list = self.get_main_texture(shader)
+            pm.rename(shader, shader_name + '_OLD')
+            #pm.rename(shading_engine, str(shading_engine.name()) + '_OLD')
 
-            delight_shader = Principled_3dl(shader.name(), folder, texture_list)
-            delight_shader.assign_shader(assigned_geometry)
+            folder, texture_list = self.get_main_texture(shader)
+            print(texture_list)
+
+            delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+            #delight_shader.assign_shader(assigned_geometry)
+
+            pm.mel.MLdeleteUnused()
 
 
 
@@ -93,7 +97,10 @@ class ConvertShaders(object):
                     yield material
 
     def get_main_texture(self, shader):
-        file_node_list = shader.connections(type='file')
+        file_node_list = pm.listConnections(shader, source=True, type='file')
+        bump_node_list = pm.listConnections(shader, source=True, type='bump2d')
+        if bump_node_list:
+            file_node_list.extend(pm.listConnections(bump_node_list, source=True, type='file'))
         texture_file_path = file_node_list[0].fileTextureName.get()
         file_path = pathlib.Path(texture_file_path).parent.absolute()
 

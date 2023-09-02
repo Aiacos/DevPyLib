@@ -23,7 +23,7 @@ class PxrDisneyBSDF(Shader_base):
     alpha = 'presence'
     normal = 'bumpNormal'
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='PxrDisneyBsdf', standard=True):
+    def __init__(self, shader_name, folder, shader_textures, shader_type='PxrDisneyBsdf', standard=True, shading_engine=None):
         """
         Create PxrSurface shader
         :param shader_name: Geo or Texture set (String)
@@ -32,7 +32,7 @@ class PxrDisneyBSDF(Shader_base):
         :param shader_type:
         """
         # init base class
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type)
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
         self.shader = Shader_base.get_shader(self)
 
         self.channel_list = [self.base_color_name_list,
@@ -133,3 +133,23 @@ class PxrDisneyBSDF(Shader_base):
         pm.connectAttr(pxrDisplace.outColor, self.shading_group.displacementShader)
 
         return pxrDisplace
+
+    def connect_textures(self, textures):
+        for tex in textures:
+            channel = str(tex.split('.')[0]).split('_')[-1]
+
+            #print('Texture: ', tex, ' -- Channel: ', channel)
+            if channel.lower() in self.base_color_name_list:
+                self.connect_color(tex, self.diffuse)
+            if channel.lower() in self.metallic_name_list:
+                self.connect_noncolor(tex, self.metallic)
+            if channel.lower() in self.specular_name_list:
+                self.connect_noncolor(tex, self.specular)
+            if channel.lower() in self.roughness_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.lower() in self.gloss_name_list:
+                self.connect_noncolor(tex, self.roughness)
+            if channel.replace('-OGL', '').lower() in self.normal_name_list:
+                self.connect_normal(tex, self.normal)
+            if channel.lower() in self.trasmission_name_list:
+                self.connect_noncolor(tex, self.trasmission)
