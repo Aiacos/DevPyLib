@@ -217,6 +217,9 @@ class Shader_base(object):
             file_node.alphaIsLuminance.set(1)
             plug = file_node.outAlpha
 
+        if '.10' in name:
+            file_node.uvTilingMode.set(3)
+
         self.connect_placement(self.place_node, file_node)
 
         return file_node
