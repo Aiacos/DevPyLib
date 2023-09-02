@@ -70,13 +70,16 @@ class ConvertShaders(object):
         self.shader_list = self.get_materials_in_scene()
 
         for shader in self.shader_list:
-            print(shader)
+            shader_name = str(shader.name())
+            pm.rename(shader, shader_name + '_OLD')
+
             shading_engine = shader.connections(type='shadingEngine')[-1]
             assigned_geometry = shading_engine.connections(type='mesh')
 
             folder, texture_list = self.get_main_texture(shader)
 
             delight_shader = Principled_3dl(shader.name(), folder, texture_list)
+            delight_shader.assign_shader(assigned_geometry)
 
 
 

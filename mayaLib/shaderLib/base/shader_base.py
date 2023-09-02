@@ -80,6 +80,19 @@ class Shader_base(object):
     alpha_name_list = str('alpha').split(' ')
     emission_name_list = str('emission').split(' ')
 
+    diffuse = 'baseColor'
+    subsurface = 'subsurfaceColor'
+
+    metallic = 'metalness'
+    specular = None
+
+    roughness = 'specularRoughness'
+
+    trasmission = 'trasmission'
+    emission = 'emission'
+    alpha = 'opacity'
+    normal = 'normalCamera'
+
     def __init__(self, shader_name, folder, shader_textures, shader_type='standardSurface', single_place_node=True):
         self.shader_name = shader_name
         self.folder = folder
@@ -111,7 +124,8 @@ class Shader_base(object):
     def connect_textures(self, textures):
         for tex in textures:
             channel = str(tex.split('.')[0]).split('_')[-1]
-            print('Texture: ', tex, ' -- Channel: ', channel)
+
+            #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
                 self.connect_color(tex, self.diffuse)
             if channel.lower() in self.metallic_name_list:
@@ -133,14 +147,14 @@ class Shader_base(object):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
-        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name), f=True)
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         file_node.alphaIsLuminance.set(True)
-        pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name), f=True)
 
 
     def connect_normal(self, texture, slot_name, colorspace=False):
@@ -154,10 +168,10 @@ class Shader_base(object):
         #self.bump_node.aiFlipG.set(0)
 
         # connect file_node to bump_node
-        pm.connectAttr(file_node.outAlpha, self.bump_node.bumpValue)
+        pm.connectAttr(file_node.outAlpha, self.bump_node.bumpValue, f=True)
 
         # connect bump_node to shader
-        pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name), f=True)
 
     def connect_displace(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
@@ -167,24 +181,24 @@ class Shader_base(object):
         return pm.shadingNode('place2dTexture', asUtility=True)
 
     def connect_placement(self, place_node, file_node):
-        pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)
-        pm.connectAttr('%s.translateFrame' % place_node, '%s.translateFrame' % file_node)
-        pm.connectAttr('%s.rotateFrame' % place_node, '%s.rotateFrame' % file_node)
-        pm.connectAttr('%s.mirrorU' % place_node, '%s.mirrorU' % file_node)
-        pm.connectAttr('%s.mirrorV' % place_node, '%s.mirrorV' % file_node)
-        pm.connectAttr('%s.stagger' % place_node, '%s.stagger' % file_node)
-        pm.connectAttr('%s.wrapU' % place_node, '%s.wrapU' % file_node)
-        pm.connectAttr('%s.wrapV' % place_node, '%s.wrapV' % file_node)
-        pm.connectAttr('%s.repeatUV' % place_node, '%s.repeatUV' % file_node)
-        pm.connectAttr('%s.offset' % place_node, '%s.offset' % file_node)
-        pm.connectAttr('%s.rotateUV' % place_node, '%s.rotateUV' % file_node)
-        pm.connectAttr('%s.noiseUV' % place_node, '%s.noiseUV' % file_node)
-        pm.connectAttr('%s.vertexUvOne' % place_node, '%s.vertexUvOne' % file_node)
-        pm.connectAttr('%s.vertexUvTwo' % place_node, '%s.vertexUvTwo' % file_node)
-        pm.connectAttr('%s.vertexUvThree' % place_node, '%s.vertexUvThree' % file_node)
-        pm.connectAttr('%s.vertexCameraOne' % place_node, '%s.vertexCameraOne' % file_node)
-        pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node)
-        pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
+        pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node, f=True)
+        pm.connectAttr('%s.translateFrame' % place_node, '%s.translateFrame' % file_node, f=True)
+        pm.connectAttr('%s.rotateFrame' % place_node, '%s.rotateFrame' % file_node, f=True)
+        pm.connectAttr('%s.mirrorU' % place_node, '%s.mirrorU' % file_node, f=True)
+        pm.connectAttr('%s.mirrorV' % place_node, '%s.mirrorV' % file_node, f=True)
+        pm.connectAttr('%s.stagger' % place_node, '%s.stagger' % file_node, f=True)
+        pm.connectAttr('%s.wrapU' % place_node, '%s.wrapU' % file_node, f=True)
+        pm.connectAttr('%s.wrapV' % place_node, '%s.wrapV' % file_node, f=True)
+        pm.connectAttr('%s.repeatUV' % place_node, '%s.repeatUV' % file_node, f=True)
+        pm.connectAttr('%s.offset' % place_node, '%s.offset' % file_node, f=True)
+        pm.connectAttr('%s.rotateUV' % place_node, '%s.rotateUV' % file_node, f=True)
+        pm.connectAttr('%s.noiseUV' % place_node, '%s.noiseUV' % file_node, f=True)
+        pm.connectAttr('%s.vertexUvOne' % place_node, '%s.vertexUvOne' % file_node, f=True)
+        pm.connectAttr('%s.vertexUvTwo' % place_node, '%s.vertexUvTwo' % file_node, f=True)
+        pm.connectAttr('%s.vertexUvThree' % place_node, '%s.vertexUvThree' % file_node, f=True)
+        pm.connectAttr('%s.vertexCameraOne' % place_node, '%s.vertexCameraOne' % file_node, f=True)
+        pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node, f=True)
+        pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node, f=True)
 
     def create_file_node(self, path, name, color=True):
         print(name, type(name))
@@ -203,7 +217,7 @@ class Shader_base(object):
 
         self.connect_placement(self.place_node, file_node)
 
-        return plug
+        return file_node
 
 
 if __name__ == "__main__":

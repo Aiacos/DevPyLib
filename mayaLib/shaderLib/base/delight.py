@@ -47,7 +47,8 @@ class Principled_3dl(Shader_base):
     def connect_textures_3dl(self, textures):
         for tex in textures:
             channel = str(tex.split('.')[0]).split('_')[-1]
-            print('Texture: ', tex, ' -- Channel: ', channel)
+
+            #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
                 self.connect_color_3dl(tex, self.diffuse)
             if channel.lower() in self.metallic_name_list:
@@ -66,7 +67,7 @@ class Principled_3dl(Shader_base):
                 self.connect_displace_3dl(self.shader_name, tex)
 
     def create_file_node_3dl(self, path, name, color=True):
-        print(name, type(name))
+        #print(name, type(name))
         tex_name, ext = name.split('.')
 
         file_node = pm.shadingNode('dlTexture', name=tex_name, asTexture=True)
