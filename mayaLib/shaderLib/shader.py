@@ -5,6 +5,7 @@ import pathlib
 from pymel import core as pm
 
 from mayaLib.shaderLib.base import texture
+from mayaLib.shaderLib.base.shader_base import Shader_base, UsdPreviewSurface
 from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
 from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
 from mayaLib.shaderLib.base.delight import Principled_3dl
@@ -78,10 +79,22 @@ class ConvertShaders(object):
             #pm.rename(shading_engine, str(shading_engine.name()) + '_OLD')
 
             folder, texture_list = self.get_main_texture(shader)
-            print(texture_list)
 
-            delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
-            #delight_shader.assign_shader(assigned_geometry)
+            if to_shader_type == 'standardSurface':
+                base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # base_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == 'usdPreviewSurface':
+                usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # usd_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == 'dlPrincipled':
+                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # delight_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == 'PxrDisneyBsdf':
+                renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # renderman_shader.assign_shader(assigned_geometry)
+            else:
+                print('No valid Shader')
+                pass
 
             pm.mel.MLdeleteUnused()
 

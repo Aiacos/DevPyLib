@@ -160,7 +160,6 @@ class Shader_base(object):
         file_node.alphaIsLuminance.set(True)
         pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name), f=True)
 
-
     def connect_normal(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
@@ -275,7 +274,7 @@ class UsdPreviewSurface(Shader_base):
             if channel.lower() in self.gloss_name_list:
                 self.connect_noncolor(tex, self.roughness)
             if channel.replace('-OGL', '').lower() in self.normal_name_list:
-                self.connect_normal(tex)
+                self.connect_normal(tex, self.normal)
             if channel.lower() in self.trasmission_name_list:
                 self.connect_noncolor(tex, self.trasmission)
             if channel.lower() in self.displacement_name_list:
