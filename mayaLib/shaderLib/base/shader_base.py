@@ -81,9 +81,11 @@ class Shader_base(object):
     emission_name_list = str('emission').split(' ')
 
     def __init__(self, shader_name, folder, shader_textures, shader_type='standardSurface', single_place_node=True):
+        self.shader_name = shader_name
+        self.folder = folder
+        self.shader_textures = shader_textures
 
         # create a shader
-        self.shader_name = shader_name
         self.shader = pm.shadingNode(shader_type, asShader=True, name=shader_name)
 
         # create a shading group
@@ -93,9 +95,6 @@ class Shader_base(object):
 
         if single_place_node:
             self.place_node = self.create_place_node()
-
-        self.folder = folder
-        self.shader_textures = shader_textures
 
     def get_shader(self):
         return self.shader
@@ -132,16 +131,21 @@ class Shader_base(object):
 
     def connect_color(self, texture, slot_name, colorspace=True):
         file_node = self.create_file_node(self.path, texture, color=colorspace)
-        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
         self.connect_placement(self.place_node, file_node)
+
+        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.path, texture, color=colorspace)
+        self.connect_placement(self.place_node, file_node)
+
         file_node.alphaIsLuminance.set(True)
         pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name))
 
+
     def connect_normal(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.path, texture, color=colorspace)
+        self.connect_placement(self.place_node, file_node)
 
         # create bump_node
         self.bump_node = pm.shadingNode("bump2d", asUtility=True)
@@ -154,6 +158,10 @@ class Shader_base(object):
 
         # connect bump_node to shader
         pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name))
+
+    def connect_displace(self, texture, slot_name, colorspace=False):
+        file_node = self.create_file_node(self.path, texture, color=colorspace)
+        self.connect_placement(self.place_node, file_node)
 
     def create_place_node(self):
         return pm.shadingNode('place2dTexture', asUtility=True)

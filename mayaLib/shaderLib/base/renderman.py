@@ -23,7 +23,7 @@ class PxrDisneyBSDF(Shader_base):
     alpha = 'presence'
     normal = 'bumpNormal'
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='PxrDisneyBsdf'):
+    def __init__(self, shader_name, folder, shader_textures, shader_type='PxrDisneyBsdf', standard=True):
         """
         Create PxrSurface shader
         :param shader_name: Geo or Texture set (String)
@@ -53,29 +53,32 @@ class PxrDisneyBSDF(Shader_base):
         self.shader.baseColor.set((0.2, 0.5, 0.8))
 
         # connect texture
-        self.connect_textures(shader_textures)
+        if standard:
+            self.connect_textures()
+        else:
+            self.connect_textures_renderman(shader_textures)
 
 
-    def connect_textures(self, textures):
+    def connect_textures_renderman(self, textures):
         for tex in textures:
             channel = str(tex.split('.')[0]).split('_')[-1]
             print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse)
+                self.connect_color_renderman(tex, self.diffuse)
             if channel.lower() in self.metallic_name_list:
-                self.connect_noncolor(tex, self.metallic)
+                self.connect_noncolor_renderman(tex, self.metallic)
             if channel.lower() in self.specular_name_list:
-                self.connect_noncolor(tex, self.specular)
+                self.connect_noncolor_renderman(tex, self.specular)
             if channel.lower() in self.roughness_name_list:
-                self.connect_noncolor(tex, self.roughness)
+                self.connect_noncolor_renderman(tex, self.roughness)
             if channel.lower() in self.gloss_name_list:
-                self.connect_noncolor(tex, self.roughness)
+                self.connect_noncolor_renderman(tex, self.roughness)
             if channel.replace('-OGL', '').lower() in self.normal_name_list:
-                self.connect_normal(tex)
+                self.connect_normal_renderman(tex)
             if channel.lower() in self.trasmission_name_list:
-                self.connect_noncolor(tex, self.trasmission)
+                self.connect_noncolor_renderman(tex, self.trasmission)
             if channel.lower() in self.displacement_name_list:
-                self.connect_displace(self.shader_name, tex)
+                self.connect_displace_renderman(self.shader_name, tex)
 
     def create_file_node_renderman(self, path, name, linearize=True):
         """
