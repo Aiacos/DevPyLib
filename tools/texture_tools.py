@@ -12,6 +12,7 @@ def gamma_correction(img, gamma):
 
 def colorspace_conversion(img, colorspace='None', gamma_to_srgb=2.2, gamma_to_linear=0.454545):
     if colorspace == 'None':
+        print(check_colorspace(img))
         return img
     elif colorspace == 'sRGB':
         return gamma_correction(img, gamma_to_srgb)
@@ -21,6 +22,16 @@ def colorspace_conversion(img, colorspace='None', gamma_to_srgb=2.2, gamma_to_li
         print('Invalid colorspace')
         return img
 
+def check_colorspace(img):
+    icc_profile = img.info.get('icc_profile')
+
+    if icc_profile:
+        if b'sRGB' in icc_profile:
+            return 'sRGB'
+        else:
+            return 'linear'
+    else:
+        return 'Unknown'
 
 def split_channels(image_file, image_name, extension='.png', colorspace='None'):
     image_path = os.path.join(os.getcwd(), image_file)
