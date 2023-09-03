@@ -4,60 +4,31 @@ from mayaLib.shaderLib.base.shader_base import Shader_base
 from mayaLib.shaderLib.utils import config
 
 
-class aiStandard_shaderBase(Shader_base):
+class aiStandardSurface(Shader_base):
     """
-    Create aiStandard shader
+    Create aiStandardSurface
     """
 
-    def __init__(self, shader_name, file_node_dict, shader_type='aiStandard'):
+    def __init__(self, shader_name, folder, shader_textures, shader_type='aiStandardSurface', standard=True, shading_engine=None):
         """
-        Create aiStandard shader
+        Create aiStandardSurface
         :param shader_name: Geo or Texture set (String)
-        :param file_node_dict: file node (instance)
+        :param folder: Texture forlder Path (String/Path)
+        :param shader_textures: Texture List (List od String/Path)
         :param shader_type:
         """
         # init base class
-        Shader_base.__init__(self, shader_name, shader_type=shader_type)
+        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type,
+                             shading_engine=shading_engine)
         self.shader = Shader_base.get_shader(self)
-        self.shader.specularFresnel.set(True)
+
+        self.folder = folder
+
+        # init faceColor
+        self.shader.baseColor.set((0.2, 0.5, 0.8))
 
         # connect texture
-        self.makeAiStandard(file_node_dict)
+        if standard:
+            self.connect_textures(shader_textures)
 
-    def makeAiStandard(self, file_node):
-        connect_diffuse = Shader_base.connect_color
-        connect_backlighting = Shader_base.connect_luminance
-        connect_specularColor = Shader_base.connect_color
-        connect_specularWeight = Shader_base.connect_luminance
-        connect_specularRoughness = Shader_base.connect_luminance
-        connect_fresnel = Shader_base.connect_fresnel
-        connect_normal = Shader_base.connect_normal
 
-        try:
-            connect_diffuse(self, file_node[config.diffuse], slot_name='color')
-        except:
-            pass
-        try:
-            connect_backlighting(self, file_node[config.backlight], slot_name='Kb')
-        except:
-            pass
-        try:
-            connect_specularColor(self, file_node[config.specularColor], slot_name='KsColor')
-        except:
-            pass
-        try:
-            connect_specularWeight(self, file_node[config.specularWeight], slot_name='Ks')
-        except:
-            self.shader.Ks.set(0.8)
-        try:
-            connect_specularRoughness(self, file_node[config.specularRoughness], slot_name='specularRoughness')
-        except:
-            pass
-        try:
-            connect_fresnel(self, file_node[config.fresnel], slot_name='Ksn')
-        except:
-            self.shader.Ksn.set(0.04)
-        try:
-            connect_normal(self, file_node[config.normal], slot_name='normalCamera')
-        except:
-            pass

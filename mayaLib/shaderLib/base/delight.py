@@ -124,7 +124,7 @@ class Principled_3dl(Shader_base):
 
             #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse)
+                self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:

@@ -131,7 +131,7 @@ class Shader_base(object):
 
             #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse)
+                self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:
@@ -147,11 +147,14 @@ class Shader_base(object):
             if channel.lower() in self.displacement_name_list:
                 self.connect_displace(self.shader_name, tex)
 
-    def connect_color(self, texture, slot_name, colorspace=True):
+    def connect_color(self, texture, slot_name, colorspace=True, alpha_slot=None):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
         pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name), f=True)
+
+        if alpha_slot:
+            pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
@@ -266,7 +269,7 @@ class UsdPreviewSurface(Shader_base):
 
             #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse)
+                self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:

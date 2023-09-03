@@ -34,18 +34,6 @@ class PxrDisneyBSDF(Shader_base):
         # init base class
         Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
         self.shader = Shader_base.get_shader(self)
-
-        self.channel_list = [self.base_color_name_list,
-                             self.subsurface_color_name_list,
-                             self.metallic_name_list,
-                             self.specular_name_list,
-                             self.roughness_name_list,
-                             self.gloss_name_list,
-                             self.emission_name_list,
-                             self.alpha_name_list,
-                             self.bump_name_list,
-                             self.normal_name_list,
-                             self.displacement_name_list]
         
         self.folder = folder
         
@@ -140,7 +128,7 @@ class PxrDisneyBSDF(Shader_base):
 
             #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse)
+                self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:
