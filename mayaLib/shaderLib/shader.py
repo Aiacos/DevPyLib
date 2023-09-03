@@ -6,7 +6,7 @@ from pymel import core as pm
 
 from mayaLib.shaderLib.base import texture
 from mayaLib.shaderLib.base.shader_base import Shader_base, UsdPreviewSurface
-from mayaLib.shaderLib.base.arnold import aiStandard_shaderBase
+from mayaLib.shaderLib.base.arnold import aiStandardSurface
 from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
 from mayaLib.shaderLib.base.delight import Principled_3dl
 
@@ -44,7 +44,7 @@ class TextureShader():
                                          single_place_node=self.place_node)
             self.filenode_dict[texture_channel] = fn.filenode
 
-        return aiStandard_shaderBase(shader_name=geo_name, file_node_dict=self.filenode_dict)
+        return aiStandardSurface(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def build_pxrDisneyBSDF(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
         for texture_channel in textureset_dict:
