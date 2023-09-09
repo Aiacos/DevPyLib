@@ -7,7 +7,7 @@ import maya.cmds as cmds
 import maya.internal.nodes.proximitywrap.node_interface as node_interface
 
 
-def createProximityWrap(source, target):
+def createProximityWrap(source, target_list):
     """
     Creates a proximity with the given source and target transforms.
     Args:
@@ -18,7 +18,8 @@ def createProximityWrap(source, target):
     """
     # implementing with maya.cmds since PyMel raises the following warning for every attribute set.
     # Warning: pymel.core.general : Could not create desired MFn. Defaulting to MFnDependencyNode.
-    deformer = cmds.deformer(target.name(), type='proximityWrap', name=target.name(stripNamespace=True) + '_pWrap')[0]
+    target_names_list = [geo.name() for geo in pm.ls(target_list)]
+    deformer = cmds.deformer(target_names_list, type='proximityWrap', name=target_list[0].name(stripNamespace=True) + '_pWrap')[0]
 
     proximity_interface = node_interface.NodeInterface(deformer)
     proximity_interface.addDriver(source.getShapes()[-1].name())  # last shape should be the deformed shape

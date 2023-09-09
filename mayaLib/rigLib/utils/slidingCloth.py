@@ -9,7 +9,7 @@ from mayaLib.rigLib.utils import skin
 
 
 class SlidingCloth():
-    def __init__(self, mainSkinGeo, mainClothGeo, proxySkinGeo='', proxyClothGeo='', rigModelGrp=None):
+    def __init__(self, mainSkinGeo, mainClothGeo_list=[], proxySkinGeo='', proxyClothGeo='', rigModelGrp=None, proximityWrap=True):
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
@@ -17,9 +17,10 @@ class SlidingCloth():
         :param proxySkinGeo: str
         :param proxyClothGeo: str
         """
-        if mainSkinGeo and mainClothGeo:
+        if mainSkinGeo and mainClothGeo_list:
             self.mainSkinGeo = pm.ls(mainSkinGeo)[0]
-            self.mainClothGeo = pm.ls(mainClothGeo)[0]
+            self.mainClothGeo_list = pm.ls(mainClothGeo_list)
+            self.mainClothGeo = pm.ls(mainClothGeo_list)[0]
         else:
             print('No valid Geo!')
 
@@ -34,7 +35,8 @@ class SlidingCloth():
             self.proxyClothGeo = self.makeProxyGeo(self.mainClothGeo)
 
         # setup skin proxy geo
-        skin.copyBind(self.mainSkinGeo, self.proxySkinGeo)
+        if not skin.findRelatedSkinCluster(self.mainSkinGeo):
+            skin.copyBind(self.mainSkinGeo, self.proxySkinGeo)
 
         # setup cloth proxy geo
         skin.copyBind(self.mainSkinGeo, self.proxyClothGeo)
@@ -52,8 +54,12 @@ class SlidingCloth():
         polySmoothDeformer = pm.polySmooth(self.proxyClothGeo)[0]
 
         # wrap main Cloth Geo
-        wrapDeformer = deform.wrapDeformer(self.mainClothGeo, self.proxyClothGeo)
-        baseObj = pm.listConnections(wrapDeformer.basePoints, source=True)[0]
+        if proximityWrap:
+            wrapDeformer = proximityWrap_deformer = deform.createProximityWrap(self.proxyClothGeo, self.mainClothGeo_list)
+            baseObj = []
+        else:
+            wrapDeformer = deform.wrapDeformer(self.mainClothGeo, self.proxyClothGeo)
+            baseObj = pm.listConnections(wrapDeformer.basePoints, source=True)[0]
 
         # regroup
         grpName = name.removeSuffix(self.mainClothGeo.name()) + 'Cloth_GRP'
