@@ -13,7 +13,7 @@ class SlidingCloth():
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
-        :param mainClothGeo: str
+        :param mainClothGeo_list: list of str
         :param proxySkinGeo: str
         :param proxyClothGeo: str
         """
