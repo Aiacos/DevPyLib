@@ -80,16 +80,16 @@ class ConvertShaders(object):
 
             folder, texture_list = self.get_main_texture(shader)
 
-            if to_shader_type == 'standardSurface':
+            if to_shader_type == 'standard':
                 base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # base_shader.assign_shader(assigned_geometry)
-            elif to_shader_type == 'usdPreviewSurface':
+            elif to_shader_type == 'usd':
                 usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # usd_shader.assign_shader(assigned_geometry)
-            elif to_shader_type == 'dlPrincipled':
+            elif to_shader_type == '3delight':
                 delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # delight_shader.assign_shader(assigned_geometry)
-            elif to_shader_type == 'PxrDisneyBsdf':
+            elif to_shader_type == 'renderamn':
                 renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # renderman_shader.assign_shader(assigned_geometry)
             else:
