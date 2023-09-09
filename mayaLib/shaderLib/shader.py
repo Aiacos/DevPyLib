@@ -68,6 +68,11 @@ class BuildAllShaders(object):
 
 class ConvertShaders(object):
     def __init__(self, to_shader_type):
+        """
+        Convert current shader to another renderer
+        :param to_shader_type: (str) standard, usd, 3delight, renderman
+        """
+
         self.shader_list = self.get_materials_in_scene()
 
         for shader in self.shader_list:
@@ -89,7 +94,7 @@ class ConvertShaders(object):
             elif to_shader_type == '3delight':
                 delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # delight_shader.assign_shader(assigned_geometry)
-            elif to_shader_type == 'renderamn':
+            elif to_shader_type == 'renderaman':
                 renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # renderman_shader.assign_shader(assigned_geometry)
             else:
