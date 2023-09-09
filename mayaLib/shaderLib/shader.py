@@ -67,12 +67,11 @@ class BuildAllShaders(object):
             TextureShader()
 
 class ConvertShaders(object):
+    """
+    Convert current shader to another renderer
+    :param to_shader_type: (str) standard, usd, 3delight, renderman
+    """
     def __init__(self, to_shader_type):
-        """
-        Convert current shader to another renderer
-        :param to_shader_type: (str) standard, usd, 3delight, renderman
-        """
-
         self.shader_list = self.get_materials_in_scene()
 
         for shader in self.shader_list:
