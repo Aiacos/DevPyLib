@@ -55,7 +55,7 @@ class SlidingCloth():
 
         # wrap main Cloth Geo
         if proximityWrap:
-            wrapDeformer = proximityWrap_deformer = deform.createProximityWrap(self.proxyClothGeo, self.mainClothGeo_list)
+            wrapDeformer = deform.createProximityWrap(self.proxyClothGeo, self.mainClothGeo_list)
             baseObj = []
         else:
             wrapDeformer = deform.wrapDeformer(self.mainClothGeo, self.proxyClothGeo)
