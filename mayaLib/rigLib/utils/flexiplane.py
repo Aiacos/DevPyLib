@@ -351,9 +351,10 @@ class Flexiplane():
         fp_wire[0].dropoffDistance[0].set(20)
         hist = pm.listHistory(fp_surf)
         tweaks = [t for t in hist if 'tweak' in t.nodeName()]
-        pm.rename(tweaks[2], '%s_cl_cluster_tweak' % (fp_name))
-        pm.rename(tweaks[0], '%s_wireAttrs_tweak' % (fp_name))
-        pm.rename(tweaks[1], '%s_extra_tweak' % (fp_name))
+        if tweaks:
+            pm.rename(tweaks[2], '%s_cl_cluster_tweak' % (fp_name))
+            pm.rename(tweaks[0], '%s_wireAttrs_tweak' % (fp_name))
+            pm.rename(tweaks[1], '%s_extra_tweak' % (fp_name))
 
         # group clusters
         cl_grp = pm.group(cl_a[1], cl_b[1], cl_mid[1], n='%s_cls_GRP' % (fp_name))
