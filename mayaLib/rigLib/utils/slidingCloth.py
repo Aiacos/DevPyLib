@@ -9,7 +9,7 @@ from mayaLib.rigLib.utils import skin
 
 
 class SlidingCloth():
-    def __init__(self, mainSkinGeo, mainClothGeo_list=[], proxySkinGeo='', proxyClothGeo='', rigModelGrp=None, proximityWrap=True):
+    def __init__(self, mainSkinGeo, mainClothGeo_list=[], proxySkinGeo='', proxyClothGeo='', rigModelGrp=None, proximityWrap=True, copy_skincluster_to_cloth_proxy=False):
         """
         Setup Sliding Cloth deformation
         :param mainSkinGeo: str
@@ -39,7 +39,8 @@ class SlidingCloth():
             skin.copyBind(self.mainSkinGeo, self.proxySkinGeo)
 
         # setup cloth proxy geo
-        skin.copyBind(self.mainSkinGeo, self.proxyClothGeo)
+        if copy_skincluster_to_cloth_proxy or not skin.findRelatedSkinCluster(self.proxyClothGeo):
+            skin.copyBind(self.mainSkinGeo, self.proxyClothGeo)
 
         cMuscleDeformer = deform.cMuscleSystemDeformer(self.proxyClothGeo)
         cMuscleDeformer.enableRelax.set(1)
