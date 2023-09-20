@@ -142,27 +142,25 @@ class ShaderFromJson(object):
             shader_name = key
             shader_dict = value
 
-            for shader_key, shader_value in shader_dict.items():
-                print(shader_key, shader_value)
-                folder = shader_value['path']
-                texture_list = shader_value['textures']
-                shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
+            folder = shader_dict['path']
+            texture_list = shader_dict['textures']
+            shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
 
-                if to_shader_type == 'standard':
-                    base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
-                    # base_shader.assign_shader(assigned_geometry)
-                elif to_shader_type == 'usd':
-                    usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
-                    # usd_shader.assign_shader(assigned_geometry)
-                elif to_shader_type == '3delight':
-                    delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
-                    # delight_shader.assign_shader(assigned_geometry)
-                elif to_shader_type == 'renderaman':
-                    renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
-                    # renderman_shader.assign_shader(assigned_geometry)
-                else:
-                    print('No valid Shader')
-                    pass
+            if to_shader_type == 'standard':
+                base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # base_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == 'usd':
+                usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # usd_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == '3delight':
+                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # delight_shader.assign_shader(assigned_geometry)
+            elif to_shader_type == 'renderaman':
+                renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                # renderman_shader.assign_shader(assigned_geometry)
+            else:
+                print('No valid Shader')
+                pass
 
         pm.mel.MLdeleteUnused()
 
