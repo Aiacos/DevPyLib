@@ -1,9 +1,8 @@
+import os
 from pathlib import Path
 
 import pymel.core as pm
 from maya import mel
-
-import os
 
 from ngSkinTools2 import api as ngst_api
 from ngSkinTools2.api import init_layers, Layers
