@@ -89,7 +89,8 @@ def ng_batch_import(geo_list, path):
         )
 
 
-export_dir = 'C:/Users/lorenzo.argentieri/Desktop/SamTeen_ng'
-geo_list = getAllObjectUnderGroup('x_geo_mdl_grp')
-# ng_batch_export(geo_list, export_dir)
-ng_batch_import(geo_list, export_dir)
+if __name__ == "__main__":
+    export_dir = 'C:/Users/lorenzo.argentieri/Desktop/SamTeen_ng'
+    geo_list = getAllObjectUnderGroup('x_geo_mdl_grp')
+    # ng_batch_export(geo_list, export_dir)
+    ng_batch_import(geo_list, export_dir)
