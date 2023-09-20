@@ -139,7 +139,16 @@ class ShaderFromJson(object):
         data = json_tool.load_json_data(json_filepath)
 
         for key, value in data.items():
-            print(key, value)
+            shader_name = key
+            shader_dict = value
+
+            for shader_key, shader_value in shader_dict.items():
+                print(shader_key, shader_value)
+                folder = shader_value['path']
+                texture_list = shader_value['textures']
+                shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
+
+                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
 
 
 if __name__ == "__main__":
