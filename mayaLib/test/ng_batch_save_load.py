@@ -73,7 +73,7 @@ def ng_batch_import(geo_list, path):
 
         skincluster = findRelatedSkinCluster(geo)
         layers = init_layers(str(skincluster.name()))
-        layer_base = layers.add("base weights_import")
+        layer_base = layers.add("base_weights_import")
 
         # configure how influences described in a file will be matched against the scene
         config = InfluenceMappingConfig()
