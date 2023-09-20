@@ -135,7 +135,7 @@ class ShaderFromJson(object):
     Create file Reading JSON File
     """
 
-    def __init__(self, json_filepath):
+    def __init__(self, json_filepath, to_shader_type):
         data = json_tool.load_json_data(json_filepath)
 
         for key, value in data.items():
@@ -148,7 +148,23 @@ class ShaderFromJson(object):
                 texture_list = shader_value['textures']
                 shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
 
-                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                if to_shader_type == 'standard':
+                    base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                    # base_shader.assign_shader(assigned_geometry)
+                elif to_shader_type == 'usd':
+                    usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                    # usd_shader.assign_shader(assigned_geometry)
+                elif to_shader_type == '3delight':
+                    delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                    # delight_shader.assign_shader(assigned_geometry)
+                elif to_shader_type == 'renderaman':
+                    renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                    # renderman_shader.assign_shader(assigned_geometry)
+                else:
+                    print('No valid Shader')
+                    pass
+
+        pm.mel.MLdeleteUnused()
 
 
 if __name__ == "__main__":
