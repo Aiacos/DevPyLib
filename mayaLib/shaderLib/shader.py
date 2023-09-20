@@ -1,6 +1,7 @@
 __author__ = 'Lorenzo Argentieri'
 
 import pathlib
+import mayaLib.utility.json_tool as json_tool
 
 from pymel import core as pm
 
@@ -128,6 +129,17 @@ class ConvertShaders(object):
             texture_list.append(texture)
 
         return str(file_path), texture_list
+
+class ShaderFromJson(object):
+    """
+    Create file Reading JSON File
+    """
+
+    def __init__(self, json_filepath):
+        data = json_tool.load_json_data(json_filepath)
+
+        for key, value in data.items():
+            print(key, value)
 
 
 if __name__ == "__main__":
