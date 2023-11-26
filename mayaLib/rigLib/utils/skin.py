@@ -1,11 +1,16 @@
 __author__ = 'Lorenzo Argentieri'
 
 import os
+from pathlib import Path
 
 import maya.mel as mel
 import pymel.core as pm
 
 from mayaLib.utility import bSkinSaver
+
+from ngSkinTools2 import api as ngst_api
+from ngSkinTools2.api import init_layers, Layers
+from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
 
 
 def selectSkinClusterObject():
@@ -178,16 +183,45 @@ def loadSkinWeights(characterName, geoList,
         bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
 
 
-def ngSkinToolInit(geo):
-    pass
+def ng_batch_export(geo_list, path):
+    full_path = Path(path)
+
+    for geo in pm.ls(geo_list):
+        file_name = str(geo.name()) + '.json'
+        output_file_name = full_path / file_name
+
+        skincluster = findRelatedSkinCluster(geo)
+        layers = init_layers(str(skincluster.name()))
+        layer_base = layers.add("base weights")
+
+        ngst_api.export_json(str(geo.name()), file=str(output_file_name))
 
 
-def ngSkinToolRaplceLayer(geo, sourceLayer, destinationLayer):
-    pass
+def ng_batch_import(geo_list, path, influence_list=pm.ls('*_FS_jnt')):
+    full_path = Path(path)
 
+    for geo in pm.ls(geo_list):
+        pm.skinCluster(influence_list, geo, dr=4.0)
 
-def ngSkinToolDeleteNode(geo):
-    pass
+        file_name = str(geo.name()) + '.json'
+        input_file_name = full_path / file_name
+
+        skincluster = findRelatedSkinCluster(geo)
+        layers = init_layers(str(skincluster.name()))
+        layer_base = layers.add("base weights")
+
+        # configure how influences described in a file will be matched against the scene
+        config = InfluenceMappingConfig()
+        config.use_distance_matching = True
+        config.use_name_matching = False
+
+        # run the import
+        ngst_api.import_json(
+            str(geo.name()),
+            file=str(input_file_name),
+            vertex_transfer_mode=VertexTransferMode.vertexId,
+            influences_mapping_config=config,
+        )
 
 
 if __name__ == "__main__":

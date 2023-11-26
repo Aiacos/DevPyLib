@@ -67,12 +67,12 @@ class Shader_base(object):
     Create general Shader
     """
 
-    base_color_name_list = str('diffuse diff albedo base col color basecolor').split(' ')
+    base_color_name_list = str('diffuse diff albedo base col color basecolor d').split(' ')
     subsurface_color_name_list = str('sss subsurface').split(' ')
-    metallic_name_list = str('metallic metalness metal mtl').split(' ')
+    metallic_name_list = str('metallic metalness metal mtl m').split(' ')
     specular_name_list = str('specularity specular spec spc').split(' ')
-    roughness_name_list = str('roughness rough rgh').split(' ')
-    gloss_name_list = str('gloss glossy glossiness').split(' ')
+    roughness_name_list = str('roughness rough rgh r').split(' ')
+    gloss_name_list = str('gloss glossy glossiness g').split(' ')
     normal_name_list = str('normal nor nrm nrml norm').split(' ')
     bump_name_list = str('bump bmp').split(' ')
     displacement_name_list = str('displacement displace disp dsp height heightmap').split(' ')
@@ -127,11 +127,11 @@ class Shader_base(object):
 
     def connect_textures(self, textures):
         for tex in textures:
-            channel = str(tex.split('.')[0]).split('_')[-1]
+            channel = str(tex.split('.')[0]).split(' ')[-1].split('_')[-1]
 
             #print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
+                self.connect_color(tex, self.diffuse, alpha_slot='')
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:
@@ -153,8 +153,8 @@ class Shader_base(object):
 
         pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name), f=True)
 
-        if alpha_slot:
-            pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
+        #if alpha_slot:
+            #pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)

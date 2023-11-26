@@ -6,25 +6,24 @@ import pymel.core as pm
 
 reference_joint_default = 'Base_main_FS_jnt'
 hip_joint_joint_default = 'M_Spine_pelvis_FS_jnt'
-spine_joint_list_default = ['M_Spine_spine_ribbon_0_driven_FS_jnt', 'M_Spine_spine_ribbon_1_driven_FS_jnt', 'M_Spine_spine_ribbon_2_driven_FS_jnt', 'M_Spine_spine_ribbon_3_driven_FS_jnt', 'M_Spine_spine_ribbon_4_driven_FS_jnt', 'M_Spine_chest_FS_jnt']
-neck_joint_list_default = ['M_Head_neck_root_FS_jnt', 'M_Head_ribbon_driven_0_FS_jnt', 'M_Head_ribbon_driven_1_FS_jnt', 'M_Head_ribbon_driven_2_FS_jnt', 'M_Head_ribbon_driven_3_FS_jnt']
+spine_joint_list_default = ['M_Spine_ribbon_driven_0_FS_jnt', 'M_Spine_ribbon_driven_1_FS_jnt', 'M_Spine_ribbon_driven_2_FS_jnt', 'M_Spine_chest_FS_jnt',]
+neck_joint_list_default = ['M_Head_neck_root_FS_jnt', 'M_Head_ribbon_driven_0_FS_jnt', 'M_Head_ribbon_driven_1_FS_jnt', 'M_Head_ribbon_driven_2_FS_jnt']
 head_joint_joint_default = 'M_Head_head_FS_jnt'
-left_arm_joint_list_default = ['L_Arm_base_FS_jnt', 'L_Arm_ribbon_upper_driven_0_FS_jnt', 'L_Arm_ribbon_lower_driven_0_FS_jnt', 'L_Arm_tip_FS_jnt']
-left_leg_joint_list_default = ['L_Leg_ribbon_upper_driven_0_FS_jnt', 'L_Leg_ribbon_lower_driven_0_FS_jnt', 'L_Leg_tip_FS_jnt', 'L_Leg_toes_root_FS_jnt']
-right_arm_joint_list_default = ['R_Arm_base_FS_jnt', 'R_Arm_ribbon_upper_driven_0_FS_jnt', 'R_Arm_ribbon_lower_driven_0_FS_jnt', 'R_Arm_tip_FS_jnt']
-right_leg_joint_list_default = ['R_Leg_ribbon_upper_driven_0_FS_jnt', 'R_Leg_ribbon_lower_driven_0_FS_jnt', 'R_Leg_tip_FS_jnt', 'R_Leg_toes_root_FS_jnt']
-
+left_arm_joint_list_default = ['L_Arm_base_FS_jnt', 'L_Arm_upper_ribbon_driven_0_FS_jnt', 'L_Arm_lower_ribbon_driven_0_FS_jnt', 'L_Arm_tip_FS_jnt']
+left_leg_joint_list_default = ['L_Leg_upper_ribbon_driven_0_FS_jnt', 'L_Leg_lower_ribbon_driven_0_FS_jnt', 'L_Leg_tip_FS_jnt', 'L_Leg_toes_root_FS_jnt']
+right_arm_joint_list_default = ['R_Arm_base_FS_jnt', 'R_Arm_upper_ribbon_driven_0_FS_jnt', 'R_Arm_lower_ribbon_driven_0_FS_jnt', 'R_Arm_tip_FS_jnt']
+right_leg_joint_list_default = ['R_Leg_upper_ribbon_driven_0_FS_jnt', 'R_Leg_lower_ribbon_driven_0_FS_jnt', 'R_Leg_tip_FS_jnt', 'R_Leg_toes_root_FS_jnt']
 left_hand_thumb_joint_list_default = ['L_Fingers_thumb_0_0_FS_jnt', 'L_Fingers_thumb_0_1_FS_jnt', 'L_Fingers_thumb_0_2_FS_jnt']
 left_hand_index_joint_list_default = ['L_Fingers_finger_0_0_FS_jnt', 'L_Fingers_finger_0_1_FS_jnt', 'L_Fingers_finger_0_2_FS_jnt', 'L_Fingers_finger_0_3_FS_jnt']
 left_hand_middle_joint_list_default = ['L_Fingers_finger_1_0_FS_jnt', 'L_Fingers_finger_1_1_FS_jnt', 'L_Fingers_finger_1_2_FS_jnt', 'L_Fingers_finger_1_3_FS_jnt']
 left_hand_ring_joint_list_default = ['L_Fingers_finger_2_0_FS_jnt', 'L_Fingers_finger_2_1_FS_jnt', 'L_Fingers_finger_2_2_FS_jnt', 'L_Fingers_finger_2_3_FS_jnt']
 left_hand_pinky_joint_list_default = ['L_Fingers_finger_3_0_FS_jnt', 'L_Fingers_finger_3_1_FS_jnt', 'L_Fingers_finger_3_2_FS_jnt', 'L_Fingers_finger_3_3_FS_jnt']
 
-right_hand_thumb_joint_list_default = ['L_Fingers_thumb_0_0_FS_jnt', 'L_Fingers_thumb_0_1_FS_jnt', 'L_Fingers_thumb_0_2_FS_jnt']
-right_hand_index_joint_list_default = ['L_Fingers_finger_0_0_FS_jnt', 'L_Fingers_finger_0_1_FS_jnt', 'L_Fingers_finger_0_2_FS_jnt', 'L_Fingers_finger_0_3_FS_jnt']
-right_hand_middle_joint_list_default = ['L_Fingers_finger_1_0_FS_jnt', 'L_Fingers_finger_1_1_FS_jnt', 'L_Fingers_finger_1_2_FS_jnt', 'L_Fingers_finger_1_3_FS_jnt']
-right_hand_ring_joint_list_default = ['L_Fingers_finger_2_0_FS_jnt', 'L_Fingers_finger_2_1_FS_jnt', 'L_Fingers_finger_2_2_FS_jnt', 'L_Fingers_finger_2_3_FS_jnt']
-right_hand_pinky_joint_list_default = ['L_Fingers_finger_3_0_FS_jnt', 'L_Fingers_finger_3_1_FS_jnt', 'L_Fingers_finger_3_2_FS_jnt', 'L_Fingers_finger_3_3_FS_jnt']
+right_hand_thumb_joint_list_default = ['R_Fingers_thumb_0_0_FS_jnt', 'R_Fingers_thumb_0_1_FS_jnt', 'R_Fingers_thumb_0_2_FS_jnt']
+right_hand_index_joint_list_default = ['R_Fingers_finger_0_0_FS_jnt', 'R_Fingers_finger_0_1_FS_jnt', 'R_Fingers_finger_0_2_FS_jnt', 'R_Fingers_finger_0_3_FS_jnt']
+right_hand_middle_joint_list_default = ['R_Fingers_finger_1_0_FS_jnt', 'R_Fingers_finger_1_1_FS_jnt', 'R_Fingers_finger_1_2_FS_jnt', 'R_Fingers_finger_1_3_FS_jnt']
+right_hand_ring_joint_list_default = ['R_Fingers_finger_2_0_FS_jnt', 'R_Fingers_finger_2_1_FS_jnt', 'R_Fingers_finger_2_2_FS_jnt', 'R_Fingers_finger_2_3_FS_jnt']
+right_hand_pinky_joint_list_default = ['R_Fingers_finger_3_0_FS_jnt', 'R_Fingers_finger_3_1_FS_jnt', 'R_Fingers_finger_3_2_FS_jnt', 'R_Fingers_finger_3_3_FS_jnt']
 
 hip_ctrl_default = 'M_Spine_cog_ctrl'
 spine_ctrl_list_default = ['M_Spine_spine_base_ctrl', 'M_Spine_ik_0_ctrl']
@@ -121,7 +120,7 @@ class HumanIK(object):
         'RightAnkle': 7,
     }
 
-    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=False, use_hybrid=False, skip_reference_joint=False,
+    def __init__(self, character_name, custom_ctrl_definition=False, use_ik=False, use_hybrid=False, skip_reference_joint=False,
                  reference_joint=reference_joint_default,
                  hip_joint=hip_joint_joint_default,
                  spine_joint_list=spine_joint_list_default,
@@ -580,6 +579,91 @@ def unlock_arise():
             unlock_and_unhide_all(jnt)
         except:
             pass
+
+class Rig_Drive(object):
+    def __init__(self, source_namespace, destination_namespace,
+                 reference_joint=reference_joint_default,
+                 hip_joint=hip_joint_joint_default,
+                 spine_joint_list=spine_joint_list_default,
+                 neck_joint_list=neck_joint_list_default,
+                 head_joint=head_joint_joint_default,
+                 left_arm_joint_list=left_arm_joint_list_default,
+                 left_leg_joint_list=left_leg_joint_list_default,
+                 right_arm_joint_list=right_arm_joint_list_default,
+                 right_leg_joint_list=right_leg_joint_list_default,
+                 left_hand_thumb_joint_list=left_hand_thumb_joint_list_default,
+                 left_hand_index_joint_list=left_hand_index_joint_list_default,
+                 left_hand_middle_joint_list=left_hand_middle_joint_list_default,
+                 left_hand_ring_joint_list=left_hand_ring_joint_list_default,
+                 left_hand_pinky_joint_list=left_hand_pinky_joint_list_default,
+                 right_hand_thumb_joint_list=right_hand_thumb_joint_list_default,
+                 right_hand_index_joint_list=right_hand_index_joint_list_default,
+                 right_hand_middle_joint_list=right_hand_middle_joint_list_default,
+                 right_hand_ring_joint_list=right_hand_ring_joint_list_default,
+                 right_hand_pinky_joint_list=right_hand_pinky_joint_list_default,
+                 hip_ctrl=hip_ctrl_default,
+                 spine_ctrl_list=spine_ctrl_list_default,
+                 chest_ctrl=chest_ctrl_default,
+                 neck_ctrl=neck_ctrl_default,
+                 head_ctrl=head_ctrl_default,
+                 left_clavicle_ctrl=left_clavicle_ctrl_default,
+                 left_shoulder_ctrl=left_shoulder_ctrl_default,
+                 left_elbow_ctrl=left_elbow_ctrl_default,
+                 left_hand_fk_ctrl=left_hand_fk_ctrl_default,
+                 left_hand_ik_ctrl=left_hand_ik_ctrl_default,
+                 right_clavicle_ctrl=right_clavicle_ctrl_default,
+                 right_shoulder_ctrl=right_shoulder_ctrl_default,
+                 right_elbow_ctrl=right_elbow_ctrl_default,
+                 right_hand_fk_ctrl=right_hand_fk_ctrl_default,
+                 right_hand_ik_ctrl=right_hand_ik_ctrl_default,
+                 left_hip_ctrl=left_hip_ctrl_default,
+                 left_knee_ctrl=left_knee_ctrl_default,
+                 left_ankle_fk_ctrl=left_ankle_fk_ctrl_default,
+                 left_ankle_ik_ctrl=left_ankle_ik_ctrl_default,
+                 right_hip_ctrl=right_hip_ctrl_default,
+                 right_knee_ctrl=right_knee_ctrl_default,
+                 right_ankle_fk_ctrl=right_ankle_fk_ctrl_default,
+                 right_ankle_ik_ctrl=right_ankle_ik_ctrl_default
+                 ):
+
+        self.source_namespace = source_namespace
+        self.destination_namespace = destination_namespace
+
+        # Set FK
+        fk_ctrl_switch_list = pm.ls(self.source_namespace + ':?_*_ik_fk_switch_ctrl')
+        for ctrl_switch in fk_ctrl_switch_list:
+            ctrl_switch.ik_fk_switch.set(1)
+
+        # Spine
+        self.do_constraint_parent(self, hip_joint, hip_ctrl)
+        self.do_constraint_parent(self, spine_joint_list[0], spine_ctrl_list[0])
+        self.do_constraint_parent(self, spine_joint_list[2], spine_ctrl_list[-1])
+        self.do_constraint_parent(self, spine_joint_list[-1], chest_ctrl_default)
+
+        # Neck
+
+        # Head
+        self.do_constraint_parent(self, head_joint, head_ctrl)
+
+        # Arms
+        for jnt, ctrl in zip(left_arm_joint_list, [left_clavicle_ctrl, left_shoulder_ctrl, left_elbow_ctrl, left_hand_fk_ctrl]):
+            self.do_constraint_parent(self, jnt, ctrl)
+
+        for jnt, ctrl in zip(right_arm_joint_list, [right_clavicle_ctrl, right_shoulder_ctrl, right_elbow_ctrl, right_hand_fk_ctrl]):
+            self.do_constraint_parent(self, jnt, ctrl)
+
+        # Fingers
+
+        # Legs
+        for jnt, ctrl in zip(left_leg_joint_list, [left_hip_ctrl, left_knee_ctrl, left_ankle_fk_ctrl, 'L_Leg_toes_ctrl']):
+            self.do_constraint_parent(self, jnt, ctrl)
+
+        for jnt, ctrl in zip(right_leg_joint_list, [right_hip_ctrl, right_knee_ctrl, right_ankle_fk_ctrl, 'R_Leg_toes_ctrl']):
+            self.do_constraint_parent(self, jnt, ctrl)
+
+
+    def do_constraint_parent(self, source, destination, m_offset=True):
+        return pm.parentConstraint(self.source_namespace + ':' + source, self.destination_namespace + ':' + destination, mo=m_offset)
         
         
 if __name__ == "__main__":
