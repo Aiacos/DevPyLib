@@ -7,6 +7,73 @@ import maya.cmds as cmds
 import maya.internal.nodes.proximitywrap.node_interface as node_interface
 
 
+def reorder_deformer(node, geo_list, search_type='skincluster'):
+    for geo in geo_list:
+        deformer_history_list = pm.listHistory(geo, type='ffd')
+        pm.reorderDeformers(deformer_history_list[-1], node, geo)
+
+def paintDeformerWeights(channel, vtx_list, value, smoothIteration=1):
+    channel = 'inputAttract'
+    mel.eval('artSetToolAndSelectAttr("artAttrCtx", "ffd.ffd1.weights");')
+    pm.select(vtx_list)
+
+    # set value
+    mel.eval('artAttrCtx -e -value ' + str(value) + ' `currentCtx`;')
+
+    # replace
+    mel.eval('artAttrPaintOperation artAttrCtx Replace;')
+    mel.eval('artAttrCtx -e -clear `currentCtx`;')
+
+    # smooth
+    for i in range(0, smoothIteration):
+        mel.eval('artAttrPaintOperation artAttrCtx Smooth;')
+        mel.eval('artAttrCtx -e -clear `currentCtx`;')
+
+    pm.select(cl=True)
+
+
+class PaintDeformer(object):
+    def __init__(self, geo, channel):
+        pm.select(geo)
+        mel.eval('artSetToolAndSelectAttr("artAttrCtx", "' + channel + '");')
+        mel.eval('artAttrInitPaintableAttr;')
+        mel.eval('artAttrPaintMenu( "artAttrListPopupMenu" );')
+        mel.eval('artAttrValues artAttrContext;')
+        mel.eval('toolPropertyShow;')
+        mel.eval('dR_contextChanged;')
+        mel.eval('currentCtx;')
+
+        #mel.eval('changeSelectMode -component;')
+
+    def select(self, vtx_list):
+        pm.select(vtx_list)
+
+    def select_all(self):
+        mel.eval('SelectAll;')
+
+    def invert_selection(self):
+        mel.eval('invertSelection;')
+
+    def grow_selection(self, growSelection):
+        for i in range(growSelection):
+            mel.eval('select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;')
+
+    def replace(self, vtx_list, value):
+        pm.select(vtx_list)
+        mel.eval('artAttrCtx - e - value ' + str(value) + ' `currentCtx`;')
+
+        mel.eval('artAttrPaintOperation artAttrCtx Replace;')
+        mel.eval('artAttrCtx -e -clear `currentCtx`;')
+
+    def smooth(self, smoothIteration=1):
+        for i in range(0, smoothIteration):
+            mel.eval('artAttrPaintOperation artAttrCtx Smooth;')
+            mel.eval('artAttrCtx -e -clear `currentCtx`;')
+
+    def __del__(self):
+        mel.eval('setToolTo $gMove;')
+        pm.select(cl=True)
+
 def createProximityWrap(source, target_list):
     """
     Creates a proximity with the given source and target transforms.
