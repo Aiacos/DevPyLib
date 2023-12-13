@@ -29,6 +29,18 @@ def deleteConnection(objAttrList):
     for objAttr in objAttrList:
         mel.eval("CBdeleteConnection " + str(objAttr.name()) + ";")
 
+def deleteConnection(plug):
+    # """ Equivalent of MEL: CBdeleteConnection """
+
+    if pm.connectionInfo(plug, isDestination=True):
+        plug = pm.connectionInfo(plug, getExactDestination=True)
+        readOnly = pm.ls(plug, ro=True)
+        # delete -icn doesn't work if destination attr is readOnly
+        if readOnly:
+            source = pm.connectionInfo(plug, sourceFromDestination=True)
+            pm.disconnectAttr(source, plug)
+        else:
+            pm.delete(plug, icn=True)
 
 def setDrivenKey(driver, driverValueList, driven, drivenValueList, cvType='linear'):
     """
