@@ -190,6 +190,10 @@ class HumanIK(object):
                  ):
         self.charecter_name = str(character_name)
 
+        # Init HumanIK Window
+        mel.eval('HIKCharacterControlsTool;')
+
+        # Create Character
         mel.eval('hikCreateCharacter("' + self.charecter_name + '")')
 
         if reference_joint and not skip_reference_joint:
@@ -527,6 +531,9 @@ class HumanIK(object):
 
     def add_rightAnkle_ctrl(self, ctrl, ctrl_id=humanIK_ctrl_dict['RightAnkle']):
         self.add_ctrl(ctrl, ctrl_id)
+
+    def clean_ctrl_orient(self, ctrl):
+        pass
 
 
 def deleteConnection(plug):
