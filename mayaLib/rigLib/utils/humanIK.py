@@ -720,4 +720,4 @@ if __name__ == "__main__":
     char_name = 'Sylvanas'
     humanIk = HumanIK(char_name + '_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=True)
     humanIk = HumanIK(char_name + '_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=True)
-    humanIk = HumanIK(char_name + '_Hybird', custom_ctrl_definition=True, use_ik=False, use_hybrid=True, skip_reference_joint=True)
+    humanIk = HumanIK(char_name + '_Hybrid', custom_ctrl_definition=True, use_ik=False, use_hybrid=True, skip_reference_joint=True)
