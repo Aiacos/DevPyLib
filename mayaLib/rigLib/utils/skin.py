@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import maya.mel as mel
+import maya.cmds as cmds
 import pymel.core as pm
 
 from mayaLib.utility import bSkinSaver
@@ -112,15 +113,15 @@ def findRelatedSkinCluster(geo):
     return pm.ls(skincluster)[0]
 
 
-def saveSkinWeights(characterName, geoList,
-                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/') + 'rig/',
+def saveSkinWeights(geoList,
+                    projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
                     skinWeightsDir='weights/skinCluster', swExt='.swt',
                     doDirectory=True):
     """
     save weights for character geometry objects
     """
     # check folder
-    directory = os.path.join(projectPath, characterName, skinWeightsDir)
+    directory = os.path.join(projectPath, skinWeightsDir)
     if not os.path.exists(directory):
         if doDirectory:
             os.makedirs(directory)
@@ -133,21 +134,21 @@ def saveSkinWeights(characterName, geoList,
 
     for obj in geoList:
         # weights file
-        wtFile = os.path.join(projectPath, characterName, skinWeightsDir, obj + swExt)
+        wtFile = os.path.join(projectPath, skinWeightsDir, obj + swExt)
 
         # save skin weight file
         pm.select(obj)
         bSkinSaver.bSaveSkinValues(wtFile)
 
 
-def loadSkinWeights(characterName, geoList,
-                    projectPath=str(pm.workspace(q=True, dir=True, rd=True) + 'scenes/') + 'rig/',
+def loadSkinWeights(geoList,
+                    projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
                     skinWeightsDir='weights/skinCluster', swExt='.swt'):
     """
     load skin weights for character geometry objects
     """
     # check folder
-    directory = os.path.join(projectPath, characterName, skinWeightsDir)
+    directory = os.path.join(projectPath, skinWeightsDir)
     if not os.path.exists(directory):
         print('Path to load SkinCluster not found!')
         return
@@ -156,7 +157,7 @@ def loadSkinWeights(characterName, geoList,
         geoList = pm.ls(geoList)
 
     # weights folders
-    wtDir = os.path.join(projectPath, characterName, skinWeightsDir)
+    wtDir = os.path.join(projectPath, skinWeightsDir)
     wtFiles = os.listdir(wtDir)
 
     # load skin weights
@@ -164,7 +165,7 @@ def loadSkinWeights(characterName, geoList,
         extRes = os.path.splitext(wtFile)
 
         # check extension format
-        if not extRes > 1:
+        if not len(extRes) > 1:
             continue
 
         # check skin weight file

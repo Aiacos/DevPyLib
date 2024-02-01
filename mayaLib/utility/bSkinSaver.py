@@ -19,6 +19,12 @@ import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds as cmds
 import maya.mel
 
+import maya.OpenMayaUI as omui
+import pathlib
+
+from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtCore import QObject, SIGNAL
+from shiboken2 import wrapInstance
 
 # def showUI():
 #     global mainWin
@@ -27,8 +33,8 @@ import maya.mel
 #
 #
 # def getMayaWindow():
-#     ptr = mui.MQtUtil.mainWindow()
-#     return wrapInstance(long(ptr), QtWidgets.QWidget)
+#     ptr = omui.MQtUtil.mainWindow()
+#     return wrapInstance(int(ptr), QtWidgets.QWidget)
 #
 #
 # class bSkinSaverUI(QtWidgets.QDialog):
