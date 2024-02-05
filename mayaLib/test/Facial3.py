@@ -1,8 +1,3 @@
-# uncompyle6 version 3.7.4
-# Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.18 (v2.7.18:8d21aa21f2, Apr 20 2020, 13:19:08) [MSC v.1500 32 bit (Intel)]
-# Embedded file name: C:/PerseusRigging3/Maya20223/Facial3.py
-# Compiled at: 2021-05-05 11:26:32
 import os, sys
 from PySide2 import QtCore
 from PySide2 import QtWidgets
