@@ -226,6 +226,47 @@ def tensionMap(obj):
 
     return tensionmap_node
 
+def save_deformer_weights():
+    pass
+
+def load_deformer_weights(geoList, projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'), skinWeightsDir='weights/deformer'):
+    """
+    load deformer weights for character geometry objects
+    """
+    # check folder
+    directory = os.path.join(projectPath, skinWeightsDir)
+    if not os.path.exists(directory):
+        print('Path to load Deformer Weights not found!')
+        return
+
+    if not isinstance(geoList, list):
+        geoList = pm.ls(geoList)
+
+    # weights folders
+    wtDir = os.path.join(projectPath, skinWeightsDir)
+    wtFiles = os.listdir(wtDir)
+
+    # load skin weights
+    for wtFile in wtFiles:
+        extRes = os.path.splitext(wtFile)
+
+        # check extension format
+        if not len(extRes) > 1:
+            continue
+
+        # check skin weight file
+        if not extRes[1] == '.json':
+            continue
+
+        # check geometry list
+        if geoList and not extRes[0] in geoList:
+            continue
+
+        # check if objects exist
+        if not pm.objExists(extRes[0]):
+            continue
+
+        fullpathWtFile = os.path.join(wtDir, wtFile)
 
 if __name__ == "__main__":
     pass

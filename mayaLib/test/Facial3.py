@@ -2037,7 +2037,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.ConvertSelectionToVertices()
         else:
             pm.select(cl=1)
-            print 'The variable has not been assigned '
+            print('The variable has not been assigned ')
 
     def checkVarExistsB(self, NewList, NewListB, invert, type):
         if len(NewList) != 0:
@@ -2053,7 +2053,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.ConvertSelectionToContainedEdges()
         else:
             pm.select(cl=1)
-            print 'The variable has not been assigned '
+            print('The variable has not been assigned ')
 
     def findEdgeUpDown(self, upDown):
         LHeadGeoSel = self.perseusDic['LHeadGeoSel']
@@ -2951,14 +2951,14 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         base = cmds.ls(sl=1)
         mel.eval('PolySelectConvert 3;')
         self.SourceDestinationSel('source')
-        print sourceVertexLs
+        print(sourceVertexLs)
         cmds.select(base)
 
     def destination_define(self):
         base = cmds.ls(sl=1)
         mel.eval('PolySelectConvert 3;')
         self.SourceDestinationSel('destination')
-        print destinationVertexLs
+        print(destinationVertexLs)
         cmds.select(base)
 
     def SourceDestinationSel(self, sdType):
@@ -3037,9 +3037,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             objNoSpaceObj = objects[0].replace(nameRefObj, '')
             pm.blendShape(objects[0], objects[1], frontOfChain=1, tc=0, n=objects[0] + '_faceRig_bs')
             pm.setAttr(objects[0] + '_faceRig_bs.' + objNoSpaceObj, 1)
-            print ('// Result: BlendShape ->> {}').format(objects[0] + '_faceRig_bs')
+            print('// Result: BlendShape ->> {}').format(objects[0] + '_faceRig_bs')
         else:
-            print 'Please select source and target mesh to connect with BlendShape'
+            print('Please select source and target mesh to connect with BlendShape')
 
     def connectBlendShapeC(self):
         objects = pm.ls(sl=1)
@@ -3047,9 +3047,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.optionVar(fv=('exclusiveBind', 1), iv=[('autoWeightThreshold', 0), ('maxDistance', 0.01)])
             pm.select(objects[1], objects[0], r=1)
             cmds.CreateWrap(n=objects[0] + '_wrap', frontOfChain=1)
-            print '// Result: Wrap deformer '
+            print('// Result: Wrap deformer ')
         else:
-            print 'Please select source and target mesh to connect with BlendShape'
+            print('Please select source and target mesh to connect with BlendShape')
 
     def connectBlendShapeD(self):
         name = self.headGeo_wdg.nameField.text()
@@ -3094,7 +3094,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 try:
                     cmds.copyAttr(obj, obj + '_ghost', inConnections=True, values=True)
                 except:
-                    print 'There is no ghost group for ' + obj
+                    print('There is no ghost group for ' + obj)
 
         cmds.select(currentSel, r=1)
 
@@ -3108,7 +3108,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 try:
                     cmds.copyAttr(obj + '_ghost', obj, inConnections=True, values=True)
                 except:
-                    print 'There is no ghost group for ' + obj
+                    print('There is no ghost group for ' + obj)
 
         cmds.select(currentSel, r=1)
 
@@ -3323,7 +3323,7 @@ def prImpSkin(filePath=None, *args):
 
             if skinCluster:
                 setlist(skinCluster, list)
-                print '%s skin data loaded.' % objName
+                print('%s skin data loaded.' % objName)
         except Exception:
             pm.displayWarning('Object: ' + objName + ' Skiped. Can NOT be found in the scene')
 
