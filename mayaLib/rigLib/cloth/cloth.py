@@ -56,7 +56,7 @@ class Cloth:
             pm.rename(geo, name)
 
         sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
-        deform.deltaMushDeformer(sim_geo_list)
+        #deform.deltaMushDeformer(sim_geo_list)
 
     def paintQuills(self, p_quill=0.75, p_feather=0.1):
         for clothShape in self.clothShapeList:

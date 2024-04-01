@@ -30,7 +30,7 @@ def create_collider(geo, nucleus='nucleus1', collider_thickness=0.005):
     return colliderNode
 
 
-def create_nCloth(geo, collider_thickness=0.005):
+def create_nCloth(geo, source_geo=None, rest_mesh=None):
     pm.select(geo)
     clothShape = pm.ls(mel.eval('createNCloth 0;'))[-1]
     nucleus = pm.listConnections(clothShape, type='nucleus')[0]
@@ -40,13 +40,11 @@ def create_nCloth(geo, collider_thickness=0.005):
     pm.parent(clothShape.getParent(), geo)
 
     # connect inputmeshShape and restShape
-    # muscleGeo = pm.ls(str(muscleSimGeo.name()).replace('_SIM', '_GEO'))[0]
-    # pm.connectAttr(muscleGeo.getShape().worldMesh[0], clothShape.inputMesh, f=True)
-    # pm.connectAttr(muscleGeo.getShape().worldMesh[0], clothShape.restShapeMesh, f=True)
+    if source_geo:
+        pm.connectAttr(source_geo.getShape().worldMesh[0], clothShape.inputMesh, f=True)
 
-    # Set Default Value
-    # Collision
-    clothShape.thickness.set(collider_thickness)
+    if rest_mesh:
+        pm.connectAttr(rest_mesh.getShape().worldMesh[0], clothShape.restShapeMesh, f=True)
 
     geo_cloth_shape = geo.getShapes()[-1]
 
@@ -54,11 +52,10 @@ def create_nCloth(geo, collider_thickness=0.005):
 
 def setup_nCloth(geo):
     geo = pm.ls(geo)[-1]
-    cloth_name = str(geo.name()).replace('_geo', '_cloth_geo')
+    cloth_name = str(geo.name()).replace('_geo', '_cloth_geo').replace('_proxy', '_proxy_cloth_geo')
     source_geo = pm.duplicate(geo, n=cloth_name)[-1]
 
-    blendshapeNode = deform.blendShapeDeformer(geo, source_geo, 'cloth_BS', defaultValue=[1, ], frontOfChain=False)
-    clothShape, nucleus, geo_cloth_shape = create_nCloth(geo, collider_thickness=0.005)
+    clothShape, nucleus, geo_cloth_shape = create_nCloth(geo, source_geo)
 
 def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
     channel = 'inputAttract'
