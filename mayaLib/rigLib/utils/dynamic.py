@@ -8,29 +8,20 @@ from mayaLib.rigLib.utils import deform
 
 
 def create_collider(geo, nucleus='nucleus1', collider_thickness=0.005):
+    geo = pm.ls(geo)[-1]
     nucleus = pm.ls(nucleus)[-1]
 
-    timerNode = pm.ls('time1')[0]
-    colliderNode = pm.createNode('nRigid', n=geo.name() + '_collider' + '_Shape')
+    pm.select(geo, nucleus)
+    colliderNode = pm.ls(mel.eval('makeCollideNCloth;'))[-1]
     pm.rename(colliderNode.getParent(), geo.name() + '_collider')
-
-    pm.connectAttr(timerNode.outTime, colliderNode.currentTime, f=True)
-    pm.connectAttr(geo.getShape().worldMesh[0], colliderNode.inputMesh, f=True)
-
-    pm.connectAttr(colliderNode.currentState, nucleus.inputPassive[0], f=True)
-    pm.connectAttr(colliderNode.startState, nucleus.inputPassiveStart[0], f=True)
-
-    pm.parent(colliderNode, geo)
-
-    colliderNode.thickness.set(collider_thickness)
-    # colliderNode.trappedCheck.set(1)
-    # colliderNode.pushOut.set(0)
-    # colliderNode.pushOutRadius.set(0.5)
+    pm.parent(colliderNode.getParent(), geo)
 
     return colliderNode
 
 
 def create_nCloth(geo, source_geo=None, rest_mesh=None):
+    geo = pm.ls(geo)[-1]
+
     pm.select(geo)
     clothShape = pm.ls(mel.eval('createNCloth 0;'))[-1]
     nucleus = pm.listConnections(clothShape, type='nucleus')[0]
@@ -39,23 +30,35 @@ def create_nCloth(geo, source_geo=None, rest_mesh=None):
     pm.rename(clothShape.getParent(), str(geo.name()) + '_nCloth')
     pm.parent(clothShape.getParent(), geo)
 
-    # connect inputmeshShape and restShape
     if source_geo:
+        source_geo = pm.ls(source_geo)[-1]
         pm.connectAttr(source_geo.getShape().worldMesh[0], clothShape.inputMesh, f=True)
 
     if rest_mesh:
+        rest_mesh = pm.ls(rest_mesh)[-1]
         pm.connectAttr(rest_mesh.getShape().worldMesh[0], clothShape.restShapeMesh, f=True)
 
     geo_cloth_shape = geo.getShapes()[-1]
 
     return clothShape, nucleus, geo_cloth_shape
 
-def setup_nCloth(geo):
+def setup_nCloth(geo, cloth_geo=None, input_geo=None, rest_mesh=None, do_direct_connection=True, do_blendshape=False):
     geo = pm.ls(geo)[-1]
-    cloth_name = str(geo.name()).replace('_geo', '_cloth_geo').replace('_proxy', '_proxy_cloth_geo')
-    source_geo = pm.duplicate(geo, n=cloth_name)[-1]
 
-    clothShape, nucleus, geo_cloth_shape = create_nCloth(geo, source_geo)
+    if not cloth_geo:
+        cloth_name = str(geo.name()).replace('_geo', '_cloth_geo').replace('_proxy', '_proxy_cloth_geo')
+        cloth_geo = pm.duplicate(geo, n=cloth_name)[-1]
+        print(cloth_geo)
+
+    if do_direct_connection:
+        pm.connectAttr(geo.getShape().worldMesh[0], cloth_geo.inMesh, f=True)
+
+    if do_blendshape:
+        pass
+
+    clothShape, nucleus, geo_cloth_shape = create_nCloth(cloth_geo, input_geo, rest_mesh)
+
+    return cloth_geo, geo_cloth_shape, clothShape, nucleus
 
 def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
     channel = 'inputAttract'

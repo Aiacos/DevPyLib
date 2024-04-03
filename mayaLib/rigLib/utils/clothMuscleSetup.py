@@ -1,6 +1,7 @@
 import maya.mel as mel
 import pymel.core as pm
 
+from mayaLib.rigLib.utils import dynamic
 
 def getAllObjectUnderGroup(group, type='mesh'):
     """
@@ -18,28 +19,6 @@ def getAllObjectUnderGroup(group, type='mesh'):
     objList = list(set(objList))
     objList.sort()
     return objList
-
-
-def clothPaintInputAttract(clothNode, vtxList, value, smoothIteration=1):
-    channel = 'inputAttract'
-    clothOutput = pm.listConnections(clothNode.outputMesh, sh=True)[0]
-
-    mel.eval('setNClothMapType("' + channel + '","' + clothOutput + '",1); artAttrNClothToolScript 4 ' + channel + ';')
-    pm.select(vtxList)
-
-    # set value
-    mel.eval('artAttrCtx -e -value ' + str(value) + ' `currentCtx`;')
-
-    # replace
-    mel.eval('artAttrPaintOperation artAttrCtx Replace;')
-    mel.eval('artAttrCtx -e -clear `currentCtx`;')
-
-    # smooth
-    for i in range(0, smoothIteration):
-        mel.eval('artAttrPaintOperation artAttrCtx Smooth;')
-        mel.eval('artAttrCtx -e -clear `currentCtx`;')
-
-    pm.select(cl=True)
 
 
 class ClothMuscle:
@@ -163,7 +142,7 @@ class ClothMuscle:
 
         vtxList = pm.ls(sl=True)
 
-        clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
+        dynamic.clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
 
     def runSolve(self):
         # setup nCloth
