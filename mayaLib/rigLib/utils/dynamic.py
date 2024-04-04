@@ -42,7 +42,7 @@ def create_nCloth(geo, source_geo=None, rest_mesh=None):
 
     return clothShape, nucleus, geo_cloth_shape
 
-def setup_nCloth(geo, cloth_geo=None, input_geo=None, rest_mesh=None, do_direct_connection=True, do_blendshape=False):
+def setup_nCloth(geo, cloth_geo=None, input_geo=None, rest_mesh=None, do_direct_connection=False, do_blendshape=True):
     geo = pm.ls(geo)[-1]
 
     if not cloth_geo:
@@ -54,7 +54,7 @@ def setup_nCloth(geo, cloth_geo=None, input_geo=None, rest_mesh=None, do_direct_
         pm.connectAttr(geo.getShape().worldMesh[0], cloth_geo.inMesh, f=True)
 
     if do_blendshape:
-        pass
+        deform.blendShapeDeformer(cloth_geo, [geo], 'input_BS')
 
     clothShape, nucleus, geo_cloth_shape = create_nCloth(cloth_geo, input_geo, rest_mesh)
 
