@@ -36,7 +36,8 @@ def create_nCloth(geo, source_geo=None, rest_mesh=None):
 
     if rest_mesh:
         rest_mesh = pm.ls(rest_mesh)[-1]
-        pm.connectAttr(rest_mesh.getShape().worldMesh[0], clothShape.restShapeMesh, f=True)
+        source_attr = pm.listConnections(clothShape.inputMesh, p=True)[-1]
+        pm.connectAttr(source_attr, clothShape.restShapeMesh, f=True)
 
     geo_cloth_shape = geo.getShapes()[-1]
 
