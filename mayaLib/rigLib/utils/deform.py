@@ -7,6 +7,14 @@ import maya.cmds as cmds
 import maya.internal.nodes.proximitywrap.node_interface as node_interface
 
 
+def remove_shapeDeformed():
+    shapeDeformed_node_list = pm.ls('*ShapeDeformed', '*:*ShapeDeformed')
+
+    for shape in shapeDeformed_node_list:
+        shape_old_name = str(shape.name())
+        new_name = shape_old_name.replace('Deformed', '')
+        pm.rename(shape, new_name)
+
 def reorder_deformer(node, geo_list, search_type='skincluster'):
     for geo in geo_list:
         deformer_history_list = pm.listHistory(geo, type='ffd')

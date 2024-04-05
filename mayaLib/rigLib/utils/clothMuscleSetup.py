@@ -22,106 +22,44 @@ def getAllObjectUnderGroup(group, type='mesh'):
 
 
 class ClothMuscle:
-    def __init__(self):
-        try:
-            self.muscleGrp = pm.ls('muscle_GRP')[0]
-            self.skeletonGrp = pm.ls('skeleton_GRP')[0]
-            # self.skinGrp = pm.ls('skin_GRP')[0]
-        except:
-            pass
+    def __init__(self, geo_list, collision_geo_list):
+        self.cloth_system_grp = pm.group(n='ClothSystem_grp', em=True)
+        self.cloth_geo_grp = pm.group(n='cloth_geo_grp', em=True, p=self.cloth_system_grp)
 
-        self.muscleSystemGrp = pm.group(n='muscleSystem_GRP', em=True)
-        pm.parent(self.muscleGrp, self.muscleSystemGrp)
-        pm.parent(self.skeletonGrp, self.muscleSystemGrp)
-
-        muscleList = getAllObjectUnderGroup(self.muscleGrp)
-        self.clothShapeList, self.nucleus = self.createNCloth(muscleList)
+        self.cloth_data_list, self.nucleus = self.createNCloth(geo_list)
 
         # setup Nucleus
-        pm.rename(self.nucleus, 'muscleSystem_nucleus')
-        pm.parent(self.nucleus, self.muscleSystemGrp)
+        pm.rename(self.nucleus, 'clothSystem_nucleus')
+        pm.parent(self.nucleus, self.cloth_system_grp)
 
-        self.nucleus.enable.set(1)
-        self.nucleus.spaceScale.set(0.01)
-        self.nucleus.subSteps.set(12)
+        # self.nucleus.enable.set(0)
 
         # setup Colliders
-        self.collisionSetup(self.skeletonGrp)
+        collision_data_list = self.collisionSetup(collision_geo_list)
 
-        for clothShape in self.clothShapeList:
-            self.paintInputAttract(clothShape)
+        # sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
+        # deform.deltaMushDeformer(sim_geo_list)
 
-    def createNCloth(self, muscleList):
-        # duplicate muscle (musSim)
-        muscleSim = pm.duplicate(muscleList)
-        muscleSimGrp = pm.group(muscleSim, n='muscleSim_GRP', p=self.muscleSystemGrp)
+    def createNCloth(self, geo_list):
+        cloth_data_list = []
+        nucleus = None
 
-        for mus in muscleSim:
-            pm.rename(mus, str(mus.name()).replace('_GEO1', '_SIM'))
+        for geo in geo_list:
+            cloth_geo, geo_cloth_shape, clothShape, nucleus = dynamic.setup_nCloth(geo, rest_mesh=geo)
+            pm.parent(cloth_geo, self.cloth_geo_grp)
+            cloth_data_list.append([geo, cloth_geo, geo_cloth_shape, clothShape])
 
-        pm.select(muscleSim)
-        clothShapeList = pm.ls(mel.eval('createNCloth 0;'))
-        nucleus = pm.listConnections(clothShapeList[0], type='nucleus')[0]
+        return cloth_data_list, nucleus
 
-        for cloth in clothShapeList:
-            muscleSimGeo = pm.listConnections(cloth.outputMesh)[0]
-            pm.rename(cloth.getParent(), str(muscleSimGeo.name()) + '_nCloth')
-            pm.parent(cloth.getParent(), muscleSimGeo)
+    def collisionSetup(self, collision_geo_list):
+        collision_data_list = []
 
-            # connect inputmeshShape and restShape
-            print('###############################################')
-            print((str(muscleSimGeo.name()).replace('_SIM', '_GEO')))
-            muscleGeo = pm.ls(str(muscleSimGeo.name()).replace('_SIM', '_GEO'))[0]
-            pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.inputMesh, f=True)
-            pm.connectAttr(muscleGeo.getShape().worldMesh[0], cloth.restShapeMesh, f=True)
+        for geo in collision_geo_list:
+            collider = dynamic.create_collider(geo, self.nucleus)
 
-            # Set Default Value
-            # Collision
-            cloth.thickness.set(0.01)
-            cloth.selfCollideWidthScale.set(1)
+            collision_data_list.append([geo, collider])
 
-            # Dynamic Properties
-            cloth.stretchResistance.set(10)
-            cloth.bendResistance.set(5)
-            cloth.inputMeshAttract.set(1)
-            cloth.inputAttractMethod.set(1)
-
-            # Pressure
-            cloth.pressureMethod.set(1)
-
-            # trap checked
-
-        return clothShapeList, nucleus
-
-    def createCollision(self, geo):
-        # pm.select(geo)
-        # collisionShapeList = pm.ls(mel.eval('makeCollideNCloth;'))
-
-        timerNode = pm.ls('time1')[0]
-        colliderNode = pm.createNode('nRigid', n=geo.name() + '_collider' + '_Shape')
-        pm.rename(colliderNode.getParent(), geo.name() + '_collider')
-
-        pm.connectAttr(timerNode.outTime, colliderNode.currentTime, f=True)
-        pm.connectAttr(geo.getShape().worldMesh[0], colliderNode.inputMesh, f=True)
-
-        pm.connectAttr(colliderNode.currentState, self.nucleus.inputPassive[0], f=True)
-        pm.connectAttr(colliderNode.startState, self.nucleus.inputPassiveStart[0], f=True)
-
-        pm.parent(colliderNode, geo)
-
-        colliderNode.thickness.set(0.005)
-        # colliderNode.trappedCheck.set(1)
-        # colliderNode.pushOut.set(0)
-        # colliderNode.pushOutRadius.set(0.5)
-
-        return colliderNode
-
-    def collisionSetup(self, collisionGrp):
-        collisionGrp = pm.ls(collisionGrp)[0]
-        collisionGeoList = getAllObjectUnderGroup(collisionGrp)
-
-        for collisionGeo in collisionGeoList:
-            self.createCollision(collisionGeo)
+        return collision_data_list
 
     def paintInputAttract(self, clothNode, growSelection=5):
         geo = pm.listConnections(clothNode.inputMesh, s=True)[0]
@@ -143,6 +81,56 @@ class ClothMuscle:
         vtxList = pm.ls(sl=True)
 
         dynamic.clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
+
+    def updateSettings(self):
+        # setup nCloth
+        for data in self.cloth_data_list:
+            cloth = data[0]
+            # Set Default Value
+            # Collision
+            cloth.thickness.set(0.01)
+            cloth.selfCollideWidthScale.set(1)
+
+            # Dynamic Properties
+            cloth.stretchResistance.set(10)
+            cloth.bendResistance.set(5)
+            cloth.inputMeshAttract.set(1)
+            cloth.inputAttractMethod.set(0)
+
+            # Pressure
+            cloth.pressureMethod.set(1)
+
+            # Collision
+            cloth.thickness.set(0.01)
+            cloth.selfCollideWidthScale.set(1)
+
+            # Quality Settings
+            cloth.collideLastThreshold.set(0.2)
+            cloth.sortLinks.set(1)
+
+            # clothShape.evaluationOrder.set(1)
+            cloth.bendSolver.set(2)
+
+            # trap checked
+            cloth.trappedCheck.set(1)
+            cloth.selfTrappedCheck.set(1)
+
+            cloth.pushOut.set(0.05)
+            cloth.pushOutRadius.set(1)
+
+            cloth.isDynamic.set(1)
+
+        self.nucleus.enable.set(1)
+
+    def selectVtx(self, geo, vertices):
+        vertex_select_list = []
+        for vertex in vertices:
+            try:
+                vertex_select_list.append("{0}.vtx[{1}]".format(geo, vertex))
+            except:
+                print('Skip vtx: ', vertex)
+
+        pm.select(vertex_select_list)
 
     def runSolve(self):
         # setup nCloth
