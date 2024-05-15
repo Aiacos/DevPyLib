@@ -258,7 +258,7 @@ def connect_bifrostwgt_to_deformerwgt(bifrost_wgt_attribute, deformer_wgt_attrib
 
     cmds.connectAttr(bifrost_wgt_attribute, deformer_wgt_attribute, f=True)
     
-def connect_bifrost_muscle_to_blendshape(bifrost_node, blendshape_targhet):
+def connect_bifrost_attribute_to_blendshape(bifrost_node, blendshape_targhet):
     """
     Connect Bifrost Maya Node weight attribute to a blendshape deformer
     Args:
