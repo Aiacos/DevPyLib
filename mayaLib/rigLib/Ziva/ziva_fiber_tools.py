@@ -35,7 +35,7 @@ def createLoACurve(obj):
     pm.select(obj)
     curve = pm.ls(mel.eval('zLineOfActionUtil;'))[0].getParent()
 
-    cv_name = str(obj.name()).replace('_geo', '_CV')
+    cv_name = str(obj.name()) + '_CV'
     pm.rename(curve, cv_name)
     curve = pm.ls(cv_name)[-1]
 

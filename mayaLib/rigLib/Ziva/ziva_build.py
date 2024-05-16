@@ -116,15 +116,17 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, combine_skeleton=True):
-        self.skeleton_grp = skeleton_grp
-        self.muscle_grp = muscle_grp
+    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, solver_scale=100, combine_skeleton=True):
+        self.skeleton_grp = pm.group(n='skeleton_sim_grp', em=True)
+        self.muscle_grp = pm.group(n='muscle_sim_grp', em=True)
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
 
         # prepare skeleton
-        if len(self.skeleton) > 1 and combine_skeleton:
+        if len(skeleton_grp) > 1 and combine_skeleton:
             self.skeleton = tool.zPolyCombine(self.skeleton)
+            pm.rename(self.skeleton, 'combined_skeleton_geo')
+            self.skeleton = pm.ls('combined_skeleton_geo')[-1]
 
         # make bone
         self.ziva_bone = addBone(self.skeleton)
@@ -164,7 +166,7 @@ class ZivaMuscle(ZivaBase):
         self.zOut_grp = pm.group(self.zMuscleCombined, n='zOut_grp')
 
         # CleanUp
-        super().__init__(character, rig_type='muscle')
+        super().__init__(character, rig_type='muscle', solver_scale=solver_scale)
         self.clean_muscle()
 
     def clean_muscle(self):
