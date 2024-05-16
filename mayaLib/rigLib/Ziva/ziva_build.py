@@ -126,7 +126,7 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='name', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, solver_scale=100, combine_skeleton=True):
+    def __init__(self, character='name', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, solver_scale=100, combine_skeleton=True, use_gpu=True):
         self.skeleton_grp = skeleton_grp
         self.muscle_grp = muscle_grp
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
@@ -177,7 +177,7 @@ class ZivaMuscle(ZivaBase):
         self.zOut_grp = pm.group(self.zMuscleCombined, n='zOut_grp')
 
         # CleanUp
-        super().__init__(character, rig_type='muscle', solver_scale=solver_scale)
+        super().__init__(character, rig_type='muscle', solver_scale=solver_scale, use_gpu=use_gpu)
         self.clean_muscle()
 
     def clean_muscle(self):
@@ -195,7 +195,7 @@ class ZivaMuscle(ZivaBase):
                     attachment.addAttachment(intersecting_geos[0], intersecting_geos[1], value=value, fixed=False)
 
 class ZivaSkin(ZivaBase):
-    def __init__(self, character='', fascia_grp='Fascia_grp', fat_grp='Fat_grp', skin_geo='', skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, max_tet_resolution=512, skip_build=False):
+    def __init__(self, character='', fascia_grp='Fascia_grp', fat_grp='Fat_grp', skin_geo='', skeleton_grp='skeleton_grp', muscle_grp='muscle_grp', tet_size=1, attachment_radius=1, solver_scale=100, combine_skeleton=True, max_tet_resolution=512, skip_build=False, use_gpu=False):
         self.skeleton_grp = pm.ls(skeleton_grp)[-1]
         self.muscle_grp = pm.ls(muscle_grp)[-1]
         self.fascia_grp = pm.ls(fascia_grp)[-1]
@@ -255,7 +255,7 @@ class ZivaSkin(ZivaBase):
         self.wrap_grp = pm.group(wrap_geo_list, n='wrap_grp')
 
 
-        super(ZivaSkin, self).__init__(character, rig_type='skin', solver_scale=solver_scale, skip_build=skip_build)
+        super(ZivaSkin, self).__init__(character, rig_type='skin', solver_scale=solver_scale, skip_build=skip_build, use_gpu=use_gpu)
         self.clean_skin()
 
     def clean_skin(self):
