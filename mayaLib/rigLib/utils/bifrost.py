@@ -253,7 +253,7 @@ def bf_add_mesh(bifrost_shape, geo, parent="/"):
 
     """
 
-    geo_shape = cmds.listRelatives(geo, type='mesh')[-1]
+    geo_shape = [s for s in cmds.listRelatives(geo, shapes=True, type='mesh') if not s.endswith('Orig')][0]
     print(geo_shape)
     
     #vnnCompound "|rig_grp|usd_bifrostGraph|usd_bifrostGraphShape" "/" -addIONode true;
@@ -305,7 +305,7 @@ if __name__ == "__main__":
     #mel.eval('file -f -new;')
     
     bifrost_shape = create_bifrost_graph('usd')
-    bf_add_mesh(bifrost_shape, "pPlatonic1")
+    bf_add_mesh(bifrost_shape, "pPlatonic")
     """
     # Create Stage
     create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")

@@ -59,7 +59,7 @@ def addMaterial(obj):
 
 
 class ZivaBase():
-    def __init__(self, character, rig_type='ziva', ziva_cache=True, solver_scale=100, skip_build=False):
+    def __init__(self, character, rig_type='ziva', ziva_cache=True, solver_scale=100, use_gpu=True, skip_build=False):
         self.character_name = character
         self.rig_type = rig_type
         self.rig_grp = pm.group(n=character + '_' + rig_type + '_rig_grp', em=True)
@@ -76,6 +76,9 @@ class ZivaBase():
             self.zSolver.getShape().affectFiberExcitation.set(1)
             self.zSolver.getShape().affectRestShapeEnvelope.set(1)
             self.zSolver.getShape().collisionDetection.set(1)
+
+            if use_gpu:
+                self.zSolver.getShape().solver.set(2)
 
         if ziva_cache:
             self.add_zivaCache()
