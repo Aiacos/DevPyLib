@@ -254,7 +254,6 @@ def bf_add_mesh(bifrost_shape, geo, parent="/"):
     """
 
     geo_shape = [s for s in cmds.listRelatives(geo, shapes=True, type='mesh') if not s.endswith('Orig')][0]
-    print(geo_shape)
     
     #vnnCompound "|rig_grp|usd_bifrostGraph|usd_bifrostGraphShape" "/" -addIONode true;
     mesh_node = cmds.vnnCompound(bifrost_shape, parent, addIONode=True)[-1]
