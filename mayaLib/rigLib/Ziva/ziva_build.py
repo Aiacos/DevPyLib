@@ -68,6 +68,13 @@ class ZivaBase():
         if self.zSolver:
             pm.group(self.zSolver, n='zSolver_grp', p=self.rig_grp)
             self.zSolver.scale.set(solver_scale, solver_scale, solver_scale)
+            self.zSolver.getShape().affectSolverGravity.set(1)
+            self.zSolver.getShape().affectInertialDamping.set(1)
+            self.zSolver.getShape().affectRestScaleEnvelope.set(1)
+            self.zSolver.getShape().affectPressureEnvelope.set(1)
+            self.zSolver.getShape().affectSurfaceTensionEnvelope.set(1)
+            self.zSolver.getShape().affectFiberExcitation.set(1)
+            self.zSolver.getShape().affectRestShapeEnvelope.set(1)
             self.zSolver.getShape().collisionDetection.set(1)
 
         if ziva_cache:
@@ -116,9 +123,9 @@ class ZivaBase():
 
 
 class ZivaMuscle(ZivaBase):
-    def __init__(self, character='Warewolf', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, solver_scale=100, combine_skeleton=True):
-        self.skeleton_grp = pm.group(n='skeleton_sim_grp', em=True)
-        self.muscle_grp = pm.group(n='muscle_sim_grp', em=True)
+    def __init__(self, character='name', skeleton_grp='Skeleton_GRP', muscle_grp='Muscle_GRP', tet_size=2, attachment_radius=1, solver_scale=100, combine_skeleton=True):
+        self.skeleton_grp = skeleton_grp
+        self.muscle_grp = muscle_grp
         self.skeleton = util.getAllObjectUnderGroup(skeleton_grp)
         self.muscles = util.getAllObjectUnderGroup(muscle_grp)
 
@@ -127,6 +134,7 @@ class ZivaMuscle(ZivaBase):
             self.skeleton = tool.zPolyCombine(self.skeleton)
             pm.rename(self.skeleton, 'combined_skeleton_geo')
             self.skeleton = pm.ls('combined_skeleton_geo')[-1]
+            pm.parent(self.skeleton, self.skeleton_grp)
 
         # make bone
         self.ziva_bone = addBone(self.skeleton)

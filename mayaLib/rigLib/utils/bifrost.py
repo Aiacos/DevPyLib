@@ -1,6 +1,5 @@
 import maya.mel as mel
 import maya.cmds as cmds
-import pymel.core as pm
 
 
 ## USD Utility
@@ -240,6 +239,34 @@ def bf_auto_layout():
     """
 
     mel.eval('undoInfo -openChunk -chunkName "Auto-Layout_Selected\tL";')
+    
+def bf_add_mesh(bifrost_shape, geo, parent="/"):
+    """
+    Add mesh to Bifrost Graph
+    Args:
+        bifrost_shape (string): Bifrost Graph Shape
+        geo (string): Geo name
+        parent (string): Parent node
+
+    Returns:
+        (string): Bifrost input mesh node
+
+    """
+
+    geo_shape = cmds.listRelatives(geo, type='mesh')[-1]
+    print(geo_shape)
+    
+    #vnnCompound "|rig_grp|usd_bifrostGraph|usd_bifrostGraphShape" "/" -addIONode true;
+    mesh_node = cmds.vnnCompound(bifrost_shape, parent, addIONode=True)[-1]
+
+    #vnnCompound "|rig_grp|usd_bifrostGraph|usd_bifrostGraphShape" "/" -renameNode "input1" "platonic_bodyShape";
+    cmds.vnnCompound(bifrost_shape, parent, renameNode=[mesh_node, geo_shape])
+
+    #vnnNode "|rig_grp|usd_bifrostGraph|usd_bifrostGraphShape" "/platonic_bodyShape" -createOutputPort "mesh" "Object" -portOptions "pathinfo={path=/rig_grp/model_grp/root/platonic_obj/platonic_body/platonic_bodyShape;setOperation=+;active=true}";
+    geo_path = str(cmds.ls(geo_shape, long=True)[0]).replace('|', '/')
+    cmds.vnnNode(bifrost_shape, '/' + geo_shape, createOutputPort=["mesh", "Object"], portOptions='pathinfo={path='+geo_path+';setOperation=+;active=true}')
+
+    return mesh_node
 
 
 
@@ -275,9 +302,11 @@ def connect_bifrost_attribute_to_blendshape(bifrost_node, blendshape_targhet):
 
 ####### Tests
 if __name__ == "__main__":
-    mel.eval('file -f -new;')
-    bifrost_shape = create_bifrost_graph('usd')
+    #mel.eval('file -f -new;')
     
+    bifrost_shape = create_bifrost_graph('usd')
+    bf_add_mesh(bifrost_shape, "pPlatonic1")
+    """
     # Create Stage
     create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")
     add_to_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,add_to_stage")
@@ -294,4 +323,4 @@ if __name__ == "__main__":
     
     stage = get_maya_usd_stage()
     set_maya_usd_stage_shareable(stage)
-    
+    """

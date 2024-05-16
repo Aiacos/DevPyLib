@@ -61,13 +61,18 @@ def returnDrivenObject(attribute, skipConversionNodes=True):
     return returnList
 
 
-def getAllObjectUnderGroup(group, type='mesh'):
+def getAllObjectUnderGroup(group, type='mesh', full_path=True):
     """
     Return all object of given type under group
-    :param group: str, group name
-    :param type: str, object type
-    :return: object list
+    Args:
+        group (string): group name
+        type (string): object type
+
+    Returns:
+        (pm.Mesh[]): object list
+
     """
+
     objList = None
 
     if type == 'mesh':
