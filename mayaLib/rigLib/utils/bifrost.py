@@ -265,7 +265,23 @@ def bf_add_mesh(bifrost_shape, geo, parent="/"):
     geo_path = str(cmds.ls(geo_shape, long=True)[0]).replace('|', '/')
     cmds.vnnNode(bifrost_shape, '/' + geo_shape, createOutputPort=["mesh", "Object"], portOptions='pathinfo={path='+geo_path+';setOperation=+;active=true}')
 
-    return mesh_node
+    return geo_shape
+    
+def bf_get_node_type(bifrost_shape, node):
+    """
+    Get Type from a Bifrost Node
+    Args:
+        bifrost_shape (string): Bifrost Graph Shape
+        node (string): Name of the node
+
+    Returns:
+        (string): Type of the Node
+
+    """
+
+    node_type = cmds.vnnNode(bifrost_shape, '/' + node, queryTypeName=True)
+    
+    return node_type
 
 
 
@@ -304,7 +320,11 @@ if __name__ == "__main__":
     #mel.eval('file -f -new;')
     
     bifrost_shape = create_bifrost_graph('usd')
-    bf_add_mesh(bifrost_shape, "pPlatonic")
+    
+    input_mesh_node = bf_add_mesh(bifrost_shape, "pPlatonic1")
+    define_mesh_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
+    node_type = bf_get_node_type(bifrost_shape, define_mesh_node)
+    print('Node_type: ', node_type)
     """
     # Create Stage
     create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")

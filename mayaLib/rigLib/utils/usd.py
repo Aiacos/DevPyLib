@@ -1,6 +1,4 @@
 import maya.cmds as cmds
-import pymel.core as pm
-
 from mayaLib.rigLib.utils import bifrost
 
 
@@ -42,10 +40,15 @@ class USDCharacterBuild(object):
         self.bifrost_shape = self.create_bifrost_graph(name)
         add_to_stage_node, time_node = self.create_default_usd_stage()
         
+        for geo in geo_list:
+            self.add_mesh(geo, time_node, add_to_stage_node)
+        
         add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [add_to_stage_node])
         bifrost.bf_feedback_port(self.bifrost_shape, add_to_stage_compound, 'out_stage', 'stage')
         
-        bifrost.bf_add_mesh(self.bifrost_shape, "platonic_body")
+        # Set USD Stage Sharable
+        maya_usd_stage = bifrost.get_maya_usd_stage()
+        bifrost.set_maya_usd_stage_shareable(maya_usd_stage)
         
 
     def create_bifrost_graph(self, name='usd'):
@@ -86,10 +89,44 @@ class USDCharacterBuild(object):
         bifrost.bf_connect(self.bifrost_shape, 'input.layer', create_usd_stage_node + '.layer')
         
         return add_to_stage_node, time_node
+        
+    def add_mesh(self, mesh_name, time_node, add_to_stage_node):
+        # Creaci una classe
+        input_mesh_node = bifrost.bf_add_mesh(self.bifrost_shape, mesh_name)
+        define_mesh_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
+        
+        bifrost.bf_connect(self.bifrost_shape, input_mesh_node + '.mesh', define_mesh_node + '.mesh')
+        bifrost.bf_connect(self.bifrost_shape, time_node + '.frame', define_mesh_node + '.frame')
+        
+        bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + mesh_name)
+        mesh_transfrom = cmds.listRelatives(mesh_name, p=True)[-1]
+        
+        self.recursive_build_usd_graph(mesh_transfrom, add_to_stage_node)
+        
+    def recursive_build_usd_graph(self, name, add_to_stage_node):
+        if name:
+            
+            if name == 'root':
+                node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
+                bifrost.bf_set_node_property(self.bifrost_shape, node, "path", "/root")
+                bifrost.bf_connect(self.bifrost_shape, 'root.prim_defintion', add_to_stage_node + '.prim_defintion')
+                
+                return None
+            else:
+                parent = cmds.listRelatives(name, p=True)[-1]
+                node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
+                bifrost.bf_set_node_property(self.bifrost_shape, node, "path", '/' + name)
+                
+                bifrost.bf_connect(self.bifrost_shape, name + '.prim_defintion', parent + '.prim_defintion')
+                
+                
+                
+                self.recursive_build_usd_graph(parent)
+        
 
 
 if __name__ == "__main__":
-    usd_character_manager = USDCharacterBuild()
+    usd_character_manager = USDCharacterBuild(['platonic_body'], name='test')
     """
     # Create Stage
     create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")
