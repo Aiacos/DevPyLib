@@ -36,15 +36,22 @@ class USDCharacterBuild(object):
     Build Bifrost nodes to manage usd
     """
 
-    def __init__(self, geo_list=[], name='', root_node=''):
-        self.bifrost_shape = self.create_bifrost_graph(name)
-        add_to_stage_node, time_node = self.create_default_usd_stage()
+    def __init__(self, geo_list=[], name='', root_node='', connect_output=True):
+        self.bifrost_shape, self.bifrost_transform = self.create_bifrost_graph(name)
+        self.add_to_stage_node, self.time_node, self.save_usd_stage_node = self.create_default_usd_stage()
         
         for geo in geo_list:
-            self.add_mesh(geo, time_node, add_to_stage_node)
+            self.add_mesh(geo)
         
-        add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [add_to_stage_node])
+        add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [self.add_to_stage_node])
         bifrost.bf_feedback_port(self.bifrost_shape, add_to_stage_compound, 'out_stage', 'stage')
+        
+        # Set Bifrost initial values
+        self.set_start_frame(0)
+        self.set_end_frame(1)
+        
+        if connect_output:
+            self.connect_output()
         
         # Set USD Stage Sharable
         maya_usd_stage = bifrost.get_maya_usd_stage()
@@ -53,10 +60,21 @@ class USDCharacterBuild(object):
 
     def create_bifrost_graph(self, name='usd'):
         bifrost_shape = bifrost.create_bifrost_graph(name)
+        bifrost_transform = cmds.listRelatives(bifrost_shape, p=True)[-1]
 
-        return bifrost_shape
+        return bifrost_shape, bifrost_transform
+        
+    def connect_output(self):
+        bifrost.bf_add_input_port(self.bifrost_shape, 'output', 'out_stage', 'BifrostUsd::Stage')
+        bifrost.bf_connect(self.bifrost_shape, self.save_usd_stage_node + '.out_stage', 'output.out_stage')
+        
+    def set_start_frame(self, frame):
+        cmds.setAttr(self.bifrost_shape + ".start_frame", frame)
 
-    def create_default_usd_stage(self, connect_output=True):
+    def set_end_frame(self, frame):
+        cmds.setAttr(self.bifrost_shape + ".end_frame", frame)
+                
+    def create_default_usd_stage(self):
         # Add Input Port
         bifrost.bf_add_output_port(self.bifrost_shape, 'input', 'layer', 'string') # node, port_name, port_type
         bifrost.bf_add_output_port(self.bifrost_shape, 'input', 'start_frame', 'float')
@@ -81,68 +99,76 @@ class USDCharacterBuild(object):
         bifrost.bf_connect(self.bifrost_shape, 'input.end_frame', stage_time_code_node + '.end')
         bifrost.bf_connect(self.bifrost_shape, 'input.layer_index', add_to_stage_node + '.layer_index')
         bifrost.bf_connect(self.bifrost_shape, 'input.end_frame', equal_node + '.second')
-        
-        if connect_output:
-            bifrost.bf_add_input_port(self.bifrost_shape, 'output', 'out_stage', 'BifrostUsd::Stage')
-            bifrost.bf_connect(self.bifrost_shape, save_usd_stage_node + '.out_stage', 'output.out_stage')
             
-        bifrost.bf_connect(self.bifrost_shape, 'input.layer', create_usd_stage_node + '.layer')
+        #bifrost.bf_connect(self.bifrost_shape, 'input.layer', create_usd_stage_node + '.layer')
+        bifrost.bf_connect(self.bifrost_shape, 'input.layer', save_usd_stage_node + '.file')
         
-        return add_to_stage_node, time_node
+        return add_to_stage_node, time_node, save_usd_stage_node
         
-    def add_mesh(self, mesh_name, time_node, add_to_stage_node):
+    def create_prim(self, obj, prim_type="Xform"):
+        # List all Nodes in the Grpah
+        graph_node_list = cmds.vnnCompound(self.bifrost_shape, "/", listNodes=True)
+        
+        node_name = obj + '_define_usd_prim'
+        node = ''
+        if node_name in graph_node_list:
+            
+            node = node_name
+        else:
+            new_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
+            bifrost.bf_set_node_property(self.bifrost_shape, new_node, "path", '/' + obj)
+            bifrost.bf_rename_node(self.bifrost_shape, new_node, obj + '_define_usd_prim')
+            
+            bifrost.bf_set_node_property(self.bifrost_shape, node_name, "type", prim_type)
+            
+            node = node_name
+        
+        return node
+        
+    def add_mesh(self, mesh_name):
         # Creaci una classe
         input_mesh_node = bifrost.bf_add_mesh(self.bifrost_shape, mesh_name)
         define_mesh_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
         
-        bifrost.bf_connect(self.bifrost_shape, input_mesh_node + '.mesh', define_mesh_node + '.mesh')
-        bifrost.bf_connect(self.bifrost_shape, time_node + '.frame', define_mesh_node + '.frame')
+        mesh_out_port = bifrost.bf_list_all_port(self.bifrost_shape, input_mesh_node, input_port=False, output_port=True)[-1]
+        
+        bifrost.bf_connect(self.bifrost_shape, mesh_out_port, define_mesh_node + '.mesh')
+        bifrost.bf_connect(self.bifrost_shape, self.time_node + '.frame', define_mesh_node + '.frame')
         
         bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + mesh_name)
-        mesh_transfrom = cmds.listRelatives(mesh_name, p=True)[-1]
         
-        self.recursive_build_usd_graph(mesh_transfrom, add_to_stage_node)
+        self.recursive_build_usd_graph(mesh_name, define_mesh_node)
         
-    def recursive_build_usd_graph(self, name, add_to_stage_node):
-        if name:
+    def recursive_build_usd_graph(self, obj, node):
+        if obj:
+            parent = cmds.listRelatives(obj, p=True)[-1]
             
-            if name == 'root':
-                node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
-                bifrost.bf_set_node_property(self.bifrost_shape, node, "path", "/root")
-                bifrost.bf_connect(self.bifrost_shape, 'root.prim_defintion', add_to_stage_node + '.prim_defintion')
+            if parent == 'root':
+                new_node = self.create_prim(parent)
+                
+                input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
+                bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
+                
+                stage_input_port = bifrost.bf_add_input_port(self.bifrost_shape, self.add_to_stage_node, "prim_definitions.prim_definition", "auto", 'prim_definitions')
+                bifrost.bf_connect(self.bifrost_shape, new_node + '.prim_definition', stage_input_port)
                 
                 return None
+
             else:
-                parent = cmds.listRelatives(name, p=True)[-1]
-                node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
-                bifrost.bf_set_node_property(self.bifrost_shape, node, "path", '/' + name)
+                new_node = self.create_prim(parent)
                 
-                bifrost.bf_connect(self.bifrost_shape, name + '.prim_defintion', parent + '.prim_defintion')
+                if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
+                    input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
+                    bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
+                else:
+                    input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
+                    bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
                 
-                
-                
-                self.recursive_build_usd_graph(parent)
-        
+                self.recursive_build_usd_graph(parent, new_node)
 
 
 if __name__ == "__main__":
-    usd_character_manager = USDCharacterBuild(['platonic_body'], name='test')
-    """
-    # Create Stage
-    create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")
-    add_to_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,add_to_stage")
-    bf_connect(bifrost_shape, create_usd_stage_node + '.stage', add_to_stage_node + '.stage')
-
-    save_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,save_usd_stage")
-    print('bf_node: ', save_usd_stage_node, ' - ', type(save_usd_stage_node))
-    bf_add_input_port(bifrost_shape, 'output', 'out_stage', 'BifrostUsd::Stage')
-    bf_connect(bifrost_shape, save_usd_stage_node + '.out_stage', 'output.out_stage')
-    bf_connect(bifrost_shape, add_to_stage_node + '.out_stage', save_usd_stage_node + '.stage')
-
-    compound_node = bf_create_compound(bifrost_shape, compound_node_list=[add_to_stage_node],
-                                       compound_name='test_compound')
-    bf_feedback_port(bifrost_shape, compound_node, 'out_stage', 'stage')
-
-    stage = get_maya_usd_stage()
-    set_maya_usd_stage_shareable(stage)
-    """
+    to_delete = cmds.ls('*_bifrostGraph?' 'mayaUsdProxy?')
+    cmds.delete(to_delete)
+    
+    usd_character_manager = USDCharacterBuild(getAllObjectUnderGroup('root', type='mesh'), name='test')

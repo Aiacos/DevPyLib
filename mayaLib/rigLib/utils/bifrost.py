@@ -115,7 +115,7 @@ def bf_get_port_type(bifrost_shape, node, port_name):
     
     return port_type
     
-def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True):
+def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, listPortChildren=''):
     """
     List all ports on a Bifrost Graph Node
     Args:
@@ -129,11 +129,17 @@ def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True):
 
     """
 
-    port_list = cmds.vnnNode(bifrost_shape, node, listPorts=True, inputPort=input_port, outputPort=output_port)
+    #port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
+    if listPortChildren:
+        tmp_port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, listPortChildren=listPortChildren)
+        port_list = [ node + '.' + listPortChildren + '.' + p for p in tmp_port_list]
+    else:
+        port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True)
+    #port_list = cmds.vnnCompound(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
     
     return port_list
 
-def bf_add_input_port(bifrost_shape, node, port_name, port_type):
+def bf_add_input_port(bifrost_shape, node, port_name, port_type, port_children=''):
     """
     Add input port to Bifrost Graph Node
     Args:
@@ -148,8 +154,16 @@ def bf_add_input_port(bifrost_shape, node, port_name, port_type):
     """
 
     cmds.vnnNode(bifrost_shape, '/' + node, createInputPort=(port_name, port_type))
+    all_port_list = bf_list_all_port(bifrost_shape, node, input_port=True, output_port=False, listPortChildren=port_children)
     
-def bf_add_output_port(bifrost_shape, node, port_name, port_type):
+    input_port_list = []
+    for p in all_port_list:
+        if port_name.split('.')[-1] in p:
+            input_port_list.append(p)
+    
+    return input_port_list[-1]
+    
+def bf_add_output_port(bifrost_shape, node, port_name, port_type, port_children=''):
     """
     Add output port to Bifrost Graph Node
     Args:
@@ -164,6 +178,14 @@ def bf_add_output_port(bifrost_shape, node, port_name, port_type):
     """
 
     cmds.vnnNode(bifrost_shape, '/' + node, createOutputPort=(port_name, port_type))
+    all_port_list = bf_list_all_port(bifrost_shape, node, input_port=False, output_port=True, listPortChildren=port_children)
+    
+    output_port_list = []
+    for p in all_port_list:
+        if port_name.split('.')[-1] in p:
+            output_port_list.append(p)
+    
+    return output_port_list[-1]
     
 def bf_connect(bifrost_shape, source_port, destination_port):
     """
@@ -177,7 +199,8 @@ def bf_connect(bifrost_shape, source_port, destination_port):
         None
 
     """
-
+    
+    #print(' ---- Test Connect: ', '/' + source_port, '/' + destination_port)
     cmds.vnnConnect(bifrost_shape, '/' + source_port, '/' + destination_port)
     
 def bf_create_compound(bifrost_shape, compound_node_list=[] ,compound_name='compound', parent='/'):
@@ -214,6 +237,20 @@ def bf_feedback_port(bifrost_shape, node, source_port, destination_port):
     """
 
     cmds.vnnCompound(bifrost_shape, node,  setPortMetaDataValue=[source_port, "feedbackPort", destination_port])
+
+def bf_rename_node(bifrost_shape, node, name):
+    """
+    Rename Bifrost Node
+    Args:
+        bifrost_shape (string): Bifrost Graph Shape
+        node (string): Compound Node
+        name (string):  New Name
+
+    Returns:
+
+    """
+
+    cmds.vnnCompound(bifrost_shape, "/", renameNode=[node, name])
 
 def bf_set_node_property(bifrost_shape, node, property, value):
     """
@@ -318,28 +355,10 @@ def connect_bifrost_attribute_to_blendshape(bifrost_node, blendshape_targhet):
 ####### Tests
 if __name__ == "__main__":
     #mel.eval('file -f -new;')
-    
+    cmds.delete('*_bifrostGraph')
     bifrost_shape = create_bifrost_graph('usd')
     
     input_mesh_node = bf_add_mesh(bifrost_shape, "pPlatonic1")
     define_mesh_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
     node_type = bf_get_node_type(bifrost_shape, define_mesh_node)
-    print('Node_type: ', node_type)
-    """
-    # Create Stage
-    create_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,create_usd_stage")
-    add_to_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,add_to_stage")
-    bf_connect(bifrost_shape, create_usd_stage_node + '.stage', add_to_stage_node + '.stage')
-    
-    save_usd_stage_node = bf_create_node(bifrost_shape, "BifrostGraph,USD::Stage,save_usd_stage")
-    print('bf_node: ', save_usd_stage_node, ' - ', type(save_usd_stage_node))
-    bf_add_input_port(bifrost_shape, 'output', 'out_stage', 'BifrostUsd::Stage')
-    bf_connect(bifrost_shape, save_usd_stage_node + '.out_stage', 'output.out_stage')
-    bf_connect(bifrost_shape, add_to_stage_node + '.out_stage', save_usd_stage_node + '.stage')
-
-    compound_node = bf_create_compound(bifrost_shape, compound_node_list=[add_to_stage_node], compound_name='test_compound')
-    bf_feedback_port(bifrost_shape, compound_node, 'out_stage', 'stage')
-    
-    stage = get_maya_usd_stage()
-    set_maya_usd_stage_shareable(stage)
-    """
+    port_result = bf_add_output_port(bifrost_shape, input_mesh_node, 'test_port', 'float')
