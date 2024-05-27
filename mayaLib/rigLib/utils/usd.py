@@ -230,6 +230,38 @@ class USDCharacterBuild(object):
         
         return node
 
+    def add_undeformed_mesh_transform(self, mesh_name):
+        """
+        Add Mesh shape to bifrost and relative mesh prim definition
+        Args:
+            mesh_name (string): Maya mesh name
+
+        Returns:
+
+        """
+        # Add define_usd_transform
+        define_usd_transform_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,define_usd_transform")
+        cmds.vnnCompound(self.bifrost_shape, "/" + define_usd_transform_node, setIsReferenced=False)
+        
+        bifrost.bf_add_output_port(self.bifrost_shape, define_usd_transform_node + '/input', "frame", "float")
+        bifrost.bf_add_output_port(self.bifrost_shape, define_usd_transform_node + '/input', "use_frame", "bool")
+        
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.frame', define_usd_transform_node + '/define_usd_attribute2' + '.frame')
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.use_frame', define_usd_transform_node + '/define_usd_attribute2' + '.use_frame')
+        
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.frame', define_usd_transform_node + '/define_usd_attribute1' + '.frame')
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.use_frame', define_usd_transform_node + '/define_usd_attribute1' + '.use_frame')
+
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.frame', define_usd_transform_node + '/define_usd_attribute3' + '.frame')
+        bifrost.bf_connect(self.bifrost_shape, define_usd_transform_node + '.use_frame', define_usd_transform_node + '/define_usd_attribute3' + '.use_frame')
+        
+        # Rename node
+        node_name = mesh_name + "_define_usd_attribute"
+        bifrost.bf_rename_node(self.bifrost_shape, define_usd_transform_node, node_name)
+        
+        return node_name
+
+
     def add_undeformed_mesh(self, mesh_name):
         """
         Add Mesh shape to bifrost and relative mesh prim definition
@@ -240,27 +272,27 @@ class USDCharacterBuild(object):
 
         """
         # Create input port
-        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_transform', 'Math::float4x4')
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_translate', "Math::float3")
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_rotate', "Math::float3")
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_scale', "Math::float3")
 
         # Create nodes
-        define_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,define_usd_attribute")
+        define_attribute_node = self.add_undeformed_mesh_transform(mesh_name)
         define_mesh_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
-        node_name = mesh_name + "_define_usd_attribute"
-        
-        bifrost.bf_rename_node(self.bifrost_shape, define_attribute_node, node_name)
-        bifrost.bf_set_node_property(self.bifrost_shape, node_name, "type", "39")
-        bifrost.bf_set_node_property(self.bifrost_shape, node_name, "name", "transform")
-        bifrost.bf_set_node_property(self.bifrost_shape, node_name, "use_frame", "1")
-        bifrost.bf_set_node_property(self.bifrost_shape, node_name, "enable_value", "1")
+
+        bifrost.bf_set_node_property(self.bifrost_shape, define_attribute_node, "use_frame", "1")
 
         bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + mesh_name)
 
         # Connect
-        bifrost.bf_connect(self.bifrost_shape, self.time_node + '.frame', node_name + '.frame')
-        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_transform', node_name + '.value')
+        bifrost.bf_connect(self.bifrost_shape, self.time_node + '.frame', define_attribute_node + '.frame')
+        
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_translate', define_attribute_node + '.translation')
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_rotate', define_attribute_node + '.rotation')
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_scale', define_attribute_node + '.scale')
 
-        input_port = bifrost.bf_add_input_port(self.bifrost_shape, define_mesh_node, "children.attribute_definition", "auto", 'children')
-        bifrost.bf_connect(self.bifrost_shape, node_name + '.attribute_definition', input_port)
+        input_port = bifrost.bf_add_input_port(self.bifrost_shape, define_mesh_node, "attribute_definitions.attribute_definition", "auto", 'attribute_definitions')
+        bifrost.bf_connect(self.bifrost_shape, define_attribute_node + '.attribute_definitions', input_port)
 
         self.recursive_build_usd_graph(mesh_name, define_mesh_node)
 
@@ -330,6 +362,6 @@ if __name__ == "__main__":
     deformed_list, undeformed_list = get_all_deformed_and_constrained('root')
     print('Deformed list: ', deformed_list)
     print('Undeformed list: ', undeformed_list)
-    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='root')
+    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='root', debug=True)
     bifrost_transform = usd_character_manager.get_bifrost_transform()
     cmds.parent(bifrost_transform, 'rig_grp')
