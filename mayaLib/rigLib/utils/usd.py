@@ -1,5 +1,5 @@
 import maya.cmds as cmds
-from mayaLib.rigLib.utils import bifrost
+from mayaLib.rigLib.bifrost import bifrost
 
 
 def getAllObjectUnderGroup(group, type='mesh'):
