@@ -63,7 +63,7 @@ class USDCharacterBuild(object):
     Build Bifrost nodes to manage usd
     """
 
-    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='root', connect_output=True, debug=False, single_usd=False):
+    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='root', save_usd_file='tmp', connect_output=True, debug=False, single_usd=False):
         """
         Constructor
         Args:
@@ -78,7 +78,7 @@ class USDCharacterBuild(object):
 
         self.root_node = root_node
         self.bifrost_shape, self.bifrost_transform = self.create_bifrost_graph(name)
-        self.add_to_stage_node, self.time_node, self.save_usd_stage_node = self.create_default_usd_stage()
+        self.add_to_stage_node, self.time_node, self.save_usd_stage_node, self.set_stage_time_code_node = self.create_default_usd_stage()
         
         for geo in deformed_geo_list:
             self.add_mesh(geo)
@@ -91,10 +91,14 @@ class USDCharacterBuild(object):
         else:
             string_join_node = bifrost_util_nodes.build_name(self.bifrost_shape, self.time_node, extension_format='usdc')
             bifrost.bf_connect(self.bifrost_shape, string_join_node + '.joined', self.save_usd_stage_node + '.file')
-        
+
+        # Block unwanted data
+        self.create_block_loop()
+
         # Set Bifrost initial values
         self.set_start_frame(0)
         self.set_end_frame(1)
+        cmds.setAttr(self.bifrost_shape + '.layer', save_usd_file, type='string')
         
         if connect_output:
             self.connect_output()
@@ -204,7 +208,7 @@ class USDCharacterBuild(object):
         #bifrost.bf_connect(self.bifrost_shape, 'input.layer', create_usd_stage_node + '.layer')
         bifrost.bf_connect(self.bifrost_shape, 'input.layer', save_usd_stage_node + '.file')
         
-        return add_to_stage_node, time_node, save_usd_stage_node
+        return add_to_stage_node, time_node, save_usd_stage_node, stage_time_code_node
         
     def create_prim(self, obj, prim_type="Xform"):
         """
@@ -361,10 +365,14 @@ class USDCharacterBuild(object):
                 
                 self.recursive_build_usd_graph(parent, new_node)
 
-    def add_block_attribute(self, prim_path, attr_name):
-        block_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,block_attribute")
-        bifrost.bf_set_node_property(self.bifrost_shape, block_attribute_node, "prim_path", prim_path)
-        bifrost.bf_set_node_property(self.bifrost_shape, block_attribute_node, "name", attr_name)
+    def add_block_attribute(self, attr_name, node_name='', prim_path='', parent=''):
+        block_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,block_attribute", parent)
+        bifrost.bf_set_node_property(self.bifrost_shape, parent + '/' + block_attribute_node, "name", attr_name)
+
+        if prim_path != '':
+            bifrost.bf_set_node_property(self.bifrost_shape, parent + '/' + block_attribute_node, "prim_path", prim_path)
+        
+        #block_attribute_node = bifrost.bf_rename_node(self.bifrost_shape, parent + '/' + block_attribute_node, node_name + '_block_attribute')
 
         return block_attribute_node
 
@@ -374,11 +382,60 @@ class USDCharacterBuild(object):
         #vnnConnect
         #"|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/block_attribute1.out_stage" "/save_usd_stage.stage";
 
+    def create_block_loop(self):
+        # Create nodes
+        get_prim_children_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,get_prim_children")
+        get_prim_path_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,get_prim_path")
+        array_size_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Array,array_size")
+        iterator_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Iterators,iterate")
 
+        get_from_array_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Array,get_from_array", parent='/' + iterator_node)
+        face_vertex_counts_block_node = self.add_block_attribute('faceVertexCounts', 'faceVertexCounts', parent='/' + iterator_node)
+        face_vertex_indices_block_node = self.add_block_attribute('faceVertexIndices', 'faceVertexIndices', parent='/' + iterator_node)
+        primvars_st_block_node = self.add_block_attribute('primvars:st', 'primvars_st', parent='/' + iterator_node)
+        primvars_st_indices_block_node = self.add_block_attribute('primvars:st:indices', 'primvars_st_indices', parent='/' + iterator_node)
 
+        # Add ports
+        print('Port: ', iterator_node + '/input')
+        bifrost.bf_add_output_port(self.bifrost_shape, iterator_node + '/input', 'out_stage', 'auto')
+        bifrost.bf_add_output_port(self.bifrost_shape, iterator_node + '/input', 'path', 'auto')
+        bifrost.bf_add_input_port(self.bifrost_shape, iterator_node + '/output', "out_stage1", "auto")
+
+        # Connects nodes
+        bifrost.bf_connect(self.bifrost_shape, self.add_to_stage_node + '.out_stage', get_prim_children_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, get_prim_children_node + '.children', get_prim_path_node + '.prim')
+        bifrost.bf_connect(self.bifrost_shape, get_prim_path_node + '.path', array_size_node + '.array')
+        bifrost.bf_connect(self.bifrost_shape, array_size_node + '.size', iterator_node + '.max_iterations')
+
+        bifrost.bf_connect(self.bifrost_shape, self.add_to_stage_node + '.out_stage', iterator_node + '.out_stage')
+        bifrost.bf_connect(self.bifrost_shape, get_prim_path_node + '.path', iterator_node + '.path')
+
+        ## Connections inside loop
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.path', iterator_node + '/' + get_from_array_node + '.array')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.current_index', iterator_node + '/' + get_from_array_node + '.index')
+
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.out_stage', iterator_node + '/' + face_vertex_counts_block_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + face_vertex_counts_block_node + '.out_stage', iterator_node + '/' + face_vertex_indices_block_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + face_vertex_indices_block_node + '.out_stage', iterator_node + '/' + primvars_st_block_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + primvars_st_block_node + '.out_stage', iterator_node + '/' + primvars_st_indices_block_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + primvars_st_indices_block_node + '.out_stage', iterator_node + '.out_stage1')
+
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + get_from_array_node + '.value', iterator_node + '/' + face_vertex_counts_block_node + '.prim_path')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + get_from_array_node + '.value', iterator_node + '/' + face_vertex_indices_block_node + '.prim_path')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + get_from_array_node + '.value', iterator_node + '/' + primvars_st_block_node + '.prim_path')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '/' + get_from_array_node + '.value', iterator_node + '/' + primvars_st_indices_block_node + '.prim_path')
+
+        # Connect output
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.out_stage1', self.set_stage_time_code_node + '.stage')
+
+        # Settings
+        bifrost.bf_sequence_port(self.bifrost_shape, '/' + iterator_node, "out_stage", "out_stage1")
+        bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "prim_path", "/root")
+
+        return iterator_node
 
 if __name__ == "__main__":
-    to_delete = cmds.ls('*_bifrostGraph?' 'mayaUsdProxy?')
+    to_delete = cmds.ls('*_bifrostGraph', '*_bifrostGraph?' 'mayaUsdProxy?')
     cmds.delete(to_delete)
     deformed_list, undeformed_list = get_all_deformed_and_constrained('root')
     print('Deformed list: ', deformed_list)

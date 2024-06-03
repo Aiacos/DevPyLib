@@ -224,7 +224,7 @@ def bf_create_compound(bifrost_shape, compound_node_list=[] ,compound_name='comp
 
 def bf_feedback_port(bifrost_shape, node, source_port, destination_port):
     """
-    Enable Feedback beetween ports inside a Compound
+    Enable Feedback between ports inside a Compound
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Compound Node name
@@ -237,6 +237,21 @@ def bf_feedback_port(bifrost_shape, node, source_port, destination_port):
     """
 
     cmds.vnnCompound(bifrost_shape, node,  setPortMetaDataValue=[source_port, "feedbackPort", destination_port])
+
+def bf_sequence_port(bifrost_shape, node, source_port, destination_port):
+    """
+    Enable Sequence between ports inside a Loop
+    Args:
+        bifrost_shape (string): Bifrost Graph Shape
+        node (string): Compound Node name
+        source_port (string): Name of the port
+        destination_port (string): Name of the port
+
+    Returns:
+
+    """
+
+    cmds.vnnCompound(bifrost_shape, node, setPortMetaDataValue=[destination_port, "statePort", source_port])
 
 def bf_rename_node(bifrost_shape, node, name):
     """
@@ -267,7 +282,10 @@ def bf_set_node_property(bifrost_shape, node, property, value):
         None
 
     """
-    cmds.vnnNode(bifrost_shape, '/' + node, setPortDefaultValues=[property, value])
+    if not node.startswith('/'):
+        node = '/' + node
+
+    cmds.vnnNode(bifrost_shape, node, setPortDefaultValues=[property, value])
 
 def bf_auto_layout():
     """
