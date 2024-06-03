@@ -351,26 +351,38 @@ class USDCharacterBuild(object):
             
             if parent == self.root_node:
                 new_node = self.create_prim(parent)
-                
-                input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
-                bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
-                
-                stage_input_port = bifrost.bf_add_input_port(self.bifrost_shape, self.add_to_stage_node, "prim_definitions.prim_definition", "auto", 'prim_definitions')
-                bifrost.bf_connect(self.bifrost_shape, new_node + '.prim_definition', stage_input_port)
+
+                connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
+                if connected_node_list == None or not (node in connected_node_list):
+                    input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
+                    bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
+
+                connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + self.add_to_stage_node, listConnectedNodes=1)
+                if not ('root_define_usd_prim' in connected_node_list):
+                    stage_input_port = bifrost.bf_add_input_port(self.bifrost_shape, self.add_to_stage_node, "prim_definitions.prim_definition", "auto", 'prim_definitions')
+                    bifrost.bf_connect(self.bifrost_shape, new_node + '.prim_definition', stage_input_port)
                 
                 return None
 
             else:
                 new_node = self.create_prim(parent)
-                
-                if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
-                    input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
-                    bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
+                connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
+                print('prim: ', new_node)
+                print('NodeList: ', connected_node_list)
+
+                if connected_node_list == None or not (new_node in connected_node_list):
+                    print('NewNode connection: ', new_node)
+                    if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
+                        input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
+                        bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
+                    else:
+                        input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
+                        bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
+
+                    self.recursive_build_usd_graph(parent, new_node)
+
                 else:
-                    input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
-                    bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
-                
-                self.recursive_build_usd_graph(parent, new_node)
+                    return None
 
     def add_block_attribute(self, attr_name, node_name='', prim_path='', parent=''):
         block_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,block_attribute", parent)
@@ -442,7 +454,7 @@ class USDCharacterBuild(object):
         return iterator_node
 
 if __name__ == "__main__":
-    to_delete = cmds.ls('*_bifrostGraph', '*_bifrostGraph?' 'mayaUsdProxy?')
+    to_delete = cmds.ls('*_bifrostGraph', '*_bifrostGraph?' 'mayaUsdProxy*')
     cmds.delete(to_delete)
     deformed_list, undeformed_list = get_all_deformed_and_constrained('root')
     print('Deformed list: ', deformed_list)
