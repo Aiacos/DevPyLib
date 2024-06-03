@@ -252,6 +252,8 @@ def bf_rename_node(bifrost_shape, node, name):
 
     cmds.vnnCompound(bifrost_shape, "/", renameNode=[node, name])
 
+    return name
+
 def bf_set_node_property(bifrost_shape, node, property, value):
     """
     Set Property on a Bifrost node

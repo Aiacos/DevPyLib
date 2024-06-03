@@ -1,5 +1,6 @@
 import maya.cmds as cmds
 from mayaLib.rigLib.bifrost import bifrost
+from mayaLib.rigLib.bifrost import bifrost_util_nodes
 
 
 def getAllObjectUnderGroup(group, type='mesh'):
@@ -62,7 +63,7 @@ class USDCharacterBuild(object):
     Build Bifrost nodes to manage usd
     """
 
-    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='root', connect_output=True, debug=False):
+    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='root', connect_output=True, debug=False, single_usd=False):
         """
         Constructor
         Args:
@@ -72,6 +73,7 @@ class USDCharacterBuild(object):
             root_node (string): default top search group
             connect_output (bool):
             debug (bool):
+            single_usd (bool): if False use the Value Clips workflow
         """
 
         self.root_node = root_node
@@ -82,9 +84,13 @@ class USDCharacterBuild(object):
             self.add_mesh(geo)
         for geo in undeformed_geo_list:
             self.add_undeformed_mesh(geo)
-        
-        add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [self.add_to_stage_node])
-        bifrost.bf_feedback_port(self.bifrost_shape, add_to_stage_compound, 'out_stage', 'stage')
+
+        if single_usd:
+            add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [self.add_to_stage_node])
+            bifrost.bf_feedback_port(self.bifrost_shape, add_to_stage_compound, 'out_stage', 'stage')
+        else:
+            string_join_node = bifrost_util_nodes.build_name(self.bifrost_shape, self.time_node, extension_format='usdc')
+            bifrost.bf_connect(self.bifrost_shape, string_join_node + '.joined', self.save_usd_stage_node + '.file')
         
         # Set Bifrost initial values
         self.set_start_frame(0)
@@ -354,6 +360,21 @@ class USDCharacterBuild(object):
                     bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
                 
                 self.recursive_build_usd_graph(parent, new_node)
+
+    def add_block_attribute(self, prim_path, attr_name):
+        block_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,block_attribute")
+        bifrost.bf_set_node_property(self.bifrost_shape, block_attribute_node, "prim_path", prim_path)
+        bifrost.bf_set_node_property(self.bifrost_shape, block_attribute_node, "name", attr_name)
+
+        return block_attribute_node
+
+        #vnnConnect
+        #"|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/set_stage_time_code.out_stage" "/block_attribute1.stage";
+
+        #vnnConnect
+        #"|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/block_attribute1.out_stage" "/save_usd_stage.stage";
+
+
 
 
 if __name__ == "__main__":
