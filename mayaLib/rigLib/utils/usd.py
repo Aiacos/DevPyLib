@@ -78,7 +78,7 @@ class USDCharacterBuild(object):
 
         self.root_node = root_node
         self.bifrost_shape, self.bifrost_transform = self.create_bifrost_graph(name)
-        self.add_to_stage_node, self.time_node, self.save_usd_stage_node, self.set_stage_time_code_node = self.create_default_usd_stage()
+        self.add_to_stage_node, self.time_node, self.save_usd_stage_node, self.set_stage_time_code_node = self.create_default_usd_stage(single_usd)
         
         for geo in deformed_geo_list:
             self.add_mesh(geo)
@@ -167,7 +167,7 @@ class USDCharacterBuild(object):
         """
         cmds.setAttr(self.bifrost_shape + ".end_frame", frame)
                 
-    def create_default_usd_stage(self):
+    def create_default_usd_stage(self, single_usd=False):
         """
         Create default Bifrost USD stage
         Returns:
@@ -189,21 +189,28 @@ class USDCharacterBuild(object):
         add_to_stage_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Stage,add_to_stage")
         stage_time_code_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Stage,set_stage_time_code")
         save_usd_stage_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Stage,save_usd_stage")
-        equal_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Logic,equal")
-        and_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Logic,and")
+
+        if single_usd:
+            equal_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Logic,equal")
+            and_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,Core::Logic,and")
         
         # Nodes Connections
         bifrost.bf_connect(self.bifrost_shape, create_usd_stage_node + '.stage', add_to_stage_node + '.stage')
         bifrost.bf_connect(self.bifrost_shape, add_to_stage_node + '.out_stage', stage_time_code_node + '.stage')
         bifrost.bf_connect(self.bifrost_shape, stage_time_code_node + '.out_stage', save_usd_stage_node + '.stage')
-        bifrost.bf_connect(self.bifrost_shape, time_node + '.frame', equal_node + '.first')
-        bifrost.bf_connect(self.bifrost_shape, equal_node + '.output', and_node + '.first')
-        bifrost.bf_connect(self.bifrost_shape, and_node + '.output', save_usd_stage_node + '.enable')
+
+        if single_usd:
+            bifrost.bf_connect(self.bifrost_shape, time_node + '.frame', equal_node + '.first')
+            bifrost.bf_connect(self.bifrost_shape, equal_node + '.output', and_node + '.first')
+            bifrost.bf_connect(self.bifrost_shape, 'input.end_frame', equal_node + '.second')
+            bifrost.bf_connect(self.bifrost_shape, 'input.publish', and_node + '.second')
+            bifrost.bf_connect(self.bifrost_shape, and_node + '.output', save_usd_stage_node + '.enable')
+        else:
+            bifrost.bf_connect(self.bifrost_shape, 'input.publish', save_usd_stage_node + '.enable')
+
         bifrost.bf_connect(self.bifrost_shape, 'input.start_frame', stage_time_code_node + '.start')
         bifrost.bf_connect(self.bifrost_shape, 'input.end_frame', stage_time_code_node + '.end')
         bifrost.bf_connect(self.bifrost_shape, 'input.layer_index', add_to_stage_node + '.layer_index')
-        bifrost.bf_connect(self.bifrost_shape, 'input.end_frame', equal_node + '.second')
-        bifrost.bf_connect(self.bifrost_shape, 'input.publish', and_node + '.second')
             
         #bifrost.bf_connect(self.bifrost_shape, 'input.layer', create_usd_stage_node + '.layer')
         bifrost.bf_connect(self.bifrost_shape, 'input.layer', save_usd_stage_node + '.file')
