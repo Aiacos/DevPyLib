@@ -396,7 +396,6 @@ class USDCharacterBuild(object):
         primvars_st_indices_block_node = self.add_block_attribute('primvars:st:indices', 'primvars_st_indices', parent='/' + iterator_node)
 
         # Add ports
-        print('Port: ', iterator_node + '/input')
         bifrost.bf_add_output_port(self.bifrost_shape, iterator_node + '/input', 'out_stage', 'auto')
         bifrost.bf_add_output_port(self.bifrost_shape, iterator_node + '/input', 'path', 'auto')
         bifrost.bf_add_input_port(self.bifrost_shape, iterator_node + '/output', "out_stage1", "auto")
@@ -431,6 +430,7 @@ class USDCharacterBuild(object):
         # Settings
         bifrost.bf_sequence_port(self.bifrost_shape, '/' + iterator_node, "out_stage", "out_stage1")
         bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "prim_path", "/root")
+        bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "descendant_mode", "3")
 
         return iterator_node
 
