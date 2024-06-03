@@ -367,11 +367,8 @@ class USDCharacterBuild(object):
             else:
                 new_node = self.create_prim(parent)
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
-                print('prim: ', new_node)
-                print('NodeList: ', connected_node_list)
 
                 if connected_node_list == None or not (new_node in connected_node_list):
-                    print('NewNode connection: ', new_node)
                     if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
                         input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
                         bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
