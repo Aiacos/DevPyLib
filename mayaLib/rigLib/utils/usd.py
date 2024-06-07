@@ -232,7 +232,7 @@ class USDCharacterBuild(object):
         
         return add_to_stage_node, time_node, save_usd_stage_node, stage_time_code_node
         
-    def create_prim(self, name_dict, prim_type="Xform"):
+    def create_prim(self, name_dict, prim_type="Xform", specifier_over=True):
         """
         Create bifrost prim from Maya object
         Args:
@@ -256,7 +256,10 @@ class USDCharacterBuild(object):
             bifrost.bf_rename_node(self.bifrost_shape, new_node, name_dict['long_name'] + '_define_usd_prim')
             
             bifrost.bf_set_node_property(self.bifrost_shape, node_name, "type", prim_type)
-            
+
+            if specifier_over:
+                bifrost.bf_set_node_property(self.bifrost_shape, node_name, "specifier", "1") # Set Over
+
             node = node_name
         
         return node
@@ -463,7 +466,7 @@ class USDCharacterBuild(object):
 
         # Settings
         bifrost.bf_sequence_port(self.bifrost_shape, '/' + iterator_node, "out_stage", "out_stage1")
-        bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "prim_path", "/root")
+        bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "prim_path", '/' + self.root_node['short_name'])
         bifrost.bf_set_node_property(self.bifrost_shape, get_prim_children_node, "descendant_mode", "3")
 
         return iterator_node
