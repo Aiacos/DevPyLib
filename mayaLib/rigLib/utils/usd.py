@@ -76,7 +76,7 @@ class USDCharacterBuild(object):
             single_usd (bool): if False use the Value Clips workflow
         """
 
-        self.root_node = root_node
+        self.root_node = self.get_name_dict(cmds.ls(root_node, long=True)[-1])
         self.bifrost_shape, self.bifrost_transform = self.create_bifrost_graph(name)
         self.add_to_stage_node, self.time_node, self.save_usd_stage_node, self.set_stage_time_code_node = self.create_default_usd_stage(single_usd)
         
@@ -109,7 +109,22 @@ class USDCharacterBuild(object):
         
         if not debug:
             cmds.delete(cmds.listRelatives(maya_usd_stage, p=True))
-        
+
+    def get_name_dict(self, full_path):
+        """
+        Return Long Name and Short Name of objects in a dict
+        Args:
+            long_name (string): long name
+
+        Returns:
+            (dict)
+
+        """
+        short_name = full_path.split('|')[-1]
+        long_name = full_path.replace('|', '_')[1:]
+        name_dict = {'full_path': full_path, 'long_name': long_name, 'short_name': short_name}
+
+        return name_dict
 
     def create_bifrost_graph(self, name='usd'):
         """
@@ -217,7 +232,7 @@ class USDCharacterBuild(object):
         
         return add_to_stage_node, time_node, save_usd_stage_node, stage_time_code_node
         
-    def create_prim(self, obj, prim_type="Xform"):
+    def create_prim(self, name_dict, prim_type="Xform"):
         """
         Create bifrost prim from Maya object
         Args:
@@ -231,15 +246,14 @@ class USDCharacterBuild(object):
         # List all Nodes in the Grpah
         graph_node_list = cmds.vnnCompound(self.bifrost_shape, "/", listNodes=True)
         
-        node_name = obj + '_define_usd_prim'
-        node = ''
+        node_name = name_dict['long_name'] + '_define_usd_prim'
         if node_name in graph_node_list:
             
             node = node_name
         else:
             new_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_prim")
-            bifrost.bf_set_node_property(self.bifrost_shape, new_node, "path", '/' + obj)
-            bifrost.bf_rename_node(self.bifrost_shape, new_node, obj + '_define_usd_prim')
+            bifrost.bf_set_node_property(self.bifrost_shape, new_node, "path", '/' + name_dict['short_name'])
+            bifrost.bf_rename_node(self.bifrost_shape, new_node, name_dict['long_name'] + '_define_usd_prim')
             
             bifrost.bf_set_node_property(self.bifrost_shape, node_name, "type", prim_type)
             
@@ -288,30 +302,31 @@ class USDCharacterBuild(object):
         Returns:
 
         """
+        name_dict = self.get_name_dict(mesh_name)
         # Create input port
-        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_translate', "Math::float3")
-        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_rotate', "Math::float3")
-        bifrost.bf_add_output_port(self.bifrost_shape, 'input', mesh_name + '_scale', "Math::float3")
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', name_dict['short_name'] + '_translate', "Math::float3")
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', name_dict['short_name'] + '_rotate', "Math::float3")
+        bifrost.bf_add_output_port(self.bifrost_shape, 'input', name_dict['short_name'] + '_scale', "Math::float3")
 
         # Create nodes
-        define_attribute_node = self.add_undeformed_mesh_transform(mesh_name)
+        define_attribute_node = self.add_undeformed_mesh_transform(name_dict['long_name'])
         define_mesh_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
 
         bifrost.bf_set_node_property(self.bifrost_shape, define_attribute_node, "use_frame", "1")
 
-        bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + mesh_name)
+        bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + name_dict['short_name'])
 
         # Connect
         bifrost.bf_connect(self.bifrost_shape, self.time_node + '.frame', define_attribute_node + '.frame')
         
-        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_translate', define_attribute_node + '.translation')
-        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_rotate', define_attribute_node + '.rotation')
-        bifrost.bf_connect(self.bifrost_shape, 'input.' + mesh_name + '_scale', define_attribute_node + '.scale')
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + name_dict['short_name'] + '_translate', define_attribute_node + '.translation')
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + name_dict['short_name'] + '_rotate', define_attribute_node + '.rotation')
+        bifrost.bf_connect(self.bifrost_shape, 'input.' + name_dict['short_name'] + '_scale', define_attribute_node + '.scale')
 
         input_port = bifrost.bf_add_input_port(self.bifrost_shape, define_mesh_node, "attribute_definitions.attribute_definition", "auto", 'attribute_definitions')
         bifrost.bf_connect(self.bifrost_shape, define_attribute_node + '.attribute_definitions', input_port)
 
-        self.recursive_build_usd_graph(mesh_name, define_mesh_node)
+        self.recursive_build_usd_graph(name_dict, define_mesh_node)
 
     def add_mesh(self, mesh_name):
         """
@@ -322,6 +337,9 @@ class USDCharacterBuild(object):
         Returns:
 
         """
+        # Manage names
+        name_dict = self.get_name_dict(mesh_name)
+
         # Creaci una classe
         input_mesh_node = bifrost.bf_add_mesh(self.bifrost_shape, mesh_name)
         define_mesh_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,define_usd_mesh")
@@ -331,26 +349,26 @@ class USDCharacterBuild(object):
         bifrost.bf_connect(self.bifrost_shape, mesh_out_port, define_mesh_node + '.mesh')
         bifrost.bf_connect(self.bifrost_shape, self.time_node + '.frame', define_mesh_node + '.frame')
         
-        bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + mesh_name)
+        bifrost.bf_set_node_property(self.bifrost_shape, define_mesh_node, "path", '/' + name_dict['short_name'])
+        self.recursive_build_usd_graph(name_dict, define_mesh_node)
         
-        self.recursive_build_usd_graph(mesh_name, define_mesh_node)
-        
-    def recursive_build_usd_graph(self, obj, node):
+    def recursive_build_usd_graph(self, obj_data, node):
         """
         Recursive build and connect Prims
         Args:
-            obj (string): current Maya object
+            obj_data (dict): current Maya object, contains 'long_name' and 'short_name'
             node (string): current Bifrost prim node
 
         Returns:
             None
 
         """
-        if obj:
-            parent = cmds.listRelatives(obj, p=True)[-1]
+        if cmds.objExists(obj_data['full_path']):
+            parent = cmds.listRelatives(obj_data['full_path'], p=True, fullPath=True)[-1]
+            parent_obj = self.get_name_dict(parent)
             
-            if parent == self.root_node:
-                new_node = self.create_prim(parent)
+            if parent_obj['short_name'] == self.root_node['short_name']:
+                new_node = self.create_prim(parent_obj)
 
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
                 if connected_node_list == None or not (node in connected_node_list):
@@ -358,14 +376,14 @@ class USDCharacterBuild(object):
                     bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
 
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + self.add_to_stage_node, listConnectedNodes=1)
-                if not ('root_define_usd_prim' in connected_node_list):
+                if not (self.root_node['long_name'] + '_define_usd_prim' in connected_node_list):
                     stage_input_port = bifrost.bf_add_input_port(self.bifrost_shape, self.add_to_stage_node, "prim_definitions.prim_definition", "auto", 'prim_definitions')
                     bifrost.bf_connect(self.bifrost_shape, new_node + '.prim_definition', stage_input_port)
                 
                 return None
 
             else:
-                new_node = self.create_prim(parent)
+                new_node = self.create_prim(parent_obj)
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
 
                 if connected_node_list == None or not (new_node in connected_node_list):
@@ -376,7 +394,7 @@ class USDCharacterBuild(object):
                         input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
                         bifrost.bf_connect(self.bifrost_shape, node + '.prim_definition', input_port)
 
-                    self.recursive_build_usd_graph(parent, new_node)
+                    self.recursive_build_usd_graph(parent_obj, new_node)
 
                 else:
                     return None
