@@ -3,7 +3,7 @@ from mayaLib.rigLib.bifrost import bifrost
 from mayaLib.rigLib.bifrost import bifrost_util_nodes
 
 
-def getAllObjectUnderGroup(group, type='mesh'):
+def getAllObjectUnderGroup(group, type='mesh', full_path=True):
     """
     Return all object of given type under group
     Args:
@@ -18,14 +18,14 @@ def getAllObjectUnderGroup(group, type='mesh'):
     objList = None
 
     if type == 'mesh':
-        objList = [cmds.listRelatives(o, p=1)[0] for o in cmds.listRelatives(group, ad=1, type=type)]
+        objList = [cmds.listRelatives(o, p=1, fullPath=full_path)[0] for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path)]
 
     if type == 'nurbsSurface':
-        objList = [cmds.listRelatives(o, p=1)[0] for o in cmds.listRelatives(group, ad=1, type=type)]
+        objList = [cmds.listRelatives(o, p=1, fullPath=full_path)[0] for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path)]
 
     if type == 'transform':
-        geoList = [cmds.listRelatives(o, p=1)[0] for o in cmds.listRelatives(group, ad=1, type='mesh')]
-        objList = [o for o in cmds.listRelatives(group, ad=1, type=type) if o not in geoList]
+        geoList = [cmds.listRelatives(o, p=1, fullPath=full_path)[0] for o in cmds.listRelatives(group, ad=1, type='mesh', fullPath=full_path)]
+        objList = [o for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path) if o not in geoList]
 
     objList = list(set(objList))
     objList.sort()
@@ -63,7 +63,7 @@ class USDCharacterBuild(object):
     Build Bifrost nodes to manage usd
     """
 
-    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='root', save_usd_file='tmp', connect_output=True, debug=False, single_usd=False):
+    def __init__(self, deformed_geo_list=[], undeformed_geo_list=[], name='', root_node='geo', save_usd_file='tmp', connect_output=True, debug=False, single_usd=False):
         """
         Constructor
         Args:
@@ -453,9 +453,9 @@ class USDCharacterBuild(object):
 if __name__ == "__main__":
     to_delete = cmds.ls('*_bifrostGraph', '*_bifrostGraph?' 'mayaUsdProxy*')
     cmds.delete(to_delete)
-    deformed_list, undeformed_list = get_all_deformed_and_constrained('root')
+    deformed_list, undeformed_list = get_all_deformed_and_constrained('geo')
     print('Deformed list: ', deformed_list)
     print('Undeformed list: ', undeformed_list)
-    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='root', debug=True)
+    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='geo', debug=True)
     bifrost_transform = usd_character_manager.get_bifrost_transform()
     cmds.parent(bifrost_transform, 'rig_grp')
