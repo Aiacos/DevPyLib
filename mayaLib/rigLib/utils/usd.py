@@ -380,27 +380,26 @@ class USDCharacterBuild(object):
         if cmds.objExists(obj_data['full_path']):
             parent = cmds.listRelatives(obj_data['full_path'], p=True, fullPath=True)[-1]
             parent_obj = self.get_name_dict(parent)
+
+            connection_check = cmds.connectionInfo(obj_data['full_path'] + '.tx',
+                                                   isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.ty', isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.tz',
+                isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.rx', isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.ry',
+                isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.rz', isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.sx',
+                isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.sy', isDestination=True) or cmds.connectionInfo(
+                obj_data['full_path'] + '.sz', isDestination=True)
+
+            if connection_check:
+                self.add_xform(obj_data['full_path'], node)
             
             if parent_obj['short_name'] == self.root_node['short_name']:
                 new_node = self.create_prim(parent_obj)
-
-                connection_check = cmds.connectionInfo(obj_data['full_path'] + '.tx',
-                                                       isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.ty', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.tz',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.rx', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.ry',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.rz', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sx',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sy', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sz', isDestination=True)
-
-                if connection_check:
-                    self.add_xform(obj_data['full_path'], node)
-
 
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
                 if connected_node_list == None or not (node in connected_node_list):
@@ -418,25 +417,7 @@ class USDCharacterBuild(object):
                 new_node = self.create_prim(parent_obj)
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
 
-                connection_check = cmds.connectionInfo(obj_data['full_path'] + '.tx',
-                                                       isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.ty', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.tz',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.rx', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.ry',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.rz', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sx',
-                    isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sy', isDestination=True) or cmds.connectionInfo(
-                    obj_data['full_path'] + '.sz', isDestination=True)
-
-                if connection_check:
-                    self.add_xform(obj_data['full_path'], new_node)
-
-
-                if connected_node_list == None or not (new_node in connected_node_list):
+                if connected_node_list == None or not (node in connected_node_list):
                     if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
                         input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
                         bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
@@ -524,6 +505,6 @@ if __name__ == "__main__":
     deformed_list, undeformed_list = get_all_deformed_and_constrained('geo')
     print('Deformed list: ', deformed_list)
     print('Undeformed list: ', undeformed_list)
-    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='geo', debug=True)
+    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='geo', debug=False)
     bifrost_transform = usd_character_manager.get_bifrost_transform()
     cmds.parent(bifrost_transform, 'rig_grp')
