@@ -316,6 +316,15 @@ class USDCharacterBuild(object):
         self.recursive_build_usd_graph(name_dict, define_mesh_node)
 
     def add_xform(self, obj, obj_node=None):
+        """
+        Add xfrom attribute to a Mesh or Prim defintion
+        Args:
+            obj (string): maya object to connect
+            obj_node (string): prim to connect attribute
+
+        Returns:
+
+        """
         name_dict = self.get_name_dict(obj)
 
         node = name_dict['long_name'] + "_define_usd_attribute"
@@ -377,10 +386,14 @@ class USDCharacterBuild(object):
             None
 
         """
+
+        # Check if maya object exists
         if cmds.objExists(obj_data['full_path']):
+            # get the object parent
             parent = cmds.listRelatives(obj_data['full_path'], p=True, fullPath=True)[-1]
             parent_obj = self.get_name_dict(parent)
 
+            # Check if there is a trnasform connection
             connection_check = cmds.connectionInfo(obj_data['full_path'] + '.tx',
                                                    isDestination=True) or cmds.connectionInfo(
                 obj_data['full_path'] + '.ty', isDestination=True) or cmds.connectionInfo(
@@ -397,10 +410,12 @@ class USDCharacterBuild(object):
 
             if connection_check:
                 self.add_xform(obj_data['full_path'], node)
-            
+
+            # if the current node is the highest in hierarchy
             if parent_obj['short_name'] == self.root_node['short_name']:
                 new_node = self.create_prim(parent_obj)
 
+                # Check if the root is already created and connected to the create stage
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
                 if connected_node_list == None or not (node in connected_node_list):
                     input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.prim_definition", "auto", 'children')
@@ -417,7 +432,9 @@ class USDCharacterBuild(object):
                 new_node = self.create_prim(parent_obj)
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
 
+                # Check if the node is already created
                 if connected_node_list == None or not (node in connected_node_list):
+                    # Check the type of the prim (Transform or Mesh)
                     if bifrost.bf_get_node_type(self.bifrost_shape, node) == "BifrostGraph,USD::Prim,define_usd_mesh":
                         input_port = bifrost.bf_add_input_port(self.bifrost_shape, new_node, "children.mesh_definition", "auto", 'children')
                         bifrost.bf_connect(self.bifrost_shape, node + '.mesh_definition', input_port)
@@ -431,6 +448,17 @@ class USDCharacterBuild(object):
                     return None
 
     def add_block_attribute(self, attr_name, node_name='', prim_path='', parent=''):
+        """
+        Add Block attribute
+        Args:
+            attr_name (string): attribute name
+            node_name (string): node name
+            prim_path (string): path of the prim to block
+            parent (string): parent node to connect
+
+        Returns:
+            (string): bifrost attribute node
+        """
         block_attribute_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Attribute,block_attribute", parent)
         bifrost.bf_set_node_property(self.bifrost_shape, parent + '/' + block_attribute_node, "name", attr_name)
 
@@ -448,6 +476,12 @@ class USDCharacterBuild(object):
         #"|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/block_attribute1.out_stage" "/save_usd_stage.stage";
 
     def create_block_loop(self):
+        """
+        Create the iterator to block same attribute on multiple prim
+        Returns:
+            (string): iterator node
+
+        """
         # Create nodes
         get_prim_children_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,get_prim_children")
         get_prim_path_node = bifrost.bf_create_node(self.bifrost_shape, "BifrostGraph,USD::Prim,get_prim_path")
@@ -500,6 +534,7 @@ class USDCharacterBuild(object):
         return iterator_node
 
 if __name__ == "__main__":
+    ## Use case
     to_delete = cmds.ls('*_bifrostGraph', '*_bifrostGraph?' 'mayaUsdProxy*')
     cmds.delete(to_delete)
     deformed_list, undeformed_list = get_all_deformed_and_constrained('geo')
