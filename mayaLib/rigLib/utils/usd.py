@@ -415,6 +415,25 @@ class USDCharacterBuild(object):
             if parent_obj['short_name'] == self.root_node['short_name']:
                 new_node = self.create_prim(parent_obj)
 
+                # Check if there is a trnasform connection
+                connection_check = cmds.connectionInfo(parent_obj['full_path'] + '.tx',
+                                                       isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.ty', isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.tz',
+                    isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.rx', isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.ry',
+                    isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.rz', isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.sx',
+                    isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.sy', isDestination=True) or cmds.connectionInfo(
+                    obj_data['full_path'] + '.sz', isDestination=True)
+
+                if connection_check:
+                    self.add_xform(parent_obj['full_path'], new_node)
+
+
                 # Check if the root is already created and connected to the create stage
                 connected_node_list = cmds.vnnNode(self.bifrost_shape, '/' + new_node, listConnectedNodes=1)
                 if connected_node_list == None or not (node in connected_node_list):
@@ -540,6 +559,6 @@ if __name__ == "__main__":
     deformed_list, undeformed_list = get_all_deformed_and_constrained('geo')
     print('Deformed list: ', deformed_list)
     print('Undeformed list: ', undeformed_list)
-    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='geo', debug=False)
+    usd_character_manager = USDCharacterBuild(deformed_list, undeformed_list, name='test', root_node='root', debug=True)
     bifrost_transform = usd_character_manager.get_bifrost_transform()
-    cmds.parent(bifrost_transform, 'rig_grp')
+    cmds.parent(bifrost_transform, 'rig')
