@@ -20,11 +20,11 @@ class AutoUV():
         """
 
         area = 0
-
+        geoList = pm.ls(geoList)
         for geo in geoList:
             print(('Current Geo: ', geo.name()))
 
-            # fi non Manifold UV
+            # fix no-Manifold UV
             self.fixNonManifoldUV(geo)
 
             # Automatic Projection UV
