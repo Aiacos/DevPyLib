@@ -29,7 +29,9 @@ class AutoUV():
 
             # Automatic Projection UV
             if autoProject:
-                pm.polyAutoProjection(geo.f[:], lm=0, pb=0, ibd=1, cm=0, l=0, sc=0, o=0, p=6, ps=0.2, ws=0)
+                pm.select(geo)
+                mel.eval('texNormalProjection 1 1 "" ;')
+                #pm.polyAutoProjection(geo.f[:], lm=0, pb=0, ibd=1, cm=0, l=0, sc=0, o=0, p=6, ps=0.2, ws=0)
 
             # Auto Seam 1
             if autoSeam:
@@ -178,9 +180,10 @@ class AutoUV():
 
     def autoSeamUV(self, geo, angle=0):
         try:
-            pm.u3dAutoSeam(geo, s=angle, p=1)  # s=0
+            pm.u3dAutoSeam(geo, s=angle, p=1)
         except:
-            pm.unfold(geo)
+            pass
+            #pm.unfold(geo)
 
     def unfoldOptimizeUV(self, geo, normalizeShell=False):
         pm.u3dUnfold(geo, mapsize=1024, iterations=2, pack=0, borderintersection=True, triangleflip=True, roomspace=0)
