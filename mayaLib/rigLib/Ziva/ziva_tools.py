@@ -1,7 +1,9 @@
 import maya.mel as mel
 import pymel.core as pm
-import zBuilder.builders.ziva as zva
-import zBuilder.commands as zva_cmds
+
+if pm.about(version=True) == '2022':
+    import zBuilder.builders.ziva as zva
+    import zBuilder.commands as zva_cmds
 
 
 def zPolyCombine(geos):

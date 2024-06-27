@@ -1,6 +1,10 @@
 __author__ = 'Lorenzo Argentieri'
+import pymel.core as pm
 
-import collections
+if pm.about(version=True) == '2022':
+    import collections as collection
+else:
+    import collections.abc as collection
 import inspect
 import pkgutil
 
@@ -78,7 +82,7 @@ class StructureManager():
         """
         for k, v in merge_dct.items():
             if (k in dct and isinstance(dct[k], dict)
-                    and isinstance(merge_dct[k], collections.Mapping)):
+                    and isinstance(merge_dct[k], collection.Mapping)):
                 self.dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]

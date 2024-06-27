@@ -2,7 +2,8 @@ from pathlib import Path
 import pymel.core as pm
 import maya.mel as mel
 
-import zBuilder.builders.ziva as zva
+if pm.about(version=True) == '2022':
+    import zBuilder.builders.ziva as zva
 
 from mayaLib.rigLib.utils import util as util
 from mayaLib.rigLib.utils import deform
