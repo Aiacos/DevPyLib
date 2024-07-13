@@ -85,6 +85,47 @@ right_hand_ring_ctrl_list_default = ['L_Fingers_finger_2_0_ctrl', 'L_Fingers_fin
 right_hand_pinky_ctrl_list_default = ['L_Fingers_finger_3_0_ctrl', 'L_Fingers_finger_3_1_ctrl',
                                       'L_Fingers_finger_3_2_ctrl', 'L_Fingers_finger_3_3_ctrl']
 
+arise_hik_data = {'joints': {'Reference': reference_joint_default,
+                             'Hips': hip_joint_joint_default,
+                             'Spine': spine_joint_list_default,
+                             'Neck': neck_joint_list_default,
+                             'Head': head_joint_joint_default,
+                             'LeftLeg': left_leg_joint_list_default,
+                             'RightLeg': right_leg_joint_list_default,
+                             'LeftArm': left_arm_joint_list_default,
+                             'RightArm': right_arm_joint_list_default,
+                             'LeftHandThumb': left_hand_thumb_joint_list_default,
+                             'LeftHandIndex': left_hand_index_joint_list_default,
+                             'LeftHandMiddle': left_hand_middle_joint_list_default,
+                             'LeftHandRing': left_hand_ring_joint_list_default,
+                             'LeftHandPinky': left_hand_pinky_joint_list_default,
+                             'RightHandThumb': right_hand_thumb_joint_list_default,
+                             'RightHandIndex': right_hand_index_joint_list_default,
+                             'RightHandMiddle': right_hand_middle_joint_list_default,
+                             'RightHandRing': right_hand_ring_joint_list_default,
+                             'RightHandPinky': right_hand_pinky_joint_list_default
+                             },
+                  'ctrls': {'Hip': hip_ctrl_default,
+                            'Spine': spine_ctrl_list_default,
+                            'Chest': chest_ctrl_default,
+                            'Neck': neck_ctrl_default,
+                            'Head': head_ctrl_default,
+                            'LeftClavicle': left_clavicle_ctrl_default,
+                            'LeftShoulder': left_shoulder_ctrl_default,
+                            'LeftElbow': left_elbow_ctrl_default,
+                            'LeftHand': [left_hand_fk_ctrl_default, left_hand_ik_ctrl_default],
+                            'RightClavicle': right_clavicle_ctrl_default,
+                            'RightShoulder': right_shoulder_ctrl_default,
+                            'RightElbow': right_elbow_ctrl_default,
+                            'RightHand': [right_hand_fk_ctrl_default, right_hand_ik_ctrl_default],
+                            'LeftUpLeg': left_hip_ctrl_default,
+                            'LeftKnee': left_knee_ctrl_default,
+                            'LeftAnkle': [left_ankle_fk_ctrl_default, left_ankle_ik_ctrl_default],
+                            'RightUpLeg': right_hip_ctrl_default,
+                            'RightKnee': right_knee_ctrl_default,
+                            'RightAnkle': [right_ankle_fk_ctrl_default, right_ankle_ik_ctrl_default],
+                            }
+                  }
 
 class HumanIK(object):
     humanIK_joint_dict = {
@@ -141,53 +182,21 @@ class HumanIK(object):
         'RightUpLeg': 5,
         'RightKnee': 6,
         'RightAnkle': 7,
+        'LeftHandThumb': (50, 51, 52),
+        'LeftHandIndex': (147, 54, 55, 56),
+        'LeftHandMiddle': (148, 58, 59, 60),
+        'LeftHandRing': (149, 62, 63, 64),
+        'LeftHandPinky': (150, 66, 67, 68),
+        'RightHandThumb': (74, 75, 76),
+        'RightHandIndex': (153, 78, 79, 80),
+        'RightHandMiddle': (154, 82, 83, 84),
+        'RightHandRing': (155, 86, 87, 88),
+        'RightHandPinky': (156, 90, 91, 92),
     }
 
-    def __init__(self, character_name, custom_ctrl_definition=True, use_ik=True, use_hybrid=True,
-                 skip_reference_joint=True,
-                 reference_joint=reference_joint_default,
-                 hip_joint=hip_joint_joint_default,
-                 spine_joint_list=spine_joint_list_default,
-                 neck_joint_list=neck_joint_list_default,
-                 head_joint=head_joint_joint_default,
-                 left_arm_joint_list=left_arm_joint_list_default,
-                 left_leg_joint_list=left_leg_joint_list_default,
-                 right_arm_joint_list=right_arm_joint_list_default,
-                 right_leg_joint_list=right_leg_joint_list_default,
-                 left_hand_thumb_joint_list=left_hand_thumb_joint_list_default,
-                 left_hand_index_joint_list=left_hand_index_joint_list_default,
-                 left_hand_middle_joint_list=left_hand_middle_joint_list_default,
-                 left_hand_ring_joint_list=left_hand_ring_joint_list_default,
-                 left_hand_pinky_joint_list=left_hand_pinky_joint_list_default,
-                 right_hand_thumb_joint_list=right_hand_thumb_joint_list_default,
-                 right_hand_index_joint_list=right_hand_index_joint_list_default,
-                 right_hand_middle_joint_list=right_hand_middle_joint_list_default,
-                 right_hand_ring_joint_list=right_hand_ring_joint_list_default,
-                 right_hand_pinky_joint_list=right_hand_pinky_joint_list_default,
-                 hip_ctrl=hip_ctrl_default,
-                 spine_ctrl_list=spine_ctrl_list_default,
-                 chest_ctrl=chest_ctrl_default,
-                 neck_ctrl=neck_ctrl_default,
-                 head_ctrl=head_ctrl_default,
-                 left_clavicle_ctrl=left_clavicle_ctrl_default,
-                 left_shoulder_ctrl=left_shoulder_ctrl_default,
-                 left_elbow_ctrl=left_elbow_ctrl_default,
-                 left_hand_fk_ctrl=left_hand_fk_ctrl_default,
-                 left_hand_ik_ctrl=left_hand_ik_ctrl_default,
-                 right_clavicle_ctrl=right_clavicle_ctrl_default,
-                 right_shoulder_ctrl=right_shoulder_ctrl_default,
-                 right_elbow_ctrl=right_elbow_ctrl_default,
-                 right_hand_fk_ctrl=right_hand_fk_ctrl_default,
-                 right_hand_ik_ctrl=right_hand_ik_ctrl_default,
-                 left_hip_ctrl=left_hip_ctrl_default,
-                 left_knee_ctrl=left_knee_ctrl_default,
-                 left_ankle_fk_ctrl=left_ankle_fk_ctrl_default,
-                 left_ankle_ik_ctrl=left_ankle_ik_ctrl_default,
-                 right_hip_ctrl=right_hip_ctrl_default,
-                 right_knee_ctrl=right_knee_ctrl_default,
-                 right_ankle_fk_ctrl=right_ankle_fk_ctrl_default,
-                 right_ankle_ik_ctrl=right_ankle_ik_ctrl_default
-                 ):
+    rig_definition = {'arise': arise_hik_data}
+
+    def __init__(self, character_name, rig_template='arise', custom_ctrl_definition=True, use_ik=True, use_hybrid=True, skip_reference_joint=True):
         self.charecter_name = str(character_name)
 
         # Init HumanIK Window
@@ -196,126 +205,129 @@ class HumanIK(object):
         # Create Character
         mel.eval('hikCreateCharacter("' + self.charecter_name + '")')
 
-        if reference_joint and not skip_reference_joint:
-            self.add_reference(reference_joint)
-        if hip_joint:
-            self.add_hip(hip_joint)
-        if spine_joint_list:
-            self.add_spine(spine_joint_list)
-        if neck_joint_list:
-            self.add_neck(neck_joint_list)
-        if head_joint:
-            self.add_head(head_joint)
-        if left_arm_joint_list:
-            self.add_left_arm(*left_arm_joint_list)
-        if left_leg_joint_list:
-            self.add_left_leg(*left_leg_joint_list)
-        if right_arm_joint_list:
-            self.add_right_arm(*right_arm_joint_list)
-        if right_leg_joint_list:
-            self.add_right_leg(*right_leg_joint_list)
+        # Select Rig Data
+        rig_data = self.rig_definition[rig_template]
 
-        if left_hand_thumb_joint_list:
-            self.add_leftHandThumb(left_hand_thumb_joint_list)
-        if left_hand_index_joint_list:
-            self.add_leftHandIndex(left_hand_index_joint_list)
-        if left_hand_middle_joint_list:
-            self.add_leftHandMiddle(left_hand_middle_joint_list)
-        if left_hand_ring_joint_list:
-            self.add_leftHandRing(left_hand_ring_joint_list)
-        if left_hand_pinky_joint_list:
-            self.add_leftHandPinky(left_hand_pinky_joint_list)
-        if right_hand_thumb_joint_list:
-            self.add_rightHandThumb(right_hand_thumb_joint_list)
-        if right_hand_index_joint_list:
-            self.add_rightHandIndex(right_hand_index_joint_list)
-        if right_hand_middle_joint_list:
-            self.add_rightHandMiddle(right_hand_middle_joint_list)
-        if right_hand_ring_joint_list:
-            self.add_rightHandRing(right_hand_ring_joint_list)
-        if right_hand_pinky_joint_list:
-            self.add_rightHandPinky(right_hand_pinky_joint_list)
+        if rig_data['joints']['Reference'] and not skip_reference_joint:
+            self.add_reference(rig_data['joints']['Reference'])
+        if rig_data['joints']['Hips']:
+            self.add_hip(rig_data['joints']['Hips'])
+        if rig_data['joints']['Spine']:
+            self.add_spine(rig_data['joints']['Spine'])
+        if rig_data['joints']['Neck']:
+            self.add_neck(rig_data['joints']['Neck'])
+        if rig_data['joints']['Head']:
+            self.add_head(rig_data['joints']['Head'])
+        if rig_data['joints']['LeftArm']:
+            self.add_left_arm(*rig_data['joints']['LeftArm'])
+        if rig_data['joints']['LeftLeg']:
+            self.add_left_leg(*rig_data['joints']['LeftLeg'])
+        if rig_data['joints']['RightArm']:
+            self.add_right_arm(*rig_data['joints']['RightArm'])
+        if rig_data['joints']['RightLeg']:
+            self.add_right_leg(*rig_data['joints']['RightLeg'])
+
+        if rig_data['joints']['LeftHandThumb']:
+            self.add_leftHandThumb(rig_data['joints']['LeftHandThumb'])
+        if rig_data['joints']['LeftHandIndex']:
+            self.add_leftHandIndex(rig_data['joints']['LeftHandIndex'])
+        if rig_data['joints']['LeftHandMiddle']:
+            self.add_leftHandMiddle(rig_data['joints']['LeftHandMiddle'])
+        if rig_data['joints']['LeftHandRing']:
+            self.add_leftHandRing(rig_data['joints']['LeftHandRing'])
+        if rig_data['joints']['LeftHandPinky']:
+            self.add_leftHandPinky(rig_data['joints']['LeftHandPinky'])
+        if rig_data['joints']['RightHandThumb']:
+            self.add_rightHandThumb(rig_data['joints']['RightHandThumb'])
+        if rig_data['joints']['RightHandIndex']:
+            self.add_rightHandIndex(rig_data['joints']['RightHandIndex'])
+        if rig_data['joints']['RightHandMiddle']:
+            self.add_rightHandMiddle(rig_data['joints']['RightHandMiddle'])
+        if rig_data['joints']['RightHandRing']:
+            self.add_rightHandRing(rig_data['joints']['RightHandRing'])
+        if rig_data['joints']['RightHandPinky']:
+            self.add_rightHandPinky(rig_data['joints']['RightHandPinky'])
 
         if custom_ctrl_definition:
             self.createCustomRigMapping()
 
-            if hip_ctrl:
-                self.add_hip_ctrl(hip_ctrl)
-            if spine_ctrl_list:
-                self.add_spine_ctrl(spine_ctrl_list)
-            if chest_ctrl:
-                self.add_chest_ctrl(chest_ctrl)
-            if neck_ctrl:
-                self.add_neck_ctrl(neck_ctrl)
-            if head_ctrl:
-                self.add_head_ctrl(head_ctrl)
-            if left_clavicle_ctrl:
-                self.add_leftClavicle_ctrl(left_clavicle_ctrl)
-            if right_clavicle_ctrl:
-                self.add_rightClavicle_ctrl(right_clavicle_ctrl)
+            if rig_data['ctrls']['Hip']:
+                self.add_hip_ctrl(rig_data['ctrls']['Hip'])
+            if rig_data['ctrls']['Spine']:
+                self.add_spine_ctrl(rig_data['ctrls']['Spine'])
+            if rig_data['ctrls']['Chest']:
+                self.add_chest_ctrl(rig_data['ctrls']['Chest'])
+            if rig_data['ctrls']['Neck']:
+                self.add_neck_ctrl(rig_data['ctrls']['Neck'])
+            if rig_data['ctrls']['Head']:
+                self.add_head_ctrl(rig_data['ctrls']['Head'])
+            if rig_data['ctrls']['LeftClavicle']:
+                self.add_leftClavicle_ctrl(rig_data['ctrls']['LeftClavicle'])
+            if rig_data['ctrls']['RightClavicle']:
+                self.add_rightClavicle_ctrl(rig_data['ctrls']['RightClavicle'])
 
             if not use_ik and not use_hybrid:
-                if left_shoulder_ctrl:
-                    self.add_leftShoulder_ctrl(left_shoulder_ctrl)
-                if left_elbow_ctrl:
-                    self.add_leftElbow_ctrl(left_elbow_ctrl)
-                if left_hand_fk_ctrl:
-                    self.add_leftHand_ctrl(left_hand_fk_ctrl)
+                if rig_data['ctrls']['LeftShoulder']:
+                    self.add_leftShoulder_ctrl(rig_data['ctrls']['LeftShoulder'])
+                if rig_data['ctrls']['LeftElbow']:
+                    self.add_leftElbow_ctrl(rig_data['ctrls']['LeftElbow'])
+                if rig_data['ctrls']['LeftHand'][0]:
+                    self.add_leftHand_ctrl(rig_data['ctrls']['LeftHand'][0])
 
-                if left_hip_ctrl:
-                    self.add_leftHip_ctrl(left_hip_ctrl)
-                if left_knee_ctrl:
-                    self.add_leftKnee_ctrl(left_knee_ctrl)
-                if left_ankle_fk_ctrl:
-                    self.add_leftAnkle_ctrl(left_ankle_fk_ctrl)
+                if rig_data['ctrls']['LeftUpLeg']:
+                    self.add_leftHip_ctrl(rig_data['ctrls']['LeftUpLeg'])
+                if rig_data['ctrls']['LeftKnee']:
+                    self.add_leftKnee_ctrl(rig_data['ctrls']['LeftKnee'])
+                if rig_data['ctrls']['LeftAnkle'][0]:
+                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftAnkle'][0])
 
-                if right_shoulder_ctrl:
-                    self.add_rightShoulder_ctrl(right_shoulder_ctrl)
-                if right_elbow_ctrl:
-                    self.add_rightElbow_ctrl(right_elbow_ctrl)
-                if right_hand_fk_ctrl:
-                    self.add_rightHand_ctrl(right_hand_fk_ctrl)
+                if rig_data['ctrls']['RightShoulder']:
+                    self.add_rightShoulder_ctrl(rig_data['ctrls']['RightShoulder'])
+                if rig_data['ctrls']['RightElbow']:
+                    self.add_rightElbow_ctrl(rig_data['ctrls']['RightElbow'])
+                if rig_data['ctrls']['RightHand'][0]:
+                    self.add_rightHand_ctrl(rig_data['ctrls']['RightHand'][0])
 
-                if right_hip_ctrl:
-                    self.add_rightHip_ctrl(right_hip_ctrl)
-                if right_knee_ctrl:
-                    self.add_rightKnee_ctrl(right_knee_ctrl)
-                if right_ankle_fk_ctrl:
-                    self.add_rightAnkle_ctrl(right_ankle_fk_ctrl)
+                if rig_data['ctrls']['RightUpLeg']:
+                    self.add_rightHip_ctrl(rig_data['ctrls']['RightUpLeg'])
+                if rig_data['ctrls']['RightKnee']:
+                    self.add_rightKnee_ctrl(rig_data['ctrls']['RightKnee'])
+                if rig_data['ctrls']['RightAnkle'][0]:
+                    self.add_rightAnkle_ctrl(rig_data['ctrls']['RightAnkle'][0])
 
             if use_ik and not use_hybrid:
-                if left_hand_ik_ctrl:
-                    self.add_leftHand_ctrl(left_hand_ik_ctrl)
+                if rig_data['ctrls']['LeftHand'][1]:
+                    self.add_leftHand_ctrl(rig_data['ctrls']['LeftHand'][1])
 
-                if left_ankle_ik_ctrl:
-                    self.add_leftAnkle_ctrl(left_ankle_ik_ctrl)
+                if rig_data['ctrls']['LeftKnee'][1]:
+                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftKnee'][1])
 
-                if right_hand_ik_ctrl:
-                    self.add_rightHand_ctrl(right_hand_ik_ctrl)
+                if rig_data['ctrls']['RightHand'][1]:
+                    self.add_rightHand_ctrl(rig_data['ctrls']['RightHand'][1])
 
-                if right_ankle_ik_ctrl:
-                    self.add_rightAnkle_ctrl(right_ankle_ik_ctrl)
+                if rig_data['ctrls']['RightAnkle'][1]:
+                    self.add_rightAnkle_ctrl(rig_data['ctrls']['RightAnkle'][1])
 
             if use_hybrid:
-                if left_shoulder_ctrl:
-                    self.add_leftShoulder_ctrl(left_shoulder_ctrl)
-                if left_elbow_ctrl:
-                    self.add_leftElbow_ctrl(left_elbow_ctrl)
-                if left_hand_fk_ctrl:
-                    self.add_leftHand_ctrl(left_hand_fk_ctrl)
+                if rig_data['ctrls']['LeftShoulder']:
+                    self.add_leftShoulder_ctrl(rig_data['ctrls']['LeftShoulder'])
+                if rig_data['ctrls']['LeftElbow']:
+                    self.add_leftElbow_ctrl(rig_data['ctrls']['LeftElbow'])
+                if rig_data['ctrls']['LeftHand'][0]:
+                    self.add_leftHand_ctrl(rig_data['ctrls']['LeftHand'][0])
 
-                if right_shoulder_ctrl:
-                    self.add_rightShoulder_ctrl(right_shoulder_ctrl)
-                if right_elbow_ctrl:
-                    self.add_rightElbow_ctrl(right_elbow_ctrl)
-                if right_hand_fk_ctrl:
-                    self.add_rightHand_ctrl(right_hand_fk_ctrl)
+                if rig_data['ctrls']['RightShoulder']:
+                    self.add_rightShoulder_ctrl(rig_data['ctrls']['RightShoulder'])
+                if rig_data['ctrls']['RightElbow']:
+                    self.add_rightElbow_ctrl(rig_data['ctrls']['RightElbow'])
+                if rig_data['ctrls']['RightHand'][0]:
+                    self.add_rightHand_ctrl(rig_data['ctrls']['RightHand'][0])
 
-                if left_ankle_ik_ctrl:
-                    self.add_leftAnkle_ctrl(left_ankle_ik_ctrl)
+                if rig_data['ctrls']['LeftKnee'][1]:
+                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftKnee'][1])
 
-                if right_ankle_ik_ctrl:
-                    self.add_rightAnkle_ctrl(right_ankle_ik_ctrl)
+                if rig_data['ctrls']['RightAnkle'][1]:
+                    self.add_rightAnkle_ctrl(rig_data['ctrls']['RightAnkle'][1])
 
     def setCharacterObject(self, joint, joint_id):
         if pm.objExists(joint):
@@ -712,7 +724,8 @@ class Rig_Drive(object):
             self.do_constraint_parent(self, jnt, ctrl)
 
     def do_constraint_parent(self, source, destination, m_offset=True):
-        return pm.parentConstraint(self.source_namespace + ':' + source, self.destination_namespace + ':' + destination, mo=m_offset)
+        return pm.parentConstraint(self.source_namespace + ':' + source, self.destination_namespace + ':' + destination,
+                                   mo=m_offset)
 
 
 if __name__ == "__main__":
@@ -720,4 +733,5 @@ if __name__ == "__main__":
     char_name = 'Sylvanas'
     humanIk = HumanIK(char_name + '_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=True)
     humanIk = HumanIK(char_name + '_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=True)
-    humanIk = HumanIK(char_name + '_Hybrid', custom_ctrl_definition=True, use_ik=False, use_hybrid=True, skip_reference_joint=True)
+    humanIk = HumanIK(char_name + '_Hybrid', custom_ctrl_definition=True, use_ik=False, use_hybrid=True,
+                      skip_reference_joint=True)
