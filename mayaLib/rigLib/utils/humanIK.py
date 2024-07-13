@@ -206,8 +206,12 @@ class HumanIK(object):
 
     rig_definition = {'arise': arise_hik_data}
 
-    def __init__(self, character_name, rig_template='arise', custom_ctrl_definition=True, use_ik=True, use_hybrid=True, skip_reference_joint=True):
+    def __init__(self, character_name, rig_template='arise', auto_T_pose=True, custom_ctrl_definition=True, use_ik=True, use_hybrid=True, skip_reference_joint=True):
         self.charecter_name = str(character_name)
+
+        # Set T Pose
+        if auto_T_pose:
+            self.go_to_T_pose()
 
         # Init HumanIK Window
         mel.eval('HIKCharacterControlsTool;')
@@ -222,6 +226,25 @@ class HumanIK(object):
 
         if custom_ctrl_definition:
             self.define_custom_ctrls(self.rig_data, use_ik, use_hybrid)
+
+    def _arise_T_pose(self):
+        import sys
+        import os
+
+        LOCAL_PATH = r"C:/Users/" + os.getlogin() + "/Documents/maya/Plug-ins/arise_main"
+        version_folder = 'py_' + str(sys.version_info.major) + '_' + str(sys.version_info.minor)
+        path = os.path.join(LOCAL_PATH, version_folder)
+
+        if path not in sys.path:
+            sys.path.append(path)
+
+        from arise.utils.ctrls_utils import apply_zero_pose_all
+
+        apply_zero_pose_all(silent=True)
+
+    def go_to_T_pose(self):
+        self._arise_T_pose()
+
 
     def define_skeleton(self, rig_data=None, skip_reference_joint=True):
         if not rig_data:
@@ -631,192 +654,10 @@ class HumanIK(object):
         for i, ctrl in enumerate(ctrl_list):
             self.add_ctrl(ctrl, ctrl_id_list[i])
 
-    def clean_ctrl_orient(self, ctrl):
-        pass
 
-
-def deleteConnection(plug):
-    # """ Equivalent of MEL: CBdeleteConnection """
-
-    if pm.connectionInfo(plug, isDestination=True):
-        plug = pm.connectionInfo(plug, getExactDestination=True)
-        readOnly = pm.ls(plug, ro=True)
-        # delete -icn doesn't work if destination attr is readOnly
-        if readOnly:
-            source = pm.connectionInfo(plug, sourceFromDestination=True)
-            pm.disconnectAttr(source, plug)
-        else:
-            pm.delete(plug, icn=True)
-
-
-def unlock_and_unhide_all(node):
-    """
-    unlock and unhide all transform attributes of selected node
-    :param node: node to be affected
-    """
-    nodeList = pm.ls(node)
-
-    for node in nodeList:
-        node.tx.set(l=0, k=1, cb=0)
-        node.ty.set(l=0, k=1, cb=0)
-        node.tz.set(l=0, k=1, cb=0)
-        node.rx.set(l=0, k=1, cb=0)
-        node.ry.set(l=0, k=1, cb=0)
-        node.rz.set(l=0, k=1, cb=0)
-        node.sx.set(l=0, k=1, cb=0)
-        node.sy.set(l=0, k=1, cb=0)
-        node.sz.set(l=0, k=1, cb=0)
-
-
-def unlock_arise():
-    # Unlock drawstyle
-    joint_list = pm.listRelatives(reference_joint_default, ad=True, type='joint')
-    reference_joint_default_pm = pm.ls(reference_joint_default)[-1]
-    joint_top_grp = pm.ls('skeleton_grp')[-1]
-    unlock_and_unhide_all(joint_top_grp)
-    pm.connectAttr('Base_main_ctrl.joints_visibility', joint_top_grp.visibility, f=True)
-
-    # source_connection = pm.listConnections(reference_joint_default_pm.drawStyle, p=True, s=True)[-1]
-    # reverse_node = pm.listConnections(reference_joint_default_pm.drawStyle, s=True)[-1]
-    # reverse_node.outputMin.set(0)
-    # reverse_node.outputMin.set(1)
-    # pm.disconnectAttr(source_connection, reference_joint_default_pm.drawStyle)
-    # pm.connectAttr(source_connection, reference_joint_default_pm.visibility)
-
-    connections_translateX = pm.listConnections(reference_joint_default_pm.translateX, p=True, s=True)[-1]
-    connections_translateY = pm.listConnections(reference_joint_default_pm.translateY, p=True, s=True)[-1]
-    connections_translateZ = pm.listConnections(reference_joint_default_pm.translateZ, p=True, s=True)[-1]
-
-    pm.disconnectAttr(connections_translateX, reference_joint_default_pm.translateX)
-    pm.disconnectAttr(connections_translateY, reference_joint_default_pm.translateY)
-    pm.disconnectAttr(connections_translateZ, reference_joint_default_pm.translateZ)
-
-    pm.connectAttr(connections_translateX, joint_top_grp.translateX)
-    pm.connectAttr(connections_translateY, joint_top_grp.translateY)
-    pm.connectAttr(connections_translateZ, joint_top_grp.translateZ)
-
-    connections_rotateX = pm.listConnections(reference_joint_default_pm.rotateX, p=True, s=True)[-1]
-    connections_rotateY = pm.listConnections(reference_joint_default_pm.rotateY, p=True, s=True)[-1]
-    connections_rotateZ = pm.listConnections(reference_joint_default_pm.rotateZ, p=True, s=True)[-1]
-
-    pm.disconnectAttr(connections_rotateX, reference_joint_default_pm.rotateX)
-    pm.disconnectAttr(connections_rotateY, reference_joint_default_pm.rotateY)
-    pm.disconnectAttr(connections_rotateZ, reference_joint_default_pm.rotateZ)
-
-    pm.connectAttr(connections_rotateX, joint_top_grp.rotateX)
-    pm.connectAttr(connections_rotateY, joint_top_grp.rotateY)
-    pm.connectAttr(connections_rotateZ, joint_top_grp.rotateZ)
-
-    for jnt in joint_list:
-        try:
-            source_connection = pm.listConnections(jnt.drawStyle, p=True, s=True)[-1]
-            reverse_node = pm.listConnections(jnt.drawStyle, s=True)[-1]
-            # reverse_node.outputMin.set(0)
-            # reverse_node.outputMin.set(1)
-            pm.disconnectAttr(source_connection, jnt.drawStyle)
-
-            reverse_node = pm.shadingNode('reverse', asUtility=True)
-
-            pm.connectAttr(source_connection, reverse_node.inputX)
-            pm.connectAttr(reverse_node.outputX, jnt.visibility)
-
-            unlock_and_unhide_all(jnt)
-        except:
-            pass
-
-
-class Rig_Drive(object):
-    def __init__(self, source_namespace, destination_namespace,
-                 reference_joint=reference_joint_default,
-                 hip_joint=hip_joint_joint_default,
-                 spine_joint_list=spine_joint_list_default,
-                 neck_joint_list=neck_joint_list_default,
-                 head_joint=head_joint_joint_default,
-                 left_arm_joint_list=left_arm_joint_list_default,
-                 left_leg_joint_list=left_leg_joint_list_default,
-                 right_arm_joint_list=right_arm_joint_list_default,
-                 right_leg_joint_list=right_leg_joint_list_default,
-                 left_hand_thumb_joint_list=left_hand_thumb_joint_list_default,
-                 left_hand_index_joint_list=left_hand_index_joint_list_default,
-                 left_hand_middle_joint_list=left_hand_middle_joint_list_default,
-                 left_hand_ring_joint_list=left_hand_ring_joint_list_default,
-                 left_hand_pinky_joint_list=left_hand_pinky_joint_list_default,
-                 right_hand_thumb_joint_list=right_hand_thumb_joint_list_default,
-                 right_hand_index_joint_list=right_hand_index_joint_list_default,
-                 right_hand_middle_joint_list=right_hand_middle_joint_list_default,
-                 right_hand_ring_joint_list=right_hand_ring_joint_list_default,
-                 right_hand_pinky_joint_list=right_hand_pinky_joint_list_default,
-                 hip_ctrl=hip_ctrl_default,
-                 spine_ctrl_list=spine_ctrl_list_default,
-                 chest_ctrl=chest_ctrl_default,
-                 neck_ctrl=neck_ctrl_default,
-                 head_ctrl=head_ctrl_default,
-                 left_clavicle_ctrl=left_clavicle_ctrl_default,
-                 left_shoulder_ctrl=left_shoulder_ctrl_default,
-                 left_elbow_ctrl=left_elbow_ctrl_default,
-                 left_hand_fk_ctrl=left_hand_fk_ctrl_default,
-                 left_hand_ik_ctrl=left_hand_ik_ctrl_default,
-                 right_clavicle_ctrl=right_clavicle_ctrl_default,
-                 right_shoulder_ctrl=right_shoulder_ctrl_default,
-                 right_elbow_ctrl=right_elbow_ctrl_default,
-                 right_hand_fk_ctrl=right_hand_fk_ctrl_default,
-                 right_hand_ik_ctrl=right_hand_ik_ctrl_default,
-                 left_hip_ctrl=left_hip_ctrl_default,
-                 left_knee_ctrl=left_knee_ctrl_default,
-                 left_ankle_fk_ctrl=left_ankle_fk_ctrl_default,
-                 left_ankle_ik_ctrl=left_ankle_ik_ctrl_default,
-                 right_hip_ctrl=right_hip_ctrl_default,
-                 right_knee_ctrl=right_knee_ctrl_default,
-                 right_ankle_fk_ctrl=right_ankle_fk_ctrl_default,
-                 right_ankle_ik_ctrl=right_ankle_ik_ctrl_default
-                 ):
-
-        self.source_namespace = source_namespace
-        self.destination_namespace = destination_namespace
-
-        # Set FK
-        fk_ctrl_switch_list = pm.ls(self.source_namespace + ':?_*_ik_fk_switch_ctrl')
-        for ctrl_switch in fk_ctrl_switch_list:
-            ctrl_switch.ik_fk_switch.set(1)
-
-        # Spine
-        self.do_constraint_parent(self, hip_joint, hip_ctrl)
-        self.do_constraint_parent(self, spine_joint_list[0], spine_ctrl_list[0])
-        self.do_constraint_parent(self, spine_joint_list[2], spine_ctrl_list[-1])
-        self.do_constraint_parent(self, spine_joint_list[-1], chest_ctrl_default)
-
-        # Neck
-
-        # Head
-        self.do_constraint_parent(self, head_joint, head_ctrl)
-
-        # Arms
-        for jnt, ctrl in zip(left_arm_joint_list,
-                             [left_clavicle_ctrl, left_shoulder_ctrl, left_elbow_ctrl, left_hand_fk_ctrl]):
-            self.do_constraint_parent(self, jnt, ctrl)
-
-        for jnt, ctrl in zip(right_arm_joint_list,
-                             [right_clavicle_ctrl, right_shoulder_ctrl, right_elbow_ctrl, right_hand_fk_ctrl]):
-            self.do_constraint_parent(self, jnt, ctrl)
-
-        # Fingers
-
-        # Legs
-        for jnt, ctrl in zip(left_leg_joint_list,
-                             [left_hip_ctrl, left_knee_ctrl, left_ankle_fk_ctrl, 'L_Leg_toes_ctrl']):
-            self.do_constraint_parent(self, jnt, ctrl)
-
-        for jnt, ctrl in zip(right_leg_joint_list,
-                             [right_hip_ctrl, right_knee_ctrl, right_ankle_fk_ctrl, 'R_Leg_toes_ctrl']):
-            self.do_constraint_parent(self, jnt, ctrl)
-
-    def do_constraint_parent(self, source, destination, m_offset=True):
-        return pm.parentConstraint(self.source_namespace + ':' + source, self.destination_namespace + ':' + destination,
-                                   mo=m_offset)
 
 
 if __name__ == "__main__":
-    unlock_arise()
     char_name = 'Sylvanas'
     humanIk = HumanIK(char_name + '_FK', custom_ctrl_definition=True, use_ik=False, skip_reference_joint=True)
     humanIk = HumanIK(char_name + '_IK', custom_ctrl_definition=True, use_ik=True, skip_reference_joint=True)
