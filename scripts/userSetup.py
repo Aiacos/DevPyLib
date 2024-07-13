@@ -21,13 +21,16 @@ def install_required(REQUIRED):
         
 #install_required(REQUIRED)
 
-libDir = (Path.home() / 'workspace' / 'DevPyLib').as_posix()
+libDir = (Path.home() / 'Documents' / 'workspace' / 'DevPyLib').as_posix()
 port = '4434'
 libName = 'mayaLib'
 
 # Open Maya port
-if not cmds.commandPort(port, q=True):
-    cmds.commandPort(n=port)
+try:
+    if not cmds.commandPort(port, q=True):
+        cmds.commandPort(n=port)
+except:
+    pass
 
 # Add develpment PATH
 if not libDir in sys.path:

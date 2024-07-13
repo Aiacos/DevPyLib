@@ -264,12 +264,14 @@ class MainMenu(QtWidgets.QWidget):
         ptr = omui.MQtUtil.findControl(widgetStr)
         menuWidget = wrapInstance(int(ptr), QtWidgets.QMainWindow)
         self.mayaMenu = menuWidget.menuBar()
-        self.libMenu = self.mayaMenu.addMenu(menuName)
 
-        self.libMenu.addAction(self.wAction)
+        if menuName not in [m.text for m in self.mayaMenu.actions()]:
+            self.libMenu = self.mayaMenu.addMenu(menuName)
 
-        QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
-        self.libMenu.triggered.connect(self.showWidget)
+            self.libMenu.addAction(self.wAction)
+
+            QObject.connect(self.libWindow, SIGNAL('updateWidget()'), lambda: self.updateWidget(libPath))
+            self.libMenu.triggered.connect(self.showWidget)
 
     def updateWidget(self, libPath):
         reload_package(mayaLib)
