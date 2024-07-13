@@ -124,6 +124,16 @@ arise_hik_data = {'joints': {'Reference': reference_joint_default,
                             'RightUpLeg': right_hip_ctrl_default,
                             'RightKnee': right_knee_ctrl_default,
                             'RightAnkle': [right_ankle_fk_ctrl_default, right_ankle_ik_ctrl_default],
+                            'LeftHandThumb': left_hand_thumb_ctrl_list_default,
+                            'LeftHandIndex': left_hand_index_ctrl_list_default,
+                            'LeftHandMiddle': left_hand_middle_ctrl_list_default,
+                            'LeftHandRing': left_hand_ring_ctrl_list_default,
+                            'LeftHandPinky': left_hand_pinky_ctrl_list_default,
+                            'RightHandThumb': right_hand_thumb_ctrl_list_default,
+                            'RightHandIndex': right_hand_index_ctrl_list_default,
+                            'RightHandMiddle': right_hand_middle_ctrl_list_default,
+                            'RightHandRing': right_hand_ring_ctrl_list_default,
+                            'RightHandPinky': right_hand_pinky_ctrl_list_default
                             }
                   }
 
@@ -299,8 +309,8 @@ class HumanIK(object):
                 if rig_data['ctrls']['LeftHand'][1]:
                     self.add_leftHand_ctrl(rig_data['ctrls']['LeftHand'][1])
 
-                if rig_data['ctrls']['LeftKnee'][1]:
-                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftKnee'][1])
+                if rig_data['ctrls']['LeftAnkle'][1]:
+                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftAnkle'][1])
 
                 if rig_data['ctrls']['RightHand'][1]:
                     self.add_rightHand_ctrl(rig_data['ctrls']['RightHand'][1])
@@ -323,11 +333,37 @@ class HumanIK(object):
                 if rig_data['ctrls']['RightHand'][0]:
                     self.add_rightHand_ctrl(rig_data['ctrls']['RightHand'][0])
 
-                if rig_data['ctrls']['LeftKnee'][1]:
-                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftKnee'][1])
+                if rig_data['ctrls']['LeftAnkle'][1]:
+                    self.add_leftAnkle_ctrl(rig_data['ctrls']['LeftAnkle'][1])
 
                 if rig_data['ctrls']['RightAnkle'][1]:
                     self.add_rightAnkle_ctrl(rig_data['ctrls']['RightAnkle'][1])
+
+            if rig_data['ctrls']['LeftHandThumb']:
+                self.add_leftHandThumb_ctrl(rig_data['ctrls']['LeftHandThumb'])
+            if rig_data['ctrls']['LeftHandIndex']:
+                print(' ----------------  DO: ', rig_data['ctrls']['LeftHandIndex'])
+                self.add_leftHandIndex_ctrl(rig_data['ctrls']['LeftHandIndex'])
+            if rig_data['ctrls']['LeftHandMiddle']:
+                print(' ----------------  DO: ', rig_data['ctrls']['LeftHandMiddle'])
+                self.add_leftHandMiddle_ctrl(rig_data['ctrls']['LeftHandMiddle'])
+            if rig_data['ctrls']['LeftHandRing']:
+                print(' ----------------  DO: ', rig_data['ctrls']['LeftHandRing'])
+                self.add_leftHandRing_ctrl(rig_data['ctrls']['LeftHandRing'])
+            if rig_data['ctrls']['LeftHandPinky']:
+                print(' ----------------  DO: ', rig_data['ctrls']['LeftHandPinky'])
+                self.add_leftHandPinky_ctrl(rig_data['ctrls']['LeftHandPinky'])
+
+            if rig_data['ctrls']['RightHandThumb']:
+                self.add_rightHandThumb_ctrl(rig_data['ctrls']['RightHandThumb'])
+            if rig_data['ctrls']['RightHandIndex']:
+                self.add_rightHandIndex_ctrl(rig_data['ctrls']['RightHandIndex'])
+            if rig_data['ctrls']['RightHandMiddle']:
+                self.add_rightHandMiddle_ctrl(rig_data['ctrls']['RightHandMiddle'])
+            if rig_data['ctrls']['RightHandRing']:
+                self.add_rightHandRing_ctrl(rig_data['ctrls']['RightHandRing'])
+            if rig_data['ctrls']['RightHandPinky']:
+                self.add_rightHandPinky_ctrl(rig_data['ctrls']['RightHandPinky'])
 
     def setCharacterObject(self, joint, joint_id):
         if pm.objExists(joint):
@@ -543,6 +579,46 @@ class HumanIK(object):
 
     def add_rightAnkle_ctrl(self, ctrl, ctrl_id=humanIK_ctrl_dict['RightAnkle']):
         self.add_ctrl(ctrl, ctrl_id)
+
+    def add_leftHandThumb_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['LeftHandThumb']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.add_ctrl(ctrl, ctrl_id_list[i])
+
+    def add_leftHandIndex_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['LeftHandIndex']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_leftHandMiddle_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['LeftHandMiddle']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_leftHandRing_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['LeftHandRing']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_leftHandPinky_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['LeftHandPinky']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_rightHandThumb_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['RightHandThumb']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_rightHandIndex_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['RightHandIndex']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_rightHandMiddle_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['RightHandMiddle']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_rightHandRing_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['RightHandRing']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
+
+    def add_rightHandPinky_ctrl(self, ctrl_list, ctrl_id_list=humanIK_ctrl_dict['RightHandPinky']):
+        for i, ctrl in enumerate(ctrl_list):
+            self.setCharacterObject(ctrl, ctrl_id_list[i])
 
     def clean_ctrl_orient(self, ctrl):
         pass
