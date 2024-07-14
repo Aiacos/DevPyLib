@@ -1,2 +1,1 @@
-import scripts
 import mayaLib
