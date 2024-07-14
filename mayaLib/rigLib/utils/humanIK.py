@@ -211,7 +211,7 @@ class HumanIK(object):
 
         # Set T Pose
         if auto_T_pose:
-            self.go_to_T_pose()
+            self.go_to_T_pose(rig_template)
 
         # Init HumanIK Window
         mel.eval('HIKCharacterControlsTool;')
@@ -242,8 +242,14 @@ class HumanIK(object):
 
         apply_zero_pose_all(silent=True)
 
-    def go_to_T_pose(self):
-        self._arise_T_pose()
+    def _arms_parallel_to_grid(self):
+        pass
+
+    def go_to_T_pose(self, template):
+        if template == 'arise':
+            self._arise_T_pose()
+        else:
+            self._arms_parallel_to_grid()
 
 
     def define_skeleton(self, rig_data=None, skip_reference_joint=True):
