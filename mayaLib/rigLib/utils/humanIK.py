@@ -74,16 +74,16 @@ left_hand_ring_ctrl_list_default = ['L_Fingers_finger_2_0_ctrl', 'L_Fingers_fing
 left_hand_pinky_ctrl_list_default = ['L_Fingers_finger_3_0_ctrl', 'L_Fingers_finger_3_1_ctrl',
                                      'L_Fingers_finger_3_2_ctrl', 'L_Fingers_finger_3_3_ctrl']
 
-right_hand_thumb_ctrl_list_default = ['L_Fingers_thumb_0_0_ctrl', 'L_Fingers_thumb_0_1_ctrl',
-                                      'L_Fingers_thumb_0_2_ctrl']
-right_hand_index_ctrl_list_default = ['L_Fingers_finger_0_0_ctrl', 'L_Fingers_finger_0_1_ctrl',
-                                      'L_Fingers_finger_0_2_ctrl', 'L_Fingers_finger_0_3_ctrl']
-right_hand_middle_ctrl_list_default = ['L_Fingers_finger_1_0_ctrl', 'L_Fingers_finger_1_1_ctrl',
-                                       'L_Fingers_finger_1_2_ctrl', 'L_Fingers_finger_1_3_ctrl']
-right_hand_ring_ctrl_list_default = ['L_Fingers_finger_2_0_ctrl', 'L_Fingers_finger_2_1_ctrl',
-                                     'L_Fingers_finger_2_2_ctrl', 'L_Fingers_finger_2_3_ctrl']
-right_hand_pinky_ctrl_list_default = ['L_Fingers_finger_3_0_ctrl', 'L_Fingers_finger_3_1_ctrl',
-                                      'L_Fingers_finger_3_2_ctrl', 'L_Fingers_finger_3_3_ctrl']
+right_hand_thumb_ctrl_list_default = ['R_Fingers_thumb_0_0_ctrl', 'R_Fingers_thumb_0_1_ctrl',
+                                      'R_Fingers_thumb_0_2_ctrl']
+right_hand_index_ctrl_list_default = ['R_Fingers_finger_0_0_ctrl', 'R_Fingers_finger_0_1_ctrl',
+                                      'R_Fingers_finger_0_2_ctrl', 'R_Fingers_finger_0_3_ctrl']
+right_hand_middle_ctrl_list_default = ['R_Fingers_finger_1_0_ctrl', 'R_Fingers_finger_1_1_ctrl',
+                                       'R_Fingers_finger_1_2_ctrl', 'R_Fingers_finger_1_3_ctrl']
+right_hand_ring_ctrl_list_default = ['R_Fingers_finger_2_0_ctrl', 'R_Fingers_finger_2_1_ctrl',
+                                     'R_Fingers_finger_2_2_ctrl', 'R_Fingers_finger_2_3_ctrl']
+right_hand_pinky_ctrl_list_default = ['R_Fingers_finger_3_0_ctrl', 'R_Fingers_finger_3_1_ctrl',
+                                      'R_Fingers_finger_3_2_ctrl', 'R_Fingers_finger_3_3_ctrl']
 
 arise_hik_data = {'joints': {'Reference': reference_joint_default,
                              'Hips': hip_joint_joint_default,
