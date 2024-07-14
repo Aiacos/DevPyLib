@@ -7,19 +7,6 @@ import pip
 import maya.cmds as cmds
 import maya.utils
 
-# Install mayaLib
-REQUIRED = {'pymel', 'pathlib', 'numpy'}
-
-def install(package):
-    #subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-    pip.main(['install', package])
-
-
-def install_required(REQUIRED):
-    for mod in REQUIRED:
-        install(mod)
-        
-#install_required(REQUIRED)
 
 libDir = (Path.home() / 'Documents' / 'workspace' / 'DevPyLib').as_posix()
 port = '4434'
