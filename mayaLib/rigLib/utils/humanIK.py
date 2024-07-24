@@ -137,6 +137,28 @@ arise_hik_data = {'joints': {'Reference': reference_joint_default,
                             }
                   }
 
+rokoko_hik_data = {'joints': {'Reference': '',
+                             'Hips': 'Hips',
+                             'Spine': ['Spine1', 'Spine2', 'Spine3', 'Spine4'],
+                             'Neck': ['Neck'],
+                             'Head': 'Head',
+                             'LeftLeg': ['LeftThigh', 'LeftShin', 'LeftFoot', 'LeftToe'],
+                             'RightLeg': ['RightThigh', 'RightShin', 'RightFoot', 'RightToe'],
+                             'LeftArm': ['LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand'],
+                             'RightArm': ['RightShoulder', 'RightArm', 'RightForeArm', 'RightHand'],
+                             'LeftHandThumb': ['LeftFinger1Metacarpal', 'LeftFinger1Proximal', 'LeftFinger1Distal'],
+                             'LeftHandIndex': ['', 'LeftFinger2Proximal', 'LeftFinger2Medial', 'LeftFinger2Distal'],
+                             'LeftHandMiddle': ['', 'LeftFinger3Proximal', 'LeftFinger3Medial', 'LeftFinger3Distal'],
+                             'LeftHandRing': ['', 'LeftFinger4Proximal', 'LeftFinger4Medial', 'LeftFinger4Distal'],
+                             'LeftHandPinky': ['', 'LeftFinger5Proximal', 'LeftFinger5Medial', 'LeftFinger5Distal'],
+                             'RightHandThumb': ['RightFinger1Metacarpal', 'RightFinger1Proximal', 'RightFinger1Distal'],
+                             'RightHandIndex': ['', 'RightFinger2Proximal', 'RightFinger2Medial', 'RightFinger2Distal'],
+                             'RightHandMiddle': ['', 'RightFinger3Proximal', 'RightFinger3Medial', 'RightFinger3Distal'],
+                             'RightHandRing': ['', 'RightFinger4Proximal', 'RightFinger4Medial', 'RightFinger4Distal'],
+                             'RightHandPinky': ['', 'RightFinger5Proximal', 'RightFinger5Medial', 'RightFinger5Distal']
+                             }
+                  }
+
 class HumanIK(object):
     humanIK_joint_dict = {
         'Reference': 0,
@@ -204,7 +226,7 @@ class HumanIK(object):
         'RightHandPinky': (156, 90, 91, 92),
     }
 
-    rig_definition = {'arise': arise_hik_data}
+    rig_definition = {'arise': arise_hik_data, 'rokoko': rokoko_hik_data}
 
     def __init__(self, character_name, rig_template='arise', auto_T_pose=True, custom_ctrl_definition=True, use_ik=True, use_hybrid=True, skip_reference_joint=True):
         self.charecter_name = str(character_name)
@@ -557,6 +579,16 @@ class HumanIK(object):
 
     def createCustomRigMapping(self):
         mel.eval('hikCreateCustomRig( hikGetCurrentCharacter() );')
+
+    def add_remove_custom_rig_mapping(self):
+        """
+        hikCustomRigAddRemoveMapping("R", `iconTextCheckBox - q - v hikCustomRigRotateButton` );
+
+        import maya.app.hik.retargeter as r
+        temporary = r.HIKRetargeter.createDefaultMapping('HIKState2GlobalSK1', 'Test', 'RightInHandMiddle', 'R_Fingers_finger_1_0_ctrl', 'R', 154, 0)
+        #r.DefaultRetargeter.toGraph(temporary, 'HIKState2GlobalSK1')
+        #del temporary
+        """
 
     def add_ctrl(self, ctrl, ctrl_id):
         pm.select(ctrl)
