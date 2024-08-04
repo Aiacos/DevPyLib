@@ -112,6 +112,39 @@ def findRelatedSkinCluster(geo):
 
     return pm.ls(skincluster)[0]
 
+def mirror_skincluster_to_opposite_object(source_obj, destination_object):
+    """
+    Mirror Skincluster to the opposite Object
+    Args:
+        source_obj (string): Source Geo
+        destination_object (string):  Destination Geo
+
+    Returns:
+
+    """
+
+    geo_skincluster = findRelatedSkinCluster(source_obj)
+    r_geo_skincluster = findRelatedSkinCluster(destination_object)
+
+    pm.copySkinWeights(ss=geo_skincluster, ds=r_geo_skincluster, mirrorMode='YZ', mirrorInverse=True)
+
+def mirror_all_skincluster_to_object(source_list, left_side='L_', r_side='R_'):
+    """
+    Mirror Skincluster to opposite Object
+    Args:
+        source_list (string[]): Objects list
+        left_side (string): Left pattern
+        r_side (string): Right Pattern
+
+    Returns:
+
+    """
+    
+    for geo in source_list:
+        r_geo = pm.ls(str(geo.name()).replace('L_', 'R_'))[-1]
+
+        mirror_skincluster_to_opposite_object(geo, r_geo)
+
 
 def saveSkinWeights(geoList,
                     projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),

@@ -1,10 +1,7 @@
 import maya.cmds as cmds
-from pylib.maya import bifrost
-from pylib.maya.bifrost import usd_util as bifrost_util_nodes
+from mayaLib.rigLib.bifrost import bifrost
+from mayaLib.rigLib.bifrost import bifrost_util_nodes
 
-import importlib as imp
-
-imp.reload(bifrost)
 
 def getAllObjectUnderGroup(group, type='mesh', full_path=True):
     """
@@ -70,7 +67,7 @@ class USDCharacterBuild(object):
     Build Bifrost nodes to manage usd
     """
 
-    def __init__(self, geo_list=[], name='', root_node='geo', save_usd_file='tmp', file_ext='usdc', connect_output=True, debug=False):
+    def __init__(self, name='', root_node='geo', save_usd_file='tmp', file_ext='usdc', single_usd=False, connect_output=True, debug=False):
         """
         Constructor
         Args:
@@ -84,6 +81,7 @@ class USDCharacterBuild(object):
         """
 
         self.file_ext = file_ext
+        self.single_usd = single_usd
         self.root_node = self.get_name_dict(cmds.ls(root_node, long=True)[-1])
         self.bifrost_shape, self.bifrost_transform = self.create_bifrost_graph(name)
 
@@ -98,8 +96,6 @@ class USDCharacterBuild(object):
         self.file_ext_input = bifrost.bf_add_output_port(self.bifrost_shape, '/input', "file_extension", "string")
 
         self.type_manager_compound = bifrost_util_nodes.file_type_manager(self.bifrost_shape, self.create_usd_stage_node)
-
-
 
         # Create Preview Compound
         self.preview_compound = bifrost_util_nodes.build_preview_compound(self.bifrost_shape)
@@ -255,22 +251,35 @@ class USDCharacterBuild(object):
 
         return add_custom_layer_data_node
 
-    def add_product(self, geo_list, product_name='product', custom_layer_data={}):
+    def add_product(self, deformed_geo_list=[], undeformed_geo_list=[], product_name='product', custom_layer_data={}):
         node_list = []
 
         # Publish Structure
         add_to_stage_node, save_usd_stage_node, set_stage_time_code_node, add_custom_layer_data_node = self.create_default_usd_stage(product_name, data=custom_layer_data)
         node_list.extend([add_to_stage_node, save_usd_stage_node, set_stage_time_code_node, add_custom_layer_data_node])
 
-        string_join_node, build_array_node, extension_value_node = bifrost_util_nodes.build_name(self.bifrost_shape, self.time_node, product=product_name, extension_format=self.file_ext, skip_frame=True)
-        bifrost.bf_connect(self.bifrost_shape, string_join_node + '.joined', save_usd_stage_node + '.file')
-        bifrost.bf_connect(self.bifrost_shape, self.file_ext_input, extension_value_node + ".value")
-        node_list.extend([string_join_node, build_array_node, extension_value_node])
+        if self.single_usd:
+            add_to_stage_compound = bifrost.bf_create_compound(self.bifrost_shape, [self.add_to_stage_node])
+            bifrost.bf_feedback_port(self.bifrost_shape, add_to_stage_compound, 'out_stage', 'stage')
+            node_list.append(add_to_stage_compound)
+        else:
+            string_join_node, build_array_node, extension_value_node = bifrost_util_nodes.build_name(self.bifrost_shape, self.time_node, product=product_name, extension_format=self.file_ext, skip_frame=False)
+            bifrost.bf_connect(self.bifrost_shape, string_join_node + '.joined', save_usd_stage_node + '.file')
+            bifrost.bf_connect(self.bifrost_shape, self.file_ext_input, extension_value_node + ".value")
+            node_list.extend([string_join_node, build_array_node, extension_value_node])
 
         # Create Prims
-        for geo in geo_list:
-            nodes = self.add_mesh(geo, add_to_stage_node)
-            node_list.extend(nodes)
+        for geo in deformed_geo_list:
+            self.add_mesh(geo)
+        for geo in undeformed_geo_list:
+            self.add_undeformed_mesh(geo)
+
+        ###############
+
+        # Block unwanted data
+        iterator_node = self.create_block_loop(add_to_stage_node, set_stage_time_code_node)
+        node_list.append(iterator_node)
+        ################
 
         # Create Payload and Reference Compound
         reference_compound = bifrost_util_nodes.build_referece_peyload(self.bifrost_shape, layer_name=product_name, is_payload="0")
@@ -641,7 +650,7 @@ class USDCharacterBuild(object):
         # vnnConnect
         # "|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/block_attribute1.out_stage" "/save_usd_stage.stage";
 
-    def create_block_loop(self):
+    def create_block_loop(self, add_to_stage_node, set_stage_time_code_node):
         """
         Create the iterator to block same attribute on multiple prim
         Returns:
@@ -670,12 +679,12 @@ class USDCharacterBuild(object):
         bifrost.bf_add_input_port(self.bifrost_shape, iterator_node + '/output', "out_stage1", "auto")
 
         # Connects nodes
-        bifrost.bf_connect(self.bifrost_shape, self.add_to_stage_node + '.out_stage', get_prim_children_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, add_to_stage_node + '.out_stage', get_prim_children_node + '.stage')
         bifrost.bf_connect(self.bifrost_shape, get_prim_children_node + '.children', get_prim_path_node + '.prim')
         bifrost.bf_connect(self.bifrost_shape, get_prim_path_node + '.path', array_size_node + '.array')
         bifrost.bf_connect(self.bifrost_shape, array_size_node + '.size', iterator_node + '.max_iterations')
 
-        bifrost.bf_connect(self.bifrost_shape, self.add_to_stage_node + '.out_stage', iterator_node + '.out_stage')
+        bifrost.bf_connect(self.bifrost_shape, add_to_stage_node + '.out_stage', iterator_node + '.out_stage')
         bifrost.bf_connect(self.bifrost_shape, get_prim_path_node + '.path', iterator_node + '.path')
 
         ## Connections inside loop
@@ -705,7 +714,7 @@ class USDCharacterBuild(object):
                            iterator_node + '/' + primvars_st_indices_block_node + '.prim_path')
 
         # Connect output
-        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.out_stage1', self.set_stage_time_code_node + '.stage')
+        bifrost.bf_connect(self.bifrost_shape, iterator_node + '.out_stage1', set_stage_time_code_node + '.stage')
 
         # Settings
         bifrost.bf_sequence_port(self.bifrost_shape, '/' + iterator_node, "out_stage", "out_stage1")
