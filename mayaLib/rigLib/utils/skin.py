@@ -140,7 +140,7 @@ def mirror_all_skincluster_to_object(source_list, left_side='L_', r_side='R_'):
 
     """
     
-    for geo in source_list:
+    for geo in pm.ls(source_list):
         r_geo = pm.ls(str(geo.name()).replace('L_', 'R_'))[-1]
 
         mirror_skincluster_to_opposite_object(geo, r_geo)
