@@ -1,0 +1,3 @@
+[submodule "pyfrost"]
+	path = pyfrost
+	url = https://github.com/BenoitGielly/pyfrost.git
