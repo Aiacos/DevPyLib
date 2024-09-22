@@ -591,8 +591,9 @@ class HumanIK(object):
         """
 
     def add_ctrl(self, ctrl, ctrl_id):
-        pm.select(ctrl)
-        mel.eval('hikCustomRigAssignEffector ' + str(ctrl_id) + ';')
+        if pm.objExists(ctrl):
+            pm.select(ctrl)
+            mel.eval('hikCustomRigAssignEffector ' + str(ctrl_id) + ';')
 
     def add_hip_ctrl(self, ctrl, ctrl_id=humanIK_ctrl_dict['Hip']):
         self.add_ctrl(ctrl, ctrl_id)
