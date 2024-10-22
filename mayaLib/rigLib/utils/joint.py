@@ -14,6 +14,29 @@ from mayaLib.rigLib.utils import name
 from mayaLib.rigLib.utils import util
 
 
+def lock_transformation(obj, t=['x', 'y', 'z'], r=['x', 'y']):
+    if not pm.objExists(obj): return
+    
+    obj = pm.ls(obj)[-1]
+    translate = obj.translate.get()
+    rotate = obj.rotate.get()
+
+    for axis in t:
+        if 'x' in axis:
+            pm.transformLimits(obj, tx=[translate[0], translate[0]], etx=[1, 1])
+        if 'y' in axis:
+            pm.transformLimits(obj, ty=[translate[1], translate[1]], ety=[1, 1])
+        if 'z' in axis:
+            pm.transformLimits(obj, tz=[translate[2], translate[2]], etz=[1, 1])
+
+    for axis in r:
+        if 'x' in axis:
+            pm.transformLimits(obj, rx=[rotate[0], rotate[0]], erx=[1, 1])
+        if 'y' in axis:
+            pm.transformLimits(obj, ry=[rotate[1], rotate[1]], ery=[1, 1])
+        if 'z' in axis:
+            pm.transformLimits(obj, rz=[rotate[2], rotate[2]], erz=[1, 1])
+
 def jointDirection(joint):
     """
     Get joint orient direction
