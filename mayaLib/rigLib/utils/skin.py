@@ -153,6 +153,9 @@ def saveSkinWeights(geoList,
     """
     save weights for character geometry objects
     """
+    if projectPath == '' or projectPath == '/':
+        projectPath = str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/')
+
     # check folder
     directory = os.path.join(projectPath, skinWeightsDir)
     if not os.path.exists(directory):
@@ -180,6 +183,9 @@ def loadSkinWeights(geoList,
     """
     load skin weights for character geometry objects
     """
+    if projectPath == '' or projectPath == '/':
+        projectPath = str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/')
+
     # check folder
     directory = os.path.join(projectPath, skinWeightsDir)
     if not os.path.exists(directory):
