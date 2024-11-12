@@ -2,13 +2,13 @@ import pymel.core as pm
 
 reference_joint_default = 'Base_main_FS_jnt'
 hip_joint_joint_default = 'M_Spine_pelvis_FS_jnt'
-spine_joint_list_default = ['M_Spine_spine_ribbon_0_driven_FS_jnt', 'M_Spine_spine_ribbon_1_driven_FS_jnt', 'M_Spine_spine_ribbon_2_driven_FS_jnt', 'M_Spine_spine_ribbon_3_driven_FS_jnt', 'M_Spine_spine_ribbon_4_driven_FS_jnt', 'M_Spine_chest_FS_jnt']
+spine_joint_list_default = ['M_Spine_ribbon_driven_0_FS_jnt', 'M_Spine_ribbon_driven_1_FS_jnt', 'M_Spine_ribbon_driven_2_FS_jnt', 'M_Spine_ribbon_driven_3_FS_jnt', 'M_Spine_ribbon_driven_4_FS_jnt', 'M_Spine_chest_FS_jnt']
 neck_joint_list_default = ['M_Head_neck_root_FS_jnt', 'M_Head_ribbon_driven_0_FS_jnt', 'M_Head_ribbon_driven_1_FS_jnt', 'M_Head_ribbon_driven_2_FS_jnt', 'M_Head_ribbon_driven_3_FS_jnt']
 head_joint_joint_default = 'M_Head_head_FS_jnt'
-left_arm_joint_list_default = ['L_Arm_base_FS_jnt', 'L_Arm_ribbon_upper_driven_0_FS_jnt', 'L_Arm_ribbon_lower_driven_0_FS_jnt', 'L_Arm_tip_FS_jnt']
-left_leg_joint_list_default = ['L_Leg_ribbon_upper_driven_0_FS_jnt', 'L_Leg_ribbon_lower_driven_0_FS_jnt', 'L_Leg_tip_FS_jnt', 'L_Leg_toes_root_FS_jnt']
-right_arm_joint_list_default = ['R_Arm_base_FS_jnt', 'R_Arm_ribbon_upper_driven_0_FS_jnt', 'R_Arm_ribbon_lower_driven_0_FS_jnt', 'R_Arm_tip_FS_jnt']
-right_leg_joint_list_default = ['R_Leg_ribbon_upper_driven_0_FS_jnt', 'R_Leg_ribbon_lower_driven_0_FS_jnt', 'R_Leg_tip_FS_jnt', 'R_Leg_toes_root_FS_jnt']
+left_arm_joint_list_default = ['L_Arm_base_FS_jnt', 'L_Arm_upper_ribbon_driven_0_FS_jnt', 'L_Arm_lower_ribbon_driven_0_FS_jnt', 'L_Arm_tip_FS_jnt']
+left_leg_joint_list_default = ['L_Leg_upper_ribbon_driven_0_FS_jnt', 'L_Leg_lower_ribbon_driven_0_FS_jnt', 'L_Leg_tip_FS_jnt', 'L_Leg_toes_root_FS_jnt']
+right_arm_joint_list_default = ['R_Arm_base_FS_jnt', 'R_Arm_upper_ribbon_driven_0_FS_jnt', 'R_Arm_lower_ribbon_driven_0_FS_jnt', 'R_Arm_tip_FS_jnt']
+right_leg_joint_list_default = ['R_Leg_upper_ribbon_driven_0_FS_jnt', 'R_Leg_lower_ribbon_driven_0_FS_jnt', 'R_Leg_tip_FS_jnt', 'R_Leg_toes_root_FS_jnt']
 
 left_hand_thumb_joint_list_default = ['L_Fingers_thumb_0_0_FS_jnt', 'L_Fingers_thumb_0_1_FS_jnt', 'L_Fingers_thumb_0_2_FS_jnt']
 left_hand_index_joint_list_default = ['L_Fingers_finger_0_0_FS_jnt', 'L_Fingers_finger_0_1_FS_jnt', 'L_Fingers_finger_0_2_FS_jnt', 'L_Fingers_finger_0_3_FS_jnt']
