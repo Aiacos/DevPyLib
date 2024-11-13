@@ -148,17 +148,15 @@ def mirror_all_skincluster_to_object(source_list, left_side='L_', r_side='R_'):
 
 def saveSkinWeights(geoList,
                     projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
-                    skinWeightsDir='weights/skinCluster', swExt='.swt',
+                    swExt='.swt',
                     doDirectory=True):
     """
     save weights for character geometry objects
     """
-    if projectPath == '' or projectPath == '/':
-        projectPath = str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/')
 
     # check folder
-    directory = os.path.join(projectPath, skinWeightsDir)
-    if not os.path.exists(directory):
+    directory = Path(projectPath) / 'weights' / 'skinCluster'
+    if not directory.exists():
         if doDirectory:
             os.makedirs(directory)
         else:
@@ -170,7 +168,10 @@ def saveSkinWeights(geoList,
 
     for obj in geoList:
         # weights file
-        wtFile = os.path.join(projectPath, skinWeightsDir, obj + swExt)
+        file = str(obj + swExt).replace(':', '__')
+        wtFile = directory / file
+        print('file to write: ', wtFile)
+        #wtFile = os.path.join(projectPath, skinWeightsDir, obj + swExt)
 
         # save skin weight file
         pm.select(obj)
@@ -179,16 +180,14 @@ def saveSkinWeights(geoList,
 
 def loadSkinWeights(geoList,
                     projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
-                    skinWeightsDir='weights/skinCluster', swExt='.swt'):
+                    swExt='.swt'):
     """
     load skin weights for character geometry objects
     """
-    if projectPath == '' or projectPath == '/':
-        projectPath = str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/')
 
     # check folder
-    directory = os.path.join(projectPath, skinWeightsDir)
-    if not os.path.exists(directory):
+    directory = Path(projectPath) / 'weights' / 'skinCluster'
+    if not directory.exists():
         print('Path to load SkinCluster not found!')
         return
 
@@ -196,7 +195,7 @@ def loadSkinWeights(geoList,
         geoList = pm.ls(geoList)
 
     # weights folders
-    wtDir = os.path.join(projectPath, skinWeightsDir)
+    wtDir = directory
     wtFiles = os.listdir(wtDir)
 
     # load skin weights
@@ -212,14 +211,16 @@ def loadSkinWeights(geoList,
             continue
 
         # check geometry list
-        if geoList and not extRes[0] in geoList:
-            continue
+        #if geoList:
+        #    print('skip2')
+        #    continue
 
         # check if objects exist
-        if not pm.objExists(extRes[0]):
+        if not pm.objExists(str(extRes[0]).replace('__', ':')):
             continue
 
-        fullpathWtFile = os.path.join(wtDir, wtFile)
+        fullpathWtFile = str(os.path.join(wtDir, wtFile))
+        print('file to read: ', fullpathWtFile)
         bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
 
 
