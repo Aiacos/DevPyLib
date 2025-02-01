@@ -16,9 +16,15 @@ from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
 
 def selectSkinClusterObject():
     """
-    Select all skinCluster object
-    :return: list(str), geo transform
+    Selects and returns a list of objects with skin clusters.
+
+    This function identifies all objects in the scene that have skin clusters,
+    selects them, and returns a list of these objects.
+
+    Returns:
+        list: A list of PyNode objects that have skin clusters.
     """
+
     objectList = []
     skinClusterList = pm.ls(type='skinCluster')
     for skinCluster in skinClusterList:
@@ -166,7 +172,7 @@ def saveSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent
     """
 
     # check folder
-    directory = projectPath / 'weights' / 'skinCluster'
+    directory = Path(projectPath) / 'weights' / 'skinCluster'
     if not directory.exists():
         if doDirectory:
             os.makedirs(str(directory))
@@ -206,8 +212,7 @@ def loadSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent
         print('Path to load SkinCluster not found!')
         return
 
-    if not isinstance(geoList, list):
-        geoList = pm.ls(geoList)
+    geoList = pm.ls(geoList)
 
     for geo in geoList:
         wtFile = str(geo.name()) + swExt
@@ -218,6 +223,14 @@ def loadSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent
 
 
 def ng_batch_export(geo_list, path):
+    """
+    Export skin weights for a list of geos to a directory.
+
+    Args:
+        geo_list (list of str): List of geometry names to export.
+        path (str): Directory path to export to. Will create the directory if it doesn't exist.
+
+    """
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
@@ -232,6 +245,15 @@ def ng_batch_export(geo_list, path):
 
 
 def ng_batch_import(geo_list, path, influence_list=pm.ls('*_FS_jnt')):
+    """
+    Import skin weights for a list of geos from a directory.
+
+    Args:
+        geo_list (list of str): List of geometry names to import.
+        path (str): Directory path to import from. Will create the directory if it doesn't exist.
+        influence_list (list of str): List of influence names to bind to. Defaults to all joints ending in '_FS_jnt'.
+
+    """
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
