@@ -9,33 +9,18 @@ from PySide2 import QtCore, QtWidgets
 import mayaLib.pipelineLib.utility.docs as doc
 
 
-def test(a, b, c, d='ciao', e='stronzo', f=1):
-    """
-    Test Function
-    :param a:
-    :param b:
-    :param c:
-    :param d:
-    :param e:
-    :param f:
-    :return:
-    """
-    print((a, b, c, d, e, f))
-
-
-class Prova():
-    def __init__(self, ciccia, pupu=2048):
-        print('Questa e una prova')
-
-    def motodo(self):
-        print('test method')
-
-
 class FunctionUI(QtWidgets.QWidget):
     def __init__(self, func, parent=None):
+        """Initializes the FunctionUI widget.
+
+        Args:
+            func (function or class): The function or class to inspect and build the UI for.
+            parent (QWidget, optional): The parent widget. Defaults to None.
+        """
         super(FunctionUI, self).__init__(parent)
 
         self.function = func
+        # Retrieve the function signature using inspect
         if inspect.isclass(func):
             self.sig = inspect.getargspec(func.__init__)
         else:
@@ -43,6 +28,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QGridLayout()
 
+        # Get parameter list
         self.args = self.getParameterList()
 
         self.label_list = []
@@ -52,9 +38,11 @@ class FunctionUI(QtWidgets.QWidget):
         row = 0
         for arg in self.args:
             if arg[0] != 'self':
+                # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
 
-                if arg[1] != None:
+                if arg[1] is not None:
+                    # Create a line edit or checkbox based on argument type
                     if isinstance(arg[1], bool):
                         lineedit = QtWidgets.QCheckBox('')
                         lineedit.setChecked(arg[1])
@@ -75,102 +63,177 @@ class FunctionUI(QtWidgets.QWidget):
                 self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
 
-                row = row + 1
+                row += 1
 
+        # Create execute button
         self.execButton = QtWidgets.QPushButton("Execute")
+        # Create advanced checkbox
         self.advancedCheckBox = QtWidgets.QCheckBox("Advanced")
         self.advancedCheckBox.setChecked(False)
         self.toggleDefaultParameter(False)
         self.layout.addWidget(self.execButton, row, 2)
         self.layout.addWidget(self.advancedCheckBox, row, 0)
 
+        # Display function documentation
         self.doclabel = QtWidgets.QLabel(doc.getDocs(func))
         self.layout.addWidget(self.doclabel, row + 1, 2)
         self.setLayout(self.layout)
 
-        # self.connect(self.execButton, QtCore.Signal("clicked()"), self.execFunction) # Deprecated
+        # Connect signals to slots
         self.execButton.clicked.connect(self.execFunction)
         self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
         for button in self.fillButton_list:
             button.clicked.connect(self.fillWithSelected)
 
+        # Set window properties
         self.setWindowTitle(func.__name__)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         self.setFocus()
 
     def fillWithSelected(self):
-        button = self.sender()
-        selection_list = pm.ls(sl=True)
+        """Fills the line edit associated with the button with the names of the
+        selected objects in Maya.
 
+        When a button is clicked, this method is called. It gets the button that
+        was clicked, gets the index of the button in the list of buttons, and
+        then gets the line edit associated with that button. It then gets the
+        selected objects in Maya and sets the text of the line edit to a comma
+        separated string of the names of the selected objects.
+        """
+        # Get the button that was clicked
+        button = self.sender()
+
+        # Get the index of the button in the list of buttons
         index = self.fillButton_list.index(button)
+
+        # Get the line edit associated with the button
         lineedit = self.lineedit_list[index]
 
+        # Get the selected objects in Maya
+        selection_list = pm.ls(sl=True)
+
+        # Initialize an empty list
         text_list = []
+
+        # Iterate over the selected objects
         for item in selection_list:
+            # Append the name of the object as a string to the list
             text_list.append(str(item))
 
+        # Set the text of the line edit to a comma separated string of the
+        # names of the selected objects
         lineedit.setText(', '.join(text_list))
 
     def getParameterList(self):
+        """Returns a list of tuples, where each tuple contains the name of a
+        parameter and its default value. The list is sorted in the same order
+        as the parameters appear in the function signature.
+
+        Args:
+            None
+
+        Returns:
+            A list of tuples. The first element of each tuple is the name of
+            a parameter, and the second element is its default value. The list
+            is sorted in the same order as the parameters appear in the
+            function signature. If a parameter has no default value, the second
+            element of the tuple is None.
+        """
+        # Get the argument list
         args = self.sig.args
 
+        # If there are no args, return an empty list
         if len(args) == 0:
             return []
 
+        # Get the varargs and keywords
         varargs = self.sig.varargs
         keywords = self.sig.keywords
+
+        # Get the default values
         defaults = self.sig.defaults
 
+        # If there are no default values, set defaults to an empty list
         if not defaults:
             defaults = []
 
+        # Create a list to store the result
         argspairs = []
+
+        # Iterate over the arguments
         argslen = len(args)
         deflen = len(defaults)
 
+        # Initialize counters
         counter = 0
         defcount = 0
+
         for arg in args:
+            # If the counter is less than the length of the defaults list,
+            # set the default value to None
             if counter < (argslen - deflen):
                 defval = None
+            # Otherwise, set the default value to the current element of
+            # the defaults list, and increment the counter
             else:
                 defval = defaults[defcount]
                 defcount = defcount + 1
 
+            # Increment the counter
             counter = counter + 1
+
+            # Create a tuple with the argument name and its default value
             pair = [arg, defval]
+            # Append the tuple to the result list
             argspairs.append(pair)
 
+        # Return the result list
         return argspairs
 
     # SLOTS
     def toggleDefaultParameter(self, defaultvisible=False):
+        """Toggle the visibility of default parameters.
+
+        This method iterates over the arguments and either shows or hides
+        the corresponding labels, line edits, and fill buttons based on
+        the `defaultvisible` flag.
+
+        Args:
+            defaultvisible (bool): If True, show the default parameters;
+                                   if False, hide them.
+        """
         counter = 0
         for arg in self.args:
             if arg[0] != 'self':
                 if defaultvisible:
-                    # show
-                    if arg[1] != None:
+                    # Show related widgets if the argument has a default value
+                    if arg[1] is not None:
                         self.label_list[counter].show()
                         self.lineedit_list[counter].show()
                         self.fillButton_list[counter].show()
                 else:
-                    # hide
-                    if arg[1] != None:
+                    # Hide related widgets if the argument has a default value
+                    if arg[1] is not None:
                         self.label_list[counter].hide()
                         self.lineedit_list[counter].hide()
                         self.fillButton_list[counter].hide()
 
-                counter = counter + 1
+                counter += 1
 
     def execFunction(self):
+        """Execute the function with the parameters from the lineedits.
+
+        Iterate over the lineedits and fill a list with the parameters.
+        The parameters can be a string, an int, a float, a list or a boolean.
+        """
         param_list = []
 
         for param in self.lineedit_list:
             value = param.text()
 
+            # Check if the parameter is a boolean
             if isinstance(param, QtWidgets.QCheckBox):
                 if param.isChecked():
                     qCheckBoxValue = True
@@ -178,12 +241,18 @@ class FunctionUI(QtWidgets.QWidget):
                     qCheckBoxValue = False
                 value = qCheckBoxValue
                 param_list.append(value)
+
+            # Check if the parameter is a list
             elif '[' in value and ']' in value:
                 value = value.replace('[', '').replace(']', '').replace("'", "").replace(' ', '').split(',')
                 param_list.append(value)
+
+            # Check if the parameter is a numeric value
             elif value.replace('.', '', 1).isdigit():
                 value = ast.literal_eval(value)
                 param_list.append(value)
+
+            # Check if the parameter is a string
             elif value == 'True':
                 value = True
                 param_list.append(value)
@@ -193,15 +262,24 @@ class FunctionUI(QtWidgets.QWidget):
             elif value == '':
                 value = None
                 param_list.append(value)
+
+            # Check if the parameter is a string with comma separated values
             elif ', ' in value:
                 value = value.split(', ')
                 param_list.append(value)
+
+            # If the parameter is a string without comma separated values
             else:
                 param_list.append(value)
 
         self.wrapper(param_list)
 
     def wrapper(self, args):
+        """Wrapper around the function to execute.
+
+        Args:
+            args (list): List of arguments to pass to the function.
+        """
         self.function(*args)
 
 
