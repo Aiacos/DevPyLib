@@ -91,8 +91,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.adjustSize()
         # self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                            QtWidgets.QSizePolicy.MinimumExpanding)
+        self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         # self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
         # self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
         # self.buttonListWidget.setMinimumHeight(75)
@@ -101,8 +100,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         # Docs Label
         self.docLabel = QtWidgets.QLabel()
-        self.docLabel.setStyleSheet(
-            "background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
+        self.docLabel.setStyleSheet("background-color: rgb(90,90,90); border-radius: 5px; border:1px solid rgb(255, 255, 255); ")
         self.layout.addWidget(self.docLabel)
         self.docLabel.setText('')
 
