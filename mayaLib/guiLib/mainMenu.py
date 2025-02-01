@@ -20,18 +20,27 @@ import importlib
 
 
 class SearchLineEdit(QtWidgets.QLineEdit):
-    # buttonClicked = QtCore.pyqtSignal(bool)
+    """Custom QLineEdit with a clear button and emits a signal on text change."""
+
     speak = QtCore.Signal(str)
 
     def __init__(self, icon_file, parent=None):
+        """Initialize the SearchLineEdit.
+
+        Args:
+            icon_file (str): Path to the icon for the clear button.
+            parent (QWidget, optional): Parent widget. Defaults to None.
+        """
         super(SearchLineEdit, self).__init__(parent)
 
+        # Setup clear button
         self.button = QtWidgets.QToolButton(self)
         self.button.setIcon(QtGui.QIcon(icon_file))
         self.button.setStyleSheet('border: 0px; padding: 0px;')
         self.button.setCursor(QtCore.Qt.ArrowCursor)
-        self.button.clicked.connect(self.clear)  # self.buttonClicked.emit
+        self.button.clicked.connect(self.clear)
 
+        # Layout configuration
         layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.button, 0, QtCore.Qt.AlignRight)
         layout.setSpacing(0)
@@ -47,6 +56,7 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         self.textChanged.connect(self.replaceText)
 
     def replaceText(self):
+        """Replace spaces in the input text with asterisks and emit the modified text."""
         text = self.text()
         text_list = text.split(' ')
         newtext = '*'.join(text_list)
@@ -58,13 +68,22 @@ class SearchLineEdit(QtWidgets.QLineEdit):
 
 
 class MenuLibWidget(QtWidgets.QWidget):
+    """Widget that displays a searchable menu library."""
+
     updateWidget = QtCore.Signal()
 
     def __init__(self, libPath, parent=None):
+        """Initialize the MenuLibWidget.
+
+        Args:
+            libPath (str): Path to the library.
+            parent (QWidget, optional): Parent widget. Defaults to None.
+        """
         super(MenuLibWidget, self).__init__(parent)
 
         libPath = pathlib.Path(libPath)
 
+        # Icon paths
         close_icon_path = libPath / 'mayaLib' / 'icons' / 'close.png'
         update_icon_path = libPath / 'mayaLib' / 'icons' / 'update.png'
         reload_icon_path = libPath / 'mayaLib' / 'icons' / 'reload.png'
@@ -72,30 +91,25 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.libStructure = lm.StructureManager(mayaLib)
         self.libDict = self.libStructure.getStructLib()['mayaLib']
 
-        # set layout
+        # Setup layout
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        # add menu
+        # Add menu bar
         self.mainMenu = self.addMenuBar()
         self.layout.addWidget(self.mainMenu)
 
-        # search bar
+        # Search bar
         self.searchLineEdit = SearchLineEdit(str(close_icon_path))
         self.layout.addWidget(self.searchLineEdit)
 
-        # WidgetList
+        # Widget List
         self.buttonItemList = []
         self.buttonListWidget = QtWidgets.QListWidget()
         self.buttonListWidget.setStyleSheet('background: transparent;')
         self.buttonListWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.buttonListWidget.adjustSize()
-        # self.buttonListWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.buttonListWidget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
-        # self.buttonListWidget.setSizeAdjustPolicy(QtWidgets.QListWidget.AdjustToContents)
-        # self.buttonListWidget.setResizeMode(QtWidgets.QListView.Adjust)
-        # self.buttonListWidget.setMinimumHeight(75)
-        # self.buttonListWidget.setMaximumHeight(100)
         self.layout.addWidget(self.buttonListWidget)
 
         # Docs Label
@@ -104,7 +118,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.docLabel)
         self.docLabel.setText('')
 
-        # update Button
+        # Update and Reload Buttons
         self.updateButton = self.addIconButton('update', str(update_icon_path))
         self.reloadButton = self.addIconButton('reload', str(reload_icon_path))
 
@@ -113,7 +127,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonLayout.addWidget(self.updateButton)
         self.layout.addLayout(self.buttonLayout)
 
-        # Connect
+        # Connect signals
         self.reloadButton.clicked.connect(self.reloaded)
         self.updateButton.clicked.connect(self.download)
         self.searchLineEdit.speak.connect(lambda: self.buildButtonList(self.searchLineEdit.text()))
@@ -122,6 +136,11 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.show()
 
     def listWidgetButtonClick(self, item):
+        """Handle list widget item click to execute corresponding function.
+
+        Args:
+            item (QListWidgetItem): The clicked item.
+        """
         libstr = item.toolTip()
         classString = libstr.split('.')
         module = '.'.join(classString[:-1])
@@ -130,6 +149,11 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonClicked(func)
 
     def buildButtonList(self, text):
+        """Build the list of buttons based on the search text.
+
+        Args:
+            text (str): Search input text.
+        """
         if self.buttonListWidget.count() > 0 or text == '':
             self.buttonListWidget.clear()
             del self.buttonItemList[:]
@@ -159,15 +183,25 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.adjustSize()
 
     def reloaded(self):
+        """Emit the updateWidget signal."""
         self.updateWidget.emit()
 
     def download(self):
+        """Download the library and reload the widget."""
         lib = libManager.InstallLibrary()
         lib.download()
-
         self.reloaded()
 
     def addIconButton(self, name, imgPath):
+        """Create a button with an icon.
+
+        Args:
+            name (str): Name for the button tooltip.
+            imgPath (str): Path to the icon image.
+
+        Returns:
+            QPushButton: The created button.
+        """
         icon = QtGui.QPixmap(imgPath)
         button = QtWidgets.QPushButton()
         button.setIcon(icon)
@@ -176,46 +210,77 @@ class MenuLibWidget(QtWidgets.QWidget):
         return button
 
     def addMenuBar(self):
+        """Create the main menu bar with disciplines.
+
+        Returns:
+            QMenuBar: The main menu bar.
+        """
         mainMenu = QtWidgets.QMenuBar(self)
 
         discipline = ['Modelling', 'Rigging', 'Animation', 'Vfx', 'Lookdev']
         for disci in discipline:
             fileMenu = mainMenu.addMenu('&' + disci)
-            # fileMenu.addAction(self.addMenuAction(disci))
             for action in self.addMultipleMenuAction(fileMenu, disci):
                 fileMenu.addAction(action)
 
         return mainMenu
 
     def buttonHover(self, text):
+        """Update the documentation label text when a button is hovered.
+
+        Args:
+            text (str): The text to display.
+        """
         self.docLabel.setText(text)
 
     def buttonClicked(self, func):
+        """Execute a function and display its UI.
+
+        Args:
+            func (function): The function to execute.
+        """
         self.functionWindow = None
-        # try:
         self.functionWindow = ui.FunctionUI(func)
         self.functionWindow.show()
         self.functionWindow.setFocus()
-        # except:
-        #    func()
 
     def addMenuAction(self, discipline, function):
+        """Add an action to the menu.
+
+        Args:
+            discipline (str): The discipline name.
+            function (function): The function associated with the action.
+
+        Returns:
+            QAction: The created action.
+        """
         extractAction = QtWidgets.QAction(discipline, self)
-        # extractAction.setShortcut("Ctrl+Q")
-        # extractAction.setStatusTip('Leave The App')
-
         extractAction.triggered.connect(lambda: self.buttonClicked(function))
-
         docText = doc.getDocs(function)
         extractAction.hovered.connect(lambda: self.buttonHover(docText))
 
         return extractAction
 
     def addSubMenu(self, upMenu, lib):
+        """Add a submenu to the given menu.
+
+        Args:
+            upMenu (QMenu): The parent menu.
+            lib (str): The library name.
+
+        Returns:
+            QMenu: The created submenu.
+        """
         libname = lib.replace('Lib', '').title()
         return upMenu.addMenu(libname)
 
     def addRecursiveMenu(self, upMenu, libDict):
+        """Recursively add submenus and actions to the menu.
+
+        Args:
+            upMenu (QMenu): The parent menu.
+            libDict (dict): The dictionary containing library functions.
+        """
         for key, value in libDict.items():
             if isinstance(value, dict):
                 subMenu = self.addSubMenu(upMenu, key)
@@ -228,6 +293,15 @@ class MenuLibWidget(QtWidgets.QWidget):
                 upMenu.addAction(self.addMenuAction(key, func))
 
     def addMultipleMenuAction(self, upMenu, discipline):
+        """Add multiple actions to the menu based on the discipline.
+
+        Args:
+            upMenu (QMenu): The parent menu.
+            discipline (str): The discipline name.
+
+        Returns:
+            list: A list of actions added.
+        """
         action_list = []
         if discipline == 'Modelling':
             libMenu = self.addSubMenu(upMenu, 'modelLib')
@@ -251,11 +325,20 @@ class MenuLibWidget(QtWidgets.QWidget):
 
 
 class MainMenu(QtWidgets.QWidget):
+    """Main menu widget to display the library in Maya."""
+
     def __init__(self, libPath, menuName='MayaLib', parent=None):
+        """Initialize the MainMenu.
+
+        Args:
+            libPath (str): Path to the library.
+            menuName (str, optional): Name of the menu. Defaults to 'MayaLib'.
+            parent (QWidget, optional): Parent widget. Defaults to None.
+        """
         super(MainMenu, self).__init__(parent)
 
         self.wAction = QtWidgets.QWidgetAction(self)
-        self.libWindow = MenuLibWidget(libPath)  # ql
+        self.libWindow = MenuLibWidget(libPath)
         self.wAction.setDefaultWidget(self.libWindow)
 
         widgetStr = mel.eval('string $tempString = $gMainWindow')
@@ -272,14 +355,17 @@ class MainMenu(QtWidgets.QWidget):
             self.libMenu.triggered.connect(self.showWidget)
 
     def updateWidget(self, libPath):
+        """Update the widget by reloading the library.
+
+        Args:
+            libPath (str): Path to the library.
+        """
         reload_package(mayaLib)
         self.libMenu.removeAction(self.wAction)
         self.libWindow.destroy()
-        # self.wAction.deleteWidget()
-        # self.libMenu.clear()
 
         self.wAction = QtWidgets.QWidgetAction(self)
-        self.libWindow = MenuLibWidget(libPath)  # ql
+        self.libWindow = MenuLibWidget(libPath)
         self.wAction.setDefaultWidget(self.libWindow)
 
         self.libMenu.addAction(self.wAction)
@@ -288,13 +374,20 @@ class MainMenu(QtWidgets.QWidget):
         print('Reloaded MayaLib!')
 
     def showWidget(self):
+        """Adjust the size of the library window."""
         self.libWindow.adjustSize()
 
     def __del__(self):
+        """Clean up resources when the object is deleted."""
         self.libMenu.deleteLater()
 
 
 def reload_package(package):
+    """Recursively reload a package and its submodules.
+
+    Args:
+        package (module): The package to reload.
+    """
     assert (hasattr(package, "__package__"))
     fn = package.__file__
     fn_dir = os.path.dirname(fn) + os.sep
@@ -302,7 +395,11 @@ def reload_package(package):
     del fn
 
     def reload_recursive_ex(module):
-        # importlib.reload(module)
+        """Helper function to reload modules.
+
+        Args:
+            module (module): The module to reload.
+        """
         importlib.reload(module)
 
         for module_child in list(vars(module).values()):
@@ -310,7 +407,6 @@ def reload_package(package):
                 fn_child = getattr(module_child, "__file__", None)
                 if (fn_child is not None) and fn_child.startswith(fn_dir):
                     if fn_child not in module_visit:
-                        # print("reloading:", fn_child, "from", module)
                         module_visit.add(fn_child)
                         reload_recursive_ex(module_child)
 
