@@ -152,7 +152,7 @@ def mirror_all_skincluster_to_object(source_list, left_side='L_', r_side='R_'):
         mirror_skincluster_to_opposite_object(geo, r_geo)
 
 
-def saveSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent, swExt='.swt', doDirectory=True):
+def saveSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent.as_posix(), swExt='.swt', doDirectory=True):
     """
     save weights for character geometry objects
     Args:
@@ -189,7 +189,7 @@ def saveSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent
         bSkinSaver.bSaveSkinValues(wtFile)
 
 
-def loadSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent, swExt='.swt'):
+def loadSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent.as_posix(), swExt='.swt'):
     """
     load weights for character geometry objects
     Args:
