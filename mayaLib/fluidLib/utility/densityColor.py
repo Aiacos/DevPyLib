@@ -1,10 +1,13 @@
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
+
+# Color definitions for smoke and fire
 
 
 def wispySmokeColor():
-    """
-    Wispy Smoke Color in RGB
-    :return:
+    """Wispy Smoke Color in RGB.
+
+    Returns:
+        tuple: RGB values as floats between 0 and 1.
     """
     r = 0.0895799
     g = 0.100438
@@ -13,9 +16,10 @@ def wispySmokeColor():
 
 
 def smokeColor():
-    """
-    Smoke Color in RGB
-    :return:
+    """Smoke Color in RGB.
+
+    Returns:
+        tuple: RGB values as floats between 0 and 1.
     """
     r = 0.122141
     g = 0.122141
@@ -24,9 +28,10 @@ def smokeColor():
 
 
 def explosionSmokeColor():
-    """
-    Explosion Smoke Color in RGB
-    :return:
+    """Explosion Smoke Color in RGB.
+
+    Returns:
+        tuple: RGB values as floats between 0 and 1.
     """
     r = 0.07
     g = 0.07

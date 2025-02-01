@@ -4,11 +4,20 @@ import pymel.core as pm
 
 
 class FlEmitter():
+    """
+    Emitter Class
+
+    Attributes:
+        emitter (list): A list containing the emitter object
+    """
+
     def __init__(self, name='', obj=None):
         """
-        Emitter
-        :param name: str
-        :param obj: str
+        Initializes an emitter object
+
+        Args:
+            name (str): The name of the emitter, defaults to ''
+            obj (str): The object to attach the emitter to, defaults to None
         """
         if obj == None:
             emitter = pm.fluidEmitter(pos=(0, 0, 0), type='omni', der=1, her=1, fer=1, fdr=2, r=100.0, cye='none',
@@ -24,6 +33,12 @@ class FlEmitter():
         self.emitter = pm.ls(emitter)
 
     def getEmitter(self):
+        """
+        Returns the emitter object
+
+        Returns:
+            list: A list containing the emitter object
+        """
         return self.emitter
 
 
