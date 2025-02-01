@@ -87,9 +87,10 @@ def copyBind(source, destination, sa='closestPoint', ia='closestJoint'):
 
 def copyBindSelected(selectionList):
     """
-    Copy SkinCluster (rayCast) from A to B,C,D...
-    :param selectionList: list
-    :return:
+    Bind and Copy skincluster to destination GEO selected in maya.
+    First selection is the source mesh, the others are the destination mesh.
+    :param selectionList: list of str, maya selection
+    :return: None
     """
     source = selectionList[0]
     destinationList = selectionList[1:]
@@ -100,10 +101,15 @@ def copyBindSelected(selectionList):
 
 def findRelatedSkinCluster(geo):
     """
-    find related skincluster of geo
-    :param geo: str
-    :return: str
+    Find the related skinCluster for the given geometry.
+
+    Args:
+        geo (str): The name of the geometry for which to find the skinCluster.
+
+    Returns:
+        PyNode or None: The found skinCluster node, or None if no skinCluster is found.
     """
+
     skincluster = mel.eval('findRelatedSkinCluster ' + geo)
     if skincluster == '' or len(pm.ls(skincluster, type='skinCluster')) == 0:
         skincluster = pm.ls(pm.listHistory(geo), type='skinCluster')
@@ -146,19 +152,24 @@ def mirror_all_skincluster_to_object(source_list, left_side='L_', r_side='R_'):
         mirror_skincluster_to_opposite_object(geo, r_geo)
 
 
-def saveSkinWeights(geoList,
-                    projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
-                    swExt='.swt',
-                    doDirectory=True):
+def saveSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent, swExt='.swt', doDirectory=True):
     """
     save weights for character geometry objects
+    Args:
+        geoList (string[]): Objects list
+        projectPath (string): file path
+        swExt (string): file extension
+        doDirectory (bool): create directory
+
+    Returns:
+
     """
 
     # check folder
-    directory = Path(projectPath) / 'weights' / 'skinCluster'
+    directory = projectPath / 'weights' / 'skinCluster'
     if not directory.exists():
         if doDirectory:
-            os.makedirs(directory)
+            os.makedirs(str(directory))
         else:
             print('Path to save SkinCluster not found!')
             return
@@ -178,13 +189,17 @@ def saveSkinWeights(geoList,
         bSkinSaver.bSaveSkinValues(wtFile)
 
 
-def loadSkinWeights(geoList,
-                    projectPath=str('/'.join(cmds.file(q=True, sn=True).split('/')[:-1]) + '/'),
-                    swExt='.swt'):
+def loadSkinWeights(geoList, projectPath=Path(cmds.file(q=True, sn=True)).parent, swExt='.swt'):
     """
-    load skin weights for character geometry objects
-    """
+    load weights for character geometry objects
+    Args:
+        geoList (string[]): Objects list
+        projectPath (string): file path
+        swExt (string): file extension
 
+    Returns:
+
+    """
     # check folder
     directory = Path(projectPath) / 'weights' / 'skinCluster'
     if not directory.exists():
@@ -194,34 +209,12 @@ def loadSkinWeights(geoList,
     if not isinstance(geoList, list):
         geoList = pm.ls(geoList)
 
-    # weights folders
-    wtDir = directory
-    wtFiles = os.listdir(wtDir)
-
-    # load skin weights
-    for wtFile in wtFiles:
-        extRes = os.path.splitext(wtFile)
-
-        # check extension format
-        if not len(extRes) > 1:
-            continue
-
-        # check skin weight file
-        if not extRes[1] == swExt:
-            continue
-
-        # check geometry list
-        #if geoList:
-        #    print('skip2')
-        #    continue
-
-        # check if objects exist
-        if not pm.objExists(str(extRes[0]).replace('__', ':')):
-            continue
-
-        fullpathWtFile = str(os.path.join(wtDir, wtFile))
-        print('file to read: ', fullpathWtFile)
-        bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
+    for geo in geoList:
+        wtFile = str(geo.name()) + swExt
+        fullpathWtFile = directory / wtFile
+        if fullpathWtFile.exists():
+            print('file to read: ', fullpathWtFile)
+            bSkinSaver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpathWtFile)
 
 
 def ng_batch_export(geo_list, path):
