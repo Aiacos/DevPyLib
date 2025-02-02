@@ -10,6 +10,20 @@ from mayaLib.shaderLib.utils import texture_ext_path
 class ShadersManager():
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr',
                  autoAssingShader=True):
+        """
+        Initialize the ShadersManager class.
+
+        Args:
+            path (str): Directory path where textures are located. Defaults to the 'sourceimages' directory in the current workspace.
+            ext (str): File extension for texture files. Defaults to 'exr'.
+            autoAssingShader (bool): Flag to automatically assign shaders to geometry. Defaults to True.
+
+        Initializes and manages shaders for geometry based on texture files found in the specified directory.
+        Detects the active renderer and creates appropriate shaders for each geometry and texture set.
+        Assigns shaders to the corresponding geometry if autoAssignShader is True.
+        Also handles texture file format conversion based on the active renderer.
+        """
+
         # See active Renderer
         self.render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)

@@ -1,9 +1,23 @@
+"""Functions to add a sweep mesh to a list of curves, paint effects
+to a list of curves and add a surface shader to the resulting geometry.
+"""
+
 import maya.mel as mel
 import pymel.core as pm
+
 from mayaLib.shaderLib.base import shader_base
 
 
 def add_sweep(cv_list, size=0.05):
+    """Adds a sweep mesh to a list of curves.
+
+    Args:
+        cv_list: List of curves to add sweep mesh to.
+        size: float, size of the sweep mesh.
+
+    Returns:
+        List of resulting geometry.
+    """
     pm.sweepMeshFromCurve(cv_list, oneNodePerCurve=False)
     sweep_deformer = pm.ls(sl=True)[-1]
 
@@ -23,6 +37,14 @@ def add_sweep(cv_list, size=0.05):
 
 
 def ctrl_paintEffect(cv_list):
+    """Paint effects to a list of curves.
+
+    Args:
+        cv_list: List of curves to add paint effects to.
+
+    Returns:
+        List of resulting geometry.
+    """
     cv_list = pm.ls(cv_list)
 
     pm.select(cv_list)
@@ -60,6 +82,18 @@ def ctrl_paintEffect(cv_list):
 
 
 def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, smoothing=2):
+    """Adds a surface shader to a list of curves.
+
+    Args:
+        ctrl_list: List of curves to add surface shader to.
+        brush_width: float, width of the brush.
+        sweep: bool, if True, adds a sweep mesh, otherwise adds paint effects.
+        sample_density: int, sample density of the brush.
+        smoothing: int, smoothing of the brush.
+
+    Returns:
+        None
+    """
     ctrl_list = pm.ls(ctrl_list)
 
     if sweep:

@@ -1,47 +1,58 @@
 __author__ = 'Lorenzo Argentieri'
 
+import glob
+import os
+import pathlib
+
 import pymel.core as pm
 
 from mayaLib.shaderLib.utils import config
 from mayaLib.shaderLib.utils import file
 
 
-import os, glob, pathlib
-
-
 class TextureFolder(object):
+    """Class to manage texture folders and their contents."""
+
     def __init__(self, folder=None, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
-        # pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/'
+        """Initialize the TextureFolder object.
+
+        Args:
+            folder (str): Custom folder path. Defaults to None.
+            workspace (str): Maya workspace directory. Defaults to current workspace directory.
+            sourceimages (str): Name of the source images folder. Defaults to 'sourceimages'.
+            scenes (str): Name of the scenes folder. Defaults to 'scenes'.
+        """
         self.home = pathlib.Path.home()
         self.scenes_folder = self.home / workspace / scenes
 
-        if folder:
-            self.texture_folder = pathlib.Path(folder)
-        else:
-            self.texture_folder = self.home / workspace / sourceimages
-
+        self.texture_folder = pathlib.Path(folder) if folder else self.home / workspace / sourceimages
 
         self.imgList = self.buildImgList()
 
     def get_texture_folder(self):
-        """
-        Get 'sourceimages' folder
-        :return: (str) 'sourceimages' folder
+        """Get the 'sourceimages' folder path.
+
+        Returns:
+            str: Path to the 'sourceimages' folder.
         """
         return str(self.texture_folder)
 
     def get_images(self):
-        """
-        Get list of all textures in 'sourceimages' folder
-        :return: (list) images
+        """Get a list of all textures in the 'sourceimages' folder.
+
+        Returns:
+            list: List of image filenames.
         """
         return self.imgList
 
     def buildImgList(self, search_extension='png'):
-        """
-        Return a list with all images in a folder: image.png
-        :param path: (str) path
-        :return: (list) imgList
+        """Build a list of all images in the folder with the given extension.
+
+        Args:
+            search_extension (str): File extension to search for. Defaults to 'png'.
+
+        Returns:
+            list: List of image filenames.
         """
         imgList = []
         os.chdir(self.get_texture_folder())
@@ -51,23 +62,27 @@ class TextureFolder(object):
         return imgList
 
     def getTextureBaseName(self, texture_stem):
-        """
-        Return Texture without '_BaseColor'
-        :param texture_stem: texture file
-        :return: (str) Texture base name
+        """Get the base name of a texture file without '_BaseColor'.
+
+        Args:
+            texture_stem (str): Texture file stem.
+
+        Returns:
+            str: Base name of the texture.
         """
         texture = str(texture_stem)
         return '_'.join(texture.split('_')[:-1])
 
     def build_texture_catalog(self):
+        """Build a catalog of textures organized by base name.
+
+        Returns:
+            dict: Dictionary mapping texture base names to lists of texture files.
+        """
         texture_dict = {}
         for img in self.imgList:
-            print(img)
             texture = pathlib.Path(img)
-            print(texture)
             texture_base_name = self.getTextureBaseName(texture.stem)
-            print(texture_base_name)
-
             try:
                 txt_tmp_list = texture_dict[texture_base_name]
             except:
@@ -75,44 +90,46 @@ class TextureFolder(object):
 
             txt_tmp_list.append(img)
             texture_dict[texture_base_name] = txt_tmp_list
-            print(texture_dict)
-
         return texture_dict
 
 def getTextureFromNode(file):
+    """Get texture file path as a pathlib object.
+
+    Args:
+        file (str): File path.
+
+    Returns:
+        pathlib.Path: Base color texture path.
     """
-    Return texture file with info
-    :param file: (str) file path
-    :return: (pathlib.Path) baseColor_texture_path
-    """
-    baseColor_texture_path = pathlib.Path(file)
-
-    return baseColor_texture_path
-
-
+    return pathlib.Path(file)
 
 class TextureFileNode():
+    """Class to manage Maya File nodes."""
+
     def __init__(self, path, filename, single_place_node=None):
-        """
-        Create File Node and connect it with Place Node
-        :param path:
-        :param filename:
-        :param single_place_node:
+        """Initialize the TextureFileNode.
+
+        Args:
+            path (str): Path to the texture file.
+            filename (str): Name of the texture file.
+            single_place_node (optional): Place node for texture. Defaults to None.
         """
         self.texture_recongition = file.TextureFile(path=path, filename=filename)
 
-        if single_place_node is None:
-            self.place_node = False
-        else:
-            self.place_node = single_place_node  # pm.shadingNode('place2dTexture', asUtility=True)
+        self.place_node = single_place_node if single_place_node else False
 
-        # file node name
-        file_name_filenode = self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' + \
-                             self.texture_recongition.texture_set + '.' + self.texture_recongition.ext
+        file_name_filenode = (self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' +
+                              self.texture_recongition.texture_set + '.' + self.texture_recongition.ext)
 
         self.filenode = self.connect_file_node(path=path, name=file_name_filenode, single_place_node=single_place_node)
 
     def connect_placement(self, place_node, file_node):
+        """Connect place node to file node.
+
+        Args:
+            place_node: Place2D texture node.
+            file_node: File node.
+        """
         pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)
         pm.connectAttr('%s.translateFrame' % place_node, '%s.translateFrame' % file_node)
         pm.connectAttr('%s.rotateFrame' % place_node, '%s.rotateFrame' % file_node)
@@ -133,16 +150,18 @@ class TextureFileNode():
         pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
 
     def connect_file_node(self, path, name, single_place_node, gammaCorrect=True, alphaIsLuminance=True):
-        """
-        Connect place node to file node
-        :param path:
-        :param name:
-        :param single_place_node:
-        :param gammaCorrect:
-        :param alphaIsLuminance:
-        :return: File Node object
-        """
+        """Create and connect a file node.
 
+        Args:
+            path (str): Path to the texture file.
+            name (str): Name of the texture file.
+            single_place_node: Place node for texture.
+            gammaCorrect (bool): Apply gamma correction. Defaults to True.
+            alphaIsLuminance (bool): Use alpha as luminance. Defaults to True.
+
+        Returns:
+            node: File node object.
+        """
         tex_name, texture_set, ext = name.split('.')
 
         # creation node
@@ -164,7 +183,7 @@ class TextureFileNode():
         else:
             file_node.alphaIsLuminance.set(False)
 
-        # Gamma
+        # Color Space
         if (self.texture_recongition.channel == config.diffuse
                 or self.texture_recongition.channel == config.specularColor):
             file_node.colorSpace.set('sRGB')
@@ -180,32 +199,35 @@ class TextureFileNode():
 
         return file_node
 
-
 class TexturePxrTexture():
+    """Class to manage Renderman PxrTexture nodes."""
+
     def __init__(self, path, filename):
-        """
-        Create pxrTexture Node
-        :param path:
-        :param filename:
+        """Initialize the TexturePxrTexture.
+
+        Args:
+            path (str): Path to the texture file.
+            filename (str): Name of the texture file.
         """
         self.texture_recongition = file.TextureFile(path=path, filename=filename)
 
-        # file node name
-        file_name_filenode = self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' + \
-                             self.texture_recongition.texture_set + '.' + self.texture_recongition.ext
+        file_name_filenode = (self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' +
+                              self.texture_recongition.texture_set + '.' + self.texture_recongition.ext)
 
         self.filenode = self.connect_file_node(path=path, name=file_name_filenode)
 
     def connect_file_node(self, path, name, linearize=True, artistic=True):
-        """
-        Connect place node to file node
-        :param path:
-        :param name:
-        :param linearize:
-        :param artistic:
-        :return: pxrTexture Node object
-        """
+        """Create and connect a PxrTexture node.
 
+        Args:
+            path (str): Path to the texture file.
+            name (str): Name of the texture file.
+            linearize (bool): Linearize texture. Defaults to True.
+            artistic (bool): Artistic setting. Defaults to True.
+
+        Returns:
+            node: PxrTexture node object.
+        """
         tex_name, texture_set, ext = name.split('.')
 
         # creation node
@@ -219,7 +241,7 @@ class TexturePxrTexture():
         else:
             pxrtexture_node.filename.set(path + '/' + name)
 
-        # Gamma
+        # Color Space
         if (self.texture_recongition.channel == config.diffuse
                 or self.texture_recongition.channel == config.specularColor):
             pxrtexture_node.linearize.set(True)

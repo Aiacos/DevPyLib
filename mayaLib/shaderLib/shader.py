@@ -1,27 +1,29 @@
 __author__ = 'Lorenzo Argentieri'
 
-import os
 import glob
+import os
 import pathlib
-import mayaLib.utility.json_tool as json_tool
 
 from pymel import core as pm
 
+import mayaLib.utility.json_tool as json_tool
 from mayaLib.shaderLib.base import texture
-from mayaLib.shaderLib.base.shader_base import Shader_base, UsdPreviewSurface
 from mayaLib.shaderLib.base.arnold import aiStandardSurface
-from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
 from mayaLib.shaderLib.base.delight import Principled_3dl
+from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
+from mayaLib.shaderLib.base.shader_base import Shader_base, UsdPreviewSurface
 
 
 class TextureShader():
     def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         """
-        Create Shader and Connect it with all associated texture
-        :param texture_path: path to textures
-        :param geo_name: Geometry name
-        :param textureset_dict: material IDs used in Substance Painter or UDIM
-        :param single_place_node: (bool)
+        Initialize the class.
+
+        Args:
+            texture_path (str): Path to the texture files.
+            geo_name (str): Geometry name.
+            textureset_dict (dict): Dictionary of textureset and its associated textures.
+            single_place_node (bool): Flag to use a single place node. Default is True.
         """
 
         # See active Renderer
@@ -36,6 +38,18 @@ class TextureShader():
             print('No valid active render engine')
 
     def build_aiStandard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
+        """
+        Build an aiStandardSurface shader and connect it with all associated textures.
+
+        Args:
+            texture_path (str): Path to the texture files.
+            geo_name (str): Geometry name.
+            textureset_dict (dict): Dictionary containing texture channels and their corresponding filenames.
+            single_place_node (bool): Use a single place2dTexture node for all textures (default is True).
+
+        Returns:
+            aiStandardSurface: The created aiStandardSurface shader.
+        """
         if single_place_node:
             self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
         else:
@@ -50,18 +64,47 @@ class TextureShader():
         return aiStandardSurface(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def build_pxrDisneyBSDF(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
+        """
+        Build a PxrDisneyBSDF shader and connect it with all associated textures.
+
+        Args:
+            texture_path (str): Path to the texture files.
+            geo_name (str): Geometry name.
+            textureset_dict (dict): Material IDs used in Substance Painter or UDIM.
+            pxrTextureNode (bool): Use pxrTexture nodes instead of file nodes (default is True).
+            single_place_node (bool): Use a single place2dTexture node for all textures (default is True).
+
+        Returns:
+            shader (PxrDisneyBSDF): The shader created by the Shader class.
+        """
         for texture_channel in textureset_dict:
             fn = texture.TexturePxrTexture(path=texture_path,
                                            filename=textureset_dict[texture_channel])
             self.filenode_dict[texture_channel] = fn.filenode
 
-        return PxrDisneyBSDF(shader_name, folder, shader_textures)
+        return PxrDisneyBSDF(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def getShader(self):
+        """
+        Get the shader created by the Shader class.
+
+        Returns:
+            shader (pm.nt.Shader): The shader created by the Shader class.
+
+        """
         return self.shader
 
 class BuildAllShaders(object):
-    def __init__(self,  folder):
+    def __init__(self, folder):
+        """
+        Initialize the BuildAllShaders class.
+
+        Args:
+            folder (str): Path to the directory containing texture files.
+
+        Initializes a texture manager to build a catalog of textures and
+        iterates over the texture dictionary to create TextureShader objects.
+        """
         # Build Texture List
         texture_manager = texture.TextureFolder()
         texture_dict = texture_manager.build_texture_catalog()
@@ -70,11 +113,28 @@ class BuildAllShaders(object):
             TextureShader()
 
 class ConvertShaders(object):
-    """
-    Convert current shader to another renderer
-    :param to_shader_type: (str) standard, usd, 3delight, renderman
+    """Convert current shader to another renderer.
+
+    Args:
+        to_shader_type (str): Type of shader to create. Options are 'standard',
+            'usd', '3delight', and 'renderman'.
     """
     def __init__(self, to_shader_type):
+        """
+        Initialize ConvertShaders class
+
+        Args:
+            to_shader_type (str): Type of shader to create. Options are 'standard',
+                'usd', '3delight', and 'renderaman'.
+
+        Notes:
+            This class takes all shaders in the current scene and converts them to
+            the specified shader type. The class first gets all shaders in the scene,
+            then renames the old shader and shading engine. It then gets the main
+            texture and all associated textures and creates a new shader with the
+            specified shader type. The new shader is then connected to the same
+            geometry as the old shader.
+        """
         self.shader_list = self.get_materials_in_scene()
         print('Shaders: ', self.shader_list)
 
@@ -115,7 +175,13 @@ class ConvertShaders(object):
 
 
     def get_materials_in_scene(self):
-        # No need to pass in a string to `type`, if you don't want to.
+        """
+        Yields all materials in the scene by iterating over all ShadingEngines and
+        checking if they have a material connected to them.
+
+        Returns:
+            generator: A generator of pm.nt.Shader objects.
+        """
         for shading_engine in pm.ls(type=pm.nt.ShadingEngine):
             # ShadingEngines are collections, so you can check against their length
             if len(shading_engine):
@@ -124,6 +190,22 @@ class ConvertShaders(object):
                     yield material
 
     def get_main_texture(self, shader):
+        """
+        Retrieves the main texture path and list of texture filenames connected to a shader.
+
+        Args:
+            shader (pm.nt.Shader): The shader node from which to extract texture information.
+
+        Returns:
+            tuple: A tuple containing:
+                - str: The absolute path to the directory containing the textures.
+                - list: A list of texture filenames connected to the shader.
+
+        Notes:
+            The function checks for file nodes and bump nodes connected to the shader
+            and retrieves their file texture names.
+        """
+
         file_node_list = pm.listConnections(shader, source=True, type='file')
         bump_node_list = pm.listConnections(shader, source=True, type='bump2d')
         if bump_node_list:
@@ -144,6 +226,17 @@ class ConvertShaders(object):
             return '', []
 
     def search_texture(self, path, texture_list):
+        """
+        Searches for textures in a given path that match the name of the last
+        texture in the given list.
+
+        Args:
+            path (str): Path to search for textures.
+            texture_list (list): List of textures to check.
+
+        Returns:
+            list: List of textures found in the given path.
+        """
         if texture_list:
             tex_name, extension = texture_list[-1].split('.')
             main_name = tex_name.split(' ')[0].split('_')[0]
@@ -158,6 +251,14 @@ class ConvertShaders(object):
             return []
 
     def reconnect_filenode(self, shader, new_shader):
+        """
+        Reconnects file nodes of a shader to a new shader. It checks all sockets of the shader
+        and if they are connected, it connects them to the new shader's sockets with the same name.
+
+        Parameters:
+            shader (pm.nt.Shader): The shader to copy the file nodes from.
+            new_shader (Shader_base): The shader to copy the file nodes to.
+        """
         if shader.type() == 'standardSurface':
             diffuse_socket = pm.PyNode(shader.name() + '.' + Shader_base.diffuse)
             metallic_socket = pm.PyNode(shader.name() + '.' + Shader_base.metallic)
@@ -222,6 +323,30 @@ class ShaderFromJson(object):
     """
 
     def __init__(self, json_filepath, to_shader_type):
+        """
+        Initialize the ShaderFromJson class.
+
+        Args:
+            json_filepath (str): Path to the JSON file containing shader data.
+            to_shader_type (str): Type of shader to create. Options are 'standard',
+                'usd', '3delight', and 'renderaman'.
+
+        Notes:
+            This class reads a JSON file and creates shaders based on the
+            information in the file. The JSON file should be formatted as follows:
+
+            {
+                "shader_name": {
+                    "path": "path_to_texture_folder",
+                    "textures": ["texture1", "texture2", ...]
+                },
+                ...
+            }
+
+            The class will create a shader for each entry in the JSON file and
+            connect the textures in the 'textures' list to the corresponding
+            attributes on the shader.
+        """
         data = json_tool.load_json_data(json_filepath)
 
         for key, value in data.items():
