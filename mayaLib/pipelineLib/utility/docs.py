@@ -3,22 +3,22 @@ __author__ = 'Lorenzo Argentieri'
 import inspect
 
 
-def getDocs(element, advanced=True):
-    """
-    Get Docs from a Function
-    :param element:
-    :param advanced:
-    :return:
+def get_docs(element, advanced=True):
+    """Get the documentation string from a given element.
+
+    Args:
+        element: The object to extract the documentation from.
+        advanced: A boolean indicating whether to return the full documentation
+            string or a shorter version.
+
+    Returns:
+        The documentation string for the given element.
     """
     if advanced:
-        docs = inspect.getdoc(element)
-        return docs
-        print('advanced')
+        return inspect.getdoc(element)
     else:
-        print((element.__doc__))
-        print((help(element)))
-        print('base')
+        return element.__doc__
 
 
 if __name__ == "__main__":
-    print((getDocs(getDocs)))
+    print(get_docs(get_docs))

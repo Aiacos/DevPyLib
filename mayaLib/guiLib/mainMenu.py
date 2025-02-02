@@ -1,10 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+import importlib
 import os
+import pathlib
 import types
 
 import maya.OpenMayaUI as omui
-import pathlib
 # from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtCore import QObject, SIGNAL
@@ -16,7 +17,6 @@ from mayaLib.guiLib.base import baseUI as ui
 from mayaLib.pipelineLib.utility import docs as doc
 from mayaLib.pipelineLib.utility import libManager
 from mayaLib.pipelineLib.utility import listFunction as lm
-import importlib
 
 
 class SearchLineEdit(QtWidgets.QLineEdit):
@@ -256,7 +256,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         """
         extractAction = QtWidgets.QAction(discipline, self)
         extractAction.triggered.connect(lambda: self.buttonClicked(function))
-        docText = doc.getDocs(function)
+        docText = doc.get_docs(function)
         extractAction.hovered.connect(lambda: self.buttonHover(docText))
 
         return extractAction

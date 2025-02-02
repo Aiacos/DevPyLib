@@ -75,7 +75,7 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.advancedCheckBox, row, 0)
 
         # Display function documentation
-        self.doclabel = QtWidgets.QLabel(doc.getDocs(func))
+        self.doclabel = QtWidgets.QLabel(doc.get_docs(func))
         self.layout.addWidget(self.doclabel, row + 1, 2)
         self.setLayout(self.layout)
 

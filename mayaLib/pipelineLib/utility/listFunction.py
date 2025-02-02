@@ -15,10 +15,12 @@ class StructureManager():
     """
     Manage Lib Structure
     """
-
     # root_package = ''
 
     def __init__(self, lib):
+        """
+        Initialize the class with the root package
+        """
         self.root_package = lib
         self.structLib = {}
 
@@ -72,13 +74,16 @@ class StructureManager():
         # func()
 
     def dict_merge(self, dct, merge_dct):
-        """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-        updating only top-level keys, dict_merge recurses down into dicts nested
-        to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-        ``dct``.
-        :param dct: dict onto which the merge is executed
-        :param merge_dct: dct merged into dct
-        :return: None
+        """
+        Recursively merges two dictionaries.
+
+        If both dictionaries have a key with dictionary values, the function
+        will recursively merge those dictionary values. Otherwise, the value
+        from `merge_dct` will overwrite the value in `dct`.
+
+        Parameters:
+        dct (dict): The dictionary to be merged into.
+        merge_dct (dict): The dictionary to merge from.
         """
         for k, v in merge_dct.items():
             if (k in dct and isinstance(dct[k], dict)
@@ -88,17 +93,25 @@ class StructureManager():
                 dct[k] = merge_dct[k]
 
     def incapsulateDict(self, dict, key):
+        """ Incapsulate the dictionary into a new one with the given key
+        """
         return {key: dict}
 
     def getStructLib(self):
+        """ Return the structure dictionary
+        """
         return self.structLib
 
     def importAndExec(self, moduleString, function):
+        """ Import the module and execute the given function
+        """
         module = __import__(moduleString, fromlist=[''])
         func = getattr(module, function)
         return func
 
     def listAllPackage(self):
+        """ Return a list of all packages in the root package
+        """
         package_list = []
         for p in pkgutil.walk_packages(self.root_package.__path__):
             if 'utility' not in p[1]:
@@ -112,6 +125,8 @@ class StructureManager():
         return package_list
 
     def listSubPackages(self, package_str):
+        """ Return a list of all sub packages in the given package
+        """
         package_list = []
         package = __import__(package_str, fromlist=[''])
         for p in pkgutil.iter_modules(package.__path__):
@@ -120,6 +135,8 @@ class StructureManager():
         return package_list
 
     def listModules(self, package):
+        """ Return a list of all modules in the given package
+        """
         module_list = []
         package_name = self.root_package.__name__ + '.' + package
         modules_list = self.explore_package(package_name)
@@ -128,8 +145,9 @@ class StructureManager():
 
         return module_list
 
-    # ToDo: rewrite
     def listAllModule(self):
+        """ Return a list of all modules in the root package
+        """
         module_list = []
         for package in self.package_list:
             # print('PACKAGE:: ', str(package))
@@ -143,6 +161,21 @@ class StructureManager():
         return module_list
 
     def getAllClass(self, module_str):
+        """
+        Return a list of all classes in the given module.
+
+        Args:
+            module_str (str): The name of the module to inspect.
+
+        Returns:
+            list: A list of tuples where each tuple contains the class name
+                  and the class object.
+
+        Note:
+            The function will not inspect modules named 'licenseRegister',
+            'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
+            an empty string.
+        """
         if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
                 'paintable_maps' not in module_str):
             module = __import__(module_str, fromlist=[''])
@@ -152,11 +185,28 @@ class StructureManager():
             return ''
 
     def getAllMethod(self, module_str):
+        """ Return a list of all methods in the given module
+        """
         module = __import__(module_str, fromlist=[''])
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
         return method_list
 
     def getAllFunction(self, module_str):
+        """
+        Return a list of all functions in the given module.
+
+        Args:
+            module_str (str): The name of the module to inspect.
+
+        Returns:
+            list: A list of tuples where each tuple contains the function name
+                  and the function object.
+
+        Note:
+            The function will not inspect modules named 'licenseRegister',
+            'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
+            an empty string.
+        """
         if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
                 'paintable_maps' not in module_str):
             module = __import__(module_str, fromlist=[''])
@@ -166,6 +216,9 @@ class StructureManager():
             return ''
 
     def explore_package(self, module_name):
+        """
+        Explore the given package and return a list of all sub packages
+        """
         package_list = []
         if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
             loader = pkgutil.get_loader(module_name)
@@ -181,6 +234,9 @@ class StructureManager():
         return package_list
 
     def nested_dict_iter(self, dictionary):
+        """
+        Iterate the nested dictionary and print the values
+        """
         for k, v in dictionary.items():
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
