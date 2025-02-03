@@ -5,16 +5,15 @@ import os
 import pymel.core as pm
 
 
-class TextureFile():  # ToDo: move in util?
-    """
-    $mesh_Diffuse.$textureSet.$ext
-    """
+class TextureFile(object):  # ToDo: move in util?
+    """Class to handle texture files."""
 
     def __init__(self, path, filename):
-        """
-        Recongize texture name pattern
-        :param path: path of texture
-        :param filename: texture filename
+        """Initialize the TextureFile object.
+
+        Args:
+            path (str): Path to the texture file.
+            filename (str): Name of the texture file.
         """
         self.path = path
         self.filename = filename
@@ -30,30 +29,38 @@ class TextureFile():  # ToDo: move in util?
             print('No matching pattern for texture')
 
     def _partition(self):
+        """Split the filename into mesh, texture_set, channel and extension."""
         name, self.texture_set, self.ext = self.filename.split('.')
         self.mesh, sep, self.channel = name.rpartition('_')
         # dict = {'channel': path}
         # self.texture_list.append()
 
     def get_channels(self):
+        """Return a list of channel name that the texture has
+
+        The channel name is the last part of the filename, before the extension.
+        For example, if the filename is "myTexture_diffuse.1001.exr", the channel
+        name will be "diffuse".
+
+        Returns:
+            list: List of channel names
+        """
         if self.texture_set.isdigit():
             return self.mesh, self.channel, self.udim, self.ext
         else:
             return self.mesh, self.channel, self.texture_set, self.ext
 
 
-class TextureFileManager():
-    """
-    Search all texture in surcefolder
-    """
+class TextureFileManager(object):
+    """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set"""
 
     def __init__(self, dirname=pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/', ext='exr'):
         """
-        Search all texture in surceimages and place it in a dictionary sorted by geo, channel and texture_set
-        ($mesh_Diffuse.$textureSet.$ext)
-        :param dirname: source folder
-        :param ext: extension
-        :return texture_dict: dictionary
+        Initialize the TextureFileManager object.
+
+        Args:
+            dirname (str): Directory path. Defaults to the 'sourceimages' directory in the current workspace.
+            ext (str): File extension to search for. Defaults to 'exr'.
         """
         self.ext = ext
         self.path = dirname
@@ -62,6 +69,15 @@ class TextureFileManager():
         self.texture_dict = self.build_dict()
 
     def search_in_directory(self, dirname, ext):
+        """Search all files with the given extension in the given directory.
+
+        Args:
+            dirname (str): Directory path.
+            ext (str): File extension.
+
+        Returns:
+            list: List of files with the given extension.
+        """
         ext = ext.lower()
         texList = []
         for file in os.listdir(dirname):
@@ -70,6 +86,7 @@ class TextureFileManager():
         return texList
 
     def build_dict(self):
+        """Build a dictionary of textures organized by geo, channel and texture_set."""
         geo_dict = {}
         channel_dict = {}
         material_dict = {}
@@ -115,6 +132,7 @@ class TextureFileManager():
         return d
 
     def get_path(self):
+        """Return the path to the texture folder."""
         return self.path
 
 
