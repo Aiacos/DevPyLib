@@ -2,35 +2,57 @@ import maya.mel as mel
 import pymel.core as pm
 
 
-def getAllObjectUnderGroup(group, type='mesh'):
+def get_all_objects_under_group(group, type='mesh'):
     """
     Return all object of given type under group
-    :param group: str, group name
-    :param type: str, object type
-    :return: object list
+
+    Args:
+        group (str): Group name
+        type (str): Object type
+
+    Returns:
+        list: A list of object names
     """
-    objList = None
+    obj_list = None
 
     if type == 'mesh':
-        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
+        obj_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
 
     if type == 'transform':
-        geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
-        objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
+        geo_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
+        obj_list = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geo_list]
 
-    objList = list(set(objList))
-    objList.sort()
+    obj_list = list(set(obj_list))
+    obj_list.sort()
 
-    return objList
+    return obj_list
 
 
-def addZivaFiber(obj):
+def add_ziva_fiber(obj):
+    """
+    Add Ziva fiber to the given object
+
+    Args:
+        obj (str): Object name
+
+    Returns:
+        The zFiber node
+    """
     pm.select(obj)
-    zFiber = pm.ls(mel.eval('ziva -f;'))[0]
-    return zFiber
+    z_fiber = pm.ls(mel.eval('ziva -f;'))[0]
+    return z_fiber
 
 
-def createLoACurve(obj):
+def create_loa_curve(obj):
+    """
+    Create a curve for Line of Action
+
+    Args:
+        obj (str): Object name
+
+    Returns:
+        The created curve
+    """
     obj = pm.ls(obj)[-1]
     pm.select(obj)
     curve = pm.ls(mel.eval('zLineOfActionUtil;'))[0].getParent()
@@ -42,39 +64,69 @@ def createLoACurve(obj):
     return curve
 
 
-def rivetCurve(curve, skeleton):
+def rivet_curve(curve, skeleton):
+    """
+    Rivet the curve to the given skeleton
+
+    Args:
+        curve (str): Curve name
+        skeleton (str): Skeleton name
+
+    Returns:
+        A list of zRivet nodes
+    """
     rivet_list = []
     for cv, n in zip(curve.cv[:], list(range(0, len(pm.ls(curve.cv[:])) + 1))):
         pm.select(cv)
         pm.select(skeleton, add=True)
-        zRivet = pm.ls(mel.eval('zRivetToBone;'))[-1]
+        z_rivet = pm.ls(mel.eval('zRivetToBone;'))[-1]
 
         rivet_name = str(curve.name()).replace('_CV', '') + '_' + str(n) + '_rivet'
-        pm.rename(zRivet, rivet_name)
-        zRivet = pm.ls(rivet_name)[-1]
+        pm.rename(z_rivet, rivet_name)
+        z_rivet = pm.ls(rivet_name)[-1]
 
-        rivet_list.append(zRivet)
+        rivet_list.append(z_rivet)
 
     return rivet_list
 
 
-def addLoA(curve, obj):
+def add_loa(curve, obj):
+    """
+    Add Line of Action to the given object
+
+    Args:
+        curve (str): Curve name
+        obj (str): Object name
+
+    Returns:
+        The zLineOfAction node
+    """
     pm.select(curve)
     pm.select(obj, add=True)
 
-    zLineOfAction = pm.ls(mel.eval('ziva -loa;'))[-1]
-    return zLineOfAction
+    z_line_of_action = pm.ls(mel.eval('ziva -loa;'))[-1]
+    return z_line_of_action
 
 
-def createLineOfAction(obj, skeleton):
-    zFiber = addZivaFiber(obj)
-    curve = createLoACurve(obj)
-    rivets = rivetCurve(curve, skeleton)
-    zLineOfAction = addLoA(curve, obj)
+def create_line_of_action(obj, skeleton):
+    """
+    Create Line of Action for the given object
+
+    Args:
+        obj (str): Object name
+        skeleton (str): Skeleton name
+
+    Returns:
+        The created curve and a list of zRivet nodes
+    """
+    z_fiber = add_ziva_fiber(obj)
+    curve = create_loa_curve(obj)
+    rivets = rivet_curve(curve, skeleton)
+    z_line_of_action = add_loa(curve, obj)
 
     return curve, rivets
 
 
-if __name__ == "__main__":
-    for geo in getAllObjectUnderGroup('muscles_grp'):
-        createLineOfAction(geo, 'C_charBison_skeleton_GEO')
+if __name__ == '__main__':
+    for geo in get_all_objects_under_group('muscles_grp'):
+        create_line_of_action(geo, 'C_charBison_skeleton_GEO')
