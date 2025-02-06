@@ -189,7 +189,8 @@ class MenuLibWidget(QtWidgets.QWidget):
     def download(self):
         """Download the library and reload the widget."""
         lib = libManager.InstallLibrary()
-        lib.download()
+        #lib.download()
+        lib.pullFromGit()
         self.reloaded()
 
     def addIconButton(self, name, imgPath):
