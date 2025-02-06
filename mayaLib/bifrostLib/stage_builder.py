@@ -1,6 +1,7 @@
 import maya.cmds as cmds
-from mayaLib.rigLib.bifrost import bifrost
-from mayaLib.rigLib.bifrost import bifrost_util_nodes
+
+from mayaLib.bifrostLib import bifrost_api as bifrost
+from mayaLib.bifrostLib import bifrost_util_nodes
 
 
 def getAllObjectUnderGroup(group, type='mesh', full_path=True):
@@ -120,7 +121,7 @@ class USDCharacterBuild(object):
             #cmds.delete(cmds.listRelatives(maya_usd_stage, p=True))
 
             # Close Bifrost Windows
-            from PySide2.QtWidgets import QApplication, QWidget
+            from PySide2.QtWidgets import QApplication
             # close graph editor
             for widget in QApplication.allWidgets():
                 try:
