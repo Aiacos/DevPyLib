@@ -17,7 +17,22 @@ Returns:
 import pymel.core as pm
 
 def meshDirectConnection(source, destination):
-    """Directly connect two meshes together without using an intermediate mesh."""
+    """
+    Connects the outMesh attribute of the source mesh directly to the inMesh attribute
+    of the destination mesh, bypassing any intermediate meshes.
+
+    This function is useful for directly connecting one mesh to another without creating
+    a new mesh in between. It first backs up any existing connections to the destination's
+    inMesh attribute. After making the direct connection, it restores any original connections
+    if they exist.
+
+    Args:
+        source (str or pm.PyNode): The source mesh or its name.
+        destination (str or pm.PyNode): The destination mesh or its name.
+
+    Returns:
+        None
+    """
     source = pm.ls(source)[0].getShape()
     destination = pm.ls(destination)[0].getShape()
 
