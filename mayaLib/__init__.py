@@ -1,4 +1,5 @@
 import mayaLib.animationLib
+import mayaLib.bifrostLib
 import mayaLib.fluidLib
 import mayaLib.guiLib
 import mayaLib.lookdevLib
