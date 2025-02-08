@@ -328,7 +328,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 class MainMenu(QtWidgets.QWidget):
     """Main menu widget to display the library in Maya."""
 
-    def __init__(self, libPath, menuName='MayaLib', parent=None):
+    def __init__(self, libPath, menuName='MayaLib', parent=None, auto_update_on_load=True):
         """Initialize the MainMenu.
 
         Args:
@@ -337,6 +337,9 @@ class MainMenu(QtWidgets.QWidget):
             parent (QWidget, optional): Parent widget. Defaults to None.
         """
         super(MainMenu, self).__init__(parent)
+
+        if auto_update_on_load:
+            self.update_lib()
 
         self.wAction = QtWidgets.QWidgetAction(self)
         self.libWindow = MenuLibWidget(libPath)
@@ -377,6 +380,11 @@ class MainMenu(QtWidgets.QWidget):
     def showWidget(self):
         """Adjust the size of the library window."""
         self.libWindow.adjustSize()
+
+    def update_lib(self):
+        """Pull the latest changes from the MayaLib repository using git."""
+        lib = libManager.InstallLibrary()
+        lib.pullFromGit()
 
     def __del__(self):
         """Clean up resources when the object is deleted."""
