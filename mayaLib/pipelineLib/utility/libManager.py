@@ -12,6 +12,7 @@ import urllib.parse
 import urllib.request
 
 import git
+import pymel.core as pm
 
 
 # import installCmd
@@ -124,6 +125,54 @@ class InstallLibrary:
             return True
         except:
             print("Pull Failed")
+            return False
+
+    def copyToMayaEnv(self):
+        """
+        Copy the library paths to the Maya environment file (Maya.env) for the current user.
+
+        This function ensures that the specified library directory is added to the Maya environment
+        by checking if the entries for `MAYA_APP_DIR` and `PYTHONPATH` are already present in the
+        Maya.env file. If not present, it appends these entries to the file.
+
+        Returns:
+            bool: True if the entries were successfully added, False if the entries already exist or
+                  if there was any error during the process.
+        """
+
+        mayaEnvPath = self.homeUser / "Documents" / "maya" / str(pm.about(version=True)) / "Maya.env"
+
+        maya_app_dir = "MAYA_APP_DIR = " + self.libDir # "C:\Users\ %USERNAME %\Documents\workspace\DevPyLib"
+        python_path = "PYTHONPATH = " + self.libDir # C:\Users\ %USERNAME %\Documents\workspace\DevPyLib"
+
+        try:
+            if os.path.exists(mayaEnvPath):
+                with open(mayaEnvPath, 'r') as f:
+                    lines = f.readlines()
+                    if maya_app_dir in lines:
+                        print("string " + maya_app_dir + " already present in Maya.env")
+                        return False
+                    if python_path in lines:
+                        print("string " + python_path + " already present in Maya.env")
+                        return False
+            else:
+                print("Maya.env file not found")
+                return False
+        except:
+            print("Error while reading Maya.env")
+            pass
+
+        try:
+            if os.path.exists(mayaEnvPath):
+                with open(mayaEnvPath, 'a') as f:
+                    f.write(maya_app_dir + "\n")
+                    f.write(python_path + "\n")
+                return True
+            else:
+                print("Maya.env file not found")
+                return False
+        except:
+            print("Error while writing to Maya.env")
             return False
 
     def updateDevMode(self, devPath=False):
