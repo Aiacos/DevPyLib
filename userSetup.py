@@ -7,6 +7,15 @@ import maya.cmds as cmds
 
 
 def install_requirements(requiremensts_dir):
+    """
+    Installs the Python packages listed in the requirements.txt file located in the specified directory.
+
+    Args:
+        requiremensts_dir (str): The directory path where the requirements.txt file is located.
+
+    Raises:
+        Exception: If an error occurs during the installation process, an exception is caught and its message is printed.
+    """
     try:
         os.system('pip install -r ' + requiremensts_dir + 'requirements.txt')
         print("All requirements installed successfully!")
