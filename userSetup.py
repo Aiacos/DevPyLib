@@ -1,16 +1,24 @@
+import importlib
 import os
 import sys
 from pathlib import Path
-import subprocess
-import importlib
-import pip
+
 import maya.cmds as cmds
-import maya.utils
+
+
+def install_requirements(requiremensts_dir):
+    try:
+        os.system('pip install -r ' + requiremensts_dir + 'requirements.txt')
+        print("All requirements installed successfully!")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 libDir = (Path.home() / 'Documents' / 'workspace' / 'DevPyLib').as_posix()
 port = '4434'
 libName = 'mayaLib'
+
+install_requirements(libDir)
 
 # Open Maya port
 try:
@@ -27,6 +35,6 @@ else:
     importlib.reload(__import__(libName))
     # reload(__import__(libName))
 
-import mayaLib.guiLib.mainMenu as mm
-command = str("libmenu = mm.MainMenu('" + str(libDir) + "')")
+
+command = str("import mayaLib.guiLib.mainMenu as mm; libmenu = mm.MainMenu('" + str(libDir) + "')")
 cmds.evalDeferred(command, lowestPriority=True)
