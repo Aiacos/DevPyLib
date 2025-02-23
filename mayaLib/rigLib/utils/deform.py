@@ -432,6 +432,20 @@ def tensionMap(obj):
     Returns:
         The created Tension Map node.
     """
+
+    # Check if the tensionMap plugin is loaded and active
+    plugin_name = "tensionMap"
+    if not pm.pluginInfo(plugin_name, q=True, loaded=True):
+        try:
+            # Attempt to load the plugin
+            pm.loadPlugin("plugin/tensionMap.py")
+            print(f"Plugin '{plugin_name}' loaded successfully.")
+        except Exception as e:
+            print(f"Failed to load plugin '{plugin_name}': {e}")
+            return None
+    else:
+        print(f"Plugin '{plugin_name}' is already loaded.")
+
     obj = pm.ls(obj)[-1]
     shape = obj.getShape()
     # Get the original geometry of the mesh
@@ -537,6 +551,7 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
             print(f"Plugin '{plugin_name}' loaded successfully.")
         except Exception as e:
             print(f"Failed to load plugin '{plugin_name}': {e}")
+            return None
     else:
         print(f"Plugin '{plugin_name}' is already loaded.")
 
