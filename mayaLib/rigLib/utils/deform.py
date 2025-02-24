@@ -566,5 +566,42 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
     return shape_result
 
 
+def generate_new_blendshspae(
+    original, blendhspae_original_list, blendhspae_target, bs_name="reconstruction_BS"
+):
+    """
+    Function to generate a new blendshape that combines the original shape with the
+    other shapes in the blendhspae_original_list.
+
+    Args:
+        original (str or pm.PyNode): The original shape node.
+        blendhspae_original_list (str or pm.PyNode): The list of original shapes to be
+            combined in the new blendshape.
+        blendhspae_target (str or pm.PyNode): The target shape to be deformed by the
+            new blendshape.
+        bs_name (str, optional): The name of the new blendshape node. Defaults to
+            "reconstruction_BS".
+
+    Returns:
+        pm.PyNode: The new blendshape node.
+    """
+    original = pm.ls(original)[-1]
+    blendhspae_original_list = pm.ls(blendhspae_original_list)
+    blendhspae_target = pm.ls(blendhspae_target)[-1]
+
+    bs_list = [original] + blendhspae_original_list
+
+    out_bs = blendShapeDeformer(
+        blendhspae_target,
+        bs_list,
+        bs_name,
+        defaultValue=[-1] + [1 for _ in range(len(blendhspae_original_list) - 1)],
+    )
+
+    # The new blendshape will deform the target shape with the original shape
+    # and the other shapes in the blendhspae_original_list.
+    return out_bs
+
+
 if __name__ == "__main__":
     pass
