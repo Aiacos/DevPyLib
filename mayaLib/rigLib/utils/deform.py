@@ -561,7 +561,7 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
 
     pm.sets("initialShadingGroup", e=True, forceElement=shape_result)
 
-    shape_result.rename(original_shape.name() + suffix)
+    pm.rename(shape_result, original_shape.name() + suffix)
 
     return shape_result
 
