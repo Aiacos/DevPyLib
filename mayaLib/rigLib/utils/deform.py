@@ -196,6 +196,18 @@ class PaintDeformer(object):
         pm.select(cl=True)
 
 
+def add_meshes_to_deformer(obj_list, deformer):
+    """
+    Adds the given list of objects to the given deformer.
+
+    Args:
+        obj_list (list): List of objects (meshes) to add to the deformer.
+        deformer (pm.nodetypes.Deformer): Deformer to add meshes to.
+    """
+    for obj in obj_list:
+        pm.deformer(deformer, e=True, g=obj)
+
+
 def createProximityWrap(source, target_list):
     """
     Creates a proximity with the given source and target transforms.

@@ -10,10 +10,11 @@ def set_purpose_to_group(group_name, purpose):
     """
 
     if pm.objExists(group_name):
-        if not pm.attributeQuery('USD_purpose', node=group_name, exists=True):
-            pm.addAttr(group_name, longName='USD_purpose', attributeType='string')
+        if not pm.attributeQuery("USD_purpose", node=group_name, exists=True):
+            pm.addAttr(group_name, longName="USD_purpose", dataType="string")
 
-        pm.setAttr(group_name + '.USD_purpose', purpose, type='string')
+        pm.setAttr(group_name + ".USD_purpose", purpose, type="string")
+
 
 def set_kind_to_group(group_name, kind):
     """
@@ -23,10 +24,10 @@ def set_kind_to_group(group_name, kind):
         kind (string): kind to set
     """
     if pm.objExists(group_name):
-        if not pm.attributeQuery('USD_kind', node=group_name, exists=True):
-            pm.addAttr(group_name, longName='USD_kind', attributeType='string')
+        if not pm.attributeQuery("USD_kind", node=group_name, exists=True):
+            pm.addAttr(group_name, longName="USD_kind", dataType="string")
 
-        pm.setAttr(group_name + '.USD_kind', kind, type='string')
+        pm.setAttr(group_name + ".USD_kind", kind, type="string")
 
 
 def set_type_name_to_group(group_name, type_name):
@@ -37,12 +38,15 @@ def set_type_name_to_group(group_name, type_name):
         type_name (string): type name to set
     """
     if pm.objExists(group_name):
-        if not pm.attributeQuery('USD_typeName', node=group_name, exists=True):
-            pm.addAttr(group_name, longName='USD_typeName', attributeType='string')
+        if not pm.attributeQuery("USD_typeName", node=group_name, exists=True):
+            pm.addAttr(group_name, longName="USD_typeName", dataType="string")
 
-        pm.setAttr(group_name + '.USD_typeName', type_name, type='string')
+        pm.setAttr(group_name + ".USD_typeName", type_name, type="string")
 
-def set_usd_attributes_to_group(group_name, type_name='xform', kind='component', purpose='default'):
+
+def set_usd_attributes_to_group(
+    group_name, type_name="xform", kind="component", purpose="default"
+):
     """
     Sets USD attributes to the given group
     Args:
@@ -51,29 +55,30 @@ def set_usd_attributes_to_group(group_name, type_name='xform', kind='component',
         kind (string): kind to set (default: 'component')
         purpose (string): purpose to set (default: 'default')
     """
-    if pm.objExists(group_name):
-        if kind == 'component':
-            pass
+    for obj in pm.ls(group_name):
+        if pm.objExists(obj):
+            if kind == "component":
+                pass
 
-        if group_name == 'geo':
-            type_name = 'Scope'
-            kind = ''
+            if group_name == "geo":
+                type_name = "Scope"
+                kind = ""
 
-        if group_name == 'render':
-            type_name = 'Scope'
-            kind = ''
-            purpose = 'render'
-        
-        if group_name == 'proxy':
-            type_name = 'Scope'
-            kind = ''
-            purpose = 'proxy'
-            
-        if group_name == 'render':
-            type_name = 'Scope'
-            kind = ''
-            purpose = 'guide'
+            if group_name == "render":
+                type_name = "Scope"
+                kind = ""
+                purpose = "render"
 
-        set_type_name_to_group(group_name, type_name)
-        set_kind_to_group(group_name, kind)
-        set_purpose_to_group(group_name, purpose)
+            if group_name == "proxy":
+                type_name = "Scope"
+                kind = ""
+                purpose = "proxy"
+
+            if group_name == "render":
+                type_name = "Scope"
+                kind = ""
+                purpose = "guide"
+
+            set_type_name_to_group(obj.name(), type_name)
+            set_kind_to_group(obj.name(), kind)
+            set_purpose_to_group(obj.name(), purpose)

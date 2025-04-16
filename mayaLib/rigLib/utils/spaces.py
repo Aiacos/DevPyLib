@@ -1,22 +1,36 @@
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
 from mayaLib.rigLib.utils import common
 
 
-def spaces(driverList, driverNames, destinationConstraint, destinationAttribute, name='space', maintainOffset=True):
+def spaces(
+    driverList,
+    driverNames,
+    destinationConstraint,
+    destinationAttribute,
+    name="space",
+    maintainOffset=True,
+):
     """
     Add spaces
     :param driverList: list(str), driver object list
-    :param driverNames: list(str), attrviute value name for each driver
+    :param driverNames: list(str), attribute value name for each driver
     :param destinationConstraint: str, destination obj
     :param destinationAttribute: str, where attribute should appear
     :param name: str, name of the attribute
     :param maintainOffset: bool, constraint maintainOffset
     :return:
     """
-    pm.addAttr(destinationAttribute, longName=name, attributeType='enum', enumName=':'.join(driverNames), k=1, dv=0)
+    pm.addAttr(
+        destinationAttribute,
+        longName=name,
+        attributeType="enum",
+        enumName=":".join(driverNames),
+        k=1,
+        dv=0,
+    )
 
     constraintList = []
     for driver in driverList:
@@ -28,8 +42,12 @@ def spaces(driverList, driverNames, destinationConstraint, destinationAttribute,
         targetValue = [0] * len(constraintList)
         targetValue[counter] = 1
 
-        target = pm.listConnections(cnst.target[counter].targetWeight, source=True, plugs=True)[0]
-        common.setDrivenKey(destinationAttribute + '.' + name, sourceValue, target, targetValue)
+        target = pm.listConnections(
+            cnst.target[counter].targetWeight, source=True, plugs=True
+        )[0]
+        common.setDrivenKey(
+            destinationAttribute + "." + name, sourceValue, target, targetValue
+        )
 
 
 if __name__ == "__main__":
