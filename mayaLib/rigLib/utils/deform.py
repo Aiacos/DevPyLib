@@ -211,6 +211,30 @@ def add_meshes_to_deformer(obj_list, deformer):
         pm.deformer(deformer, e=True, g=obj)
 
 
+def add_meshes_to_wrap(obj_list, wrap_target):
+    """
+    Adds the specified list of objects to a wrap deformer with the given wrap target.
+
+    This function selects the wrap target and the provided list of objects,
+    and then executes a MEL command to add the objects as influences to the
+    wrap deformer.
+
+    Args:
+        obj_list (list): List of objects to add to the wrap deformer.
+        wrap_target (str): The wrap target object that the wrap deformer is applied to.
+
+    Returns:
+        None
+    """
+
+    for obj in obj_list:
+        pm.select(wrap_target, r=True)
+        pm.select(obj, add=True)
+        mel.eval("AddWrapInfluence();")
+
+        pm.select(cl=True)
+
+
 def createProximityWrap(source, target_list):
     """
     Creates a proximity with the given source and target transforms.
