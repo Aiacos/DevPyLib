@@ -159,6 +159,28 @@ rokoko_hik_data = {'joints': {'Reference': '',
                              }
                   }
 
+advanced_skeleton_data = {'joints': {'Reference': '',
+                             'Hips': 'Hips',
+                             'Spine': ['Spine1', 'Spine2', 'Spine3', 'Spine4'],
+                             'Neck': ['Neck'],
+                             'Head': 'Head',
+                             'LeftLeg': ['LeftThigh', 'LeftShin', 'LeftFoot', 'LeftToe'],
+                             'RightLeg': ['RightThigh', 'RightShin', 'RightFoot', 'RightToe'],
+                             'LeftArm': ['LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand'],
+                             'RightArm': ['RightShoulder', 'RightArm', 'RightForeArm', 'RightHand'],
+                             'LeftHandThumb': ['LeftFinger1Metacarpal', 'LeftFinger1Proximal', 'LeftFinger1Distal'],
+                             'LeftHandIndex': ['', 'LeftFinger2Proximal', 'LeftFinger2Medial', 'LeftFinger2Distal'],
+                             'LeftHandMiddle': ['', 'LeftFinger3Proximal', 'LeftFinger3Medial', 'LeftFinger3Distal'],
+                             'LeftHandRing': ['', 'LeftFinger4Proximal', 'LeftFinger4Medial', 'LeftFinger4Distal'],
+                             'LeftHandPinky': ['', 'LeftFinger5Proximal', 'LeftFinger5Medial', 'LeftFinger5Distal'],
+                             'RightHandThumb': ['RightFinger1Metacarpal', 'RightFinger1Proximal', 'RightFinger1Distal'],
+                             'RightHandIndex': ['', 'RightFinger2Proximal', 'RightFinger2Medial', 'RightFinger2Distal'],
+                             'RightHandMiddle': ['', 'RightFinger3Proximal', 'RightFinger3Medial', 'RightFinger3Distal'],
+                             'RightHandRing': ['', 'RightFinger4Proximal', 'RightFinger4Medial', 'RightFinger4Distal'],
+                             'RightHandPinky': ['', 'RightFinger5Proximal', 'RightFinger5Medial', 'RightFinger5Distal']
+                             }
+                  }
+
 class HumanIK(object):
     humanIK_joint_dict = {
         'Reference': 0,

@@ -592,7 +592,8 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
             print(f"Failed to load plugin '{plugin_name}': {e}")
             return None
     else:
-        print(f"Plugin '{plugin_name}' is already loaded.")
+        pass
+        # print(f"Plugin '{plugin_name}' is already loaded.")
 
     original_shape = pm.PyNode(original_shape)
     targhet_shape = pm.PyNode(targhet_shape)
@@ -600,9 +601,9 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
 
     pm.sets("initialShadingGroup", e=True, forceElement=shape_result)
 
-    pm.rename(shape_result, original_shape.name() + suffix)
+    pm.rename(shape_result, suffix + str(targhet_shape.name()).split("|")[-1])
 
-    return shape_result
+    return suffix + str(targhet_shape.name()).split("|")[-1]
 
 
 def generate_new_blendshspae(

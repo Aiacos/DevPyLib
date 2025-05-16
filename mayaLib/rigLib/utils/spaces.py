@@ -14,14 +14,26 @@ def spaces(
     maintainOffset=True,
 ):
     """
-    Add spaces
-    :param driverList: list(str), driver object list
-    :param driverNames: list(str), attribute value name for each driver
-    :param destinationConstraint: str, destination obj
-    :param destinationAttribute: str, where attribute should appear
-    :param name: str, name of the attribute
-    :param maintainOffset: bool, constraint maintainOffset
-    :return:
+    Create a space system on the given destinationConstraint with the given list
+    of drivers and names. The given destinationAttribute is used to store the value
+    of the active space. The value of the active space is used to set the weight of
+    the parent constraint on the destinationConstraint. The optional maintainOffset
+    parameter is used to set the maintainOffset flag on the parent constraint.
+
+    Args:
+        driverList (list): List of objects that will drive the space system
+        driverNames (list): List of names associated with the drivers
+        destinationConstraint (str): Name of the constraint that will be controlled
+            by the space system
+        destinationAttribute (str): Name of the attribute that will store the value
+            of the active space
+        name (str): Name of the attribute that will be added to the destination
+            attribute. Defaults to "space"
+        maintainOffset (bool): Whether to maintain the offset of the parent
+            constraint. Defaults to True
+
+    Returns:
+        None
     """
     pm.addAttr(
         destinationAttribute,
