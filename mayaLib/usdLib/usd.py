@@ -44,6 +44,20 @@ def set_type_name_to_group(group_name, type_name):
         pm.setAttr(group_name + ".USD_typeName", type_name, type="string")
 
 
+def set_hidden_to_group(group_name, hidden):
+    """
+    Sets the Hidden to the given group
+    Args:
+        group_name (string): name of the group
+        hidden (bool): hidden to set
+    """
+    if pm.objExists(group_name):
+        if not pm.attributeQuery("USD_hidden", node=group_name, exists=True):
+            pm.addAttr(group_name, longName="USD_hidden", dataType="bool")
+
+        pm.setAttr(group_name + ".USD_hidden", hidden, type="bool")
+
+
 def set_usd_attributes_to_group(
     group_name, type_name="xform", kind="component", purpose="default"
 ):
@@ -57,6 +71,8 @@ def set_usd_attributes_to_group(
     """
     for obj in pm.ls(group_name):
         if pm.objExists(obj):
+            hidden = False
+
             if kind == "component":
                 pass
 
@@ -79,6 +95,10 @@ def set_usd_attributes_to_group(
                 kind = ""
                 purpose = "guide"
 
+            if group_name == "rig":
+                hidden = True
+
             set_type_name_to_group(obj.name(), type_name)
             set_kind_to_group(obj.name(), kind)
             set_purpose_to_group(obj.name(), purpose)
+            set_hidden_to_group(obj.name(), hidden)
