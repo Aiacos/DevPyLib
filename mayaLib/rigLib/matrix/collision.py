@@ -10,6 +10,16 @@ class Collider(object):
         collision_mesh=None,
         target_mesh=None,
     ):
+        """
+        Initialize the collision system.
+
+        Args:
+            module_name (str): The name of the module to be used for naming.
+            ctrl (str): The name of the control to be used for the collision.
+            collision_point (str): The name of the point to be used for the collision.
+            collision_mesh (str): The name of the mesh to be used for the collision.
+            target_mesh (str): The name of the mesh to be deformed by the collision.
+        """
         if not ctrl:
             self.ctrl = pm.spaceLocator(name=module_name + "_ctrl")
         else:
