@@ -30,7 +30,7 @@ def set_kind_to_group(group_name, kind):
         pm.setAttr(group_name + ".USD_kind", kind, type="string")
 
 
-def set_type_name_to_group(group_name, type_name):
+def set_type_name_to_group(group_name, type_name="xform"):
     """
     Sets the TypeName to the given group
     Args:
@@ -53,9 +53,9 @@ def set_hidden_to_group(group_name, hidden):
     """
     if pm.objExists(group_name):
         if not pm.attributeQuery("USD_hidden", node=group_name, exists=True):
-            pm.addAttr(group_name, longName="USD_hidden", dataType="bool")
+            pm.addAttr(group_name, longName="USD_hidden", at="bool")
 
-        pm.setAttr(group_name + ".USD_hidden", hidden, type="bool")
+        pm.setAttr(f"{group_name}.USD_hidden", e=True, keyable=True)
 
 
 def set_usd_attributes_to_group(
