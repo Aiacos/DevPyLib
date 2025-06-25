@@ -15,6 +15,13 @@ def ensure_bool_attr(node, attr_name, default=False):
     pm.setAttr(f"{node}.{attr_name}", keyable=True)
 
 
+def ensure_visibility_attr(node, visibility="inherited"):
+    attr = "USD_visibility"
+    if not pm.attributeQuery(attr, node=node, exists=True):
+        pm.addAttr(node, longName=attr, dataType="string")
+    pm.setAttr(f"{node}.{attr}", visibility, type="string")
+
+
 def set_usd(group_name, type_name="xform", kind="", purpose="default", hidden=False):
     if purpose not in USD_PURPOSES:
         raise ValueError(f"USD purpose '{purpose}' is invalid")
@@ -23,10 +30,12 @@ def set_usd(group_name, type_name="xform", kind="", purpose="default", hidden=Fa
         ensure_string_attr(group_name, "USD_kind")
         ensure_string_attr(group_name, "USD_purpose")
         ensure_bool_attr(group_name, "USD_hidden", hidden)
+        ensure_string_attr(group_name, "USD_visibility")
 
         pm.setAttr(f"{group_name}.USD_typeName", type_name, type="string")
         pm.setAttr(f"{group_name}.USD_kind", kind, type="string")
         pm.setAttr(f"{group_name}.USD_purpose", purpose, type="string")
+        pm.setAttr(f"{group_name}.USD_visibility", "inherited", type="string")
 
 
 def set_usd_attributes_to_group(group_name):
