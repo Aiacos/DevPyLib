@@ -36,21 +36,6 @@ def ensure_bool_attr(node, attr_name, default=False):
     pm.setAttr(f"{node}.{attr_name}", keyable=True)
 
 
-def ensure_visibility_attr(node, visibility="inherited"):
-    """Ensure a USD visibility attribute exists on a Maya node.
-
-    Args:
-        node (pm.PyNode): The node to add the attribute to.
-        visibility (str, optional): The visibility to set. Defaults to "inherited".
-    """
-    attr = "USD_visibility"
-    if not pm.attributeQuery(attr, node=node, exists=True):
-        # Add a USD visibility attribute to the node if it doesn't exist
-        pm.addAttr(node, longName=attr, dataType="string")
-    # Set the visibility attribute value
-    pm.setAttr(f"{node}.{attr}", visibility, type="string")
-
-
 def set_usd(group_name, type_name="Xform", kind="", purpose="default", hidden=False):
     """Set USD attributes to a given object in Maya.
 
@@ -73,6 +58,7 @@ def set_usd(group_name, type_name="Xform", kind="", purpose="default", hidden=Fa
     """
     if purpose not in USD_PURPOSES:
         raise ValueError(f"USD purpose '{purpose}' is invalid")
+
     if pm.objExists(group_name):
         ensure_string_attr(group_name, "USD_typeName")
         ensure_string_attr(group_name, "USD_kind")
@@ -108,6 +94,7 @@ def set_usd_attributes_to_group(group_name):
         "guide": ("Scope", "group", "guide", False),
         "rig": ("Scope", "assembly", "guide", True),
     }
+
     # Retrieve configuration for the given group name, default if not found
     type_name, kind, purpose, hidden = cfg.get(
         group_name, ("Xform", "component", "default", False)
@@ -115,4 +102,4 @@ def set_usd_attributes_to_group(group_name):
 
     # Set USD attributes to each object in the group
     for obj in pm.ls(group_name):
-        set_usd(obj, type_name, kind, purpose, hidden)
+        set_usd(obj.name(), type_name, kind, purpose, hidden)
