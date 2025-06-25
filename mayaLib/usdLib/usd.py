@@ -1,104 +1,49 @@
 import pymel.core as pm
 
+USD_PURPOSES = {"render", "proxy", "guide", "default"}
 
-def set_purpose_to_group(group_name, purpose):
-    """
-    Sets the Purpose to the given group
-    Args:
-        group_name (string): name of the group
-        purpose (string): one of 'render', 'proxy', 'guide'
-    """
 
+def ensure_string_attr(node, attr_name):
+    if not pm.attributeQuery(attr_name, node=node, exists=True):
+        pm.addAttr(node, longName=attr_name, dataType="string")
+
+
+def ensure_bool_attr(node, attr_name, default=False):
+    if not pm.attributeQuery(attr_name, node=node, exists=True):
+        pm.addAttr(node, longName=attr_name, attributeType="bool")
+    pm.setAttr(f"{node}.{attr_name}", default)
+    pm.setAttr(f"{node}.{attr_name}", keyable=True)
+
+
+def set_usd(group_name, type_name="xform", kind="", purpose="default", hidden=False):
+    if purpose not in USD_PURPOSES:
+        raise ValueError(f"USD purpose '{purpose}' is invalid")
     if pm.objExists(group_name):
-        if not pm.attributeQuery("USD_purpose", node=group_name, exists=True):
-            pm.addAttr(group_name, longName="USD_purpose", dataType="string")
+        ensure_string_attr(group_name, "USD_typeName")
+        ensure_string_attr(group_name, "USD_kind")
+        ensure_string_attr(group_name, "USD_purpose")
+        ensure_bool_attr(group_name, "USD_hidden", hidden)
 
-        pm.setAttr(group_name + ".USD_purpose", purpose, type="string")
-
-
-def set_kind_to_group(group_name, kind):
-    """
-    Sets the Kind to the given group
-    Args:
-        group_name (string): name of the group
-        kind (string): kind to set
-    """
-    if pm.objExists(group_name):
-        if not pm.attributeQuery("USD_kind", node=group_name, exists=True):
-            pm.addAttr(group_name, longName="USD_kind", dataType="string")
-
-        pm.setAttr(group_name + ".USD_kind", kind, type="string")
+        pm.setAttr(f"{group_name}.USD_typeName", type_name, type="string")
+        pm.setAttr(f"{group_name}.USD_kind", kind, type="string")
+        pm.setAttr(f"{group_name}.USD_purpose", purpose, type="string")
 
 
-def set_type_name_to_group(group_name, type_name="xform"):
-    """
-    Sets the TypeName to the given group
-    Args:
-        group_name (string): name of the group
-        type_name (string): type name to set
-    """
-    if pm.objExists(group_name):
-        if not pm.attributeQuery("USD_typeName", node=group_name, exists=True):
-            pm.addAttr(group_name, longName="USD_typeName", dataType="string")
+def set_usd_attributes_to_group(group_name):
+    if not pm.objExists(group_name):
+        pm.warning(f"Group '{group_name}' non trovato")
+        return
 
-        pm.setAttr(group_name + ".USD_typeName", type_name, type="string")
+    cfg = {
+        "geo": ("Scope", "group", "default", False),
+        "render": ("Scope", "group", "render", False),
+        "proxy": ("Scope", "group", "proxy", False),
+        "guide": ("Scope", "group", "guide", False),
+        "rig": ("Scope", "assembly", "guide", True),
+    }
+    type_name, kind, purpose, hidden = cfg.get(
+        group_name, ("xform", "component", "default", False)
+    )
 
-
-def set_hidden_to_group(group_name, hidden):
-    """
-    Sets the Hidden to the given group
-    Args:
-        group_name (string): name of the group
-        hidden (bool): hidden to set
-    """
-    if pm.objExists(group_name):
-        if not pm.attributeQuery("USD_hidden", node=group_name, exists=True):
-            pm.addAttr(group_name, longName="USD_hidden", at="bool")
-
-        pm.setAttr(f"{group_name}.USD_hidden", e=True, keyable=True)
-
-
-def set_usd_attributes_to_group(
-    group_name, type_name="xform", kind="component", purpose="default"
-):
-    """
-    Sets USD attributes to the given group
-    Args:
-        group_name (string): name of the group
-        type_name (string): type name to set (default: 'xform')
-        kind (string): kind to set (default: 'component')
-        purpose (string): purpose to set (default: 'default')
-    """
     for obj in pm.ls(group_name):
-        if pm.objExists(obj):
-            hidden = False
-
-            if kind == "component":
-                pass
-
-            if group_name == "geo":
-                type_name = "Scope"
-                kind = ""
-
-            if group_name == "render":
-                type_name = "Scope"
-                kind = ""
-                purpose = "render"
-
-            if group_name == "proxy":
-                type_name = "Scope"
-                kind = ""
-                purpose = "proxy"
-
-            if group_name == "render":
-                type_name = "Scope"
-                kind = ""
-                purpose = "guide"
-
-            if group_name == "rig":
-                hidden = True
-
-            set_type_name_to_group(obj.name(), type_name)
-            set_kind_to_group(obj.name(), kind)
-            set_purpose_to_group(obj.name(), purpose)
-            set_hidden_to_group(obj.name(), hidden)
+        set_usd(obj, type_name, kind, purpose, hidden)
