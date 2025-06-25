@@ -22,7 +22,7 @@ def ensure_visibility_attr(node, visibility="inherited"):
     pm.setAttr(f"{node}.{attr}", visibility, type="string")
 
 
-def set_usd(group_name, type_name="xform", kind="", purpose="default", hidden=False):
+def set_usd(group_name, type_name="Xform", kind="", purpose="default", hidden=False):
     if purpose not in USD_PURPOSES:
         raise ValueError(f"USD purpose '{purpose}' is invalid")
     if pm.objExists(group_name):
@@ -51,7 +51,7 @@ def set_usd_attributes_to_group(group_name):
         "rig": ("Scope", "assembly", "guide", True),
     }
     type_name, kind, purpose, hidden = cfg.get(
-        group_name, ("xform", "component", "default", False)
+        group_name, ("Xform", "component", "default", False)
     )
 
     for obj in pm.ls(group_name):
