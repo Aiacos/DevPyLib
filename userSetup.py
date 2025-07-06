@@ -17,15 +17,15 @@ def install_requirements(requiremensts_dir):
         Exception: If an error occurs during the installation process, an exception is caught and its message is printed.
     """
     try:
-        os.system('pip install -r ' + requiremensts_dir + 'requirements.txt')
+        os.system("pip install -r " + requiremensts_dir + "/requirements.txt")
         print("All requirements installed successfully!")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 
-libDir = (Path.home() / 'Documents' / 'workspace' / 'DevPyLib').as_posix()
-port = '4434'
-libName = 'mayaLib'
+libDir = (Path.home() / "Documents" / "workspace" / "DevPyLib").as_posix()
+port = "4434"
+libName = "mayaLib"
 
 install_requirements(libDir)
 
@@ -45,5 +45,7 @@ else:
     # reload(__import__(libName))
 
 
-command = str("import mayaLib.guiLib.mainMenu as mm; libmenu = mm.MainMenu('" + str(libDir) + "')")
+command = str(
+    "import mayaLib.guiLib.mainMenu as mm; libmenu = mm.MainMenu('" + str(libDir) + "')"
+)
 cmds.evalDeferred(command, lowestPriority=True)
