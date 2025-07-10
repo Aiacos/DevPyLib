@@ -2,8 +2,35 @@ import importlib
 import os
 import sys
 from pathlib import Path
+from git import Repo, GitCommandError
 
 import maya.cmds as cmds
+
+
+def git_pull_gitpython(repo_path: str | Path, branch: str = "master") -> None:
+    """
+    Pulls the specified branch from a remote Git repository, using the GitPython library.
+
+    Args:
+        repo_path (str | Path): The path to the local Git repository.
+        branch (str, optional): The branch to pull from the remote. Defaults to "main".
+
+    Notes:
+        This function is equivalent to running `git pull --ff-only origin <branch>`.
+        If a Git error occurs, the error message is printed and the function exits.
+    """
+    repo = Repo(Path(repo_path).expanduser().resolve())
+    try:
+        # ensure we’re on the branch we want
+        repo.git.checkout(branch)
+
+        # equivalent to `git pull --ff-only`
+        pull_info = repo.remotes.origin.pull(branch, ff_only=True)
+        for info in pull_info:  # print or log each updated ref
+            print(f"{info.ref} – {info.summary}")
+    except GitCommandError as exc:
+        print(f"Git error: {exc}")
+        # handle merge conflicts, auth errors, etc. here
 
 
 def install_requirements(requiremensts_dir):
@@ -28,6 +55,7 @@ port = "4434"
 libName = "mayaLib"
 
 install_requirements(libDir)
+# git_pull_gitpython(libDir, branch="develop")
 
 # Open Maya port
 try:

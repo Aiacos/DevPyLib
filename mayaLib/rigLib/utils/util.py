@@ -434,3 +434,33 @@ def matrixConstrain(
         pm.connectAttr(decomposeMatrix.outputRotate, driven.rotate)
     if scale:
         pm.connectAttr(decomposeMatrix.outputScale, driven.scale)
+
+
+def cleanup_unknowns_nodes():
+    """
+    Safely removes lost plugin references and all unknown-type nodes
+    in the current Maya scene.
+    """
+    # 1. List unknown plugins safely
+    plugins = pm.unknownPlugin(q=True, list=True) or []
+    for plugin in plugins:
+        try:
+            pm.unknownPlugin(plugin, remove=True)
+            print(f"Removed unknown plugin: {plugin}")
+        except RuntimeError:
+            print(f"Skipped plugin (already removed): {plugin}")
+
+    # 2️. Clean up unknown-type nodes
+    types = ["unknown", "unknownDag", "unknownTransform"]
+    unknown_nodes = []
+    for t in types:
+        unknown_nodes += pm.ls(type=t)
+
+    for node in unknown_nodes:
+        if node and not node.isReferenced():
+            try:
+                node.unlock()
+                pm.delete(node)
+                print(f"Deleted node: {node}")
+            except Exception as e:
+                print(f"Could not delete {node}: {e}")
