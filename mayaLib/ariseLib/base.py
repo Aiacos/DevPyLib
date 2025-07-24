@@ -27,6 +27,9 @@ class BaseRig:
         self.do_human_ik = do_human_ik
         self.auto_t_pose = auto_t_pose
 
+        # Init
+        self.main_set = None
+
         # Connect purpose
         self.connect_purpose("Base_main_ctrl")
 
@@ -201,12 +204,12 @@ class BaseRig:
         skeletal_set = pm.sets(pm.ls(render_geo_list, joint_list), n="skeletalMesh_set")
 
         # Main
-        main_set = self._create_selection_set(
+        self.main_set = self._create_selection_set(
             self.character_name + "_character_set",
             pm.ls(ctrl_set, model_set, joint_set, skeletal_set),
         )
 
-    def _create_selection_set(self, name, members):
+    def _create_selection_set(self, name, members, parent=None):
         """Create a selection set if it doesn't already exist.
 
         Args:
@@ -220,6 +223,14 @@ class BaseRig:
             obj_set = pm.sets(name=name, empty=True)
             if members:
                 pm.sets(obj_set, add=members)
+
+            if self.main_set and pm.objExists(self.main_set):
+                pm.sets(self.main_set, add=obj_set)
+            elif parent and pm.objExists(parent):
+                pm.sets(parent, add=obj_set)
+            else:
+                pass
+
             return obj_set
         return pm.PyNode(name)
 
