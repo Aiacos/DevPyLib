@@ -13,7 +13,7 @@ from ngSkinTools2.api import init_layers, Layers
 from mayaLib.utility import bSkinSaver
 
 
-def select_skin_cluster_object():
+def get_skincluster_object():
     """
     Selects and returns a list of objects with skin clusters.
 
@@ -30,6 +30,22 @@ def select_skin_cluster_object():
         obj_shape = pm.skinCluster(skin_cluster, q=True, geometry=True)
         obj = pm.listRelatives(obj_shape, p=True)[0]
         object_list.append(obj)
+
+    return object_list
+
+
+def select_skin_cluster_object():
+    """
+    Selects and returns a list of objects with skin clusters.
+
+    This function identifies all objects in the scene that have skin clusters,
+    selects them, and returns a list of these objects.
+
+    Returns:
+        list: A list of PyNode objects that have skin clusters.
+    """
+
+    object_list = get_skincluster_object()
 
     pm.select(object_list)
     return object_list
