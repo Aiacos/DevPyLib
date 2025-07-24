@@ -52,26 +52,38 @@ def select_skin_cluster_object():
 
 
 def disable_inherits_transform_on_skin_clusters():
-    """
-    Disable InheritsTransform on all skinCluster object
-    :return:
+    """Disable inheritsTransform on all skinCluster objects.
+
+    This function will go through all the objects in the scene that have skin
+    clusters and disable the inheritsTransform attribute on the skin cluster.
+    This is useful when you want to transfer the skin weights from one object to
+    another object, such as when you want to transfer the skin weights from one
+    mesh to another mesh.
     """
     obj_list = select_skin_cluster_object()
     for obj in obj_list:
+        # disable inheritsTransform on the skincluster
         obj.inheritsTransform.set(0)
 
 
 def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
-    """
-    Copy skin weight to mirrored mesh
-    """
+    """Copy skin weight to mirrored mesh
 
+    Args:
+        selection (list, optional): A list of two PyNode objects. Defaults to pm.ls(sl=True).
+
+    Returns:
+        None
+    """
+    # Get the source and destination mesh from the selection
     source_mesh = selection[0]
     destination_mesh = selection[1]
 
+    # Find the skinCluster associated with the source and destination mesh
     source_skin_cluster = mel.eval("findRelatedSkinCluster " + source_mesh)
     destination_skin_cluster = mel.eval("findRelatedSkinCluster " + destination_mesh)
 
+    # Copy the skin weights from the source mesh to the destination mesh
     pm.copySkinWeights(
         ss=source_skin_cluster,
         ds=destination_skin_cluster,
@@ -83,40 +95,52 @@ def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
 
 def copy_bind(source, destination, sa="closestPoint", ia="closestJoint"):
     """
-    Bind and Copy skincluster to destination GEO
-    :param source: mesh str
-    :param destination: mesh str
-    :return:
+    Bind and copy skinCluster weights from the source mesh to the destination mesh.
+
+    Args:
+        source (str): The name of the source mesh.
+        destination (str): The name of the destination mesh.
+        sa (str, optional): Surface association method. Defaults to "closestPoint".
+        ia (str, optional): Influence association method. Defaults to "closestJoint".
+
+    Returns:
+        None
     """
-    # Get Shape and skin from Object
+    # Find the skinCluster associated with the source mesh
     skin_cluster = find_related_skin_cluster(source)
-    if skin_cluster:
-        skin = skin_cluster
-    else:
+    if not skin_cluster:
         print("Missing source SkinCluster")
+        return
 
-    # Get joint influence of the skin
-    influnces = skin.getInfluence(q=True)  # influences is joint
+    # Get joint influences from the source skinCluster
+    influences = skin_cluster.getInfluence(q=True)
 
-    # Bind destination Mesh
-    # pm.select(influnces[0])
-    # pm.select(destination, add=True)
-    # mel.eval('SmoothBindSkin;')
-    pm.skinCluster(influnces[0], destination, dr=4.0)
+    # Bind the destination mesh to the first influence from the source
+    pm.skinCluster(influences[0], destination, dr=4.0)
 
-    # copy skin wheights form source
-    pm.select(source)
-    pm.select(destination, add=True)
-    pm.copySkinWeights(noMirror=True, surfaceAssociation=sa, influenceAssociation=ia)
+    # Copy skin weights from the source mesh to the destination mesh
+    pm.copySkinWeights(
+        ss=skin_cluster,
+        ds=find_related_skin_cluster(destination),
+        noMirror=True,
+        surfaceAssociation=sa,
+        influenceAssociation=ia,
+    )
+
+    # Clear selection in Maya
     pm.select(cl=True)
 
 
 def copy_bind_selected(selection_list):
-    """
-    Bind and Copy skincluster to destination GEO selected in maya.
+    """Bind and Copy skincluster to destination GEO selected in maya.
+
     First selection is the source mesh, the others are the destination mesh.
-    :param selection_list: list of str, maya selection
-    :return: None
+
+    Args:
+        selection_list (list[str]): Maya selection
+
+    Returns:
+        None
     """
     source = selection_list[0]
     destination_list = selection_list[1:]
