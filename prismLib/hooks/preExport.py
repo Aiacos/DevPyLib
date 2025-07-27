@@ -1,11 +1,11 @@
-# This script will be executed after the execution of an export state in the Prism State Manager.
-# You can use this file to define project specific actions, like manipulating the outputfiles.
+# This script will be executed before the execution of an export state in the Prism State Manager.
+# You can use this file to define project specific actions, like cleaning up your scene or preparing objects for export.
 
 # Example:
-# print "Prism has exported objects."
-
+# print "Prism is going to export objects now."
 
 # If the main function exists in this script, it will be called.
+# The "kwargs" argument is a dictionary with usefull information about Prism and the current export.
 
 
 def detect_host_app() -> str:
