@@ -13,3 +13,4 @@ from . import spaces
 from . import stretchyIKChain
 from . import transform
 from . import util
+from . import line_of_action
