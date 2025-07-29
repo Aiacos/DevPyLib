@@ -1,5 +1,5 @@
 import pymel.core as pm
-from mayaLib.rigLib.utils.common import setDrivenKey
+from mayaLib.rigLib.utils.common import set_driven_key
 from mayaLib.rigLib.utils import humanIK
 from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
@@ -92,19 +92,19 @@ class BaseRig:
                 pm.warning(f"Destination object {dest} does not exist.")
                 continue
 
-        setDrivenKey(
+        set_driven_key(
             f"{source}.purpose",
             [0, 1, 2],
             f"{destination_list[0]}.visibility",
             [0, 1, 0],
         )
-        setDrivenKey(
+        set_driven_key(
             f"{source}.purpose",
             [0, 1, 2],
             f"{destination_list[1]}.visibility",
             [1, 0, 0],
         )
-        setDrivenKey(
+        set_driven_key(
             f"{source}.purpose",
             [0, 1, 2],
             f"{destination_list[2]}.visibility",

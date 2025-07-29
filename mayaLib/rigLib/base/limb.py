@@ -447,11 +447,11 @@ class Limb():
             tiltAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'tilt', defaultValue=0, keyable=True,
                                                     minValue=-90, maxValue=90)
             if lSide in prefix:
-                common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
-                common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
+                common.set_driven_key(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [90, 0, 0])
+                common.set_driven_key(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, -90])
             else:
-                common.setDrivenKey(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [-90, 0, 0])
-                common.setDrivenKey(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, 90])
+                common.set_driven_key(tiltAttr, [-90, 0, 90], innerRollGrp.rotateZ, [-90, 0, 0])
+                common.set_driven_key(tiltAttr, [-90, 0, 90], outerRollGrp.rotateZ, [0, 0, 90])
 
             # lean
             leanAttr = attributes.addFloatAttribute(mainIKCtrl.getControl(), 'lean', defaultValue=0, keyable=True,

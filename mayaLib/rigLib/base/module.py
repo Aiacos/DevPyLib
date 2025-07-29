@@ -133,10 +133,10 @@ class Base():
         levelGrp = [self.fastModelGrp, self.mediumModelGrp, self.slowModelGrp]
         pm.addAttr(self.globalCtrl.getControl(), ln=displayLevel, at='enum', enumName='fast:medium:slow', k=1, dv=1)
         pm.setAttr(self.globalCtrl.getControl() + '.' + displayLevel, cb=1)
-        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[0] + '.v', [1, 0, 0])
-        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[1] + '.v', [0, 1, 0])
-        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[2] + '.v', [0, 0, 1])
-        common.setDrivenKey(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v',
+        common.set_driven_key(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[0] + '.v', [1, 0, 0])
+        common.set_driven_key(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[1] + '.v', [0, 1, 0])
+        common.set_driven_key(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], levelGrp[2] + '.v', [0, 0, 1])
+        common.set_driven_key(self.globalCtrl.getControl() + '.' + displayLevel, [0, 1, 2], self.mediumSlowGrp + '.v',
                             [0, 1, 1])
 
         # create display control
@@ -250,8 +250,8 @@ class Module():
             levelGrp = [self.controlsGrp, self.secControlsGrp]
             pm.addAttr(displayCtrl, ln=prefix, at='enum', enumName='none:block:all', k=1, dv=1)
             pm.setAttr(displayCtrl + '.' + prefix, cb=1)
-            common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[0] + '.v', [0, 1, 1])
-            common.setDrivenKey(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[1] + '.v', [0, 0, 1])
+            common.set_driven_key(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[0] + '.v', [0, 1, 1])
+            common.set_driven_key(displayCtrl + '.' + prefix, [0, 1, 2], levelGrp[1] + '.v', [0, 0, 1])
 
         # parent module
         if baseObj:

@@ -57,7 +57,7 @@ def spaces(
         target = pm.listConnections(
             cnst.target[counter].targetWeight, source=True, plugs=True
         )[0]
-        common.setDrivenKey(
+        common.set_driven_key(
             destinationAttribute + "." + name, sourceValue, target, targetValue
         )
 

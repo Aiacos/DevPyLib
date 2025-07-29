@@ -564,7 +564,7 @@ def rp_grip():
                                    0)
                         pm.setAttr((ctg + "_parentConstraint1." + cj[i] + "W" + str(i)),
                                    1)
-                        pm.setDrivenKeyframe((ctg + "_parentConstraint1." + cj[x] + "W" + str(x)),
+                        pm.set_driven_keyframe((ctg + "_parentConstraint1." + cj[x] + "W" + str(x)),
                                              cd=(ct[0] + ".move"))
 
                 pm.setAttr((ct[0] + ".move"), (y + 1))

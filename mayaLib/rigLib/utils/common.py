@@ -122,7 +122,7 @@ def set_driven_key(
             step, and stepnext
     """
     for driver_v, driven_v in zip(driver_value_list, driven_value_list):
-        pm.setDrivenKeyframe(
+        pm.set_driven_keyframe(
             driven,
             currentDriver=driver,
             driverValue=driver_v,
