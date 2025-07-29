@@ -608,8 +608,70 @@ def create_line_of_action(geo, skeleton_geo, name_suffix="_loa_crv", space_scale
 
     # Create a curve between the locators in world space.
     cv_name = str(geo).replace("_geo", "") + name_suffix
-    p1 = cmds.getAttr("{0}.worldSpace[0]".format(locator_start))
-    p2 = cmds.getAttr("{0}.worldSpace[0]".format(locator_end))
+    p1 = cmds.xform(locator_start, q=True, t=True, ws=True)
+    p2 = cmds.xform(locator_end, q=True, t=True, ws=True)
     curve = cmds.curve(p=[p1, p2], degree=1, name=cv_name)
 
+    pm.delete(locator_start, locator_end)
+
     return curve
+
+
+def create_all_lines_of_action(
+    geos=None, skeleton_geo=None, name_suffix="_loa_crv", loa_grp="line_of_action_grp"
+):
+    """
+    Computes and creates all line of actions for a list of geos.
+
+    Args:
+        geos: A list of geometry objects.
+        skeleton_geo: Geometry object for the skeleton. If None, will be set to
+            "skeleton_grp". If "skeleton_grp", will duplicate the last one and use it as
+            a proxy.
+        name_suffix: Suffix to add to the geometry's name for the line of action curve.
+        loa_grp: Name of the group to parent all the line of action curves under.
+
+    Returns:
+        loa_grp: Name of the group for the line of action curves.
+        cv_list: List of names for the line of action curves.
+    """
+
+    if not geos:
+        muscle_grp = pm.ls("muscle_grp")[-1]
+        geos = muscle_grp.getChildren()
+
+    if not skeleton_geo or skeleton_geo == "skeleton_grp":
+        # Duplicate the skeleton geometry if it doesn't exist or is the default
+        # name.
+        skeleton_geo = pm.ls("skeleton_grp")[-1]
+        duplicate_skeleton = pm.duplicate(skeleton_geo, n="skeleton_duplicate_geo")[0]
+
+        # Combine all the duplicated skeleton into a single geometry.
+        combined_skeleton = pm.polyUnite(
+            duplicate_skeleton,
+            ch=False,
+            mergeUVSets=True,
+            centerPivot=False,
+            name="skeleton_proxy_geo",
+        )[-1]
+
+        combined_skeleton = str(combined_skeleton.name())
+
+    cv_list = []
+    for geo in geos:
+        # Compute and create the line of action curve for each geometry.
+        cv_name = str(geo).replace("_geo", "") + name_suffix
+        print(geo, combined_skeleton)
+        cv = create_line_of_action(geo, combined_skeleton, name_suffix=name_suffix)
+        cv_list.append(cv_name)
+
+    if not pm.objExists(loa_grp):
+        # Create the group for the line of action curves if it doesn't exist.
+        pm.group(n=loa_grp, em=True, p="guide")
+
+    # Parent all the line of action curves to the group.
+    pm.parent(cv_list, loa_grp)
+
+    # pm.delete(combined_skeleton)
+
+    return loa_grp, cv_list
