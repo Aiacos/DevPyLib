@@ -1,10 +1,14 @@
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import ast
 import inspect
 
 import pymel.core as pm
-from PySide2 import QtCore, QtWidgets
+
+try:
+    from PySide6 import QtCore, QtWidgets
+except:
+    from PySide2 import QtCore, QtWidgets
 
 import mayaLib.pipelineLib.utility.docs as doc
 
@@ -37,14 +41,14 @@ class FunctionUI(QtWidgets.QWidget):
 
         row = 0
         for arg in self.args:
-            if arg[0] != 'self':
+            if arg[0] != "self":
                 # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
 
                 if arg[1] is not None:
                     # Create a line edit or checkbox based on argument type
                     if isinstance(arg[1], bool):
-                        lineedit = QtWidgets.QCheckBox('')
+                        lineedit = QtWidgets.QCheckBox("")
                         lineedit.setChecked(arg[1])
                     else:
                         lineedit = QtWidgets.QLineEdit(str(arg[1]))
@@ -89,7 +93,10 @@ class FunctionUI(QtWidgets.QWidget):
         # Set window properties
         self.setWindowTitle(func.__name__)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding,
+        )
         self.setFocus()
 
     def fillWithSelected(self):
@@ -124,7 +131,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         # Set the text of the line edit to a comma separated string of the
         # names of the selected objects
-        lineedit.setText(', '.join(text_list))
+        lineedit.setText(", ".join(text_list))
 
     def getParameterList(self):
         """Returns a list of tuples, where each tuple contains the name of a
@@ -206,7 +213,7 @@ class FunctionUI(QtWidgets.QWidget):
         """
         counter = 0
         for arg in self.args:
-            if arg[0] != 'self':
+            if arg[0] != "self":
                 if defaultvisible:
                     # Show related widgets if the argument has a default value
                     if arg[1] is not None:
@@ -243,29 +250,35 @@ class FunctionUI(QtWidgets.QWidget):
                 param_list.append(value)
 
             # Check if the parameter is a list
-            elif '[' in value and ']' in value:
-                value = value.replace('[', '').replace(']', '').replace("'", "").replace(' ', '').split(',')
+            elif "[" in value and "]" in value:
+                value = (
+                    value.replace("[", "")
+                    .replace("]", "")
+                    .replace("'", "")
+                    .replace(" ", "")
+                    .split(",")
+                )
                 param_list.append(value)
 
             # Check if the parameter is a numeric value
-            elif value.replace('.', '', 1).isdigit():
+            elif value.replace(".", "", 1).isdigit():
                 value = ast.literal_eval(value)
                 param_list.append(value)
 
             # Check if the parameter is a string
-            elif value == 'True':
+            elif value == "True":
                 value = True
                 param_list.append(value)
-            elif value == 'False':
+            elif value == "False":
                 value = False
                 param_list.append(value)
-            elif value == '':
+            elif value == "":
                 value = None
                 param_list.append(value)
 
             # Check if the parameter is a string with comma separated values
-            elif ', ' in value:
-                value = value.split(', ')
+            elif ", " in value:
+                value = value.split(", ")
                 param_list.append(value)
 
             # If the parameter is a string without comma separated values

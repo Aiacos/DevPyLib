@@ -1,8 +1,16 @@
 import os, sys
-from PySide2 import QtCore
-from PySide2 import QtWidgets
-from shiboken2 import wrapInstance
-from PySide2 import QtGui as QtG
+
+try:
+    from PySide6 import QtCore
+    from PySide6 import QtGui as QtG
+    from PySide6 import QtWidgets
+    from shiboken6 import wrapInstance
+except:
+    from PySide2 import QtCore
+    from PySide2 import QtGui as QtG
+    from PySide2 import QtWidgets
+    from shiboken2 import wrapInstance
+
 import maya.cmds as cmds, maya.OpenMayaUI as omui, pymel.all as pm, maya.mel as mel, json, re
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 import maya.OpenMaya as OpenMaya, logging
