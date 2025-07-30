@@ -672,6 +672,6 @@ def create_all_lines_of_action(
     # Parent all the line of action curves to the group.
     pm.parent(cv_list, loa_grp)
 
-    # pm.delete(combined_skeleton)
+    pm.delete(combined_skeleton)
 
     return loa_grp, cv_list
