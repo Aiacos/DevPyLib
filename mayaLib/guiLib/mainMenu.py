@@ -12,6 +12,7 @@ from maya import mel
 
 try:
     from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6.QtGui import QAction
     from PySide6.QtCore import QObject, SIGNAL
     from shiboken6 import wrapInstance
 except:
@@ -52,7 +53,11 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.button, 0, QtCore.Qt.AlignRight)
         layout.setSpacing(0)
-        layout.setMargin(5)
+        try:
+            layout.setContentsMargins(5, 5, 5, 5)
+        except:
+            layout.setMargin(5)
+
 
         frameWidth = self.style().pixelMetric(QtWidgets.QStyle.PM_DefaultFrameWidth)
         buttonSize = self.button.sizeHint()
@@ -279,7 +284,10 @@ class MenuLibWidget(QtWidgets.QWidget):
         Returns:
             QAction: The created action.
         """
-        extractAction = QtWidgets.QAction(discipline, self)
+        try:
+            extractAction = QAction(discipline, self)
+        except:
+            extractAction = QtWidgets.QAction(discipline, self)
         extractAction.triggered.connect(lambda: self.buttonClicked(function))
         docText = doc.get_docs(function)
         extractAction.hovered.connect(lambda: self.buttonHover(docText))
@@ -403,9 +411,12 @@ class MainMenu(QtWidgets.QWidget):
         self.wAction.setDefaultWidget(self.libWindow)
 
         self.libMenu.addAction(self.wAction)
-        QObject.connect(
-            self.libWindow, SIGNAL("updateWidget()"), lambda: self.updateWidget(libPath)
-        )
+        try:
+            self.libWindow.updateWidget.connect(lambda: self.updateWidget(libPath))
+        except:
+            QObject.connect(
+                self.libWindow, SIGNAL("updateWidget()"), lambda: self.updateWidget(libPath)
+            )
         self.libMenu.triggered.connect(self.showWidget)
         print("Reloaded MayaLib!")
 
@@ -420,7 +431,8 @@ class MainMenu(QtWidgets.QWidget):
 
     def __del__(self):
         """Clean up resources when the object is deleted."""
-        self.libMenu.deleteLater()
+        if hasattr(self, 'libMenu') and self.libMenu is not None:
+            self.libMenu.deleteLater()
 
 
 def reload_package(package):
