@@ -48,7 +48,7 @@ def get_scene_unit():
         str: The unit of length used in the scene.
     """
 
-    return cmds.currentUnit(query=True, linear=True, fullName=True)
+    return cmds.currentUnit(query=True, linear=True)
 
 
 def set_scene_unit(unit="cm"):
