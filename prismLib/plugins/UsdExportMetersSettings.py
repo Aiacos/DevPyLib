@@ -28,32 +28,51 @@ class UsdExportMetersSettings:
         )
 
     def preMayaUSDExport(self, origin, options, outputPath):
-        """Customize the USD export settings in Maya.
+        """Modify the export settings for the USD exporter.
 
-        The USD export settings are modified here to set the unit to meters.
-        This is done by replacing or adding the "unit=m" parameter to the
-        options string.
+        The USD exporter's settings are passed as a string to this plugin.
+        The string is a semicolon-separated list of options where each option
+        is a key-value pair. This plugin will add the 'unit' option to the
+        list of options. The value of the 'unit' option is determined by the
+        current Maya unit setting. If the current unit is set to 'meter', the
+        'unit' option is set to 'cm', otherwise it is set to 'mayaPrefs'.
 
         Args:
-            origin (str): Origin of the command call.
-            options (str): Options string for the USD export.
-            outputPath (str): Output path of the USD export.
+            origin (str): The origin of the export.
+            options (str): The export settings.
+            outputPath (str): The path to the output file.
 
         Returns:
-            dict: Dictionary with the modified options string.
+            dict: A dictionary with the modified export settings.
         """
-        unit_param = ";unit=m"
-        if "unit=" in options:
-            # Replace the existing unit parameter with the new one
-            # This is done using a regular expression to ensure that
-            # the existing unit parameter is completely replaced
-            import re
 
-            options = re.sub(r"unit=\w+", unit_param, options)
+        unit_param = "mayaPrefs"
+
+        # Get the current Maya unit setting
+        import maya.cmds as cmds
+
+        current_unit = cmds.currentUnit(query=True, linear=True)
+
+        # Set the 'unit' option based on the current Maya unit setting
+        if current_unit == "cm":
+            unit_param = "cm"
+        elif current_unit == "m":
+            unit_param = "mayaPrefs"
         else:
-            # Add the unit parameter to the options string
-            options += unit_param + ";"
+            unit_param = "mayaPrefs"
 
-        print(f" ---------- PyCharm Customized USD export settings: {options}")
+        # Split the export settings into a list of options
+        parts = options.split(";")
 
+        # Remove any existing 'unit' options
+        filtered = [p for p in parts if p and not p.strip().startswith("unit=")]
+        # Add the new 'unit' option
+        filtered.append(f"unit={unit_param}")
+        # Join the options back into a string
+        options = ";".join(filtered)
+        # Add a trailing semicolon if it's not already there
+        if not options.endswith(";"):
+            options = options + ";"
+
+        # Return the modified export settings
         return {"options": options}
