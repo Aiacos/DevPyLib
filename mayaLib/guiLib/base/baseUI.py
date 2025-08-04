@@ -26,9 +26,9 @@ class FunctionUI(QtWidgets.QWidget):
         self.function = func
         # Retrieve the function signature using inspect
         if inspect.isclass(func):
-            self.sig = inspect.getargspec(func.__init__)
+            self.sig = inspect.signature(func.__init__)
         else:
-            self.sig = inspect.getargspec(func)
+            self.sig = inspect.signature(func)
 
         self.layout = QtWidgets.QGridLayout()
 
@@ -134,70 +134,24 @@ class FunctionUI(QtWidgets.QWidget):
         lineedit.setText(", ".join(text_list))
 
     def getParameterList(self):
-        """Returns a list of tuples, where each tuple contains the name of a
-        parameter and its default value. The list is sorted in the same order
-        as the parameters appear in the function signature.
+        """Returns a list of parameters for the UI.
 
-        Args:
-            None
+        This method returns a list of tuples, where the first element of each
+        tuple is the name of a parameter and the second element is the default
+        value for that parameter, if it exists.
 
         Returns:
-            A list of tuples. The first element of each tuple is the name of
-            a parameter, and the second element is its default value. The list
-            is sorted in the same order as the parameters appear in the
-            function signature. If a parameter has no default value, the second
-            element of the tuple is None.
+            list: A list of tuples, where each tuple contains a parameter name
+                and its default value.
         """
-        # Get the argument list
-        args = self.sig.args
-
-        # If there are no args, return an empty list
-        if len(args) == 0:
-            return []
-
-        # Get the varargs and keywords
-        varargs = self.sig.varargs
-        keywords = self.sig.keywords
-
-        # Get the default values
-        defaults = self.sig.defaults
-
-        # If there are no default values, set defaults to an empty list
-        if not defaults:
-            defaults = []
-
-        # Create a list to store the result
-        argspairs = []
-
-        # Iterate over the arguments
-        argslen = len(args)
-        deflen = len(defaults)
-
-        # Initialize counters
-        counter = 0
-        defcount = 0
-
-        for arg in args:
-            # If the counter is less than the length of the defaults list,
-            # set the default value to None
-            if counter < (argslen - deflen):
-                defval = None
-            # Otherwise, set the default value to the current element of
-            # the defaults list, and increment the counter
-            else:
-                defval = defaults[defcount]
-                defcount = defcount + 1
-
-            # Increment the counter
-            counter = counter + 1
-
-            # Create a tuple with the argument name and its default value
-            pair = [arg, defval]
-            # Append the tuple to the result list
-            argspairs.append(pair)
-
-        # Return the result list
-        return argspairs
+        result = []
+        for name, param in self.sig.parameters.items():
+            default = None
+            if param.default is not inspect.Parameter.empty:
+                # If the parameter has a default value, store it
+                default = param.default
+            result.append((name, default))
+        return result
 
     # SLOTS
     def toggleDefaultParameter(self, defaultvisible=False):
