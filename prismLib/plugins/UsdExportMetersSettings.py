@@ -28,24 +28,20 @@ class UsdExportMetersSettings:
         )
 
     def preMayaUSDExport(self, origin, options, outputPath):
-        """Modify the export settings for the USD exporter.
+        """
+        Callback that is called before USD export.
 
-        The USD exporter's settings are passed as a string to this plugin.
-        The string is a semicolon-separated list of options where each option
-        is a key-value pair. This plugin will add the 'unit' option to the
-        list of options. The value of the 'unit' option is determined by the
-        current Maya unit setting. If the current unit is set to 'meter', the
-        'unit' option is set to 'cm', otherwise it is set to 'mayaPrefs'.
+        This callback is used to customize the USD export settings based on the
+        current Maya unit setting.
 
         Args:
             origin (str): The origin of the export.
-            options (str): The export settings.
-            outputPath (str): The path to the output file.
+            options (str): The export settings as a string.
+            outputPath (str): The output path of the USD export.
 
         Returns:
-            dict: A dictionary with the modified export settings.
+            dict: The modified export settings.
         """
-
         unit_param = "mayaPrefs"
 
         # Get the current Maya unit setting
@@ -55,9 +51,13 @@ class UsdExportMetersSettings:
 
         # Set the 'unit' option based on the current Maya unit setting
         if current_unit == "cm":
-            unit_param = "cm"
+            unit_param = "none"
+
+            # cmds.currentUnit(linear="m")
+            # cmds.optionVar(category="Settings", stringValue=("workingUnitLinear", "m"))
+
         elif current_unit == "m":
-            unit_param = "mayaPrefs"
+            unit_param = "none"
         else:
             unit_param = "mayaPrefs"
 
