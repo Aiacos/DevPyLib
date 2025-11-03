@@ -5,11 +5,13 @@ import os.path
 # import pip
 import pathlib
 import platform
+import shutil
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zipfile
 
 import git
 import pymel.core as pm
@@ -71,23 +73,38 @@ class InstallLibrary:
 
         self.libUrl = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.homeUser = pathlib.Path.home()
-        self.winPath = "Documents"
-        self.linuxPath = "Documents"
-        self.osxPath = '/Library/Preferences/Autodesk'
-        self.mayaScriptPath = '/maya/scripts/'
-        self.wokspace_path = self.homeUser / "Documents" / "workspace"
 
+        # Cross-platform Maya script paths
         self.port = ':4434'
         self.libName = 'mayaLib'
 
-        if platform.system() == "Linux":
-            self.mayaScriptPath = self.homeUser / self.linuxPath / self.mayaScriptPath
-        elif platform.system() == "OSX":
-            self.mayaScriptPath = self.homeUser / self.osxPath / self.mayaScriptPath
-        elif platform.system() == "Windows":
-            self.mayaScriptPath = self.homeUser / self.linuxPath / self.mayaScriptPath
+        # Detect platform and set appropriate paths
+        current_platform = platform.system()
 
-        self.libDir = self.wokspace_path / 'DevPyLib'
+        if current_platform == "Linux":
+            # Linux: ~/maya/scripts or ~/Documents/maya/scripts
+            self.mayaScriptPath = self.homeUser / "maya" / "scripts"
+            if not self.mayaScriptPath.exists():
+                self.mayaScriptPath = self.homeUser / "Documents" / "maya" / "scripts"
+            self.workspace_path = self.homeUser / "workspace"
+            if not self.workspace_path.exists():
+                self.workspace_path = self.homeUser / "Documents" / "workspace"
+
+        elif current_platform == "Darwin":  # macOS
+            # macOS: ~/Library/Preferences/Autodesk/maya/scripts
+            self.mayaScriptPath = self.homeUser / "Library" / "Preferences" / "Autodesk" / "maya" / "scripts"
+            self.workspace_path = self.homeUser / "Documents" / "workspace"
+
+        elif current_platform == "Windows":
+            # Windows: %USERPROFILE%\Documents\maya\scripts
+            self.mayaScriptPath = self.homeUser / "Documents" / "maya" / "scripts"
+            self.workspace_path = self.homeUser / "Documents" / "workspace"
+        else:
+            # Fallback for unknown platforms
+            self.mayaScriptPath = self.homeUser / "Documents" / "maya" / "scripts"
+            self.workspace_path = self.homeUser / "Documents" / "workspace"
+
+        self.libDir = self.workspace_path / 'DevPyLib'
 
 
     def installFromGit(self, gitUrl='https://github.com/Aiacos/DevPyLib'):
@@ -140,10 +157,24 @@ class InstallLibrary:
                   if there was any error during the process.
         """
 
-        mayaEnvPath = self.homeUser / "Documents" / "maya" / str(pm.about(version=True)) / "Maya.env"
+        # Cross-platform Maya.env path detection
+        maya_version = str(pm.about(version=True))
+        current_platform = platform.system()
 
-        maya_app_dir = "MAYA_APP_DIR = " + self.libDir # "C:\Users\ %USERNAME %\Documents\workspace\DevPyLib"
-        python_path = "PYTHONPATH = " + self.libDir # C:\Users\ %USERNAME %\Documents\workspace\DevPyLib"
+        if current_platform == "Linux":
+            # Linux: ~/maya/<version>/Maya.env
+            mayaEnvPath = self.homeUser / "maya" / maya_version / "Maya.env"
+            if not mayaEnvPath.parent.exists():
+                mayaEnvPath = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
+        elif current_platform == "Darwin":  # macOS
+            # macOS: ~/Library/Preferences/Autodesk/maya/<version>/Maya.env
+            mayaEnvPath = self.homeUser / "Library" / "Preferences" / "Autodesk" / "maya" / maya_version / "Maya.env"
+        else:  # Windows
+            # Windows: %USERPROFILE%\Documents\maya\<version>\Maya.env
+            mayaEnvPath = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
+
+        maya_app_dir = "MAYA_APP_DIR = " + str(self.libDir)
+        python_path = "PYTHONPATH = " + str(self.libDir)
 
         try:
             if os.path.exists(mayaEnvPath):
@@ -316,7 +347,7 @@ class InstallLibrary:
         Download the library from the given URL.
 
         This method will download the library to the given path, unzip it,
-        and then remove the zip file.
+        and then remove the zip file. Cross-platform implementation using zipfile.
 
         Args:
             zipFilename (str): The name of the zip file to download.
@@ -325,29 +356,47 @@ class InstallLibrary:
             None
         """
 
-        cd_cmd = 'cd ' + self.mayaScriptPath + ' && '
+        download_dir = pathlib.Path(self.mayaScriptPath)
+        zip_path = download_dir / zipFilename
+        extracted_dir = download_dir / 'DevPyLib-master'
 
-        if os.path.isdir(self.mayaScriptPath + 'DevPyLib-master'):
-            rm_cmd = cd_cmd + 'rm -R ' + 'DevPyLib-master'
-            os.system(rm_cmd)
+        # Remove existing directory if present
+        if extracted_dir.exists():
+            try:
+                shutil.rmtree(extracted_dir)
+                print(f"Removed existing directory: {extracted_dir}")
+            except Exception as e:
+                print(f"Error removing directory: {e}")
 
-        # download
-        urllib.request.urlretrieve(self.libUrl, self.mayaScriptPath + zipFilename, self.reporthook)
+        # Download
+        try:
+            urllib.request.urlretrieve(self.libUrl, str(zip_path), self.reporthook)
+            print(f"Downloaded to: {zip_path}")
+        except Exception as e:
+            print(f"Error downloading file: {e}")
+            return
 
-        # unzip
-        unzip_cmd = cd_cmd + 'unzip ' + zipFilename
-        os.system(unzip_cmd)
+        # Unzip using zipfile module (cross-platform)
+        try:
+            with zipfile.ZipFile(str(zip_path), 'r') as zip_ref:
+                zip_ref.extractall(str(download_dir))
+            print(f"Extracted to: {download_dir}")
+        except Exception as e:
+            print(f"Error extracting zip file: {e}")
+            return
 
-        # remove
-        rm_cmd = cd_cmd + 'rm -R ' + zipFilename
-        os.system(rm_cmd)
+        # Remove zip file
+        try:
+            zip_path.unlink()
+            print(f"Removed zip file: {zip_path}")
+        except Exception as e:
+            print(f"Error removing zip file: {e}")
 
     def delete(self):
         """
         Delete the DevPyLib-master directory from the Maya script path.
 
-        This method constructs a command to navigate to the Maya script path
-        and remove the 'DevPyLib-master' directory if it exists.
+        Cross-platform implementation using shutil.
 
         Args:
             None
@@ -356,11 +405,14 @@ class InstallLibrary:
             None
         """
 
-        cd_cmd = 'cd ' + self.mayaScriptPath + ' && '
-        # remove
-        if os.path.isdir(self.mayaScriptPath + 'DevPyLib-master'):
-            rm_cmd = cd_cmd + 'rm -R DevPyLib-master'
-            os.system(rm_cmd)
+        delete_dir = pathlib.Path(self.mayaScriptPath) / 'DevPyLib-master'
+
+        if delete_dir.exists():
+            try:
+                shutil.rmtree(delete_dir)
+                print(f"Deleted directory: {delete_dir}")
+            except Exception as e:
+                print(f"Error deleting directory: {e}")
 
 
 if __name__ == "__main__":
