@@ -12,6 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
+from textwrap import dedent
 
 import git
 import pymel.core as pm
@@ -19,32 +20,36 @@ import pymel.core as pm
 
 # import installCmd
 def buildInstallCmd(libDir, libName, port):
-    installCommand = \
-        """
+    lib_dir_literal = repr(libDir)
+    port_literal = repr(str(port))
+    lib_name_literal = repr(libName)
+    installCommand = dedent(
+        f"""
         # Install mayaLib
         import sys
         import importlib
         import maya.cmds as cmds
         import maya.utils
 
-        libDir = '""" + libDir + """'
-port = '""" + str(port) + """'
-libName = '""" + libName + """'
+        libDir = {lib_dir_literal}
+        port = {port_literal}
+        libName = {lib_name_literal}
 
-# Open Maya port
-if not cmds.commandPort(port, q=True):
-    cmds.commandPort(n=port)
+        # Open Maya port
+        if not cmds.commandPort(port, q=True):
+            cmds.commandPort(n=port)
 
-# Add develpment PATH
-if not libDir in sys.path:
-    sys.path.append(libDir)
-    __import__(libName)
-else:
-    importlib.reload(__import__(libName))
+        # Add development PATH
+        if libDir not in sys.path:
+            sys.path.append(libDir)
+            __import__(libName)
+        else:
+            importlib.reload(__import__(libName))
 
-import mayaLib.guiLib.mainMenu as mm
-cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
-"""
+        import mayaLib.guiLib.mainMenu as mm
+        cmds.evalDeferred(f"libMenu = mm.MainMenu({lib_dir_literal})")
+        """
+    )
 
     return installCommand
 
@@ -121,7 +126,7 @@ class InstallLibrary:
 
         try:
             print("Cloning: ", gitUrl, " in folder: ", self.libDir)
-            repo = git.Repo.clone_from(gitUrl, self.libDir)
+            git.Repo.clone_from(gitUrl, self.libDir)
             print("Clone Complete")
             return True
         except Exception as e:
@@ -245,19 +250,13 @@ class InstallLibrary:
         userSetup_path = self.mayaScriptPath
         fileName = 'userSetup.py'
         filePath = pathlib.Path(userSetup_path) / fileName
-        if os.path.isdir(userSetup_path):
-            if os.path.exists(filePath):
-                # append
-                f = open(filePath, 'a')
-                f.write('\n')
-                f.write(self.installCommand)
-
-                f.close()
+        if userSetup_path.is_dir():
+            if filePath.exists():
+                with filePath.open('a', encoding='utf-8') as handle:
+                    handle.write('\n')
+                    handle.write(self.installCommand)
             else:
-                # create and append
-                f = open(filePath, 'w')
-                f.write(self.installCommand)
-                f.close()
+                filePath.write_text(self.installCommand, encoding='utf-8')
         else:
             print('ERROR: Directory not exist!')
 
@@ -305,16 +304,10 @@ class InstallLibrary:
         userSetup_path = self.mayaScriptPath
         fileName = 'userSetup.py'
         filePath = pathlib.Path(userSetup_path) / fileName
-        if os.path.isdir(userSetup_path):
-            if os.path.exists(filePath):
-                f = open(filePath, 'r')
-                script = f.read()
-                f.close()
-
-                f = open(filePath, 'w')
-                script = script.replace(self.installCommand, '')
-                f.write(script)
-                f.close()
+        if userSetup_path.is_dir():
+            if filePath.exists():
+                script = filePath.read_text(encoding='utf-8')
+                filePath.write_text(script.replace(self.installCommand, ''), encoding='utf-8')
 
         self.delete()
 

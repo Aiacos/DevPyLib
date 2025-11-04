@@ -5,9 +5,12 @@ import maya.OpenMayaUI as omui
 try:
     from PySide6 import QtWidgets
     from shiboken6 import wrapInstance
-except:
-    from PySide2 import QtWidgets
-    from shiboken2 import wrapInstance
+except ImportError:
+    try:
+        from PySide2 import QtWidgets
+        from shiboken2 import wrapInstance
+    except ImportError as exc:
+        raise ImportError("PySide6 or PySide2 is required to run this module") from exc
 
 
 def getMayaMainWindow():

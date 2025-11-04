@@ -1,8 +1,6 @@
 import maya.mel as mel
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import util
-from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.utils import dynamic
 
 
@@ -43,7 +41,7 @@ class Cloth(object):
         # self.nucleus.enable.set(0)
 
         # setup Colliders
-        collision_data_list = self.collisionSetup(collision_geo_list)
+        self.collisionSetup(collision_geo_list)
 
         # sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
         # deform.deltaMushDeformer(sim_geo_list)
@@ -124,7 +122,7 @@ class Cloth(object):
         # Select all edges
         mel.eval("SelectAll;")
         mel.eval("polySelectConstraint -pp 3;")
-        edges = pm.ls(sl=True)
+        pm.ls(sl=True)
         # mel.eval('polySelectContraint -dis;')
 
         # Grow the selection by a specified amount
@@ -191,7 +189,7 @@ class Cloth(object):
             try:
                 # Construct the selection string
                 vertex_select_list.append("{0}.vtx[{1}]".format(geo, vertex))
-            except:
+            except Exception:
                 print("Skip vtx: ", vertex)
 
         # Select the vertices

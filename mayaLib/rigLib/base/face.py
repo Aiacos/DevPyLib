@@ -82,7 +82,7 @@ class Face():
 
             fullClusterList.extend(curveClusters)
 
-        clusterGrp = pm.group(fullClusterList, n='faceCluster_GRP', p=self.rigmodule.partsNoTransGrp)
+        pm.group(fullClusterList, n='faceCluster_GRP', p=self.rigmodule.partsNoTransGrp)
 
         follicleList = []
         for loc, cls in zip(fullLocList, fullClusterList):
@@ -95,7 +95,7 @@ class Face():
 
             follicle = followCtrl.makeControlFollowSkin(skinGeo, ctrl.getControl(), cls)[-1]
             follicleList.extend([follicle])
-        follicleGrp = pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
+        pm.group(follicleList, n='faceFollicle_GRP', p=self.rigmodule.partsNoTransGrp)
 
     def setupCurve(self, cv, pointsNumber, sphereSize=0.1, offsetActive=False, locSize=0.1, jointRadius=0.1,
                    follow=False):
@@ -130,7 +130,7 @@ class Face():
             # pm.parent(sphereShape, joint, r=True, s=True)
             # pm.delete(sphereObj)
 
-        locGrp = pm.group(locatorList, n=cvName + 'Loc_GRP', p=self.rigmodule.partsNoTransGrp)
+        pm.group(locatorList, n=cvName + 'Loc_GRP', p=self.rigmodule.partsNoTransGrp)
 
         return locatorList
 

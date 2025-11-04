@@ -1,10 +1,23 @@
-import mayaLib.animationLib
-import mayaLib.bifrostLib
-import mayaLib.fluidLib
-import mayaLib.guiLib
-import mayaLib.lookdevLib
-import mayaLib.modelLib
-import mayaLib.pipelineLib
-import mayaLib.rigLib
-import mayaLib.shaderLib
-import mayaLib.utility
+from . import animationLib
+from . import bifrostLib
+from . import fluidLib
+from . import guiLib
+from . import lookdevLib
+from . import modelLib
+from . import pipelineLib
+from . import rigLib
+from . import shaderLib
+from . import utility
+
+__all__ = [
+    "animationLib",
+    "bifrostLib",
+    "fluidLib",
+    "guiLib",
+    "lookdevLib",
+    "modelLib",
+    "pipelineLib",
+    "rigLib",
+    "shaderLib",
+    "utility",
+]

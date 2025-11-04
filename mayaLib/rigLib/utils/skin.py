@@ -8,7 +8,7 @@ import maya.mel as mel
 import pymel.core as pm
 from ngSkinTools2 import api as ngst_api
 from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
-from ngSkinTools2.api import init_layers, Layers
+from ngSkinTools2.api import init_layers
 
 from mayaLib.utility import bSkinSaver
 
@@ -299,7 +299,7 @@ def ng_batch_export(geo_list, path):
 
         skincluster = find_related_skin_cluster(geo)
         layers = init_layers(str(skincluster.name()))
-        layer_base = layers.add("base weights")
+        layers.add("base weights")
 
         ngst_api.export_json(str(geo.name()), file=str(output_file_name))
 
@@ -324,7 +324,7 @@ def ng_batch_import(geo_list, path, influence_list=pm.ls("*_FS_jnt")):
 
         skincluster = find_related_skin_cluster(geo)
         layers = init_layers(str(skincluster.name()))
-        layer_base = layers.add("base weights")
+        layers.add("base weights")
 
         # configure how influences described in a file will be matched against the scene
         config = InfluenceMappingConfig()

@@ -278,7 +278,8 @@ class BVHImporterDialog(object):
                     if "Frame" not in line:
                         data = line.split(" ")
                         if len(data) > 0:
-                            if data[0] == "": data.pop(0)
+                            if data[0] == "":
+                                data.pop(0)
 
                         if self._debug:
                             print("Animating..")

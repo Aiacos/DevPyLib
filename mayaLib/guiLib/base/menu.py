@@ -43,10 +43,11 @@ class Menu():
             parent = self.lib_menu.name()
 
         # Create a menu item with or without an image
+        callback = pm.Callback(cmd)
         if image is None:
-            self.item[item_name] = pm.menuItem(item_name, p=parent, command=cmd.__name__ + '()')
+            self.item[item_name] = pm.menuItem(item_name, p=parent, command=callback)
         else:
-            self.item[item_name] = pm.menuItem(item_name, p=parent, command=cmd.__name__ + '()', image=image)
+            self.item[item_name] = pm.menuItem(item_name, p=parent, command=callback, image=image)
 
         # Return the last part of the parent path
         ret_parent = self.item[item_name]
@@ -67,7 +68,7 @@ class Menu():
             parent = self.lib_menu.name()
 
         self.item[item_name] = pm.menuItem(
-            item_name, p=parent, command=cmd.__name__ + '()', checkBox=True
+            item_name, p=parent, command=pm.Callback(cmd), checkBox=True
         )
         ret_parent = self.item[item_name]
         return ret_parent.rpartition('|')[-1]

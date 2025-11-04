@@ -15,8 +15,9 @@ try:
     from PySide6.QtGui import QAction
     from PySide6.QtCore import QObject, SIGNAL
     from shiboken6 import wrapInstance
-except:
+except ImportError:
     from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2.QtWidgets import QAction
     from PySide2.QtCore import QObject, SIGNAL
     from shiboken2 import wrapInstance
 
@@ -53,9 +54,9 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.button, 0, QtCore.Qt.AlignRight)
         layout.setSpacing(0)
-        try:
+        if hasattr(layout, "setContentsMargins"):
             layout.setContentsMargins(5, 5, 5, 5)
-        except:
+        else:
             layout.setMargin(5)
 
 
@@ -284,10 +285,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         Returns:
             QAction: The created action.
         """
-        try:
-            extractAction = QAction(discipline, self)
-        except:
-            extractAction = QtWidgets.QAction(discipline, self)
+        extractAction = QAction(discipline, self)
         extractAction.triggered.connect(lambda: self.buttonClicked(function))
         docText = doc.get_docs(function)
         extractAction.hovered.connect(lambda: self.buttonHover(docText))
@@ -413,7 +411,7 @@ class MainMenu(QtWidgets.QWidget):
         self.libMenu.addAction(self.wAction)
         try:
             self.libWindow.updateWidget.connect(lambda: self.updateWidget(libPath))
-        except:
+        except AttributeError:
             QObject.connect(
                 self.libWindow, SIGNAL("updateWidget()"), lambda: self.updateWidget(libPath)
             )

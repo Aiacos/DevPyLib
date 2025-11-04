@@ -588,8 +588,8 @@ def create_line_of_action(geo, skeleton_geo, name_suffix="_loa_crv", space_scale
     )
 
     # Extract start and end points and indices.
-    start_index = extremal_vertices_data["start_index"]
-    end_index = extremal_vertices_data["end_index"]
+    extremal_vertices_data["start_index"]
+    extremal_vertices_data["end_index"]
     start_point = extremal_vertices_data["start_point"]
     end_point = extremal_vertices_data["end_point"]
 
@@ -662,7 +662,7 @@ def create_all_lines_of_action(
         # Compute and create the line of action curve for each geometry.
         cv_name = str(geo).replace("_geo", "") + name_suffix
         print(geo, combined_skeleton)
-        cv = create_line_of_action(geo, combined_skeleton, name_suffix=name_suffix)
+        create_line_of_action(geo, combined_skeleton, name_suffix=name_suffix)
         cv_list.append(cv_name)
 
     if not pm.objExists(loa_grp):

@@ -34,6 +34,7 @@ import sys
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 from maya.mel import eval as meval
+import maya.cmds as cmds
 
 kPluginNodeTypeName = "collisionDeformer"
 
@@ -41,7 +42,6 @@ collisionDeformerId = OpenMaya.MTypeId(0x0010A52B)
 
 # Some global variables were moved from MPxDeformerNode to MPxGeometryFilter.
 # Set some constants to the proper C++ cvars based on the API version.
-import maya.cmds as cmds
 
 kApiVersion = cmds.about(apiVersion=True)
 if kApiVersion < 201600:
@@ -72,14 +72,11 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
     def compute(self, plug, dataBlock):
         # variable definitions
-        vector = OpenMaya.MVector()
-        normvector = OpenMaya.MVector()
         point = OpenMaya.MPoint()
 
         pointNormal = OpenMaya.MVector()
         colliderPointNormal = OpenMaya.MVector()
-        distanceVector = OpenMaya.MVector()
-        deformedPoints = OpenMaya.MFloatPointArray()
+        OpenMaya.MFloatPointArray()
         deformedPointsIndices = []
 
         pointInfo = OpenMaya.MPointOnMesh()
@@ -87,11 +84,9 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
         emptyFloatArray = OpenMaya.MFloatArray()
 
         inMeshNormal = OpenMaya.MVector()
-        connectedPnts = []
-        maxDistance = 0
         worldPoint = OpenMaya.MFloatPoint()
 
-        previndex = OpenMaya.MScriptUtil().asIntPtr()
+        OpenMaya.MScriptUtil().asIntPtr()
         indirPointInfo = OpenMaya.MPointOnMesh()
 
         # Handles
@@ -100,7 +95,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
         multiIndex = plug.logicalIndex()
         thisNode = self.thisMObject()
 
-        nodeFn = OpenMaya.MFnDependencyNode(thisNode)
+        OpenMaya.MFnDependencyNode(thisNode)
 
         envelope = kEnvelope
         envelopeHandle = dataBlock.inputValue(envelope)
@@ -133,7 +128,6 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
         hInput.jumpToArrayElement(multiIndex)
 
         inputGeom = kInputGeom
-        groupId = kGroupId
 
         hInputElement = hInput.inputValue()
         hInputGeom = hInputElement.child(inputGeom)
@@ -165,18 +159,18 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
         try:
             colliderObject = colliderHandle.asMesh()
             colliderFn = OpenMaya.MFnMesh(colliderObject)
-            colliderIter = OpenMaya.MItMeshVertex(colliderHandle.asMesh())
+            OpenMaya.MItMeshVertex(colliderHandle.asMesh())
             polycount = colliderFn.numPolygons()
             colliderFn.getVertices(pcounts, pconnect)
             colliderFn.getPoints(colliderPoints, OpenMaya.MSpace.kObject)
-        except:
+        except Exception:
             # print "can't get collidermesh. check connection to deformer node!"
             pass
 
-        vertexcount = self.newpoints.length()
+        self.newpoints.length()
 
         dataCreator = OpenMaya.MFnMeshData()
-        newColliderData = OpenMaya.MObject(dataCreator.create())
+        OpenMaya.MObject(dataCreator.create())
 
         colliderMatrixHandle = dataBlock.inputValue(self.colliderMatrix)
         colliderMatrixValue = floatMMatrixToMMatrix_(colliderMatrixHandle.asFloatMatrix())
@@ -208,7 +202,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
                 try:
                     colliderFn.createInPlace(colliderPoints.length(), polycount, newColliderPoints, pcounts, pconnect)
-                except:
+                except Exception:
                     # print "Can't create offset copy"
                     pass
 
@@ -216,7 +210,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
             try:
                 self.intersector.create(colliderObject, colliderMatrixValue)
                 self.mmAccelParams = colliderFn.autoUniformGridParams()
-            except:
+            except Exception:
                 # print "Can't create intersector"
                 pass
 
@@ -241,7 +235,6 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
                 idsSorted = True
                 space = OpenMaya.MSpace.kWorld
                 maxParam = thresholdValue
-                tolerance = 1e-9
 
                 # testBothDirs = False
                 testBothDirs = True
@@ -258,10 +251,10 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
                     gotHit = colliderFn.allIntersections(raySource, rayDirection, faceIds, triIds, idsSorted, space,
                                                          maxParam, testBothDirs, accelParams, sortHits, hitPoints1,
                                                          hitRayParams, hitFaces, hitTriangles, hitBary1s, hitBary2s)
-                except:
+                except Exception:
                     break
 
-                if gotHit == True:
+                if gotHit:
                     # need this to check if collider is in range for collision, because gotHit may also be true if the collider lies half way outside the maxParam
 
                     hitCount = hitPoints1.length()
@@ -295,7 +288,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
                         closePoint = OpenMaya.MPoint(pointInfo.getPoint())
                         closePointNormal = OpenMaya.MFloatVector(pointInfo.getNormal())
 
-                        offsetVector = OpenMaya.MVector(closePointNormal.x, closePointNormal.y, closePointNormal.z)
+                        OpenMaya.MVector(closePointNormal.x, closePointNormal.y, closePointNormal.z)
 
                         # normal angle check for backface culling, if the angle is bigger then 90 the face lies on the opposite side of the collider mesh
                         angle = closePointNormal * rayDirection
@@ -354,7 +347,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
             if offsetValue != 0:
                 try:
                     colliderFn.createInPlace(colliderPoints.length(), polycount, baseColliderPoints, pcounts, pconnect)
-                except:
+                except Exception:
                     # print "Can't reset offset copy"
                     pass
 
@@ -448,18 +441,18 @@ def nodeInitializer():
     eAttr = OpenMaya.MFnEnumAttribute()
 
     collisionDeformer.backface = eAttr.create("backface_culling", "bkcul", 0)
-    eAttr.addField("off", 0);
-    eAttr.addField("on", 1);
-    eAttr.setHidden(False);
-    eAttr.setKeyable(True);
-    eAttr.setStorable(True);
+    eAttr.addField("off", 0)
+    eAttr.addField("on", 1)
+    eAttr.setHidden(False)
+    eAttr.setKeyable(True)
+    eAttr.setStorable(True)
 
     collisionDeformer.sculptmode = eAttr.create("sculpt_mode", "snmd", 0)
-    eAttr.addField("off", 0);
-    eAttr.addField("on", 1);
-    eAttr.setHidden(False);
-    eAttr.setKeyable(True);
-    eAttr.setStorable(True);
+    eAttr.addField("off", 0)
+    eAttr.addField("on", 1)
+    eAttr.setHidden(False)
+    eAttr.setKeyable(True)
+    eAttr.setStorable(True)
 
     # add attribute
     try:
@@ -482,7 +475,7 @@ def nodeInitializer():
         collisionDeformer.attributeAffects(collisionDeformer.backface, outputGeom)
         collisionDeformer.attributeAffects(collisionDeformer.sculptmode, outputGeom)
         collisionDeformer.attributeAffects(collisionDeformer.bulgeshape, outputGeom)
-    except:
+    except Exception:
         sys.stderr.write("Failed to create attributes of %s node\n" % kPluginNodeTypeName)
 
 
@@ -492,7 +485,7 @@ def initializePlugin(mobject):
     try:
         mplugin.registerNode(kPluginNodeTypeName, collisionDeformerId, nodeCreator, nodeInitializer,
                              OpenMayaMPx.MPxNode.kDeformerNode)
-    except:
+    except Exception:
         sys.stderr.write("Failed to register node: %s\n" % kPluginNodeTypeName)
 
 
@@ -501,7 +494,7 @@ def uninitializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
         mplugin.deregisterNode(collisionDeformerId)
-    except:
+    except Exception:
         sys.stderr.write("Failed to unregister node: %s\n" % kPluginNodeTypeName)
 
 

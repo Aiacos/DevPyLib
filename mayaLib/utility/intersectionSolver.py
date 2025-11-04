@@ -22,13 +22,13 @@ windowName = 'intersectionSolver'
 
 def createPfxToon(arg=None):
     sel = mc.ls(mc.listRelatives(c=True), fl=True)
-    if mc.objExists('pfxToon_set') !=True:
+    if not mc.objExists('pfxToon_set'):
         mc.sets(sel, n='pfxToon_set')
     else:
         mc.sets(sel, e=True, fe='pfxToon_set')
     target = mc.sets('pfxToon_set', q=True)
-    
-    if mc.objExists('pfxToonCollisionDetectShape') != True:
+
+    if not mc.objExists('pfxToonCollisionDetectShape'):
         pfxToonNode = mc.createNode('pfxToon', n='pfxToonCollisionDetectShape', p='pfxToonCollisioneDetect')
         mc.setAttr(pfxToonNode +'.profileLines', 0)
         mc.setAttr(pfxToonNode +'.creaseLines', 0)
@@ -46,9 +46,9 @@ def createPfxToon(arg=None):
         i+=1
 
 def removePfxToon(arg=None):
-    if mc.objExists('pfxToon_set') == True:
+    if mc.objExists('pfxToon_set'):
         mc.delete('pfxToon_set')
-    if mc.objExists('pfxToonCollisionDetect') == True:
+    if mc.objExists('pfxToonCollisionDetect'):
         mc.delete('pfxToonCollisionDetect')
 
 def nearClipChange(arg=None):
@@ -74,13 +74,13 @@ def findCollision(null):
     for each in sel:
         mc.polyTriangulate(each, ch=1)
     mc.ls(sel)
-    rigidBodyStr = mc.rigidBody(sel, active=True, m=1, dp=0, sf=0.2, df=0.2, b=0.6, l=0, tf=200, iv=(0,0,0), iav=(0,0,0), c=0, pc=0, i=(0,0,0), imp=(0,0,0), si=(0,0,0), sio='none')
+    mc.rigidBody(sel, active=True, m=1, dp=0, sf=0.2, df=0.2, b=0.6, l=0, tf=200, iv=(0,0,0), iav=(0,0,0), c=0, pc=0, i=(0,0,0), imp=(0,0,0), si=(0,0,0), sio='none')
 
     mc.setAttr('rigidSolver.collisionTolerance', 0.0001)
     mc.select(cl=True)
-    mc.currentTime(1);
-    mc.currentTime(2);
-    mc.currentTime(1);
+    mc.currentTime(1)
+    mc.currentTime(2)
+    mc.currentTime(1)
 
     global collisionResults
     collisionResults = mc.ls(sl=True)
@@ -100,7 +100,7 @@ def selectResults(null):
 def applyCollision(none):
     flushCBB()
 
-    start = time.time()
+    time.time()
 
     selOrig = mc.ls(sl=True, fl=True)
     selDup = []
@@ -121,7 +121,7 @@ def applyCollision(none):
     newSetsList = []
     for i in range(0, len(setsList)):
         newSetsList.append(mc.sets(setsList[i], q=True))
-        newSetsList[i] = [x for x in newSetsList[i] if not 'transform' in x]
+        newSetsList[i] = [x for x in newSetsList[i] if 'transform' not in x]
 
     mc.select(cl=True)
 
@@ -139,7 +139,7 @@ def applyCollision(none):
     newSetsList = []
     for i in range(0, len(setsList)):
         newSetsList.append(mc.sets(setsList[i], q=True))
-        newSetsList[i] = [x for x in newSetsList[i] if not 'transform' in x]
+        newSetsList[i] = [x for x in newSetsList[i] if 'transform' not in x]
 
     mc.DeleteHistory()
 
@@ -179,8 +179,6 @@ def applyCollision(none):
     mc.select(selOrig)
     mc.DeleteHistory()
     mc.delete(boolMeshName)
-
-    end = time.time() - start
 
 def relaxBrush(arg=None):
     mel.eval('setMeshSculptTool "Relax";')

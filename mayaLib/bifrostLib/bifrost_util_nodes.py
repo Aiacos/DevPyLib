@@ -1,4 +1,5 @@
 import importlib as imp
+from contextlib import suppress
 
 from mayaLib.bifrostLib import bifrost_api as bifrost
 
@@ -296,7 +297,12 @@ def build_referece_peyload(bifrost_shape, layer_name='Reference_layer', is_paylo
             bifrost.bf_set_node_property(bifrost_shape, compound + "/" + variant_selector_node, 'variant_set_name', 'modeling')
             bifrost.bf_set_node_property(bifrost_shape, compound + "/" + variant_selector_node, 'selection', 'default')
 
-            variant_set_port = bifrost.bf_add_input_port(bifrost_shape, compound + "/" + define_usd_prim_node, 'variant_set_definitions.variant_set_definition', 'auto')
+            bifrost.bf_add_input_port(
+                bifrost_shape,
+                compound + "/" + define_usd_prim_node,
+                'variant_set_definitions.variant_set_definition',
+                'auto',
+            )
             bifrost.bf_connect(bifrost_shape, compound + "/" + variant_selector_node + '.variant_set_definition', compound + "/" + define_usd_prim_node + '.variant_set_definitions.variant_set_definition')
 
     return '/' + compound
@@ -379,39 +385,51 @@ def build_preview_compound(bifrost_shape, working_layer_name='WORKING_MODELING',
 
     # Create Ports
     compound = compound.replace('/', '')
-    compound_layers_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "sublayers", "array<BifrostUsd::Layer>")
+    _ = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "sublayers", "array<BifrostUsd::Layer>")
     compound_file_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "file", "string")
-    step_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "step", "string")
-    custom_data_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "custom_data", "auto")
+    _ = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "step", "string")
+    _ = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "custom_data", "auto")
 
-    try:
-        working_buildstring_input = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + build_string_node, "strings.output", "string")
-    except:
-        pass
+    with suppress(Exception):
+        bifrost.bf_add_input_port(
+            bifrost_shape,
+            compound + '/' + build_string_node,
+            "strings.output",
+            "string",
+        )
 
-    try:
-        step_buffer_input = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + build_string_node, "strings.output1", "string")
-    except:
-        pass
+    with suppress(Exception):
+        bifrost.bf_add_input_port(
+            bifrost_shape,
+            compound + '/' + build_string_node,
+            "strings.output1",
+            "string",
+        )
 
-    stage_layer_input = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + create_layer_node, "sublayers.sublayers", "array<BifrostUsd::Layer>")
-    file_layer_input = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + create_stage_node, "sublayers.layer", "auto")
+    _ = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + create_layer_node, "sublayers.sublayers", "array<BifrostUsd::Layer>")
+    _ = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + create_stage_node, "sublayers.layer", "auto")
 
-    try:
-        sublayers_array_input = bifrost.bf_add_input_port(bifrost_shape, compound + "/" + create_stage_node, "sublayers.external_layers", "auto")
-    except:
-        pass
+    with suppress(Exception):
+        bifrost.bf_add_input_port(
+            bifrost_shape,
+            compound + "/" + create_stage_node,
+            "sublayers.external_layers",
+            "auto",
+        )
 
     compound_stage_output = bifrost.bf_add_input_port(bifrost_shape, compound + '/output', "out_stage", "BifrostUsd::Stage")
     id_output = bifrost.bf_add_input_port(bifrost_shape, compound + '/output', "id", "auto")
 
-    foreach_split_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/' + for_each_node + '/input', "split", "auto")
-    foreach_layer_output = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + for_each_node + '/output', "layer", "auto")
+    _ = bifrost.bf_add_output_port(bifrost_shape, compound + '/' + for_each_node + '/input', "split", "auto")
+    _ = bifrost.bf_add_input_port(bifrost_shape, compound + '/' + for_each_node + '/output', "layer", "auto")
 
-    try:
-        working_layer_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/' + for_each_node + '/input', "working_layer", "auto")
-    except:
-        pass
+    with suppress(Exception):
+        bifrost.bf_add_output_port(
+            bifrost_shape,
+            compound + '/' + for_each_node + '/input',
+            "working_layer",
+            "auto",
+        )
 
     # Connections
     bifrost.bf_connect(bifrost_shape, compound + ".sublayers", compound + "/" + create_layer_node + '.sublayers.sublayers')
@@ -499,12 +517,10 @@ def get_data_from_layer(bifrost_shape, layer_node, product_name):
     compound = bifrost.bf_create_compound(bifrost_shape, compound_node_list=node_list, compound_name=product_name + '_data_compound')
 
     # Complete compound
-    compound_stage_output = bifrost.bf_add_input_port(bifrost_shape, compound + '/output', "out_data", "auto")
+    bifrost.bf_add_input_port(bifrost_shape, compound + '/output', "out_data", "auto")
     bifrost.bf_connect(bifrost_shape, compound + "/" + product_dict_property + '.out_object', compound + '.out_data')
 
-    compound_stage_input = bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "in_data", "auto")
+    bifrost.bf_add_output_port(bifrost_shape, compound + '/input', "in_data", "auto")
     bifrost.bf_connect(bifrost_shape, compound + '.in_data', compound + "/" + product_dict_property + '.object')
 
     return compound
-
-

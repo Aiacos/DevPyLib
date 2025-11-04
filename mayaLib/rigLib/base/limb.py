@@ -528,10 +528,8 @@ class Arm():
             """
 
             limbCtrlInstanceList = []
-            handFeetCtrlInstanceList = []
 
             limbCtrlConstraintList = []
-            handFeetCtrlConstraintList = []
 
             # Arm/Leg
             for jnt in limbJoints:
@@ -591,4 +589,4 @@ class Arm():
 
         pm.parentConstraint(mainIKCtrl.C, footRollGrpList[-1], mo=True)
         pm.parentConstraint(footRollGrpList[1], ballCtrl.getOffsetGrp(), mo=True)
-        handIKOrientContraint = pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)
+        pm.orientConstraint(mainIKCtrl.C, limbJoints[2], mo=True)

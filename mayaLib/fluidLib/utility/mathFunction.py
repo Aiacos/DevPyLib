@@ -3,7 +3,7 @@ __author__ = "Lorenzo Argentieri"
 import math
 
 
-def repart_function(x, l=15):
+def repart_function(x, lambda_val=15):
     """
     Repartition function.
 
@@ -12,13 +12,13 @@ def repart_function(x, l=15):
 
     Args:
         x (float): The input value.
-        l (float, optional): The lambda value. Defaults to 15.
+        lambda_val (float, optional): The lambda value. Defaults to 15.
 
     Returns:
         float: The output value.
     """
     e = math.e
-    y = 1 - e ** (-1 * (l * x))
+    y = 1 - e ** (-1 * (lambda_val * x))
     return y
 
 

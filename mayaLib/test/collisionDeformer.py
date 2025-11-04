@@ -52,7 +52,7 @@ class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
                                             colliderBoundingBoxMaxVal[2]))
 
                 # set up point on mesh and intersector for returning closest point and accelParams if required
-                pointOnMesh = OpenMaya.MPointOnMesh()
+                OpenMaya.MPointOnMesh()
                 self.intersector.create(inColliderMesh, colliderMatrixVal)
 
                 # set up constants for allIntersections
@@ -165,7 +165,7 @@ def initializePlugin(obj):
     try:
         plugin.registerNode('collisionDeformer', collisionDeformer.kPluginNodeId, creator, initialize,
                             OpenMayaMPx.MPxNode.kDeformerNode)
-    except:
+    except Exception:
         raise RuntimeError('Failed to register node')
 
 
@@ -173,7 +173,7 @@ def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterNode(collisionDeformer.kPluginNodeId)
-    except:
+    except Exception:
         raise RuntimeError('Failed to deregister node')
 
 

@@ -175,7 +175,7 @@ def initializePlugin( mobject ):
 	try:
 		mplugin.registerNode( kPluginNodeName, kPluginNodeId, nodeCreator, initialize )
 		om.MGlobal.executeCommand( AEtemplateString( kPluginNodeName ) )
-	except:
+	except Exception:
 		sys.stderr.write( "Failed to register node: " + kPluginNodeName )
 		raise
 
@@ -184,6 +184,6 @@ def uninitializePlugin(mobject):
 	mplugin = om2.MFnPlugin( mobject )
 	try:
 		mplugin.deregisterNode( kPluginNodeId )
-	except:
+	except Exception:
 		sys.stderr.write( 'Failed to deregister node: ' + kPluginNodeName )
 		raise

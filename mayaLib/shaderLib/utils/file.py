@@ -25,7 +25,7 @@ class TextureFile(object):  # ToDo: move in util?
 
         try:
             self._partition()
-        except:
+        except Exception:
             print('No matching pattern for texture')
 
     def _partition(self):
@@ -127,7 +127,7 @@ class TextureFileManager(object):
                 if d[geo_key][textureset_key]['Diffuse'] == {}:
                     try:
                         d[geo_key].pop(textureset_key)
-                    except:
+                    except Exception:
                         pass
         return d
 

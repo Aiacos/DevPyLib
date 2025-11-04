@@ -575,7 +575,7 @@ def rp_grip():
 def rp_surface():
     """..............................................................................................//"""
 
-    ncj = int(pm.intField('NCJ', q=1, v=1))
+    int(pm.intField('NCJ', q=1, v=1))
     # > control joints
     rn = float(pm.intField('NJ', q=1, v=1))
     bz = int(pm.checkBoxGrp('CTJP', q=1, v1=1))

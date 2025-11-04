@@ -119,10 +119,10 @@ def create_line_of_action(obj, skeleton):
     Returns:
         The created curve and a list of zRivet nodes
     """
-    z_fiber = add_ziva_fiber(obj)
+    add_ziva_fiber(obj)
     curve = create_loa_curve(obj)
     rivets = rivet_curve(curve, skeleton)
-    z_line_of_action = add_loa(curve, obj)
+    add_loa(curve, obj)
 
     return curve, rivets
 

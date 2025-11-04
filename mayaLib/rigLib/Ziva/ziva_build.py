@@ -348,8 +348,8 @@ class ZivaSkin(ZivaBase):
         wrap_geo_list = []
         for fat_geo, skin_geo in zip(self.fat_list, self.skin_list):
             wrap_geo = pm.duplicate(skin_geo, n=str(skin_geo.name()).replace('_geo', 'wrap_msh'))[-1]
-            wrap_node = deform.wrapDeformer(wrap_geo, fat_geo)
-            bs_node = deform.blendShapeDeformer(skin_geo, [wrap_geo], str(skin_geo.name()).replace('_geo', '_wrap_BS'))
+            deform.wrapDeformer(wrap_geo, fat_geo)
+            deform.blendShapeDeformer(skin_geo, [wrap_geo], str(skin_geo.name()).replace('_geo', '_wrap_BS'))
 
             wrap_geo_list.append(wrap_geo)
 

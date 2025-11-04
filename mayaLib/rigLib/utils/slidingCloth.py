@@ -52,7 +52,7 @@ class SlidingCloth():
         shrinkWrapDeformer.projection.set(4)
         shrinkWrapDeformer.targetInflation.set(0.01)
 
-        polySmoothDeformer = pm.polySmooth(self.proxyClothGeo)[0]
+        pm.polySmooth(self.proxyClothGeo)[0]
 
         # wrap main Cloth Geo
         if proximityWrap:

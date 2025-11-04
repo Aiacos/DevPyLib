@@ -19,18 +19,6 @@ import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds as cmds
 import maya.mel
 
-import maya.OpenMayaUI as omui
-import pathlib
-
-try:
-    from PySide6 import QtCore, QtWidgets, QtGui
-    from PySide6.QtCore import QObject, SIGNAL
-    from shiboken6 import wrapInstance
-except:
-    from PySide2 import QtCore, QtWidgets, QtGui
-    from PySide2.QtCore import QObject, SIGNAL
-    from shiboken2 import wrapInstance
-
 # def showUI():
 #     global mainWin
 #     mainWin = bSkinSaverUI()
@@ -165,7 +153,6 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
 
     line = ""
     fileJoints = []
-    weights = []
     splittedStrings = []
     splittedWeights = []
     selectionList = OpenMaya.MSelectionList()
@@ -192,10 +179,7 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
         print("select a skinned object")
 
     fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
-    input = open(inputFile, "r")
 
-    fileJoints = []
-    weightLines = []
     filePosition = 0
 
     # getting the weightLines
@@ -207,54 +191,62 @@ def bLoadVertexSkinValues(inputFile, ignoreJointLocks):
 
     bindVertCount = 0
     didCheckSoftSelection = False
-    while True:
-        line = input.readline().strip()
-        if not line:
-            break
+    doSoftSelection = False
+    softWeights = []
+    weightsIndex = 1
 
-        if filePosition == 0:
-            vertexCount = int(line)
-            if OpenMaya.MItGeometry(node).count() != vertexCount:
-                print("vertex counts don't match!")
-                return
-            filePosition = 1
+    with open(inputFile, "r", encoding="utf-8") as input_stream:
+        while True:
+            raw_line = input_stream.readline()
+            if not raw_line:
+                break
+            line = raw_line.strip()
+            if not line:
+                break
 
-        elif filePosition == 1:
-            if not line.startswith("========"):
-                fileJoints.append(line)
-            else:
-                filePosition = 2
+            if filePosition == 0:
+                vertexCount = int(line)
+                if OpenMaya.MItGeometry(node).count() != vertexCount:
+                    print("vertex counts don't match!")
+                    return
+                filePosition = 1
 
-        elif filePosition == 2:
-            splittedStrings = line.split(":")
-
-            # do we have softselection?
-            if not didCheckSoftSelection:
-                if len(splittedStrings) == 3:
-                    weightsIndex = 2
-                    doSoftSelection = True
-                    softWeights = [1.0] * bindVertCount
+            elif filePosition == 1:
+                if not line.startswith("========"):
+                    fileJoints.append(line)
                 else:
-                    weightsIndex = 1
-                    doSoftSelection = False
-                didCheckSoftSelection = True
+                    filePosition = 2
 
-            # vertId
-            vertId = int(splittedStrings[0])
-            fnVtxComp.addElement(vertId)
+            elif filePosition == 2:
+                splittedStrings = line.split(":")
 
-            # softselection
-            if doSoftSelection:
-                softWeights.append(float(splittedStrings[1]))
+                # do we have softselection?
+                if not didCheckSoftSelection:
+                    if len(splittedStrings) == 3:
+                        weightsIndex = 2
+                        doSoftSelection = True
+                        softWeights = [1.0] * bindVertCount
+                    else:
+                        weightsIndex = 1
+                        doSoftSelection = False
+                    didCheckSoftSelection = True
 
-            # weights
-            splittedWeights = splittedStrings[weightsIndex].split(" ")
-            fileWeightFloats.append(list(map(float, splittedWeights)))
+                # vertId
+                vertId = int(splittedStrings[0])
+                fnVtxComp.addElement(vertId)
 
-            # for k in range(len(fileJoints)):
-            #    fileWeightFloats[bindVertCount].append(float(splittedWeights[k]))
+                # softselection
+                if doSoftSelection:
+                    softWeights.append(float(splittedStrings[1]))
 
-            bindVertCount += 1
+                # weights
+                splittedWeights = splittedStrings[weightsIndex].split(" ")
+                fileWeightFloats.append(list(map(float, splittedWeights)))
+
+                bindVertCount += 1
+
+    bSkinPath = OpenMaya.MDagPath()
+    fnSkinCluster.getPathAtIndex(0, bSkinPath)
 
     # print('fileWeightFloats: ', fileWeightFloats)
 
@@ -444,7 +436,7 @@ def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
         return
 
     output = open(inputFile, "w")
-    output.write(str(OpenMaya.MItGeometry(bSkinPath).count()) + "\n")
+    output.write(str(OpenMaya.MItGeometry(dagPath).count()) + "\n")
 
     fnVtxComp = OpenMaya.MFnSingleIndexedComponent()
     vtxComponents = OpenMaya.MObject()
@@ -460,7 +452,7 @@ def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
     vertexCount = meshIter.count()
     scriptUtil = OpenMaya.MScriptUtil()
     infCountPtr = scriptUtil.asUintPtr()
-    fnSkinCluster.getWeights(bSkinPath, vtxComponents, WeightArray, infCountPtr)
+    fnSkinCluster.getWeights(dagPath, vtxComponents, WeightArray, infCountPtr)
     infCount = OpenMaya.MScriptUtil.getUint(infCountPtr)
 
     weightCheckArray = []
@@ -517,91 +509,90 @@ def bSaveVertexSkinValues(inputFile, ignoreSoftSelection):
 def bSaveSkinValues(inputFile):
     timeBefore = time.time()
 
-    output = open(inputFile, "w")
+    with open(inputFile, "w", encoding="utf-8") as output:
 
-    selection = OpenMaya.MSelectionList()
-    OpenMaya.MGlobal.getActiveSelectionList(selection)
+        selection = OpenMaya.MSelectionList()
+        OpenMaya.MGlobal.getActiveSelectionList(selection)
 
-    iterate = OpenMaya.MItSelectionList(selection)
+        iterate = OpenMaya.MItSelectionList(selection)
 
-    while not iterate.isDone():
-        node = OpenMaya.MDagPath()
-        component = OpenMaya.MObject()
-        iterate.getDagPath(node, component)
-        if not node.hasFn(OpenMaya.MFn.kTransform):
-            print(
-                (
-                    OpenMaya.MFnDagNode(node).name()
-                    + " is not a Transform node (need to select transform node of polyMesh)"
-                )
-            )
-        else:
-            objectName = OpenMaya.MFnDagNode(node).name()
-            newTransform = OpenMaya.MFnTransform(node)
-            for childIndex in range(newTransform.childCount()):
-                childObject = newTransform.child(childIndex)
-                if (
-                    childObject.hasFn(OpenMaya.MFn.kMesh)
-                    or childObject.hasFn(OpenMaya.MFn.kNurbsSurface)
-                    or childObject.hasFn(OpenMaya.MFn.kCurve)
-                ):
-                    skinCluster = bFindSkinCluster(
-                        OpenMaya.MFnDagNode(childObject).partialPathName()
+        while not iterate.isDone():
+            node = OpenMaya.MDagPath()
+            component = OpenMaya.MObject()
+            iterate.getDagPath(node, component)
+            if not node.hasFn(OpenMaya.MFn.kTransform):
+                print(
+                    (
+                        OpenMaya.MFnDagNode(node).name()
+                        + " is not a Transform node (need to select transform node of polyMesh)"
                     )
-                    if skinCluster is not False:
-                        bSkinPath = OpenMaya.MDagPath()
-                        fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
-                        fnSkinCluster.getPathAtIndex(0, bSkinPath)
-                        influenceArray = OpenMaya.MDagPathArray()
-                        fnSkinCluster.influenceObjects(influenceArray)
-                        influentsCount = influenceArray.length()
-                        output.write(objectName + "\n")
-
-                        for k in range(influentsCount):
-                            jointTokens = str(influenceArray[k].fullPathName()).split(
-                                "|"
-                            )
-                            jointTokens = jointTokens[len(jointTokens) - 1].split(":")
-                            output.write(jointTokens[len(jointTokens) - 1] + "\n")
-
-                        output.write("============\n")
-
-                        fnVtxComp = OpenMaya.MFnSingleIndexedComponent()
-                        vtxComponents = OpenMaya.MObject()
-                        vtxComponents = fnVtxComp.create(
-                            OpenMaya.MFn.kMeshVertComponent
+                )
+            else:
+                objectName = OpenMaya.MFnDagNode(node).name()
+                newTransform = OpenMaya.MFnTransform(node)
+                for childIndex in range(newTransform.childCount()):
+                    childObject = newTransform.child(childIndex)
+                    if (
+                        childObject.hasFn(OpenMaya.MFn.kMesh)
+                        or childObject.hasFn(OpenMaya.MFn.kNurbsSurface)
+                        or childObject.hasFn(OpenMaya.MFn.kCurve)
+                    ):
+                        skinCluster = bFindSkinCluster(
+                            OpenMaya.MFnDagNode(childObject).partialPathName()
                         )
+                        if skinCluster is not False:
+                            bSkinPath = OpenMaya.MDagPath()
+                            fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
+                            fnSkinCluster.getPathAtIndex(0, bSkinPath)
+                            influenceArray = OpenMaya.MDagPathArray()
+                            fnSkinCluster.influenceObjects(influenceArray)
+                            influentsCount = influenceArray.length()
+                            output.write(objectName + "\n")
 
-                        vertexCount = OpenMaya.MFnMesh(bSkinPath).numVertices()
-                        for i in range(vertexCount):
-                            fnVtxComp.addElement(i)
+                            for k in range(influentsCount):
+                                jointTokens = str(influenceArray[k].fullPathName()).split(
+                                    "|"
+                                )
+                                jointTokens = jointTokens[len(jointTokens) - 1].split(":")
+                                output.write(jointTokens[len(jointTokens) - 1] + "\n")
 
-                        WeightArray = OpenMaya.MFloatArray()
-                        scriptUtil = OpenMaya.MScriptUtil()
-                        infCountPtr = scriptUtil.asUintPtr()
-                        fnSkinCluster.getWeights(
-                            bSkinPath, vtxComponents, WeightArray, infCountPtr
-                        )
-                        infCount = OpenMaya.MScriptUtil.getUint(infCountPtr)
+                            output.write("============\n")
 
-                        for i in range(vertexCount):
-                            # saveString = ' '.join(map(str,WeightArray[i*infCount : (i+1)*infCount]))
-                            saveString = " ".join(
-                                [
-                                    "0" if x == 0 else str(x)
-                                    for n, x in enumerate(
-                                        WeightArray[i * infCount : (i + 1) * infCount]
-                                    )
-                                ]
+                            fnVtxComp = OpenMaya.MFnSingleIndexedComponent()
+                            vtxComponents = OpenMaya.MObject()
+                            vtxComponents = fnVtxComp.create(
+                                OpenMaya.MFn.kMeshVertComponent
                             )
 
-                            output.write(saveString + "\n")
+                            vertexCount = OpenMaya.MFnMesh(bSkinPath).numVertices()
+                            for i in range(vertexCount):
+                                fnVtxComp.addElement(i)
 
-                        output.write("\n")
+                            WeightArray = OpenMaya.MFloatArray()
+                            scriptUtil = OpenMaya.MScriptUtil()
+                            infCountPtr = scriptUtil.asUintPtr()
+                            fnSkinCluster.getWeights(
+                                bSkinPath, vtxComponents, WeightArray, infCountPtr
+                            )
+                            infCount = OpenMaya.MScriptUtil.getUint(infCountPtr)
 
-        next(iterate)
+                            for i in range(vertexCount):
+                                # saveString = ' '.join(map(str,WeightArray[i*infCount : (i+1)*infCount]))
+                                saveString = " ".join(
+                                    [
+                                        "0" if x == 0 else str(x)
+                                        for n, x in enumerate(
+                                            WeightArray[i * infCount : (i + 1) * infCount]
+                                        )
+                                    ]
+                                )
 
-    output.close()
+                                output.write(saveString + "\n")
+
+                            output.write("\n")
+
+            next(iterate)
+
     print(("done saving weights, it took ", (time.time() - timeBefore), " seconds."))
 
 
@@ -642,14 +633,13 @@ def bSkinObject(objectName, fileJoints, weights):
     # create some arrays
     #
     allJointsHere = False
-    totalJointsCount = len(fileJoints)
     fileJointsMapArray = list(range(len(fileJoints)))
     objectEmptyJoints = []
 
     # let's check if there's already a skinCluster, let's try to use that - if it contains all the needed joints
     #
     skinCluster = bFindSkinCluster(objectName)
-    if type(skinCluster) != type(True):
+    if not isinstance(skinCluster, bool):
         fnSkinCluster = OpenMayaAnim.MFnSkinCluster(skinCluster)
         influentsArray = OpenMaya.MDagPathArray()
         infCount = fnSkinCluster.influenceObjects(influentsArray)
@@ -679,7 +669,6 @@ def bSkinObject(objectName, fileJoints, weights):
             for i in range(len(influenceStringArray)):
                 if not objectFoundJointsInFile[i]:
                     objectEmptyJoints.append(i)
-            totalJointsCount = len(fileJointsMapArray) + len(objectEmptyJoints)
 
             # print 'jointMapArray: ', fileJointsMapArray
 
@@ -786,7 +775,7 @@ def bLoadSkinValues(loadOnSelection, inputFile):
     weights = []
     PolygonObject = ""
 
-    if loadOnSelection == True:
+    if loadOnSelection:
         selectionList = OpenMaya.MSelectionList()
         OpenMaya.MGlobal.getActiveSelectionList(selectionList)
         node = OpenMaya.MDagPath()
@@ -805,39 +794,39 @@ def bLoadSkinValues(loadOnSelection, inputFile):
         print("You need to select a polygon object")
         return
 
-    input = open(inputFile, "r")
+    with open(inputFile, "r", encoding="utf-8") as input_stream:
 
-    FilePosition = 0
-    while True:
-        line = input.readline()
-        if not line:
-            break
+        FilePosition = 0
+        while True:
+            line = input_stream.readline()
+            if not line:
+                break
 
-        line = line.strip()
+            line = line.strip()
 
-        if FilePosition != 0:
-            if not line.startswith("============"):
-                if FilePosition == 1:
-                    joints.append(line)
-                elif FilePosition == 2:
-                    if len(line) > 0:
-                        weights.append(line)
-                    else:
-                        bSkinObject(PolygonObject, joints, weights)
-                        PolygonObject = ""
-                        joints = []
-                        weights = []
-                        FilePosition = 0
-                        if loadOnSelection == True:
-                            break
+            if FilePosition != 0:
+                if not line.startswith("============"):
+                    if FilePosition == 1:
+                        joints.append(line)
+                    elif FilePosition == 2:
+                        if len(line) > 0:
+                            weights.append(line)
+                        else:
+                            bSkinObject(PolygonObject, joints, weights)
+                            PolygonObject = ""
+                            joints = []
+                            weights = []
+                            FilePosition = 0
+                            if loadOnSelection:
+                                break
 
-            else:  # it's ========
-                FilePosition = 2
+                else:  # it's ========
+                    FilePosition = 2
 
-        else:  # FilePosition == 0
-            if not loadOnSelection:
-                PolygonObject = line
-            FilePosition = 1
+            else:  # FilePosition == 0
+                if not loadOnSelection:
+                    PolygonObject = line
+                FilePosition = 1
 
             if cmds.objExists(PolygonObject):
                 maya.mel.eval("select " + PolygonObject)
@@ -864,13 +853,14 @@ def getSoftSelection():
         dagPath.pop()  # Grab the parent of the shape node
         node = dagPath.fullPathName()
         fnComp = OpenMaya.MFnSingleIndexedComponent(component)
-        getWeight = (
-            lambda i: fnComp.weight(i).influence() if fnComp.hasWeights() else 1.0
-        )
+        def get_weight(index):
+            if fnComp.hasWeights():
+                return fnComp.weight(index).influence()
+            return 1.0
 
         for i in range(fnComp.elementCount()):
             elements.append("%s.vtx[%i]" % (node, fnComp.element(i)))
-            weights.append(getWeight(i))
+            weights.append(get_weight(i))
         next(iter)
 
     return elements, weights

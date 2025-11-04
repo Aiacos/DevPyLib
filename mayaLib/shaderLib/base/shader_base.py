@@ -280,11 +280,9 @@ class Shader_base(object):
 
         if color:
             file_node.colorSpace.set('sRGB')
-            plug = file_node.outColor
         else:
             file_node.colorSpace.set('Raw')
             file_node.alphaIsLuminance.set(1)
-            plug = file_node.outAlpha
 
         if '.10' in name:
             file_node.uvTilingMode.set(3)

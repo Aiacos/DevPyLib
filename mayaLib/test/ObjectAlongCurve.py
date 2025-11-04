@@ -94,11 +94,11 @@ class JointChainCurve(object):
 def extract_feather_curves(geo, edge_idx_list):
     cv_list = []
     for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list))):
-        tmp_loop_idx = pm.polySelect(geo, edgeLoop=loop_idx)
+        pm.polySelect(geo, edgeLoop=loop_idx)
         # min_edge = min(tmp_loop_idx)
         # max_edge = max(tmp_loop_idx)
         # pm.polySelect(geo, edgeLoopPath=[min_edge, max_edge])
-        loop = pm.ls(sl=True)
+        pm.ls(sl=True)
         cv = pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1)[0]
 
         if i % 2:
@@ -132,7 +132,7 @@ def deleteConnection(plug):
             cmds.delete(plug, icn=True)
 
 
-def pointMode():
+def pointMode(curve, pointsNumber, nameBuilder_locator, spacing):
     for p in range(1, pointsNumber):
         if p == 1:
             cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=nameBuilder_locator + str(p))
@@ -141,9 +141,9 @@ def pointMode():
         # joint
 
 
-def pathMode(path):
+def pathMode(path, pointsNumber, spacing):
     nameBuilder_locator = path + "_loc"
-    nameBuilder_joint = path + "_jnt"
+    path + "_jnt"
     locatorList = []
     for p in range(1, pointsNumber):
         if p == 1:

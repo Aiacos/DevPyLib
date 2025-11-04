@@ -7,7 +7,7 @@ import pymel.core as pm
 
 try:
     from PySide6 import QtCore, QtWidgets
-except:
+except ImportError:
     from PySide2 import QtCore, QtWidgets
 
 import mayaLib.pipelineLib.utility.docs as doc

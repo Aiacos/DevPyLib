@@ -26,7 +26,7 @@ def create_nCloth(geo, source_geo=None, rest_mesh=None):
     clothShape = pm.ls(mel.eval('createNCloth 0;'))[-1]
     nucleus = pm.listConnections(clothShape, type='nucleus')[0]
 
-    cloth_geo = pm.listConnections(clothShape.outputMesh)[0]
+    pm.listConnections(clothShape.outputMesh)[0]
     pm.rename(clothShape.getParent(), str(geo.name()) + '_nCloth')
     pm.parent(clothShape.getParent(), geo)
 
@@ -102,7 +102,7 @@ class DynamicCurve():
         self.nucleus = pm.listConnections(self.hairSystem.getShape().currentState, destination=True)
         try:
             pm.parent(self.nucleus, self.dynamicSystemGrp)
-        except:
+        except Exception:
             pass
 
         # regroup

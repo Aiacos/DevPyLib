@@ -72,7 +72,7 @@ def ctrl_paintEffect(cv_list):
 
     ctrl_geo_grp = pm.group(em=True, n='ctrl_geo_grp')
     stroke_grp = pm.group(stroke_list, n='stroke_grp', p=ctrl_geo_grp)
-    cv_geo_grp = pm.group(ctrl_geo_list, n='ctrl_geo_grp', p=ctrl_geo_grp)
+    pm.group(ctrl_geo_list, n='ctrl_geo_grp', p=ctrl_geo_grp)
 
     pm.hide(stroke_grp)
 
@@ -97,9 +97,9 @@ def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, 
     ctrl_list = pm.ls(ctrl_list)
 
     if sweep:
-        sweep_geo_list = add_sweep(ctrl_list)
+        add_sweep(ctrl_list)
     else:
-        sweep_geo_list = ctrl_paintEffect(ctrl_list)
+        ctrl_paintEffect(ctrl_list)
 
         for cv in ctrl_list:
             cv_shape_list = cv.getShapes()
@@ -113,7 +113,7 @@ def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, 
 
                 try:
                     rgb_color = pm.colorIndex(cv.overrideColor.get(), q=True)
-                except:
+                except Exception:
                     if cv.getShape().overrideEnabled.get() == 0:
                         cv.getShape().overrideEnabled.set(1)
                         cv.getShape().ovc.set(1)

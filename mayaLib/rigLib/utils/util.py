@@ -376,9 +376,9 @@ def getPlanarRadiusBBOXFromTransform(transform, radiusFactor=2):
     hypotenuseXYZ = get_distance_from_coords([xmin, ymin, zmin], [xmax, ymax, zmax])
 
     # Calculate center distances for each axis
-    cX = get_distance_from_coords([xmin, 0, 0], [xmax, 0, 0])
-    cY = get_distance_from_coords([0, ymin, 0], [0, ymax, 0])
-    cZ = get_distance_from_coords([0, 0, zmin], [0, 0, zmax])
+    get_distance_from_coords([xmin, 0, 0], [xmax, 0, 0])
+    get_distance_from_coords([0, ymin, 0], [0, ymax, 0])
+    get_distance_from_coords([0, 0, zmin], [0, 0, zmax])
 
     # Create a dictionary of radii divided by the radius factor
     radiusDict = {

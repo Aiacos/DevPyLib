@@ -1,6 +1,6 @@
 import glob
 from pathlib import Path
-from PIL import Image, ImageFilter
+from PIL import Image
 
 
 def gamma_correction(img, gamma):
@@ -43,24 +43,20 @@ def split_channels(image_file, image_name, extension='.png', colorspace='None'):
     image_path = Path(image_file)
     if not image_path.is_absolute():
         image_path = Path.cwd() / image_path
-    image = Image.open(image_path)
-
-    image = colorspace_conversion(image, colorspace)
-
-    r, g, b = image.split()
-    r.save(image_name + '_metallic' + extension)
-    g.save(image_name + '_roughness' + extension)
-    b.save(image_name + '_ao' + extension)
+    with Image.open(image_path) as src_image:
+        converted = colorspace_conversion(src_image, colorspace)
+        r_channel, g_channel, b_channel = converted.split()
+        r_channel.save(image_name + '_metallic' + extension)
+        g_channel.save(image_name + '_roughness' + extension)
+        b_channel.save(image_name + '_ao' + extension)
 
 def convert_to_png(image_file, image_name, extension='.png', colorspace='None'):
     image_path = Path(image_file)
     if not image_path.is_absolute():
         image_path = Path.cwd() / image_path
-    image = Image.open(image_path)
-
-    image = colorspace_conversion(image, colorspace)
-
-    image.save(image_name + extension)
+    with Image.open(image_path) as src_image:
+        converted = colorspace_conversion(src_image, colorspace)
+        converted.save(image_name + extension)
 
 def get_all_texture(extension_list=None):
     if extension_list is None:
@@ -103,7 +99,6 @@ class TextureManager:
                 self.rename_texture(tex)
 
     def split_texture(self, texture):
-        channel = str(texture.split('.')[0]).split('_')[-1]
         name = str(texture.split('.')[0])
         name = name.replace('_MT_R_AO', '').replace('_OcclusionRoughnessMetallic', '')
 
@@ -113,30 +108,28 @@ class TextureManager:
         channel = str(texture.split('.')[0]).split('_')[-1]
         name = '_'.join(str(texture.split('.')[0]).split('_')[:-1])
 
-        print('Texture: ', texture, ' -- Name: ', name, ' -- Channel: ', channel)
+        print(f'Texture: {texture} -- Name: {name} -- Channel: {channel}')
 
-        if channel.lower() in self.base_color_name_list:
-            convert_to_png(texture, name + '_diffuse', self.extension)
-        if channel.lower() in self.metallic_name_list:
-            convert_to_png(texture, name + '_metallic', self.extension)
-        if channel.lower() in self.subsurface_color_name_list:
-            convert_to_png(texture, name + '_subsurface', self.extension)
-        if channel.lower() in self.specular_name_list:
-            convert_to_png(texture, name + '_specular', self.extension)
-        if channel.lower() in self.roughness_name_list:
-            convert_to_png(texture, name + '_roughness', self.extension)
-        if channel.lower() in self.gloss_name_list:
-            convert_to_png(texture, name + '_gloss', self.extension)
-        if channel.replace('-OGL', '').lower() in self.normal_name_list:
-            convert_to_png(texture, name + '_normal', self.extension)
-        if channel.lower() in self.transmission_name_list:
-            convert_to_png(texture, name + '_transmission', self.extension)
-        if channel.lower() in self.alpha_name_list:
-            convert_to_png(texture, name + '_opacity', self.extension)
-        if channel.lower() in self.emission_name_list:
-            convert_to_png(texture, name + '_emission', self.extension)
-        if channel.lower() in self.displacement_name_list:
-            convert_to_png(texture, name + '_displacement', self.extension)
+        channel_lower = channel.lower()
+        normalized_channel = channel_lower.replace('-ogl', '')
+
+        channel_mappings = (
+            (self.base_color_name_list, '_diffuse', channel_lower),
+            (self.metallic_name_list, '_metallic', channel_lower),
+            (self.subsurface_color_name_list, '_subsurface', channel_lower),
+            (self.specular_name_list, '_specular', channel_lower),
+            (self.roughness_name_list, '_roughness', channel_lower),
+            (self.gloss_name_list, '_gloss', channel_lower),
+            (self.normal_name_list, '_normal', normalized_channel),
+            (self.transmission_name_list, '_transmission', channel_lower),
+            (self.alpha_name_list, '_opacity', channel_lower),
+            (self.emission_name_list, '_emission', channel_lower),
+            (self.displacement_name_list, '_displacement', channel_lower),
+        )
+
+        for names, suffix, candidate in channel_mappings:
+            if candidate in names:
+                convert_to_png(texture, name + suffix, self.extension)
 
 
 

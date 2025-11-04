@@ -110,10 +110,8 @@ def quadPatchInit(arg=None):
 
     # Source object
     selEdgesOrig = mc.ls(sl=True, fl=True)
-    selVertsOrig = mc.polyListComponentConversion(selEdgesOrig, tv=True)
-    selFacesOrig = mc.polyListComponentConversion(selVertsOrig, tf=True)
+    mc.polyListComponentConversion(selEdgesOrig, tv=True)
     objNameOrig = selEdgesOrig[0].split(".")[0]
-    allFacesOrig = mc.polyListComponentConversion(objNameOrig, tf=True)
 
     # Duplicate the original object
     objNameDup = mc.duplicate(
@@ -356,12 +354,6 @@ def rotateSlider(arg=None):
             + divOffset
         ]
     )
-    sideAEdgeComponents = (
-        orderedEdgesComponentsExtended[0 + offsetNum : sideALen + offsetNum]
-        + orderedEdgesComponentsExtended[
-            sideALen + sideBLen + offsetNum : sideALen * 2 + sideBLen + offsetNum
-        ]
-    )
     sideAEdgesString = ""
     for each in sideAEdges:
         sideAEdgesString = sideAEdgesString + " " + '"e[' + str(each) + ']"'
@@ -480,12 +472,6 @@ def divideSlider(arg=None):
             + sideBLen
             + offsetNum
             + divOffset
-        ]
-    )
-    sideAEdgeComponents = (
-        orderedEdgesComponentsExtended[0 + offsetNum : sideALen + offsetNum]
-        + orderedEdgesComponentsExtended[
-            sideALen + sideBLen + offsetNum : sideALen * 2 + sideBLen + offsetNum
         ]
     )
     sideAEdgesString = " ".join(f'"e[{each}]"' for each in sideAEdges)
@@ -807,8 +793,6 @@ def patchIt(arg=None):
     # Delete the faces to hide
     mc.delete(dupFacesToHide)
     # Get the original faces
-    facesOrig = mc.ls(mc.polyListComponentConversion(objNameDup, tf=True), fl=True)
-
     edgesToMerge = []
     # Iterate over the original edges and get their indices
     for each in selEdgesOrig:

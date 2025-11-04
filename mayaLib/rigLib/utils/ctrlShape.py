@@ -7,7 +7,7 @@ import json
 import re
 import functools
 
-from maya import cmds as pm, OpenMaya as om
+from maya import OpenMaya as om
 
 SHAPE_LIBRARY_PATH = ''  # 'C:/PATH_TO_LIBRARY'
 SHELF_NAME = ''  # 'Custom'
@@ -258,8 +258,10 @@ def mirrorCtlShapes(ctrl, mode='x', sides=['_L', '_R']):
                 pos = pm.xform(cv, q=1, ws=1, t=1)
                 cv_dest = pm.ls(str(cv.name()).replace(side, other_side))[-1]
                 if pm.objExists(cv_dest):
-                    if mode == 'x': pm.xform(cv_dest, ws=1, t=[pos[0] * (-1), pos[1], pos[2]])
-                    if mode == 'z': pm.xform(cv_dest, ws=1, t=[pos[0], pos[1], pos[2] * (-1)])
+                    if mode == 'x':
+                        pm.xform(cv_dest, ws=1, t=[pos[0] * (-1), pos[1], pos[2]])
+                    if mode == 'z':
+                        pm.xform(cv_dest, ws=1, t=[pos[0], pos[1], pos[2] * (-1)])
 
 
 def copyCtlShape(*args):
@@ -339,7 +341,7 @@ if __name__ == '__main__':
         for each in children:
             try:
                 label = pm.shelfButton(each, q=1, l=1)
-            except:
+            except Exception:
                 continue
             if label == 'ctlShapeManager':
                 pm.deleteUI(each)

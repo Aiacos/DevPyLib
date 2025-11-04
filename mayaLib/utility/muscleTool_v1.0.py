@@ -92,7 +92,7 @@ def applyValues(arg=None):
         mc.setAttr(each + '.crossoverPush', 1)
         mc.setAttr(each + '.selfCrossoverPush', 1)
         mc.setAttr(each + '.inputMotionDrag', 1)
-    if mc.checkBox('restLengthScale', q=True, v=True) == True:
+    if mc.checkBox('restLengthScale', q=True, v=True):
         mc.setAttr(each + '.restLengthScale', 0)
     else:
         mc.setAttr(each + '.restLengthScale', 1)
@@ -116,7 +116,7 @@ def clearNCloth(arg=None):
     remove = []
     for each in sel:
         currentShapes = mc.listRelatives(each, type='mesh')
-        if len(currentShapes) > 1 and mc.getAttr(currentShapes[0] + '.intermediateObject') == False:
+        if len(currentShapes) > 1 and not mc.getAttr(currentShapes[0] + '.intermediateObject'):
             mc.delete(mc.listConnections(currentShapes[0], type='nCloth'))
             mc.delete(currentShapes[1])
             remove.append(each)
@@ -127,7 +127,7 @@ def clearNCloth(arg=None):
         nClothName = mc.listConnections(mc.listRelatives(each), type='nCloth')[0]
         inputMeshName = mc.listRelatives(each)[0]
         
-        if any('blendShape' in x for x in mc.listConnections(mc.listRelatives(each, c=True))) == True:
+        if any('blendShape' in x for x in mc.listConnections(mc.listRelatives(each, c=True))):
             bsDelete = mc.listConnections(mc.listConnections(mc.listRelatives(each, c=True), type='blendShape')[0] +'.inputTarget')
             mc.delete(each, ch=True)
             mc.delete(bsDelete)
@@ -252,7 +252,7 @@ def timeNext(arg=None):
 def timeStop(arg=None):
     mc.play(st=False)
 def timePlay(arg=None):
-    if mc.play(q=True, st=True) == True:
+    if mc.play(q=True, st=True):
         mc.play(st=False)
     else:
         mc.play(st=True)
@@ -260,7 +260,7 @@ def timePlay(arg=None):
 def freezeSetup(arg=None):
     connections = mc.listConnections(mc.listRelatives(mc.ls(sl=True, fl=True)))
 
-    if any('nCloth' in s for s in connections) == True and any('blendShape' not in k for k in connections) == True:
+    if any('nCloth' in s for s in connections) and any('blendShape' not in k for k in connections):
         sel = mc.ls(sl=True, fl=True)
         for each in sel:
             bs = mc.duplicate(each)[0]
@@ -275,7 +275,7 @@ def freezeSetup(arg=None):
         mc.ArtPaintBlendShapeWeightsTool(sel)
             
 def paintWeight(arg=None):
-    if mc.listConnections(mc.listRelatives(mc.ls(sl=True, fl=True))[0], type='blendShape') != None:
+    if mc.listConnections(mc.listRelatives(mc.ls(sl=True, fl=True))[0], type='blendShape') is not None:
         mc.ArtPaintBlendShapeWeightsTool()
 
 def fixShapeName(arg=None):
@@ -306,13 +306,13 @@ def deleteIO(arg=None):
     
     if len(shapes) == 2:
         if mc.getAttr(shapes[0] + '.intermediateObject') == 1:
-            if mc.listConnections(shapes[0], type='nCloth') != None:
+            if mc.listConnections(shapes[0], type='nCloth') is not None:
                 mc.delete(mc.listConnections(shapes[0], type='nCloth'))
                 mc.delete(shapes[0])
             else:
                 mc.delete(shapes[0])
         else:
-            if mc.listConnections(shapes[0], type='nCloth') != None:
+            if mc.listConnections(shapes[0], type='nCloth') is not None:
                 mc.delete(mc.listConnections(shapes[0], type='nCloth'))
                 mc.delete(shapes[1])
             else:
@@ -327,17 +327,17 @@ def transformConstraint(arg=None):
 def removeConstraint(arg=None):
     sel = mc.listRelatives(mc.ls(sl=True, fl=True), c=True, type='mesh')
     for each in sel:
-        if mc.getAttr(each + '.intermediateObject') == False:
+        if not mc.getAttr(each + '.intermediateObject'):
             sel.remove(each)
     allNComponents = mc.ls(type='nComponent')
     for this in sel:
         for each in allNComponents:
-            if mc.objExists(each) == True:
+            if mc.objExists(each):
                 if this in mc.listHistory(each):
                     mc.delete(each)
     
 def restLengthScaleBox(arg=None):
-    if mc.checkBox('restLengthScale', q=True, v=True) == 1:
+    if mc.checkBox('restLengthScale', q=True, v=True):
         nClothList = mc.ls(type='nCloth', fl=True)
         for each in nClothList:
             mc.setAttr(each + '.restLengthScale', 0)
@@ -350,9 +350,9 @@ def restLengthScaleBox(arg=None):
 def muscleTool(arg=None):
     windowName = "Muscle_Tool"
     windowSize = (310, 360)
-    if (mc.window(windowName , exists=True)):
+    if mc.window(windowName, exists=True):
         mc.deleteUI(windowName)
-    window = mc.window( windowName, title= windowName, widthHeight=(windowSize[0], windowSize[1]) )
+    mc.window(windowName, title=windowName, widthHeight=(windowSize[0], windowSize[1]))
 
     mc.columnLayout( "mainColumn", adjustableColumn=True) 
 
@@ -392,7 +392,7 @@ def muscleTool(arg=None):
     mc.intField('pressure', v=0, w=40, cc=applyValues)
     mc.text(l='Pressure     ')
     mc.checkBox('restLengthScale', l='Alt', cc=restLengthScaleBox)
-    if mc.checkBox('restLengthScale', q=True, v=True) == 0:
+    if not mc.checkBox('restLengthScale', q=True, v=True):
         mc.checkBox('restLengthScale', e=True, en=False)
     mc.setParent('..')
 
@@ -473,7 +473,7 @@ def muscleTool(arg=None):
     mc.button(l='Fix Shape Name', bgc=(.2,.2,0.2), c=fixShapeName)
     mc.setParent('..')
     
-    mc.showWindow( windowName )
-    gMainWindow = mel.eval('$tmpVar=$gMainWindow')
-    mc.window( windowName, edit=True, widthHeight=(windowSize[0], windowSize[1]) )
+    mc.showWindow(windowName)
+    mel.eval('$tmpVar=$gMainWindow')
+    mc.window(windowName, edit=True, widthHeight=(windowSize[0], windowSize[1]))
 muscleTool()

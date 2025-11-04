@@ -156,17 +156,14 @@ class USDCharacterBuild(object):
             # Close Bifrost Windows
             try:
                 from PySide6.QtWidgets import QApplication
-            except:
+            except ImportError:
                 from PySide2.QtWidgets import QApplication
 
             # close graph editor
             for widget in QApplication.allWidgets():
-                try:
-                    if widget.windowTitle() == "Bifrost Graph Editor":
-                        widget.close()
-                        break
-                except:
-                    pass
+                if hasattr(widget, "windowTitle") and widget.windowTitle() == "Bifrost Graph Editor":
+                    widget.close()
+                    break
 
     def get_name_dict(self, full_path):
         """
@@ -262,10 +259,10 @@ class USDCharacterBuild(object):
             self.bifrost_shape, "output", "out_stage", "BifrostUsd::Stage"
         )
         try:
-            id_array_output = bifrost.bf_add_input_port(
+            bifrost.bf_add_input_port(
                 self.bifrost_shape, "output", "id_array", "array<long>"
             )
-        except:
+        except Exception:
             pass
 
         bifrost.bf_connect(
@@ -314,7 +311,7 @@ class USDCharacterBuild(object):
             add_custom_layer_data_node + ".stage",
         )
 
-        custom_layer_data_compound = bifrost_util_nodes.add_custom_layer_data(
+        bifrost_util_nodes.add_custom_layer_data(
             self.bifrost_shape, data, add_custom_layer_data_node, product=product
         )
         # bifrost.bf_connect(self.bifrost_shape, self.create_usd_stage_node + '.stage', add_custom_layer_data_node + '.stage')
@@ -457,7 +454,7 @@ class USDCharacterBuild(object):
             product_compound + "/" + product_layer_output,
         )
 
-        id_array_output = bifrost.bf_add_input_port(
+        bifrost.bf_add_input_port(
             self.bifrost_shape,
             product_compound + "/output",
             product_name + "_id_array",
@@ -734,7 +731,7 @@ class USDCharacterBuild(object):
         connected_node_list = cmds.vnnNode(
             self.bifrost_shape, "/" + obj_node, listConnectedNodes=1
         )
-        if connected_node_list == None or not (node in connected_node_list):
+        if connected_node_list is None or node not in connected_node_list:
             # Create input port
             bifrost.bf_add_output_port(
                 self.bifrost_shape,
@@ -941,7 +938,7 @@ class USDCharacterBuild(object):
                 connected_node_list = cmds.vnnNode(
                     self.bifrost_shape, "/" + new_node, listConnectedNodes=1
                 )
-                if connected_node_list == None or not (node in connected_node_list):
+                if connected_node_list is None or node not in connected_node_list:
                     input_port = bifrost.bf_add_input_port(
                         self.bifrost_shape,
                         new_node,
@@ -956,10 +953,7 @@ class USDCharacterBuild(object):
                 connected_node_list = cmds.vnnNode(
                     self.bifrost_shape, "/" + add_to_stage_node, listConnectedNodes=1
                 )
-                if not (
-                    self.root_node["long_name"] + "_define_usd_prim"
-                    in connected_node_list
-                ):
+                if self.root_node["long_name"] + "_define_usd_prim" not in connected_node_list:
                     stage_input_port = bifrost.bf_add_input_port(
                         self.bifrost_shape,
                         add_to_stage_node,
@@ -984,7 +978,7 @@ class USDCharacterBuild(object):
                 )
 
                 # Check if the node is already created
-                if connected_node_list == None or not (node in connected_node_list):
+                if connected_node_list is None or node not in connected_node_list:
                     # Check the type of the prim (Transform or Mesh)
                     if (
                         bifrost.bf_get_node_type(self.bifrost_shape, node)

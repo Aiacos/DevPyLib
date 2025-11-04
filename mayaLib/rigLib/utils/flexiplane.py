@@ -44,9 +44,9 @@ class Flexiplane():
         curve_name = [f.replace('ctrl_global', 'curveInfo') for f in flex]
 
         # delete curve info node
-        delete_curve = [pm.delete(c) for c in curve_name]
+        [pm.delete(c) for c in curve_name]
         # delete the flexiplane
-        delete_flex = [pm.delete(f.getParent()) for f in flex]
+        [pm.delete(f.getParent()) for f in flex]
         return flex, curve_name
 
     def create_plane(self, name, width=10, lengthratio=0.2):
@@ -451,7 +451,7 @@ class Flexiplane():
         connect = fp_div.outputX >> fp_div_vol.input2.input2X
         connect = self.fp_gm_ctrl.enable >> fp_cond.firstTerm
         connect = fp_div_vol.outputX >> fp_cond.colorIfTrueR
-        fp_ctrl_global = self.fp_gm_ctrl.getShape()
+        self.fp_gm_ctrl.getShape()
 
         for i in range(0, len(flcs)):
             connect = fp_cond.outColorR >> jnts[i].sy

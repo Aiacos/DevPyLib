@@ -15,7 +15,8 @@ from mayaLib.rigLib.utils import util
 
 
 def lock_transformation(obj, t=['x', 'y', 'z'], r=['x', 'y']):
-    if not pm.objExists(obj): return
+    if not pm.objExists(obj):
+        return
     
     obj = pm.ls(obj)[-1]
     translate = obj.translate.get()

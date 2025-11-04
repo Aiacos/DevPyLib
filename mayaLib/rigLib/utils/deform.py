@@ -53,7 +53,6 @@ def paintDeformerWeights(channel, vtx_list, value, smoothIteration=1):
         None
     """
     # Set the channel to paint weights on
-    channel = "inputAttract"
     mel.eval('artSetToolAndSelectAttr("artAttrCtx", "ffd.ffd1.weights");')
 
     # Select the vertices to paint weights on
@@ -525,7 +524,7 @@ def save_deformer_weights():
         wtData = {}
         for deformer in pm.findDeformers(geo):
             wtData[str(deformer)] = pm.getAttr(deformer + ".weightList")
-        with wtFile.open("w") as f:
+        with wtFile.open("w"):
             pass
             # json.dump(wtData, f, indent=4)
 
@@ -553,7 +552,7 @@ def load_deformer_weights(
     # load skin weights
     for wtFile in wtFiles:
         # check geometry list
-        if geoList and not str(wtFile.stem) in geoList:
+        if geoList and str(wtFile.stem) not in geoList:
             continue
 
         # check if objects exist

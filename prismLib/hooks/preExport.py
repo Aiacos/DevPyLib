@@ -7,6 +7,8 @@
 # If the main function exists in this script, it will be called.
 # The "kwargs" argument is a dictionary with usefull information about Prism and the current export.
 
+import importlib.util as importlib_util
+
 
 def detect_host_app() -> str:
     """Detects which host application we are currently inside.
@@ -14,24 +16,10 @@ def detect_host_app() -> str:
     Returns:
         str: The name of the host application or None if not detected.
     """
-    # Try to detect Maya
-    try:
-        import maya.cmds as cmds
-
+    if importlib_util.find_spec("maya.cmds") is not None:
         return "Maya"
-    except ImportError:
-        # Maya is not available
-        pass
-
-    # Try to detect Houdini
-    try:
-        import hou
-
+    if importlib_util.find_spec("hou") is not None:
         return "Houdini"
-    except ImportError:
-        # Houdini is not available
-        pass
-
     return None
 
 

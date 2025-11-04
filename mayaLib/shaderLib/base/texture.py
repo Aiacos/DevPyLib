@@ -56,8 +56,8 @@ class TextureFolder(object):
         """
         imgList = []
         os.chdir(self.get_texture_folder())
-        for file in glob.glob('*.' + search_extension):
-            imgList.append(file)
+        for filename in glob.glob('*.' + search_extension):
+            imgList.append(filename)
 
         return imgList
 
@@ -85,7 +85,7 @@ class TextureFolder(object):
             texture_base_name = self.getTextureBaseName(texture.stem)
             try:
                 txt_tmp_list = texture_dict[texture_base_name]
-            except:
+            except Exception:
                 txt_tmp_list = []
 
             txt_tmp_list.append(img)

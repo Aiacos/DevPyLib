@@ -16,7 +16,7 @@ def get_all_groups():
 
 def get_all_locators():
     """Return all locators in the scene"""
-    loc_list = [l.getParent() for l in pm.ls(type='locator')]
+    loc_list = [locator.getParent() for locator in pm.ls(type='locator')]
     return loc_list
 
 

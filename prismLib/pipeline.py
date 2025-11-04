@@ -1,3 +1,4 @@
+import importlib.util as importlib_util
 import sys
 
 
@@ -15,7 +16,7 @@ def detect_host_app_v2():
     if "maya.cmds" in sys.modules or "maya" in sys.modules:
         return "Maya"
     # Check if Houdini is loaded
-    elif "hou" in sys.modules:
+    if "hou" in sys.modules:
         return "Houdini"
 
     # If none of the above, return None
@@ -28,24 +29,10 @@ def detect_host_app() -> str:
     Returns:
         str: The name of the host application or None if not detected.
     """
-    # Try to detect Maya
-    try:
-        import maya.cmds as cmds
-
+    if importlib_util.find_spec("maya.cmds") is not None:
         return "Maya"
-    except ImportError:
-        # Maya is not available
-        pass
-
-    # Try to detect Houdini
-    try:
-        import hou
-
+    if importlib_util.find_spec("hou") is not None:
         return "Houdini"
-    except ImportError:
-        # Houdini is not available
-        pass
-
     return None
 
 

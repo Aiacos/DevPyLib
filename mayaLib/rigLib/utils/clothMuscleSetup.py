@@ -35,7 +35,7 @@ class ClothMuscle:
         # self.nucleus.enable.set(0)
 
         # setup Colliders
-        collision_data_list = self.collisionSetup(collision_geo_list)
+        self.collisionSetup(collision_geo_list)
 
         # sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
         # deform.deltaMushDeformer(sim_geo_list)
@@ -70,7 +70,7 @@ class ClothMuscle:
         mel.eval('changeSelectMode -component;')
         mel.eval('SelectAll;')
         mel.eval('polySelectConstraint -pp 3;')
-        edges = pm.ls(sl=True)
+        pm.ls(sl=True)
         # mel.eval('polySelectContraint -dis;')
 
         for i in range(growSelection):
@@ -127,7 +127,7 @@ class ClothMuscle:
         for vertex in vertices:
             try:
                 vertex_select_list.append("{0}.vtx[{1}]".format(geo, vertex))
-            except:
+            except Exception:
                 print('Skip vtx: ', vertex)
 
         pm.select(vertex_select_list)

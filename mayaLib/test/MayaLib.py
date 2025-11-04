@@ -37,7 +37,7 @@ def initializePlugin(plugin):
         pluginFn.registerCommand(
             MayaLibPlugin.kPluginCmdName, MayaLibPlugin.cmdCreator
         )
-    except:
+    except Exception:
         sys.stderr.write(
             "Failed to register command: %s\n" % MayaLibPlugin.kPluginCmdName
         )
@@ -49,7 +49,7 @@ def uninitializePlugin(plugin):
     pluginFn = om.MFnPlugin(plugin)
     try:
         pluginFn.deregisterCommand(MayaLibPlugin.kPluginCmdName)
-    except:
+    except Exception:
         sys.stderr.write(
             "Failed to unregister command: %s\n" % MayaLibPlugin.kPluginCmdName
         )

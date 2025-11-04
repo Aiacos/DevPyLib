@@ -51,7 +51,7 @@ class MuscleUtil():
 
         for file in os.listdir(self.muscleScriptPath):
             if file.endswith('.mel'):
-                if not file in skipSourceFileList:
+                if file not in skipSourceFileList:
                     pm.mel.eval('source "' + os.path.join(self.muscleScriptPath, file) + '";')
 
     def mirrorMuscle(self, muscleSurface, usePymel=True):
@@ -109,7 +109,7 @@ class MuscleUtil():
                 baseName = str(
                     pm.mel.eval('cMuscle_strSearchReplace("' + creator.name() + '", "cMuscleCreator", "") ;'))
                 baseName = baseName[:baseName.rfind(musIdentifier) + len(musIdentifier)]
-                endNumber = baseName[baseName.rfind(musIdentifier) + len(musIdentifier):]
+                baseName[baseName.rfind(musIdentifier) + len(musIdentifier):]
                 # print(baseName, ' ', endNumber)
                 baseName = str(baseName).replace(search, replace, 1)
                 ## endNumber = match("[0-9]+$", $creator) ;

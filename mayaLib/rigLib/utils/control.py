@@ -7,8 +7,6 @@ import pymel.core as pm
 import mayaLib.pipelineLib.utility.nameCheck as nc
 from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import ctrlShape
-from mayaLib.rigLib.utils import name
-from mayaLib.rigLib.utils import util
 
 
 class Control():
@@ -117,12 +115,12 @@ class Control():
                 ctrl_shape.ovc.set(22)
 
         # translate control
-        if translateTo != None and translateTo != '':
+        if translateTo is not None and translateTo != '':
             if pm.objExists(translateTo):
                 pm.delete(pm.pointConstraint(translateTo, ctrlOffset))
 
         # rotate control
-        if rotateTo != None and rotateTo != '':
+        if rotateTo is not None and rotateTo != '':
             if pm.objExists(rotateTo):
                 pm.delete(pm.orientConstraint(rotateTo, ctrlOffset))
 
@@ -155,7 +153,7 @@ class Control():
             self.Modify = ctrlModify
 
         # parent control
-        if parent != None and parent != '':
+        if parent is not None and parent != '':
             if pm.objExists(parent):
                 pm.parent(self.getTop(), parent)
 

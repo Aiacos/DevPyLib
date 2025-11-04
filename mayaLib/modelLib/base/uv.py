@@ -293,9 +293,9 @@ class AutoUV():
         """
         try:
             pm.u3dAutoSeam(geo, s=angle, p=1)
-        except:
+        except RuntimeError:
+            # Maya may fail to create seams on invalid geometry
             pass
-            #pm.unfold(geo)
 
     def unfoldOptimizeUV(self, geo, normalizeShell=False):
         """

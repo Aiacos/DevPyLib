@@ -141,7 +141,7 @@ class ConvertShaders(object):
         for shader in self.shader_list:
             shader_name = str(shader.name())
             shading_engine = shader.connections(type='shadingEngine')[-1]
-            assigned_geometry = shading_engine.connections(type='mesh')
+            shading_engine.connections(type='mesh')
 
             pm.rename(shader, shader_name + '_OLD')
             #pm.rename(shading_engine, str(shading_engine.name()) + '_OLD')
@@ -152,19 +152,19 @@ class ConvertShaders(object):
             print('TEXTURE LIST: ', texture_list)
 
             if to_shader_type == 'standard':
-                base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, base_shader)
                 # base_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'usd':
-                usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, usd_shader)
                 # usd_shader.assign_shader(assigned_geometry)
             elif to_shader_type == '3delight':
-                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, delight_shader)
                 # delight_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'renderaman':
-                renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, renderman_shader)
                 # renderman_shader.assign_shader(assigned_geometry)
             else:
@@ -306,7 +306,7 @@ class ConvertShaders(object):
             pass
             try:
                 pm.connectAttr(alpha_socket.listConnections(plugs=True)[-1], pm.PyNode(new_shader.get_shader().name() + '.' + new_shader.alpha), f=True)
-            except:
+            except Exception:
                 print('Alpha Error')
                 #pm.connectAttr(shader.name() + '.outAlpha', pm.PyNode(new_shader.get_shader().name() + '.' + new_shader.alpha))
         if normal_socket.isConnected():
@@ -358,16 +358,16 @@ class ShaderFromJson(object):
             shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
 
             if to_shader_type == 'standard':
-                base_shader = Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # base_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'usd':
-                usd_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # usd_shader.assign_shader(assigned_geometry)
             elif to_shader_type == '3delight':
-                delight_shader = Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # delight_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'renderaman':
-                renderman_shader = UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
+                UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # renderman_shader.assign_shader(assigned_geometry)
             else:
                 print('No valid Shader')

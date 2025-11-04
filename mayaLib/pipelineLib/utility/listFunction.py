@@ -37,9 +37,10 @@ class StructureManager():
             try:
                 # Module Case
                 subPack = self.listSubPackages(mod)
-                self.moduleClassList.extend(subPack)
-            except:
+            except (AttributeError, ImportError):
                 self.moduleClassList.append(mod)
+            else:
+                self.moduleClassList.extend(subPack)
 
         for item in self.moduleClassList:
             # Class OR Function Case
@@ -223,7 +224,7 @@ class StructureManager():
         if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
             loader = pkgutil.get_loader(module_name)
 
-            if loader != None:
+            if loader is not None:
                 for sub_module in pkgutil.iter_modules([module_name]):
                     print('SubMod: ', sub_module)
                     _, sub_module_name, _ = sub_module
