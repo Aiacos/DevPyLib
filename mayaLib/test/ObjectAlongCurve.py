@@ -163,11 +163,12 @@ def pathMode(path, pointsNumber, spacing):
     return locatorList
 
 
-locList = []
-for cv in curve:
-    print(cv)
-    locList.extend(pathMode(cv))
-cmds.group(locList, n='locator_grp')
+# WIP - Script code commented out until properly implemented
+# locList = []
+# for cv in curve:
+#     print(cv)
+#     locList.extend(pathMode(cv, pointsNumber, spacing))
+# cmds.group(locList, n='locator_grp')
 ## --ToDo
 
 # gui

@@ -154,7 +154,7 @@ def saveToLib(crv=None, shapeName=None):
     crvShape = getShape(crv=crv)
     current_file_location = getCurrentFileLocation()
     path = os.path.join(current_file_location, create_shape_dir(current_file_location),
-                        re.sub('\s', '', shapeName) + '.json')
+                        re.sub(r'\s', '', shapeName) + '.json')
     print(path)
     for shapeDict in crvShape:
         shapeDict.pop('colour', None)
