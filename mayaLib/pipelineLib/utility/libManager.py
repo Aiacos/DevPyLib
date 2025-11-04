@@ -23,9 +23,10 @@ def buildInstallCmd(libDir, libName, port):
         """
         # Install mayaLib
         import sys
+        import importlib
         import maya.cmds as cmds
         import maya.utils
-        
+
         libDir = '""" + libDir + """'
 port = '""" + str(port) + """'
 libName = '""" + libName + """'
@@ -39,7 +40,7 @@ if not libDir in sys.path:
     sys.path.append(libDir)
     __import__(libName)
 else:
-    reload(__import__(libName))
+    importlib.reload(__import__(libName))
 
 import mayaLib.guiLib.mainMenu as mm
 cmds.evalDeferred("libMenu = mm.MainMenu('""" + libDir + """')")
@@ -123,8 +124,8 @@ class InstallLibrary:
             repo = git.Repo.clone_from(gitUrl, self.libDir)
             print("Clone Complete")
             return True
-        except:
-            print("Clone Failed")
+        except Exception as e:
+            print(f"Clone Failed: {e}")
             return False
 
     def pullFromGit(self):
@@ -140,8 +141,8 @@ class InstallLibrary:
             repo.remotes.origin.pull()
             print("Pull Complete")
             return True
-        except:
-            print("Pull Failed")
+        except Exception as e:
+            print(f"Pull Failed: {e}")
             return False
 
     def copyToMayaEnv(self):
@@ -189,9 +190,9 @@ class InstallLibrary:
             else:
                 print("Maya.env file not found")
                 return False
-        except:
-            print("Error while reading Maya.env")
-            pass
+        except Exception as e:
+            print(f"Error while reading Maya.env: {e}")
+            return False
 
         try:
             if os.path.exists(mayaEnvPath):
@@ -202,8 +203,8 @@ class InstallLibrary:
             else:
                 print("Maya.env file not found")
                 return False
-        except:
-            print("Error while writing to Maya.env")
+        except Exception as e:
+            print(f"Error while writing to Maya.env: {e}")
             return False
 
     def updateDevMode(self, devPath=False):
@@ -243,7 +244,7 @@ class InstallLibrary:
         """
         userSetup_path = self.mayaScriptPath
         fileName = 'userSetup.py'
-        filePath = userSetup_path + fileName
+        filePath = pathlib.Path(userSetup_path) / fileName
         if os.path.isdir(userSetup_path):
             if os.path.exists(filePath):
                 # append
@@ -303,7 +304,7 @@ class InstallLibrary:
         """
         userSetup_path = self.mayaScriptPath
         fileName = 'userSetup.py'
-        filePath = userSetup_path + fileName
+        filePath = pathlib.Path(userSetup_path) / fileName
         if os.path.isdir(userSetup_path):
             if os.path.exists(filePath):
                 f = open(filePath, 'r')

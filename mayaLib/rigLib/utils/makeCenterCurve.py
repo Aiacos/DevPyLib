@@ -49,7 +49,7 @@ def run(c=1, j=1):
         strip = re.search(r"\[([0-9]+)\]", one)
         num.append(strip.group(1))
     edgeCount = len(num)
-    if (edgeCount is not 0):
+    if edgeCount != 0:
         if edgeCount == 1:
             edges = maya.cmds.polySelect(edgeRing=(int(num[0])), ns=True) or []
         elif edgeCount == 2:
@@ -82,7 +82,6 @@ def run(c=1, j=1):
         maya.cmds.select(out)
     else:
         print("Nothing is selected")
-
 
 
 

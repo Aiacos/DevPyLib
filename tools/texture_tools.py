@@ -1,13 +1,19 @@
-import os
 import glob
+from pathlib import Path
 from PIL import Image, ImageFilter
 
 
 def gamma_correction(img, gamma):
-    #LUT = ImageFilter.Color3DLUT.generate((11, 11, 11), lambda r, g, b: (r ** gamma, g ** gamma, b ** gamma))
-    #img_out = img.filter(LUT)
-    img_out = img.point(lambda x: ((x / 255) ** gamma) * 255)
+    """Apply gamma correction to an image.
 
+    Args:
+        img: PIL Image object
+        gamma: Gamma correction value
+
+    Returns:
+        PIL Image object with gamma correction applied
+    """
+    img_out = img.point(lambda x: ((x / 255) ** gamma) * 255)
     return img_out
 
 def colorspace_conversion(img, colorspace='None', gamma_to_srgb=2.2, gamma_to_linear=0.454545):
@@ -34,7 +40,9 @@ def check_colorspace(img):
         return 'Unknown'
 
 def split_channels(image_file, image_name, extension='.png', colorspace='None'):
-    image_path = os.path.join(os.getcwd(), image_file)
+    image_path = Path(image_file)
+    if not image_path.is_absolute():
+        image_path = Path.cwd() / image_path
     image = Image.open(image_path)
 
     image = colorspace_conversion(image, colorspace)
@@ -45,14 +53,18 @@ def split_channels(image_file, image_name, extension='.png', colorspace='None'):
     b.save(image_name + '_ao' + extension)
 
 def convert_to_png(image_file, image_name, extension='.png', colorspace='None'):
-    image_path = os.path.join(os.getcwd(), image_file)
+    image_path = Path(image_file)
+    if not image_path.is_absolute():
+        image_path = Path.cwd() / image_path
     image = Image.open(image_path)
 
     image = colorspace_conversion(image, colorspace)
 
     image.save(image_name + extension)
 
-def get_all_texture(extension_list=['png', 'tga', 'jpg']):
+def get_all_texture(extension_list=None):
+    if extension_list is None:
+        extension_list = ('png', 'tga', 'jpg')
     texture_list = []
 
     for ext in extension_list:
@@ -61,7 +73,7 @@ def get_all_texture(extension_list=['png', 'tga', 'jpg']):
 
     return set(texture_list)
 
-class Texture_Manager():
+class TextureManager:
     """
     Texture Manager
     """
@@ -74,12 +86,14 @@ class Texture_Manager():
     normal_name_list = str('normal nor nrm nrml norm n').split(' ')
     bump_name_list = str('bump bmp').split(' ')
     displacement_name_list = str('displacement displace disp dsp height heightmap').split(' ')
-    trasmission_name_list = str('opacity').split(' ')
+    transmission_name_list = str('opacity').split(' ')
     alpha_name_list = str('alpha').split(' ')
     emission_name_list = str('emission').split(' ')
 
-    def __init__(self, extension='.png', extension_search_list=['png', 'tga', 'jpg']):
+    def __init__(self, extension='.png', extension_search_list=None):
         self.extension = extension
+        if extension_search_list is None:
+            extension_search_list = ('png', 'tga', 'jpg')
         self.texture_list = get_all_texture(extension_search_list)
 
         for tex in self.texture_list:
@@ -115,8 +129,8 @@ class Texture_Manager():
             convert_to_png(texture, name + '_gloss', self.extension)
         if channel.replace('-OGL', '').lower() in self.normal_name_list:
             convert_to_png(texture, name + '_normal', self.extension)
-        if channel.lower() in self.trasmission_name_list:
-            convert_to_png(texture, name + '_trasmission', self.extension)
+        if channel.lower() in self.transmission_name_list:
+            convert_to_png(texture, name + '_transmission', self.extension)
         if channel.lower() in self.alpha_name_list:
             convert_to_png(texture, name + '_opacity', self.extension)
         if channel.lower() in self.emission_name_list:
@@ -127,9 +141,5 @@ class Texture_Manager():
 
 
 if __name__ == "__main__":
-    #convert_all_textures()
-    tx_manager = Texture_Manager()
-
+    tx_manager = TextureManager()
     print('Done!')
-    import time
-    time.sleep(10)

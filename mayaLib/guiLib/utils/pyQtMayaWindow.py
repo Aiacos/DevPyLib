@@ -14,16 +14,18 @@ def getMayaMainWindow():
     """Return the main Maya window as a QMainWindow object.
 
     Returns:
-        A QMainWindow object pointing to the main Maya window.
+        A QMainWindow object pointing to the main Maya window or None if unavailable.
     """
     # Get the main Maya window as a pointer to a QWidget object
     accessMainWindow = omui.MQtUtil.mainWindow()
+    if accessMainWindow is None:
+        return None
     # Convert the pointer to a QMainWindow object
     return wrapInstance(int(accessMainWindow), QtWidgets.QMainWindow)
 
 
 class PyQtMayaWindow(QtWidgets.QMainWindow):
-    def __init__(self, parent=getMayaMainWindow(), uniqueHandle="PyQtWindow"):
+    def __init__(self, parent=None, uniqueHandle="PyQtWindow"):
         """Initialize PyQtMayaWindow.
 
         Args:
@@ -34,7 +36,7 @@ class PyQtMayaWindow(QtWidgets.QMainWindow):
             None
         """
         # Initialize the superclass (QMainWindow)
-        super(PyQtMayaWindow, self).__init__(parent)
+        super(PyQtMayaWindow, self).__init__(parent or getMayaMainWindow())
 
         # Set the window title
         self.setWindowTitle("PyQt Window")

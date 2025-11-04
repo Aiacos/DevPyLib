@@ -815,11 +815,11 @@ def bLoadSkinValues(loadOnSelection, inputFile):
 
         line = line.strip()
 
-        if FilePosition is not 0:
+        if FilePosition != 0:
             if not line.startswith("============"):
-                if FilePosition is 1:
+                if FilePosition == 1:
                     joints.append(line)
-                elif FilePosition is 2:
+                elif FilePosition == 2:
                     if len(line) > 0:
                         weights.append(line)
                     else:
@@ -834,7 +834,7 @@ def bLoadSkinValues(loadOnSelection, inputFile):
             else:  # it's ========
                 FilePosition = 2
 
-        else:  # FilePosition is 0
+        else:  # FilePosition == 0
             if not loadOnSelection:
                 PolygonObject = line
             FilePosition = 1

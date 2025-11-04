@@ -44,6 +44,7 @@ class FunctionUI(QtWidgets.QWidget):
             if arg[0] != "self":
                 # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
+                fillButton = None
 
                 if arg[1] is not None:
                     # Create a line edit or checkbox based on argument type
@@ -60,9 +61,9 @@ class FunctionUI(QtWidgets.QWidget):
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
 
-                if fillButton:
+                if fillButton is not None:
                     self.layout.addWidget(fillButton, row, 1)
-                    self.fillButton_list.append(fillButton)
+                self.fillButton_list.append(fillButton)
 
                 self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
@@ -88,7 +89,8 @@ class FunctionUI(QtWidgets.QWidget):
         self.advancedCheckBox.stateChanged.connect(self.toggleDefaultParameter)
 
         for button in self.fillButton_list:
-            button.clicked.connect(self.fillWithSelected)
+            if button is not None:
+                button.clicked.connect(self.fillWithSelected)
 
         # Set window properties
         self.setWindowTitle(func.__name__)
@@ -173,13 +175,15 @@ class FunctionUI(QtWidgets.QWidget):
                     if arg[1] is not None:
                         self.label_list[counter].show()
                         self.lineedit_list[counter].show()
-                        self.fillButton_list[counter].show()
+                        if self.fillButton_list[counter] is not None:
+                            self.fillButton_list[counter].show()
                 else:
                     # Hide related widgets if the argument has a default value
                     if arg[1] is not None:
                         self.label_list[counter].hide()
                         self.lineedit_list[counter].hide()
-                        self.fillButton_list[counter].hide()
+                        if self.fillButton_list[counter] is not None:
+                            self.fillButton_list[counter].hide()
 
                 counter += 1
 
@@ -251,10 +255,11 @@ class FunctionUI(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
+    # Example usage:
     # app = QtWidgets.QApplication.instance()
     # button = QtWidgets.QPushButton("Hello World")
     # button.show()
     # app.exec_()
-    # print(inspect.getargspec(Prova))
-    t = FunctionUI(Prova)
-    t.show()
+    # t = FunctionUI(your_function_here)
+    # t.show()
+    pass
