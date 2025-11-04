@@ -1,5 +1,4 @@
 import importlib
-import os
 import sys
 import subprocess
 from pathlib import Path
@@ -9,6 +8,7 @@ import maya.cmds as cmds
 # Optional git support
 try:
     from git import Repo, GitCommandError
+
     GIT_AVAILABLE = True
 except ImportError:
     GIT_AVAILABLE = False
@@ -67,7 +67,7 @@ def install_requirements(requirements_dir):
             [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
             capture_output=True,
             text=True,
-            timeout=300  # 5 minutes timeout
+            timeout=300,  # 5 minutes timeout
         )
 
         if result.returncode == 0:
