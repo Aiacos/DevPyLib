@@ -171,18 +171,18 @@ class PxrDisneyBSDF(ShaderBase):
             shader_name (str): Name of the shader
             texture (str): Name of the texture
         """
-        pxrTexture = self.create_file_node(self.folder, texture, linearize=False)
-        pxrDisplace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name + 'Displace')
-        pxrDispTransform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name + 'DispTransform')
+        pxr_texture = self.create_file_node(self.folder, texture, linearize=False)
+        pxr_displace = pm.shadingNode('PxrDisplace', asShader=True, name=shader_name + 'Displace')
+        pxr_disp_transform = pm.shadingNode('PxrDispTransform', asTexture=True, name=shader_name + 'DispTransform')
 
-        pm.connectAttr(pxrDispTransform.resultF, pxrDisplace.dispScalar)
-        pm.connectAttr(pxrTexture.resultA, pxrDispTransform.dispScalar)
+        pm.connectAttr(pxr_disp_transform.resultF, pxr_displace.dispScalar)
+        pm.connectAttr(pxr_texture.resultA, pxr_disp_transform.dispScalar)
 
-        pxrDisplace.dispAmount.set(0.1)
+        pxr_displace.dispAmount.set(0.1)
 
-        pm.connectAttr(pxrDisplace.outColor, self.shading_group.displacementShader)
+        pm.connectAttr(pxr_displace.outColor, self.shading_group.displacementShader)
 
-        return pxrDisplace
+        return pxr_displace
 
     def connect_textures(self, textures):
         """

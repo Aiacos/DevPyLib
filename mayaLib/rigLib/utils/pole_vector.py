@@ -11,6 +11,18 @@ import pymel.core as pm
 
 class PoleVector():
     def __init__(self, ik_handle):
+        """Initialize pole vector setup for an IK handle.
+
+        Creates and positions a pole vector locator for the given IK handle,
+        automatically calculating optimal placement based on joint chain geometry.
+
+        Args:
+            ik_handle: Maya IK handle node to create pole vector for
+
+        Attributes:
+            poleVector: The created pole vector locator node
+            poleVectorGrp: The group containing the pole vector locator
+        """
         if ik_handle:
             ik_handle = pm.ls(ik_handle)[0]
             self.poleVector, self.poleVectorGrp = self.connect_pole_vector(ik_handle)
@@ -23,28 +35,28 @@ class PoleVector():
         '''
 
         ik_handle_name = ik_handle.name()
-        selJoints = ik_handle.getJointList()
-        pm.select(selJoints[-1])
+        sel_joints = ik_handle.getJointList()
+        pm.select(sel_joints[-1])
         pm.pickWalk(d='down')
-        newJoints = pm.ls(sl=True)
-        selJoints.append(newJoints[0])
+        new_joints = pm.ls(sl=True)
+        sel_joints.append(new_joints[0])
 
         # Create a locator and group it twice
-        poleVector_locator = pm.spaceLocator(n=ik_handle_name + '_PV' + '_LOC')
-        poleVector_group = pm.group(poleVector_locator, n=ik_handle_name + '_PV' + '_LOC' + '_GRP')
+        pole_vector_locator = pm.spaceLocator(n=ik_handle_name + '_PV' + '_LOC')
+        pole_vector_group = pm.group(pole_vector_locator, n=ik_handle_name + '_PV' + '_LOC' + '_GRP')
 
         # Point constrain it between the three joints
-        pointConstraint = pm.pointConstraint(selJoints, poleVector_group)
-        pm.delete(pointConstraint)
+        point_constraint = pm.pointConstraint(sel_joints, pole_vector_group)
+        pm.delete(point_constraint)
 
         # Create an aim constraint for the locator to aim at the middle joint
-        aimConstraint = pm.aimConstraint(selJoints[1], poleVector_group)
-        pm.delete(aimConstraint)
+        aim_constraint = pm.aimConstraint(sel_joints[1], pole_vector_group)
+        pm.delete(aim_constraint)
 
         ##Snap grupLocator to middle joint
-        # snap = pm.pointConstraint( selJoints[1], poleVector_group, skip=('y','z'))
+        # snap = pm.pointConstraint( sel_joints[1], pole_vector_group, skip=('y','z'))
 
-        return poleVector_group
+        return pole_vector_group
 
     def get_joint_distance(self, ik_handle):
         '''
@@ -54,40 +66,65 @@ class PoleVector():
         '''
 
         # Put all three joints in a variable based on a selected ik_handle
-        selJoints = ik_handle.getJointList()
-        pm.select(selJoints[-1])
+        sel_joints = ik_handle.getJointList()
+        pm.select(sel_joints[-1])
         pm.pickWalk(d='down')
-        newJoints = pm.ls(sl=True)
-        selJoints.append(newJoints[0])
+        new_joints = pm.ls(sl=True)
+        sel_joints.append(new_joints[0])
         loc0 = pm.spaceLocator()
         loc1 = pm.spaceLocator()
-        constraint0 = pm.pointConstraint(selJoints[0], loc0)
-        constraint1 = pm.pointConstraint(selJoints[2], loc1)
+        constraint0 = pm.pointConstraint(sel_joints[0], loc0)
+        constraint1 = pm.pointConstraint(sel_joints[2], loc1)
 
         def ctr_dist(obj_a, obj_b):
-            Ax, Ay, Az = obj_a.getTranslation(space="world")
-            Bx, By, Bz = obj_b.getTranslation(space="world")
-            return ((Ax - Bx) ** 2 + (Ay - By) ** 2 + (Az - Bz) ** 2) ** 0.5
+            """Calculate Euclidean distance between two transform nodes.
+
+            Args:
+                obj_a: First transform node
+                obj_b: Second transform node
+
+            Returns:
+                float: Distance in world space units
+            """
+            ax, ay, az = obj_a.getTranslation(space="world")
+            bx, by, bz = obj_b.getTranslation(space="world")
+            return ((ax - bx) ** 2 + (ay - by) ** 2 + (az - bz) ** 2) ** 0.5
 
         distance = ctr_dist(loc0, loc1)
         pm.delete(constraint0, constraint1, loc0, loc1)
         return distance
 
     def connect_pole_vector(self, ik_handle):
-        poleVector_locator_grp = self.create_pv(ik_handle)
+        """Create and connect pole vector to IK handle.
+
+        Creates a pole vector locator, positions it based on the IK chain length,
+        and constrains the IK handle to the locator.
+
+        Args:
+            ik_handle: Maya IK handle to connect pole vector to
+
+        Returns:
+            tuple: (pole_vector_locator, pole_vector_group) nodes
+        """
+        pole_vector_locator_grp = self.create_pv(ik_handle)
 
         # Calculate ik_handle length to set as pv -X axis
         distance = int(self.get_joint_distance(ik_handle) / 2)
         # Move the Locator Group in the -X axis (Object Space)
-        pm.move(distance, 0, 0, poleVector_locator_grp, objectSpace=True, relative=True)
+        pm.move(distance, 0, 0, pole_vector_locator_grp, objectSpace=True, relative=True)
 
         # Connect PoleVector
-        poleVector_loc = pm.listRelatives(poleVector_locator_grp, children=True)[0]
-        pm.poleVectorConstraint(poleVector_loc, ik_handle)
+        pole_vector_loc = pm.listRelatives(pole_vector_locator_grp, children=True)[0]
+        pm.poleVectorConstraint(pole_vector_loc, ik_handle)
 
-        return poleVector_loc, poleVector_locator_grp
+        return pole_vector_loc, pole_vector_locator_grp
 
     def get_pole_vector(self):
+        """Get the created pole vector nodes.
+
+        Returns:
+            tuple: (pole_vector_locator, pole_vector_group) created during initialization
+        """
         return self.poleVector, self.poleVectorGrp
 
 

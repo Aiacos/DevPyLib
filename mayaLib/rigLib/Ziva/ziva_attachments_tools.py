@@ -20,10 +20,10 @@ def ziva_fixed_attachment(stiffness=8):
     Returns:
         pm.nt.DagNode: The created Ziva attachment node.
     """
-    zAttachment = pm.ls(mel.eval('ziva -a;'))[0]
-    zAttachment.stiffnessExp.set(stiffness)
+    z_attachment = pm.ls(mel.eval('ziva -a;'))[0]
+    z_attachment.stiffnessExp.set(stiffness)
 
-    return zAttachment
+    return z_attachment
 
 
 def ziva_sliding_attachment(stiffness=8):
@@ -36,11 +36,11 @@ def ziva_sliding_attachment(stiffness=8):
     Returns:
         pm.nt.DagNode: The created Ziva attachment node.
     """
-    zAttachment = pm.ls(mel.eval('ziva -a;'))[0]
-    zAttachment.attachmentMode.set(2)
-    zAttachment.stiffnessExp.set(stiffness)
+    z_attachment = pm.ls(mel.eval('ziva -a;'))[0]
+    z_attachment.attachmentMode.set(2)
+    z_attachment.stiffnessExp.set(stiffness)
 
-    return zAttachment
+    return z_attachment
 
 
 def paint_proximity(z_attachement, min=0.0001, max=1):
@@ -76,11 +76,11 @@ def add_attachment(source, dest, value, fixed=True):
     pm.select(dest, add=True)
 
     if fixed:
-        current_zAttachemnt = ziva_fixed_attachment()
+        current_z_attachment = ziva_fixed_attachment()
     else:
-        current_zAttachemnt = ziva_sliding_attachment(6)
+        current_z_attachment = ziva_sliding_attachment(6)
 
-    paint_proximity(current_zAttachemnt, 0.0001, value)
+    paint_proximity(current_z_attachment, 0.0001, value)
 
 
 if __name__ == "__main__":

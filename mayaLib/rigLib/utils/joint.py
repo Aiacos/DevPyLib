@@ -197,6 +197,21 @@ class TwistJoint:  # pylint: disable=too-many-instance-attributes
         num_twist_joints: int = 3,
         rotation_axis: str = 'X',
     ) -> None:
+        """Initialize twist joint chain for one or more parent joints.
+
+        Creates a twist joint setup between parent and child joints to distribute
+        rotation along the limb, preventing candy-wrapper deformation artifacts.
+
+        Args:
+            parent_joint: Single joint name/PyNode or list of joints to add twist to
+            parent_group: Name of parent group for twist joint hierarchy. Defaults to 'rig_GRP'.
+            num_twist_joints: Number of intermediate twist joints to create. Defaults to 3.
+            rotation_axis: Axis along which twist rotation occurs ('X', 'Y', or 'Z'). Defaults to 'X'.
+
+        Example:
+            >>> twist = TwistJoint('upperarm_L_JNT', num_twist_joints=5)
+            >>> twist = TwistJoint(['upperarm_L_JNT', 'upperarm_R_JNT'])
+        """
         if not pm.objExists(parent_group):
             pm.group(n=parent_group, em=True)
 
@@ -328,6 +343,15 @@ def rename_human_ik_joint(  # pylint: disable=too-many-locals
     """Rename HumanIK-generated joints to the studio naming convention."""
 
     def alpha_name(prefix: str, index: int) -> str:
+        """Generate alphabetically suffixed joint name.
+
+        Args:
+            prefix: Base name for the joint (e.g., 'spineJ', 'neckJ')
+            index: Zero-based index to convert to alpha suffix
+
+        Returns:
+            Formatted joint name like 'spineJa_JNT', 'spineJb_JNT', etc.
+        """
         return f"{prefix}{name.get_alpha(index)}_JNT"
 
     spine_joints = pm.ls(f'{element}_Hips', f'{element}_Spine*')
@@ -386,15 +410,3 @@ def rename_human_ik_joint(  # pylint: disable=too-many-locals
             pm.delete(hik_nodes)
 
 
-lockTransformation = lock_transformation  # pylint: disable=invalid-name
-jointDirection = joint_direction  # pylint: disable=invalid-name
-listHierarchy = list_hierarchy  # pylint: disable=invalid-name
-savePose = save_pose  # pylint: disable=invalid-name
-loadPose = load_pose  # pylint: disable=invalid-name
-saveProjectionPose = save_projection_pose  # pylint: disable=invalid-name
-saveTPose = save_t_pose  # pylint: disable=invalid-name
-loadProjectionPose = load_projection_pose  # pylint: disable=invalid-name
-loadTPose = load_t_pose  # pylint: disable=invalid-name
-setJointParallelToGrid = set_joint_parallel_to_grid  # pylint: disable=invalid-name
-setArmParallelToGrid = set_arm_parallel_to_grid  # pylint: disable=invalid-name
-setArmParallelToGrid_old = set_arm_parallel_to_grid_old  # pylint: disable=invalid-name

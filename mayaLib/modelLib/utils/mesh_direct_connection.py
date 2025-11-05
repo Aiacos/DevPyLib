@@ -37,16 +37,16 @@ def mesh_direct_connection(source, destination):
     destination = pm.ls(destination)[0].getShape()
 
     # Store the original connections
-    inBackUp = pm.listConnections(destination.inMesh, source=True, plugs=True)
+    in_back_up = pm.listConnections(destination.inMesh, source=True, plugs=True)
 
     # Connect the source mesh to the destination mesh
     pm.connectAttr(source.outMesh, destination.inMesh, f=True)
     # pm.disconnectAttr(source.outMesh, destination.inMesh)
 
     # If there are any original connections, reconnect them
-    if (len(inBackUp) > 0):
+    if (len(in_back_up) > 0):
         # pass
-        pm.connectAttr(inBackUp[0], destination.inMesh, f=True)
+        pm.connectAttr(in_back_up[0], destination.inMesh, f=True)
 
 
 if __name__ == "__main__":

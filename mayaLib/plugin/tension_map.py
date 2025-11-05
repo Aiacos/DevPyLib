@@ -31,10 +31,10 @@ def maya_use_new_api():
 
 class TensionMap( om2.MPxNode ):
 
-    aOrigShape = om2.MObject()
-    aDeformedShape = om2.MObject()
-    aOutShape = om2.MObject()
-    aColorRamp = om2.MObject()
+    a_orig_shape = om2.MObject()
+    a_deformed_shape = om2.MObject()
+    a_out_shape = om2.MObject()
+    a_color_ramp = om2.MObject()
 
     is_deformed_dirty = True
     is_orig_dirty = True
@@ -60,9 +60,9 @@ class TensionMap( om2.MPxNode ):
         interp_plug.setInt(interpolation)
 
     def postConstructor( self ):
-        self.initialize_ramp( self.thisMObject(), self.aColorRamp, 0, 0.0, om2.MColor( (0, 1, 0, 1) ), 1 )
-        self.initialize_ramp( self.thisMObject(), self.aColorRamp, 1, 0.5, om2.MColor( (0, 0, 0, 1) ), 1 )
-        self.initialize_ramp( self.thisMObject(), self.aColorRamp, 2, 1.0, om2.MColor( (1, 0, 0, 1) ), 1 )
+        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 0, 0.0, om2.MColor( (0, 1, 0, 1) ), 1 )
+        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor( (0, 0, 0, 1) ), 1 )
+        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor( (1, 0, 0, 1) ), 1 )
 
     def setDependentsDirty( self, dirty_plug, affected_plugs ):
         if dirty_plug.partialName() == DEFORMED_ATTR_NAME:
@@ -77,12 +77,12 @@ class TensionMap( om2.MPxNode ):
 
     def compute( self, plug, data ):
 
-        if plug == self.aOutShape:
+        if plug == self.a_out_shape:
             this_obj = self.thisMObject()
-            orig_handle = data.inputValue( self.aOrigShape )
-            deformed_handle = data.inputValue( self.aDeformedShape )
-            out_handle = data.outputValue( self.aOutShape )
-            color_attribute = om2.MRampAttribute( this_obj, self.aColorRamp )
+            orig_handle = data.inputValue( self.a_orig_shape )
+            deformed_handle = data.inputValue( self.a_deformed_shape )
+            out_handle = data.outputValue( self.a_out_shape )
+            color_attribute = om2.MRampAttribute( this_obj, self.a_color_ramp )
 
             if self.is_orig_dirty:
                 self.orig_edge_len_array = self.get_edge_len( orig_handle )
@@ -141,24 +141,24 @@ def node_creator():
 def initialize():
     t_attr = om2.MFnTypedAttribute()
 
-    TensionMap.aOrigShape = t_attr.create( ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh )
+    TensionMap.a_orig_shape = t_attr.create( ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh )
     t_attr.storable = True
 
-    TensionMap.aDeformedShape = t_attr.create( DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, om2.MFnMeshData.kMesh )
+    TensionMap.a_deformed_shape = t_attr.create( DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, om2.MFnMeshData.kMesh )
     t_attr.storable = True
 
-    TensionMap.aOutShape = t_attr.create( "out", "out", om2.MFnMeshData.kMesh )
+    TensionMap.a_out_shape = t_attr.create( "out", "out", om2.MFnMeshData.kMesh )
     t_attr.writable = False
     t_attr.storable = False
 
-    TensionMap.aColorRamp = om2.MRampAttribute().createColorRamp("color", "color")
-    TensionMap.addAttribute( TensionMap.aOrigShape )
-    TensionMap.addAttribute( TensionMap.aDeformedShape )
-    TensionMap.addAttribute( TensionMap.aOutShape )
-    TensionMap.addAttribute( TensionMap.aColorRamp )
-    TensionMap.attributeAffects( TensionMap.aOrigShape, TensionMap.aOutShape )
-    TensionMap.attributeAffects( TensionMap.aDeformedShape, TensionMap.aOutShape )
-    TensionMap.attributeAffects( TensionMap.aColorRamp, TensionMap.aOutShape )
+    TensionMap.a_color_ramp = om2.MRampAttribute().createColorRamp("color", "color")
+    TensionMap.addAttribute( TensionMap.a_orig_shape )
+    TensionMap.addAttribute( TensionMap.a_deformed_shape )
+    TensionMap.addAttribute( TensionMap.a_out_shape )
+    TensionMap.addAttribute( TensionMap.a_color_ramp )
+    TensionMap.attributeAffects( TensionMap.a_orig_shape, TensionMap.a_out_shape )
+    TensionMap.attributeAffects( TensionMap.a_deformed_shape, TensionMap.a_out_shape )
+    TensionMap.attributeAffects( TensionMap.a_color_ramp, TensionMap.a_out_shape )
 
 
 # AE template that put the main attributes into the main attribute section

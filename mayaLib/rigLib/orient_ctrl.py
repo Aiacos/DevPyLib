@@ -20,10 +20,10 @@ def rename_ctrl(joint, control):
     Returns:
         pm.nt.Transform: The renamed control object.
     """
-    jointName = joint
-    controlName = jointName.replace('_jnt', '_ctrl')
-    print(controlName)
-    return control.rename(controlName)
+    joint_name = joint
+    control_name = joint_name.replace('_jnt', '_ctrl')
+    print(control_name)
+    return control.rename(control_name)
 
 
 def orient_ctrl_constrain(control, joint):
@@ -41,8 +41,8 @@ def orient_ctrl_constrain(control, joint):
     control_group = pm.group(control, n=control_name + '_grp')
     control_group.rotateZ.set(90)
     pm.makeIdentity(control_group, apply=True)
-    parentConstraint = pm.parentConstraint(joint, control_group)
-    pm.delete(parentConstraint)
+    parent_constraint = pm.parentConstraint(joint, control_group)
+    pm.delete(parent_constraint)
 
 
 def orient_ctrl_parent(control, joint):

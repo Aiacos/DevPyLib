@@ -87,9 +87,9 @@ def create_bifrost_geo_to_maya_node():
 
     """
 
-    bifrostGeoToMaya_node = cmds.createNode('bifrostGeoToMaya')
+    bifrost_geo_to_maya_node = cmds.createNode('bifrostGeoToMaya')
 
-    return bifrostGeoToMaya_node
+    return bifrost_geo_to_maya_node
 
 
 def bf_create_node(bifrost_shape, node, parent='/'):

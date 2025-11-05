@@ -44,7 +44,7 @@ import maya.cmds as mc
 import pymel.core as pm
 
 # This maps the BVH naming convention to Maya
-translationDict = {
+TRANSLATION_DICT = {
     "Xposition": "translateX",
     "Yposition": "translateY",
     "Zposition": "translateZ",
@@ -60,6 +60,12 @@ class TinyDAG(object):
     """
 
     def __init__(self, obj, p_obj=None):
+        """Initialize BVH node wrapper.
+
+        Args:
+            obj: Node name or object
+            p_obj: Parent BVHNode object. Defaults to None.
+        """
         self.obj = obj
         self.pObj = p_obj
 
@@ -80,6 +86,20 @@ class BVHImporterDialog(object):
     """
 
     def __init__(self, debug=False):
+        """Initialize BVH Importer dialog window.
+
+        Creates a Maya UI dialog for importing BVH motion capture files,
+        with options for scale, frame range, and rotation order.
+
+        Args:
+            debug: Enable debug output during import. Defaults to False.
+                  WARNING: Don't use debug when importing more than 10 frames.
+
+        Attributes:
+            _filename: Path to BVH file
+            _channels: Parsed motion channels from BVH
+            _rootNode: Target root joint for retargeting
+        """
         # Don't use debug when importing more than 10 frames.. Otherwise it gets messy
         self._name = "bvhImportDialog"
         self._title = "BVH Importer %s" % __version__
@@ -102,6 +122,11 @@ class BVHImporterDialog(object):
         self.setup_ui()
 
     def setup_ui(self):
+        """Create and display the BVH Importer UI window.
+
+        Builds the Maya UI with text fields for file path, scale factor,
+        frame range, rotation order dropdown, and import/reload buttons.
+        """
         # Creates the great dialog
         win = self._name
         if mc.window(win, ex=True):
@@ -180,18 +205,18 @@ class BVHImporterDialog(object):
 
     def _read_bvh(self, e=False):
         # Safe close is needed for End Site part to keep from setting new parent.
-        safeClose = False
+        safe_close = False
         # Once motion is active, animate.
         motion = False
         # Clear channels before appending
         self._channels = []
 
         # Scale the entire rig and animation
-        rigScale = mc.floatField(self._scaleField, q=True, value=True)
+        rig_scale = mc.floatField(self._scaleField, q=True, value=True)
         frame = mc.intField(self._frameField, q=True, value=True)
-        rotOrder = mc.optionMenu(self._rotationOrder, q=True, select=True) - 1
+        rot_order = mc.optionMenu(self._rotationOrder, q=True, select=True) - 1
 
-        with open(self._filename) as f:
+        with open(self._filename, encoding='utf-8') as f:
             # Check to see if the file is valid (sort of)
             if not f.next().startswith("HIERARCHY"):
                 mc.error("No valid .bvh file selected.")
@@ -199,14 +224,14 @@ class BVHImporterDialog(object):
 
             if self._rootNode is None:
                 # Create a group for the rig, easier to scale. (Freeze transform when ungrouping please..)
-                mocapName = os.path.basename(self._filename)
-                grp = pm.group(em=True, name="_mocap_%s_grp" % mocapName)
-                grp.scale.set(rigScale, rigScale, rigScale)
+                mocap_name = os.path.basename(self._filename)
+                grp = pm.group(em=True, name="_mocap_%s_grp" % mocap_name)
+                grp.scale.set(rig_scale, rig_scale, rig_scale)
 
                 # The group is now the 'root'
-                myParent = TinyDAG(str(grp), None)
+                my_parent = TinyDAG(str(grp), None)
             else:
-                myParent = TinyDAG(str(self._rootNode), None)
+                my_parent = TinyDAG(str(self._rootNode), None)
                 self._clear_animation()
 
             for line in f:
@@ -216,30 +241,30 @@ class BVHImporterDialog(object):
                     if line.startswith("ROOT"):
                         # Set the Hip joint as root
                         if self._rootNode:
-                            myParent = TinyDAG(str(self._rootNode), None)
+                            my_parent = TinyDAG(str(self._rootNode), None)
                         else:
-                            myParent = TinyDAG(line[5:].rstrip(), myParent)
+                            my_parent = TinyDAG(line[5:].rstrip(), my_parent)
 
                     if "JOINT" in line:
                         jnt = line.split(" ")
                         # Create the joint
-                        myParent = TinyDAG(jnt[-1].rstrip(), myParent)
+                        my_parent = TinyDAG(jnt[-1].rstrip(), my_parent)
 
                     if "End Site" in line:
                         # Finish up a hierarchy and ignore a closing bracket
-                        safeClose = True
+                        safe_close = True
 
                     if "}" in line:
-                        # Ignore when safeClose is on
-                        if safeClose:
-                            safeClose = False
+                        # Ignore when safe_close is on
+                        if safe_close:
+                            safe_close = False
                             continue
 
                         # Go up one level
-                        if myParent is not None:
-                            myParent = myParent.pObj
-                            if myParent is not None:
-                                mc.select(myParent._full_path())
+                        if my_parent is not None:
+                            my_parent = my_parent.pObj
+                            if my_parent is not None:
+                                mc.select(my_parent._full_path())
 
                     if "CHANNELS" in line:
                         chan = line.strip().split(" ")
@@ -248,29 +273,29 @@ class BVHImporterDialog(object):
 
                         # Append the channels that are animated
                         for i in range(int(chan[1])):
-                            self._channels.append("%s.%s" % (myParent._full_path(), translationDict[chan[2 + i]]))
+                            self._channels.append("%s.%s" % (my_parent._full_path(), TRANSLATION_DICT[chan[2 + i]]))
 
                     if "OFFSET" in line:
                         offset = line.strip().split(" ")
                         if self._debug:
                             print(offset)
-                        jntName = str(myParent)
+                        jnt_name = str(my_parent)
 
                         # When End Site is reached, name it "_tip"
-                        if safeClose:
-                            jntName += "_tip"
+                        if safe_close:
+                            jnt_name += "_tip"
 
                         # skip if exists
-                        if mc.objExists(myParent._full_path()):
-                            jnt = pm.PyNode(myParent._full_path())
-                            jnt.rotateOrder.set(rotOrder)
+                        if mc.objExists(my_parent._full_path()):
+                            jnt = pm.PyNode(my_parent._full_path())
+                            jnt.rotateOrder.set(rot_order)
                             jnt.translate.set([float(offset[1]), float(offset[2]), float(offset[3])])
                             continue
 
                         # Build the joint and set its properties
-                        jnt = pm.joint(name=jntName, p=(0, 0, 0))
+                        jnt = pm.joint(name=jnt_name, p=(0, 0, 0))
                         jnt.translate.set([float(offset[1]), float(offset[2]), float(offset[3])])
-                        jnt.rotateOrder.set(rotOrder)
+                        jnt.rotateOrder.set(rot_order)
 
                     if "MOTION" in line:
                         # Animate!

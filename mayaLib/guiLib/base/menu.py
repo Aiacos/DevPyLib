@@ -11,9 +11,9 @@ import pymel.core as pm
 
 
 class Menu():
-    gMainWindow = maya.mel.eval('$tmpVar=$gMainWindow')
+    g_main_window = maya.mel.eval('$tmpVar=$gMainWindow')
 
-    def __init__(self, menu_name='test', parent=gMainWindow):
+    def __init__(self, menu_name='test', parent=g_main_window):
         """Construct a Menu Object
 
         Args:
@@ -100,6 +100,10 @@ class Menu():
 
 
 def print_text():
+    """Test function for menu command demonstration.
+
+    Prints a test message, used as example command in menu item creation.
+    """
     print('hello test')
 
 

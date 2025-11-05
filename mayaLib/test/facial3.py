@@ -792,7 +792,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     WINDOW_TITLE = 'Perseus UI'
     UI_NAME = 'PerseusUI'
     ui_instance = None
-    perseusDic = {}
+    perseus_dic = {}
 
     @classmethod
     def show_dialog(cls):
@@ -966,10 +966,10 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
-        self.perseusDic['FacialRigName'] = name
+        self.perseus_dic['FacialRigName'] = name
         skinJntSuffix = self.headGeo_wdg.skinJntSuffix.text()
         skinJntSuffix = skinJntSuffix.replace(' ', '')
-        self.perseusDic['skinJntSuffix'] = skinJntSuffix
+        self.perseus_dic['skinJntSuffix'] = skinJntSuffix
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
         chkExtra = int(self.headGeo_wdg.chkExtra.isChecked())
         chkMaintainMaxInf = int(self.settings_wdg.chkMaintainMaxInf.isChecked())
@@ -984,21 +984,21 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         eyelidJnt = self.settings_wdg.eyelidJnt.value()
         chkOptEye = int(self.settings_wdg.chkOptEye.isChecked())
         eyeCreaseJnt = self.settings_wdg.eyeCreaseJnt.value()
-        self.perseusDic['chkExtra'] = chkExtra
-        self.perseusDic['chkMaintainMaxInf'] = chkMaintainMaxInf
-        self.perseusDic['maxInfs'] = maxInfs
-        self.perseusDic['relaxSk'] = relaxSk
-        self.perseusDic['chkGame'] = chkGame
-        self.perseusDic['chkSoftMod'] = chkSoftMod
-        self.perseusDic['chkTweaker'] = chkTweaker
-        self.perseusDic['chkOptLip'] = chkOptLip
-        self.perseusDic['lipJnt'] = lipJnt
-        self.perseusDic['chkOptEyelidJnt'] = chkOptEyelidJnt
-        self.perseusDic['eyelidJnt'] = eyelidJnt
-        self.perseusDic['chkOptEye'] = chkOptEye
-        self.perseusDic['eyeCreaseJnt'] = eyeCreaseJnt
-        self.perseusDic['chkPrefix'] = chkPrefix
-        self.perseusDic['chkPrefix'] = chkPrefix
+        self.perseus_dic['chkExtra'] = chkExtra
+        self.perseus_dic['chkMaintainMaxInf'] = chkMaintainMaxInf
+        self.perseus_dic['maxInfs'] = maxInfs
+        self.perseus_dic['relaxSk'] = relaxSk
+        self.perseus_dic['chkGame'] = chkGame
+        self.perseus_dic['chkSoftMod'] = chkSoftMod
+        self.perseus_dic['chkTweaker'] = chkTweaker
+        self.perseus_dic['chkOptLip'] = chkOptLip
+        self.perseus_dic['lipJnt'] = lipJnt
+        self.perseus_dic['chkOptEyelidJnt'] = chkOptEyelidJnt
+        self.perseus_dic['eyelidJnt'] = eyelidJnt
+        self.perseus_dic['chkOptEye'] = chkOptEye
+        self.perseus_dic['eyeCreaseJnt'] = eyeCreaseJnt
+        self.perseus_dic['chkPrefix'] = chkPrefix
+        self.perseus_dic['chkPrefix'] = chkPrefix
 
     def generateRig_fn(self):
         pythonVersion = sys.version_info.major
@@ -1007,109 +1007,109 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         else:
             from perseus_main import perseusRigging_facialRig
         prFacialRig = perseusRigging_facialRig()
-        prFacialRig.checkCurveGuideExists(self.perseusDic)
+        prFacialRig.checkCurveGuideExists(self.perseus_dic)
 
     def sl_headGeo_fn(self):
-        cmds.select(self.perseusDic['LHeadGeoSel'], r=1)
+        cmds.select(self.perseus_dic['LHeadGeoSel'], r=1)
 
     def sl_rEyeGeo_fn(self):
-        cmds.select(self.perseusDic['REyeGeoSel'], r=1)
+        cmds.select(self.perseus_dic['REyeGeoSel'], r=1)
 
     def sl_lEyeGeo_fn(self):
-        cmds.select(self.perseusDic['LEyeGeoSel'], r=1)
+        cmds.select(self.perseus_dic['LEyeGeoSel'], r=1)
 
     def sl_topTeethGeo_fn(self):
-        cmds.select(self.perseusDic['TopTeethGeoSel'], r=1)
+        cmds.select(self.perseus_dic['TopTeethGeoSel'], r=1)
 
     def sl_downTeethGeo_fn(self):
-        cmds.select(self.perseusDic['DownTeethGeoSel'], r=1)
+        cmds.select(self.perseus_dic['DownTeethGeoSel'], r=1)
 
     def sl_tongueGeo_fn(self):
-        cmds.select(self.perseusDic['TongueGeoSel'], r=1)
+        cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
 
     def sl_extraGeo_fn(self):
-        cmds.select(self.perseusDic['ExtraGeoSel'], r=1)
+        cmds.select(self.perseus_dic['ExtraGeoSel'], r=1)
 
     def sl_rEyeLidMain_fn(self):
-        self.checkVarExistsB(self.perseusDic['RTopEyeEdgeSel'], self.perseusDic['RDownEyeEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['RTopEyeEdgeSel'], self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
 
     def sl_lEyeLidMain_fn(self):
-        self.checkVarExistsB(self.perseusDic['LTopEyeEdgeSel'], self.perseusDic['LDownEyeEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['LTopEyeEdgeSel'], self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
 
     def sl_lTopEyeEdge_fn(self):
-        self.checkVarExists(self.perseusDic['LTopEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['LTopEyeEdgeSel'], 0, 1)
 
     def sl_lDownEyeEdge_fn(self):
-        self.checkVarExists(self.perseusDic['LDownEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
 
     def sl_rTopEyeEdge_fn(self):
-        self.checkVarExists(self.perseusDic['RTopEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['RTopEyeEdgeSel'], 0, 1)
 
     def sl_rDownEyeEdge_fn(self):
-        self.checkVarExists(self.perseusDic['RDownEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
 
     def sl_rEyeLidOuter_fn(self):
-        self.checkVarExistsB(self.perseusDic['RTopEyeOuterEdgeSel'], self.perseusDic['RDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['RTopEyeOuterEdgeSel'], self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lEyeLidOuter_fn(self):
-        self.checkVarExistsB(self.perseusDic['LTopEyeOuterEdgeSel'], self.perseusDic['LDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['LTopEyeOuterEdgeSel'], self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lTopEyeOuterEdge_fn(self):
-        self.checkVarExists(self.perseusDic['LTopEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['LTopEyeOuterEdgeSel'], 0, 1)
 
     def sl_lDownEyeOuterEdge_fn(self):
-        self.checkVarExists(self.perseusDic['LDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_rTopEyeOuterEdge_fn(self):
-        self.checkVarExists(self.perseusDic['RTopEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['RTopEyeOuterEdgeSel'], 0, 1)
 
     def sl_rDownEyeOuterEdge_fn(self):
-        self.checkVarExists(self.perseusDic['RDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lipTopDown_fn(self):
-        self.checkVarExistsB(self.perseusDic['DownLipEdgeSel'], self.perseusDic['TopLipEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['DownLipEdgeSel'], self.perseus_dic['TopLipEdgeSel'], 0, 1)
 
     def sl_lipTop_fn(self):
-        self.checkVarExists(self.perseusDic['TopLipEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['TopLipEdgeSel'], 0, 1)
 
     def sl_lipDown_fn(self):
-        self.checkVarExists(self.perseusDic['DownLipEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['DownLipEdgeSel'], 0, 1)
 
     def sl_tongueTopDown_fn(self):
-        self.checkVarExistsB(self.perseusDic['DownTongueEdgeSel'], self.perseusDic['TopTongueEdgeSel'], 0, 1)
+        self.checkVarExistsB(self.perseus_dic['DownTongueEdgeSel'], self.perseus_dic['TopTongueEdgeSel'], 0, 1)
 
     def sl_tongueTop_fn(self):
-        self.checkVarExists(self.perseusDic['TopTongueEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['TopTongueEdgeSel'], 0, 1)
 
     def sl_tongueDown_fn(self):
-        self.checkVarExists(self.perseusDic['DownTongueEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['DownTongueEdgeSel'], 0, 1)
 
     def sl_noseEdges_fn(self):
-        self.checkVarExists(self.perseusDic['NoseEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic['NoseEdgeSel'], 0, 1)
 
     def sl_noseUnderVrtx_fn(self):
-        self.checkVarExists(self.perseusDic['NoseUnderVertexSel'], 0, 0)
+        self.checkVarExists(self.perseus_dic['NoseUnderVertexSel'], 0, 0)
 
     def sl_foreheadFace_fn(self):
-        self.checkVarExists(self.perseusDic['ForeheadFaceSel'], 1, 2)
+        self.checkVarExists(self.perseus_dic['ForeheadFaceSel'], 1, 2)
 
     def sl_backHeadNeck_fn(self):
-        self.checkVarExists(self.perseusDic['BackHeadNeckFaceSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['BackHeadNeckFaceSel'], 0, 2)
 
     def sl_squashStretchFace_fn(self):
-        self.checkVarExists(self.perseusDic['SquashStretchFaceSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['SquashStretchFaceSel'], 0, 2)
 
     def sl_LPupil_fn(self):
-        self.checkVarExists(self.perseusDic['LPupilSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['LPupilSel'], 0, 2)
 
     def sl_RPupil_fn(self):
-        self.checkVarExists(self.perseusDic['RPupilSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['RPupilSel'], 0, 2)
 
     def sl_LIris_fn(self):
-        self.checkVarExists(self.perseusDic['LIrisSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['LIrisSel'], 0, 2)
 
     def sl_RIris_fn(self):
-        self.checkVarExists(self.perseusDic['RIrisSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic['RIrisSel'], 0, 2)
 
     def LHeadGeoSelUI(self):
         LHeadGeoSel = cmds.ls(sl=1)[0]
@@ -1117,7 +1117,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + LHeadGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         LHeadGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['LHeadGeoSel'] = LHeadGeoSel
+        self.perseus_dic['LHeadGeoSel'] = LHeadGeoSel
         self.headGeo_wdg.geoField.setText(LHeadGeoSel)
 
     def REyeGeoUI(self):
@@ -1126,7 +1126,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + REyeGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         REyeGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['REyeGeoSel'] = REyeGeoSel
+        self.perseus_dic['REyeGeoSel'] = REyeGeoSel
         self.headGeo_wdg.REyeBox.setText(REyeGeoSel)
 
     def LEyeGeoUI(self):
@@ -1135,7 +1135,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + LEyeGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         LEyeGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['LEyeGeoSel'] = LEyeGeoSel
+        self.perseus_dic['LEyeGeoSel'] = LEyeGeoSel
         self.headGeo_wdg.LEyeBox.setText(LEyeGeoSel)
 
     def UpTeethGeoUI(self):
@@ -1144,7 +1144,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + TopTeethGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         TopTeethGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['TopTeethGeoSel'] = TopTeethGeoSel
+        self.perseus_dic['TopTeethGeoSel'] = TopTeethGeoSel
         self.headGeo_wdg.UpTeethBox.setText(TopTeethGeoSel)
 
     def DownTeethGeoUI(self):
@@ -1153,7 +1153,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + DownTeethGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         DownTeethGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['DownTeethGeoSel'] = DownTeethGeoSel
+        self.perseus_dic['DownTeethGeoSel'] = DownTeethGeoSel
         self.headGeo_wdg.DownTeethBox.setText(DownTeethGeoSel)
 
     def TongueGeoUI(self):
@@ -1162,12 +1162,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkNameSpace > 1:
             cmds.namespace(removeNamespace=':' + TongueGeoSel.split(':')[0], mergeNamespaceWithParent=True)
         TongueGeoSel = cmds.ls(sl=1)[0]
-        self.perseusDic['TongueGeoSel'] = TongueGeoSel
+        self.perseus_dic['TongueGeoSel'] = TongueGeoSel
         self.headGeo_wdg.TongueBox.setText(TongueGeoSel)
 
     def ExtraGeoUI(self):
         ExtraGeoSel = cmds.ls(sl=1)
-        self.perseusDic['ExtraGeoSel'] = ExtraGeoSel
+        self.perseus_dic['ExtraGeoSel'] = ExtraGeoSel
         self.headGeo_wdg.ExtraBox.setText(str(ExtraGeoSel))
         self.headGeo_wdg.chkExtra.setChecked(True)
         pm.parent(w=1)
@@ -1184,8 +1184,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = RTopEyeEdgeSel
             RTopEyeEdgeSel = RDownEyeEdgeSel
             RDownEyeEdgeSel = temp
-        self.perseusDic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
-        self.perseusDic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
+        self.perseus_dic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
+        self.perseus_dic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
         self.headGeo_wdg.chkREyeLid.setChecked(True)
 
     def LEyeLidMainUI(self):
@@ -1200,8 +1200,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = LTopEyeEdgeSel
             LTopEyeEdgeSel = LDownEyeEdgeSel
             LDownEyeEdgeSel = temp
-        self.perseusDic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
-        self.perseusDic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
+        self.perseus_dic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
+        self.perseus_dic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
         self.headGeo_wdg.chkLEyeLid.setChecked(True)
 
     def REyeLidOuterUI(self):
@@ -1216,8 +1216,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = RTopEyeOuterEdgeSel
             RTopEyeOuterEdgeSel = RDownEyeOuterEdgeSel
             RDownEyeOuterEdgeSel = temp
-        self.perseusDic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
-        self.perseusDic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
+        self.perseus_dic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
+        self.perseus_dic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
         self.headGeo_wdg.chkREyeOuterLid.setChecked(True)
 
     def LEyeLidOuterUI(self):
@@ -1232,41 +1232,41 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = LTopEyeOuterEdgeSel
             LTopEyeOuterEdgeSel = LDownEyeOuterEdgeSel
             LDownEyeOuterEdgeSel = temp
-        self.perseusDic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
-        self.perseusDic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
+        self.perseus_dic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
+        self.perseus_dic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
         self.headGeo_wdg.chkLEyeOuterLid.setChecked(True)
 
     def LTopEyeEdgeSelUI(self):
         LTopEyeEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
+        self.perseus_dic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
 
     def LDownEyeEdgeSelUI(self):
         LDownEyeEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
+        self.perseus_dic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
 
     def RTopEyeEdgeSelUI(self):
         RTopEyeEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
+        self.perseus_dic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
 
     def RDownEyeEdgeSelUI(self):
         RDownEyeEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
+        self.perseus_dic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
 
     def LTopEyeOuterEdgeSelUI(self):
         LTopEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
+        self.perseus_dic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
 
     def LDownEyeOuterEdgeSelUI(self):
         LDownEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
+        self.perseus_dic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
 
     def RTopEyeOuterEdgeSelUI(self):
         RTopEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
+        self.perseus_dic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
 
     def RDownEyeOuterEdgeSelUI(self):
         RDownEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
+        self.perseus_dic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
 
     def LipEdgeUI(self):
         TopLipEdgeSel = self.findEdgeUpDown(0)
@@ -1280,49 +1280,49 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             TopLipEdgeSel = DownLipEdgeSel
             DownLipEdgeSel = temp
         cmds.select(TopLipEdgeSel, r=1)
-        self.perseusDic['TopLipEdgeSel'] = TopLipEdgeSel
-        self.perseusDic['DownLipEdgeSel'] = DownLipEdgeSel
+        self.perseus_dic['TopLipEdgeSel'] = TopLipEdgeSel
+        self.perseus_dic['DownLipEdgeSel'] = DownLipEdgeSel
         self.headGeo_wdg.chkLip.setChecked(True)
 
     def TopLipEdgeSelUI(self):
         TopLipEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['TopLipEdgeSel'] = TopLipEdgeSel
+        self.perseus_dic['TopLipEdgeSel'] = TopLipEdgeSel
 
     def DownLipEdgeSelUI(self):
         DownLipEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['DownLipEdgeSel'] = DownLipEdgeSel
+        self.perseus_dic['DownLipEdgeSel'] = DownLipEdgeSel
 
     def TopTongueEdgeSelUI(self):
         TopTongueEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['TopTongueEdgeSel'] = TopTongueEdgeSel
+        self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
 
     def DownTongueEdgeSelUI(self):
         DownTongueEdgeSel = cmds.ls(sl=1)
-        self.perseusDic['DownTongueEdgeSel'] = DownTongueEdgeSel
+        self.perseus_dic['DownTongueEdgeSel'] = DownTongueEdgeSel
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def TongueEdgeUI(self):
         TopTongueEdgeSel = self.findEdgeUpDownTongue(0)
         DownTongueEdgeSel = self.findEdgeUpDownTongue(1)
-        self.perseusDic['TopTongueEdgeSel'] = TopTongueEdgeSel
-        self.perseusDic['DownTongueEdgeSel'] = DownTongueEdgeSel
+        self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
+        self.perseus_dic['DownTongueEdgeSel'] = DownTongueEdgeSel
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def NoseEdgeUI(self):
         cmds.ConvertSelectionToVertices()
         NoseEdgeSel = cmds.ls(fl=1, sl=1)
         cmds.ConvertSelectionToContainedEdges()
-        self.perseusDic['NoseEdgeSel'] = NoseEdgeSel
+        self.perseus_dic['NoseEdgeSel'] = NoseEdgeSel
         self.headGeo_wdg.chkNoseEdge.setChecked(True)
 
     def NoseUnderVrtxUI(self):
         cmds.ConvertSelectionToVertices()
         NoseUnderVertexSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['NoseUnderVertexSel'] = NoseUnderVertexSel
+        self.perseus_dic['NoseUnderVertexSel'] = NoseUnderVertexSel
         self.headGeo_wdg.chkNoseUnderVertex.setChecked(True)
 
     def ForeheadFaceSelUI(self):
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1332,7 +1332,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(ForeheadFaceSelEx, d=1)
         ForeheadFaceSel = cmds.ls(fl=1, sl=1)
         cmds.select(ForeheadFaceSelEx, r=1)
-        self.perseusDic['ForeheadFaceSel'] = ForeheadFaceSel
+        self.perseus_dic['ForeheadFaceSel'] = ForeheadFaceSel
         self.headGeo_wdg.checkForeheadFace.setChecked(True)
 
     def BackHeadNeckFaceSelUI(self):
@@ -1340,7 +1340,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         BackHeadNeckFaceSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['BackHeadNeckFaceSel'] = BackHeadNeckFaceSel
+        self.perseus_dic['BackHeadNeckFaceSel'] = BackHeadNeckFaceSel
         self.headGeo_wdg.chkBackFace.setChecked(True)
 
     def SquashStretchFaceSelUI(self):
@@ -1348,7 +1348,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         SquashStretchFaceSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['SquashStretchFaceSel'] = SquashStretchFaceSel
+        self.perseus_dic['SquashStretchFaceSel'] = SquashStretchFaceSel
         self.headGeo_wdg.checkSquashStretchFace.setChecked(True)
 
     def LPupilUI(self):
@@ -1356,7 +1356,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['LPupilSel'] = LPupilSel
+        self.perseus_dic['LPupilSel'] = LPupilSel
         self.headGeo_wdg.chkLPupil.setChecked(True)
 
     def RPupilUI(self):
@@ -1364,7 +1364,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['RPupilSel'] = LPupilSel
+        self.perseus_dic['RPupilSel'] = LPupilSel
         self.headGeo_wdg.chkRPupil.setChecked(True)
 
     def LIrisUI(self):
@@ -1372,7 +1372,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['LIrisSel'] = LPupilSel
+        self.perseus_dic['LIrisSel'] = LPupilSel
         self.headGeo_wdg.chkLIris.setChecked(True)
 
     def RIrisUI(self):
@@ -1380,7 +1380,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseusDic['RIrisSel'] = LPupilSel
+        self.perseus_dic['RIrisSel'] = LPupilSel
         self.headGeo_wdg.chkRIris.setChecked(True)
 
     def EdgeLoopOn_fn(self):
@@ -1400,12 +1400,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def DuplicateUI(self):
         cmds.select(cl=1)
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
-        LEyeGeoSel = self.perseusDic['LEyeGeoSel']
-        REyeGeoSel = self.perseusDic['REyeGeoSel']
-        TopTeethGeoSel = self.perseusDic['TopTeethGeoSel']
-        DownTeethGeoSel = self.perseusDic['DownTeethGeoSel']
-        TongueGeoSel = self.perseusDic['TongueGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        LEyeGeoSel = self.perseus_dic['LEyeGeoSel']
+        REyeGeoSel = self.perseus_dic['REyeGeoSel']
+        TopTeethGeoSel = self.perseus_dic['TopTeethGeoSel']
+        DownTeethGeoSel = self.perseus_dic['DownTeethGeoSel']
+        TongueGeoSel = self.perseus_dic['TongueGeoSel']
         cmds.select(LHeadGeoSel, LEyeGeoSel, REyeGeoSel, TopTeethGeoSel, DownTeethGeoSel, TongueGeoSel, r=1)
         self.wffacialDuplicate()
         self.headGeo_wdg.componentLayoutGrp.setChecked(True)
@@ -1449,37 +1449,37 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         chkLIris = int(self.headGeo_wdg.chkLIris.isChecked())
         chkRIris = int(self.headGeo_wdg.chkLIris.isChecked())
         try:
-            self.perseusDic['LHeadGeoSel']
+            self.perseus_dic['LHeadGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Head Geo'")
             status = False
 
         try:
-            self.perseusDic['REyeGeoSel']
+            self.perseus_dic['REyeGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'R Eye Geo'")
             status = False
 
         try:
-            self.perseusDic['LEyeGeoSel']
+            self.perseus_dic['LEyeGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'L Eye Geo'")
             status = False
 
         try:
-            self.perseusDic['TopTeethGeoSel']
+            self.perseus_dic['TopTeethGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Up Teeth Geo'")
             status = False
 
         try:
-            self.perseusDic['DownTeethGeoSel']
+            self.perseus_dic['DownTeethGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Down Teeth Geo'")
             status = False
 
         try:
-            self.perseusDic['TongueGeoSel']
+            self.perseus_dic['TongueGeoSel']
         except Exception:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Tongue Geo'")
             status = False
@@ -1508,7 +1508,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if chkTongue == 0:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'tongue edges'")
             try:
-                cmds.select(self.perseusDic['TongueGeoSel'], r=1)
+                cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
             except Exception:
                 pass
 
@@ -1535,8 +1535,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'RIris'")
             status = False
         if status:
-            DownLipEdgeSel = self.perseusDic['DownLipEdgeSel']
-            TopLipEdgeSel = self.perseusDic['TopLipEdgeSel']
+            DownLipEdgeSel = self.perseus_dic['DownLipEdgeSel']
+            TopLipEdgeSel = self.perseus_dic['TopLipEdgeSel']
             try:
                 TopLipEdgeSel
             except NameError:
@@ -1551,7 +1551,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def Adjustment_a(self, DownLipEdgeSel, TopLipEdgeSel):
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         pos1 = cmds.xform(TopLipEdgeSel[0], q=1, ws=1, t=1)
         pos2 = cmds.xform(TopLipEdgeSel[int(len(TopLipEdgeSel) / 4)], q=1, ws=1, t=1)
         pos3 = cmds.xform(TopLipEdgeSel[int(len(TopLipEdgeSel) / 3)], q=1, ws=1, t=1)
@@ -1878,7 +1878,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def projectCrv(self):
         cmds.undoInfo(openChunk=True)
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         headGeo = LHeadGeoSel
         cmds.select('l_browsCurve', r=1)
         cmds.select(headGeo, tgl=1)
@@ -2044,7 +2044,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.setAttr('r_' + sel[2:size] + '.overrideColor', 1)
 
     def checkVarExists(self, NewList, invert, type):
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         if len(NewList) != 0:
             pm.select(NewList, r=1)
             if invert == 1:
@@ -2080,7 +2080,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             print('The variable has not been assigned ')
 
     def findEdgeUpDown(self, upDown):
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         vertexList = ['']
         vertexList = []
         name = LHeadGeoSel
@@ -2178,7 +2178,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.select(upDownSel[1], r=1)
 
     def findEdgeUpDownTongue(self, upDown):
-        self.perseusDic['LHeadGeoSel']
+        self.perseus_dic['LHeadGeoSel']
         vertexList = []
         edgeSel = cmds.ls(fl=1, sl=1)
         cmds.ConvertSelectionToVertices()
@@ -2256,8 +2256,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def FacialSave(self):
         self.pre_generateRig_fn()
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
-        self.perseusDic['skinJntSuffix']
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        self.perseus_dic['skinJntSuffix']
         if cmds.window('OptionBoxWindow', exists=1):
             cmds.deleteUI('OptionBoxWindow', window=1)
         pm.mel.saveOptionBoxSize()
@@ -2268,7 +2268,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.select(cl=1)
         if len(fDialog) != 0:
             adress = fDialog[0]
-            self.to_json(self.perseusDic, adress)
+            self.to_json(self.perseus_dic, adress)
         skinMesh = LHeadGeoSel
         try:
             bSMainName = cmds.ls(type='blendShape', *(cmds.listHistory(skinMesh) or []))[0]
@@ -2319,34 +2319,34 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
         with open(fDialogLd, 'r') as (fp):
             data = json.load(fp)
-        self.perseusDic = data
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
-        self.headGeo_wdg.geoField.setText(self.perseusDic['LHeadGeoSel'])
-        self.headGeo_wdg.REyeBox.setText(self.perseusDic['REyeGeoSel'])
-        self.headGeo_wdg.LEyeBox.setText(self.perseusDic['LEyeGeoSel'])
-        self.headGeo_wdg.UpTeethBox.setText(self.perseusDic['TopTeethGeoSel'])
-        self.headGeo_wdg.DownTeethBox.setText(self.perseusDic['DownTeethGeoSel'])
-        self.headGeo_wdg.TongueBox.setText(self.perseusDic['TongueGeoSel'])
+        self.perseus_dic = data
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        self.headGeo_wdg.geoField.setText(self.perseus_dic['LHeadGeoSel'])
+        self.headGeo_wdg.REyeBox.setText(self.perseus_dic['REyeGeoSel'])
+        self.headGeo_wdg.LEyeBox.setText(self.perseus_dic['LEyeGeoSel'])
+        self.headGeo_wdg.UpTeethBox.setText(self.perseus_dic['TopTeethGeoSel'])
+        self.headGeo_wdg.DownTeethBox.setText(self.perseus_dic['DownTeethGeoSel'])
+        self.headGeo_wdg.TongueBox.setText(self.perseus_dic['TongueGeoSel'])
         try:
-            self.headGeo_wdg.chkPrefix.setChecked(self.perseusDic['chkPrefix'])
-            self.headGeo_wdg.skinJntSuffix.setText(self.perseusDic['skinJntSuffix'])
+            self.headGeo_wdg.chkPrefix.setChecked(self.perseus_dic['chkPrefix'])
+            self.headGeo_wdg.skinJntSuffix.setText(self.perseus_dic['skinJntSuffix'])
         except Exception:
             pass
 
-        self.settings_wdg.chkMaintainMaxInf.setChecked(self.perseusDic['chkMaintainMaxInf'])
-        self.settings_wdg.maxInfs.setValue(self.perseusDic['maxInfs'])
-        self.settings_wdg.relaxSk.setValue(self.perseusDic['relaxSk'])
-        self.settings_wdg.chkGame.setChecked(self.perseusDic['chkGame'])
-        self.settings_wdg.chkSoftMod.setChecked(self.perseusDic['chkSoftMod'])
-        self.settings_wdg.chkTweaker.setChecked(self.perseusDic['chkTweaker'])
-        self.settings_wdg.chkOptLip.setChecked(self.perseusDic['chkOptLip'])
-        self.settings_wdg.lipJnt.setValue(self.perseusDic['lipJnt'])
-        self.settings_wdg.chkOptEyelidJnt.setChecked(self.perseusDic['chkOptEyelidJnt'])
-        self.settings_wdg.eyelidJnt.setValue(self.perseusDic['eyelidJnt'])
-        self.settings_wdg.chkOptEye.setChecked(self.perseusDic['chkOptEye'])
-        self.settings_wdg.eyeCreaseJnt.setValue(self.perseusDic['eyeCreaseJnt'])
-        if self.perseusDic['chkExtra'] == 1:
-            self.headGeo_wdg.ExtraBox.setText(str(self.perseusDic['ExtraGeoSel']))
+        self.settings_wdg.chkMaintainMaxInf.setChecked(self.perseus_dic['chkMaintainMaxInf'])
+        self.settings_wdg.maxInfs.setValue(self.perseus_dic['maxInfs'])
+        self.settings_wdg.relaxSk.setValue(self.perseus_dic['relaxSk'])
+        self.settings_wdg.chkGame.setChecked(self.perseus_dic['chkGame'])
+        self.settings_wdg.chkSoftMod.setChecked(self.perseus_dic['chkSoftMod'])
+        self.settings_wdg.chkTweaker.setChecked(self.perseus_dic['chkTweaker'])
+        self.settings_wdg.chkOptLip.setChecked(self.perseus_dic['chkOptLip'])
+        self.settings_wdg.lipJnt.setValue(self.perseus_dic['lipJnt'])
+        self.settings_wdg.chkOptEyelidJnt.setChecked(self.perseus_dic['chkOptEyelidJnt'])
+        self.settings_wdg.eyelidJnt.setValue(self.perseus_dic['eyelidJnt'])
+        self.settings_wdg.chkOptEye.setChecked(self.perseus_dic['chkOptEye'])
+        self.settings_wdg.eyeCreaseJnt.setValue(self.perseus_dic['eyeCreaseJnt'])
+        if self.perseus_dic['chkExtra'] == 1:
+            self.headGeo_wdg.ExtraBox.setText(str(self.perseus_dic['ExtraGeoSel']))
             self.headGeo_wdg.chkExtra.setChecked(True)
         if cmds.objExists('neck_neckHeadCurve') == 0:
             cmds.file(fDialogLdCurve, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
@@ -2373,7 +2373,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         mel.eval('print "Facial Data Setting has been loaded successfully.";')
 
     def FacialResetUI(self):
-        self.perseusDic = {}
+        self.perseus_dic = {}
         self.headGeo_wdg.chkExtra.setChecked(False)
         self.headGeo_wdg.chkLIris.setChecked(False)
         self.headGeo_wdg.chkLPupil.setChecked(False)
@@ -2479,8 +2479,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
         with open(fDialogLd, 'r') as (fp):
             data = json.load(fp)
-        self.perseusDic = data
-        LHeadGeoSel = self.perseusDic['LHeadGeoSel']
+        self.perseus_dic = data
+        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         if cmds.objExists('neck_neckHeadCurve') == 0:
             cmds.file(fDialogLdCurve, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
             if cmds.objExists(LHeadGeoSel + '_prs_trg') == 1:

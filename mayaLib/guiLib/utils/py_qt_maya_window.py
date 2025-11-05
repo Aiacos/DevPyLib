@@ -26,11 +26,11 @@ def get_maya_main_window():
         A QMainWindow object pointing to the main Maya window or None if unavailable.
     """
     # Get the main Maya window as a pointer to a QWidget object
-    accessMainWindow = OpenMayaUI.MQtUtil.mainWindow()
-    if accessMainWindow is None:
+    access_main_window = OpenMayaUI.MQtUtil.mainWindow()
+    if access_main_window is None:
         return None
     # Convert the pointer to a QMainWindow object
-    return wrapInstance(int(accessMainWindow), QtWidgets.QMainWindow)
+    return wrapInstance(int(access_main_window), QtWidgets.QMainWindow)
 
 
 class PyQtMayaWindow(QtWidgets.QMainWindow):
@@ -60,6 +60,11 @@ class PyQtMayaWindow(QtWidgets.QMainWindow):
         self.set_window()
 
     def set_window(self):
+        """Set up window controls and layout.
+
+        Override this method in subclasses to add PyQt widgets, layouts,
+        and other UI elements to the window.
+        """
         # add PyQt window controls here in inherited classes
         pass
 

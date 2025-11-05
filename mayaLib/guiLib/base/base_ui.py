@@ -50,7 +50,7 @@ class FunctionUI(QtWidgets.QWidget):
             if arg[0] != "self":
                 # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
-                fillButton = None
+                fill_button = None
 
                 if arg[1] is not None:
                     # Create a line edit or checkbox based on argument type
@@ -59,17 +59,17 @@ class FunctionUI(QtWidgets.QWidget):
                         lineedit.setChecked(arg[1])
                     else:
                         lineedit = QtWidgets.QLineEdit(str(arg[1]))
-                        fillButton = QtWidgets.QPushButton(">")
+                        fill_button = QtWidgets.QPushButton(">")
                 else:
                     lineedit = QtWidgets.QLineEdit("")
-                    fillButton = QtWidgets.QPushButton(">")
+                    fill_button = QtWidgets.QPushButton(">")
 
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
 
-                if fillButton is not None:
-                    self.layout.addWidget(fillButton, row, 1)
-                self.fillButton_list.append(fillButton)
+                if fill_button is not None:
+                    self.layout.addWidget(fill_button, row, 1)
+                self.fillButton_list.append(fill_button)
 
                 self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
@@ -207,10 +207,10 @@ class FunctionUI(QtWidgets.QWidget):
             # Check if the parameter is a boolean
             if isinstance(param, QtWidgets.QCheckBox):
                 if param.isChecked():
-                    qCheckBoxValue = True
+                    q_check_box_value = True
                 else:
-                    qCheckBoxValue = False
-                value = qCheckBoxValue
+                    q_check_box_value = False
+                value = q_check_box_value
                 param_list.append(value)
 
             # Check if the parameter is a list

@@ -30,8 +30,8 @@ class Scapula():
         effector = pm.listConnections(ikhandle[0].endEffector, source=True)
 
         # group ik
-        grpName = name.remove_suffix(side + 'scapula_GRP')
-        self.scapulaGrp = pm.group(ikhandle, n=grpName)
+        grp_name = name.remove_suffix(side + 'scapula_GRP')
+        self.scapulaGrp = pm.group(ikhandle, n=grp_name)
 
         # parent constraint group
         pm.parentConstraint(spine_jnt, self.scapulaGrp, mo=True)
@@ -43,6 +43,11 @@ class Scapula():
         pm.parent(effector, scapula_shoulder_jnt)
 
     def get_scapula_grp(self):
+        """Get the created scapula IK group.
+
+        Returns:
+            PyNode: The group containing scapula IK handle and related nodes
+        """
         return self.scapulaGrp
 
 

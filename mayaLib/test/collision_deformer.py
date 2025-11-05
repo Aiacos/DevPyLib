@@ -9,8 +9,8 @@ import maya.OpenMayaMPx as OpenMayaMPx
 
 
 class collisionDeformer(OpenMayaMPx.MPxDeformerNode):
-    kPluginNodeId = OpenMaya.MTypeId(0x00000012)
-    kPluginNodeTypeName = "collisionDeformer"
+    k_plugin_node_id = OpenMaya.MTypeId(0x00000012)
+    k_plugin_node_type_name = "collisionDeformer"
 
     def __init__(self):
         OpenMayaMPx.MPxDeformerNode.__init__(self)
@@ -169,7 +169,7 @@ def initialize():
 def initializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj, 'Grover', '1.0', 'Any')
     try:
-        plugin.registerNode('collisionDeformer', collisionDeformer.kPluginNodeId, creator, initialize,
+        plugin.registerNode('collisionDeformer', collisionDeformer.k_plugin_node_id, creator, initialize,
                             OpenMayaMPx.MPxNode.kDeformerNode)
     except RuntimeError:
         raise RuntimeError('Failed to register node')
@@ -178,7 +178,7 @@ def initializePlugin(obj):
 def uninitializePlugin(obj):
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
-        plugin.deregisterNode(collisionDeformer.kPluginNodeId)
+        plugin.deregisterNode(collisionDeformer.k_plugin_node_id)
     except RuntimeError:
         raise RuntimeError('Failed to deregister node')
 

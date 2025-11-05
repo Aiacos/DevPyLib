@@ -41,22 +41,22 @@ class ShadersManager():
             for texture_set in list(self.texture_dict[geo_key].keys()):
                 if texture_set == 'UDIM':
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    currentShader = shader.TextureShader(texture_path=self.file_manager.path,
+                    current_shader = shader.TextureShader(texture_path=self.file_manager.path,
                                                          geo_name=geo_key,
                                                          textureset_dict=textureset_dict)
 
                     if auto_assing_shader:
-                        currentShader.get_shader().assign_shader(geo_key)
+                        current_shader.get_shader().assign_shader(geo_key)
 
                     break
                 else:
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    currentShader = shader.TextureShader(texture_path=self.file_manager.path,
+                    current_shader = shader.TextureShader(texture_path=self.file_manager.path,
                                                          geo_name=texture_set,
                                                          textureset_dict=textureset_dict)
 
                     if auto_assing_shader:
-                        currentShader.get_shader().assign_shader(geo_key)
+                        current_shader.get_shader().assign_shader(geo_key)
 
         # set tx or tex file format
         if self.render_engine == 'arnold':

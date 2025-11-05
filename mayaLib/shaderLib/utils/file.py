@@ -85,11 +85,11 @@ class TextureFileManager(object):
             list: List of files with the given extension.
         """
         ext = ext.lower()
-        texList = []
+        tex_list = []
         for file in os.listdir(dirname):
             if file.endswith(ext):
-                texList.append(file)
-        return texList
+                tex_list.append(file)
+        return tex_list
 
     def build_dict(self):
         """Build a dictionary of textures organized by geo, channel and texture_set."""

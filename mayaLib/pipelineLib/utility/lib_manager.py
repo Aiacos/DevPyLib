@@ -26,10 +26,27 @@ import pymel.core as pm
 
 # import installCmd
 def build_install_cmd(lib_dir, lib_name, port):
+    """Build Python installation command for remote Maya execution.
+
+    Generates a self-contained Python script string that can be sent to
+    a running Maya instance via commandPort to install and initialize a library.
+
+    Args:
+        lib_dir: Directory path containing the library to install
+        lib_name: Name of the library module to import
+        port: Maya commandPort number to connect to
+
+    Returns:
+        str: Multi-line Python script ready for remote execution
+
+    Example:
+        >>> cmd = build_install_cmd('/path/to/DevPyLib', 'mayaLib', 7001)
+        >>> # Send cmd to Maya via commandPort
+    """
     lib_dir_literal = repr(lib_dir)
     port_literal = repr(str(port))
     lib_name_literal = repr(lib_name)
-    installCommand = dedent(
+    install_command = dedent(
         f"""
         # Install mayaLib
         import sys
@@ -57,7 +74,7 @@ def build_install_cmd(lib_dir, lib_name, port):
         """
     )
 
-    return installCommand
+    return install_command
 
 
 class InstallLibrary:
@@ -179,22 +196,22 @@ class InstallLibrary:
 
         if current_platform == "Linux":
             # Linux: ~/maya/<version>/Maya.env
-            mayaEnvPath = self.homeUser / "maya" / maya_version / "Maya.env"
-            if not mayaEnvPath.parent.exists():
-                mayaEnvPath = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
+            maya_env_path = self.homeUser / "maya" / maya_version / "Maya.env"
+            if not maya_env_path.parent.exists():
+                maya_env_path = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
         elif current_platform == "Darwin":  # macOS
             # macOS: ~/Library/Preferences/Autodesk/maya/<version>/Maya.env
-            mayaEnvPath = self.homeUser / "Library" / "Preferences" / "Autodesk" / "maya" / maya_version / "Maya.env"
+            maya_env_path = self.homeUser / "Library" / "Preferences" / "Autodesk" / "maya" / maya_version / "Maya.env"
         else:  # Windows
             # Windows: %USERPROFILE%\Documents\maya\<version>\Maya.env
-            mayaEnvPath = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
+            maya_env_path = self.homeUser / "Documents" / "maya" / maya_version / "Maya.env"
 
         maya_app_dir = "MAYA_APP_DIR = " + str(self.libDir)
         python_path = "PYTHONPATH = " + str(self.libDir)
 
         try:
-            if os.path.exists(mayaEnvPath):
-                with open(mayaEnvPath, 'r') as f:
+            if os.path.exists(maya_env_path):
+                with open(maya_env_path, 'r', encoding='utf-8') as f:
                     lines = f.readlines()
                     if maya_app_dir in lines:
                         print("string " + maya_app_dir + " already present in Maya.env")
@@ -210,8 +227,8 @@ class InstallLibrary:
             return False
 
         try:
-            if os.path.exists(mayaEnvPath):
-                with open(mayaEnvPath, 'a') as f:
+            if os.path.exists(maya_env_path):
+                with open(maya_env_path, 'a', encoding='utf-8') as f:
                     f.write(maya_app_dir + "\n")
                     f.write(python_path + "\n")
                 return True
@@ -257,16 +274,16 @@ class InstallLibrary:
             None
 
         """
-        userSetup_path = self.mayaScriptPath
-        fileName = 'userSetup.py'
-        filePath = pathlib.Path(userSetup_path) / fileName
-        if userSetup_path.is_dir():
-            if filePath.exists():
-                with filePath.open('a', encoding='utf-8') as handle:
+        user_setup_path = self.mayaScriptPath
+        file_name = 'userSetup.py'
+        file_path = pathlib.Path(user_setup_path) / file_name
+        if user_setup_path.is_dir():
+            if file_path.exists():
+                with file_path.open('a', encoding='utf-8') as handle:
                     handle.write('\n')
                     handle.write(self.installCommand)
             else:
-                filePath.write_text(self.installCommand, encoding='utf-8')
+                file_path.write_text(self.installCommand, encoding='utf-8')
         else:
             print('ERROR: Directory not exist!')
 
@@ -311,13 +328,13 @@ class InstallLibrary:
         Returns:
             None
         """
-        userSetup_path = self.mayaScriptPath
-        fileName = 'userSetup.py'
-        filePath = pathlib.Path(userSetup_path) / fileName
-        if userSetup_path.is_dir():
-            if filePath.exists():
-                script = filePath.read_text(encoding='utf-8')
-                filePath.write_text(script.replace(self.installCommand, ''), encoding='utf-8')
+        user_setup_path = self.mayaScriptPath
+        file_name = 'userSetup.py'
+        file_path = pathlib.Path(user_setup_path) / file_name
+        if user_setup_path.is_dir():
+            if file_path.exists():
+                script = file_path.read_text(encoding='utf-8')
+                file_path.write_text(script.replace(self.installCommand, ''), encoding='utf-8')
 
         self.delete()
 

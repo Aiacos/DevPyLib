@@ -21,9 +21,9 @@ def z_poly_combine(geos):
         The resulting combined geometry object.
     """
     pm.select(pm.ls(geos))
-    zPolyCombine_node, zPolyCombine_mesh = pm.ls(mel.eval('zPolyCombine;'))
+    z_poly_combine_node, z_poly_combine_mesh = pm.ls(mel.eval('zPolyCombine;'))
 
-    return zPolyCombine_mesh
+    return z_poly_combine_mesh
 
 
 def harmonic_warp(source, destination, transfer_geos, tet_size=1):
@@ -49,13 +49,13 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
         transfer_list.append(name)
     transfer_string = ' '.join(transfer_list)
 
-    zArmonicWarp = pm.ls(mel.eval('zHarmonicWarp ' + source_string + ' ' +
+    z_armonic_warp = pm.ls(mel.eval('zHarmonicWarp ' + source_string + ' ' +
                                  destination_string + ' ' + transfer_string +
                                  ';'))[0]
-    zArmonicWarp.maxResolution.set(512)
-    zArmonicWarp.tetSize.set(tet_size)
+    z_armonic_warp.maxResolution.set(512)
+    z_armonic_warp.tetSize.set(tet_size)
 
-    return zArmonicWarp
+    return z_armonic_warp
 
 
 def bone_warp(source, destination, transfer_geos, tet_size=1):
@@ -81,11 +81,11 @@ def bone_warp(source, destination, transfer_geos, tet_size=1):
         transfer_list.append(name)
     transfer_string = ' '.join(transfer_list)
 
-    zBoneWarp = pm.ls(mel.eval('zBoneWarp ' + source_string + ' ' + destination_string + ' ' + transfer_string + ';'))[0]
-    zBoneWarp.maxResolution.set(512)
-    zBoneWarp.tetSize.set(tet_size)
+    z_bone_warp = pm.ls(mel.eval('zBoneWarp ' + source_string + ' ' + destination_string + ' ' + transfer_string + ';'))[0]
+    z_bone_warp.maxResolution.set(512)
+    z_bone_warp.tetSize.set(tet_size)
 
-    return zBoneWarp
+    return z_bone_warp
 
 
 def ziva_check_intersection(geo1, geo2):
@@ -124,15 +124,15 @@ def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
         suffix (str): The suffix to add to the end of the node names.
     """
     pm.select(pm.ls(from_side + '*' + suffix))
-    zObj = zva.Ziva()
+    z_obj = zva.Ziva()
 
     if pm.ls(sl=True):
-        zObj.retrieve_from_scene_selection()
+        z_obj.retrieve_from_scene_selection()
     else:
-        zObj.retrieve_from_scene()
+        z_obj.retrieve_from_scene()
 
-    zObj.string_replace('^' + from_side, to_side)
-    zObj.build()
+    z_obj.string_replace('^' + from_side, to_side)
+    z_obj.build()
 
 
 if __name__ == "__main__":

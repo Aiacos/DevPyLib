@@ -12,8 +12,8 @@ def list_all_display_layer():
     Returns:
         list: A list of display layer objects.
     """
-    layerList = pm.ls(type='displayLayer')[1:]
-    return layerList
+    layer_list = pm.ls(type='displayLayer')[1:]
+    return layer_list
 
 def get_objects_in_display_layer(layer):
     """Retrieves objects contained within a specific display layer.

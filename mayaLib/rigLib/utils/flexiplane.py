@@ -28,6 +28,17 @@ class Flexiplane:  # pylint: disable=too-many-instance-attributes
     }
 
     def __init__(self, prefix: str = '') -> None:
+        """Initialize Flexiplane surface deformer.
+
+        Creates a flexible plane surface deformer useful for cloth, wings, fins,
+        or other flat deformable surfaces driven by joint hierarchies.
+
+        Args:
+            prefix: Naming prefix for created nodes. Defaults to ''.
+
+        Example:
+            >>> flexi = Flexiplane(prefix='wing')
+        """
         self.flexiplane_pattern = 'flexiPlane*'
         self.surface_suffix = 'NURBS'
         self.highlight_colour = 17

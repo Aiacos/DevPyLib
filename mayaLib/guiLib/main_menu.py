@@ -99,7 +99,7 @@ class SearchLineEdit(QtWidgets.QLineEdit):
 class MenuLibWidget(QtWidgets.QWidget):
     """Widget that displays a searchable menu library."""
 
-    updateWidget = QtCore.Signal()
+    update_widget = QtCore.Signal()
 
     def __init__(self, lib_path, parent=None):
         """Initialize the MenuLibWidget.
@@ -219,8 +219,8 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.buttonListWidget.adjustSize()
 
     def reloaded(self):
-        """Emit the updateWidget signal."""
-        self.updateWidget.emit()
+        """Emit the update_widget signal."""
+        self.update_widget.emit()
 
     def download(self):
         """Download the library and reload the widget."""
@@ -416,7 +416,7 @@ class MainMenu(QtWidgets.QWidget):
 
         self.libMenu.addAction(self.wAction)
         try:
-            self.libWindow.updateWidget.connect(lambda: self.update_widget(lib_path))
+            self.libWindow.update_widget.connect(lambda: self.update_widget(lib_path))
         except AttributeError:
             QObject.connect(
                 self.libWindow, SIGNAL("updateWidget()"), lambda: self.update_widget(lib_path)

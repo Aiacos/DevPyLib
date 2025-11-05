@@ -52,6 +52,20 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         ik_ctrl,
         do_flexyplane: bool = True,
     ) -> None:
+        """Initialize stretchy IK chain on existing IK handle.
+
+        Adds stretch and squash functionality to an IK chain, allowing joints
+        to extend beyond their normal length when the IK control moves away.
+        Optionally adds a Flexiplane deformer for volume preservation.
+
+        Args:
+            ik_handle: Existing IK handle to make stretchy (name or PyNode)
+            ik_ctrl: IK control that drives the stretch behavior (name or PyNode)
+            do_flexyplane: Add Flexiplane for volume preservation. Defaults to True.
+
+        Example:
+            >>> stretchy = StretchyIkChain('arm_IKH', 'hand_CTRL')
+        """
         ik_handle_node = _ensure_node(ik_handle)
         ik_ctrl_node = _ensure_node(ik_ctrl)
 

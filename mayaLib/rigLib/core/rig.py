@@ -27,6 +27,28 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
         do_proxy_geo: bool = True,
         go_to_t_pose: bool = True,
     ) -> None:
+        """Initialize base rig setup with model and build scene.
+
+        Sets up the foundational rig hierarchy, imports model and build files,
+        loads skin weights, and optionally generates proxy geometry for fast display.
+
+        Args:
+            character_name: Name prefix for rig hierarchy nodes. Defaults to 'new'.
+            model_file_path: Path to model file to import. Defaults to '' (skip import).
+            build_scene_file_path: Path to build scene with joints/guides. Defaults to '' (skip).
+            root_joint: Root joint of skeleton hierarchy. Defaults to 'spineJA_jnt'.
+            head_joint: Head joint for head/neck setup. Defaults to 'headJA_jnt'.
+            load_skin_cluster: Load saved skin weights if available. Defaults to True.
+            do_proxy_geo: Generate per-joint proxy geometry for fast display. Defaults to True.
+            go_to_t_pose: Load T-pose before rigging. Defaults to True.
+
+        Attributes:
+            proxy_geo_list: List of generated proxy geometry meshes
+            skin_model: Main skinned model mesh
+
+        Example:
+            >>> rig = Rig(character_name='hero', model_file_path='hero_model.ma')
+        """
         start_time = pm.timerX()
         print('-- START --')
 
@@ -258,6 +280,35 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
         do_flexyplane: bool = False,
         go_to_t_pose: bool = True,
     ) -> None:
+        """Initialize humanoid character rig with full body setup.
+
+        Creates a complete humanoid rig including spine, neck, limbs, hands, feet,
+        with optional features like stretchy IK, dynamic tails, and Flexiplanes.
+
+        Args:
+            character_name: Name prefix for rig hierarchy. Defaults to 'new'.
+            model_file_path: Path to model file to import. Defaults to '' (skip).
+            build_scene_file_path: Path to build scene with skeleton. Defaults to '' (skip).
+            scene_scale: Global scale multiplier for rig. Defaults to 1.0.
+            root_joint: Root joint of skeleton. Defaults to 'rootJA_JNT'.
+            head_joint: Head joint for head setup. Defaults to 'headJA_JNT'.
+            load_skin_cluster: Load saved skin weights. Defaults to True.
+            do_proxy_geo: Generate proxy geometry for fast display. Defaults to True.
+            do_spine: Build spine rig module. Defaults to True.
+            do_neck: Build neck rig module. Defaults to True.
+            do_tail: Build tail rig module. Defaults to False.
+            do_dynamic_tail: Use dynamic curve for tail. Defaults to False.
+            do_stretchy: Add stretchy IK to limbs. Defaults to False.
+            do_flexyplane: Add Flexiplane volume preservation. Defaults to False.
+            go_to_t_pose: Load T-pose before rigging. Defaults to True.
+
+        Example:
+            >>> rig = HumanoidRig(
+            ...     character_name='hero',
+            ...     model_file_path='hero.ma',
+            ...     do_stretchy=True
+            ... )
+        """
         self.root_joint = root_joint
         self.head_joint = head_joint
         self.do_spine = do_spine

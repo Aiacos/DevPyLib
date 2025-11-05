@@ -23,7 +23,7 @@ def maya_useNewAPI():
 
 # command
 class MayaLibPlugin(om.MPxCommand):
-    kPluginCmdName = 'MayaLib'
+    k_plugin_cmd_name = 'MayaLib'
 
     def __init__(self):
         om.MPxCommand.__init__(self)
@@ -41,11 +41,11 @@ def initializePlugin(plugin):
     pluginFn = om.MFnPlugin(plugin, 'Lorenzo Argentieri', '1.0')
     try:
         pluginFn.registerCommand(
-            MayaLibPlugin.kPluginCmdName, MayaLibPlugin.cmdCreator
+            MayaLibPlugin.k_plugin_cmd_name, MayaLibPlugin.cmdCreator
         )
     except RuntimeError:
         sys.stderr.write(
-            "Failed to register command: %s\n" % MayaLibPlugin.kPluginCmdName
+            "Failed to register command: %s\n" % MayaLibPlugin.k_plugin_cmd_name
         )
         raise
 
@@ -54,9 +54,9 @@ def initializePlugin(plugin):
 def uninitializePlugin(plugin):
     pluginFn = om.MFnPlugin(plugin)
     try:
-        pluginFn.deregisterCommand(MayaLibPlugin.kPluginCmdName)
+        pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
     except RuntimeError:
         sys.stderr.write(
-            "Failed to unregister command: %s\n" % MayaLibPlugin.kPluginCmdName
+            "Failed to unregister command: %s\n" % MayaLibPlugin.k_plugin_cmd_name
         )
         raise

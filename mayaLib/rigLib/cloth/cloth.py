@@ -72,13 +72,13 @@ class Cloth(object):
 
         for geo in geo_list:
             # Set up nCloth for each geometry
-            cloth_geo, geo_cloth_shape, clothShape, nucleus = dynamic.setup_nCloth(geo)
+            cloth_geo, geo_cloth_shape, cloth_shape, nucleus = dynamic.setup_nCloth(geo)
 
             # Parent the cloth geometry to the cloth geometry group
             pm.parent(cloth_geo, self.cloth_geo_grp)
 
             # Append the cloth data to the list
-            cloth_data_list.append([geo, cloth_geo, geo_cloth_shape, clothShape])
+            cloth_data_list.append([geo, cloth_geo, geo_cloth_shape, cloth_shape])
 
         return cloth_data_list, nucleus
 
@@ -139,10 +139,10 @@ class Cloth(object):
         mel.eval("invertSelection;")
 
         # Get the list of vertices to paint
-        vtxList = pm.ls(sl=True)
+        vtx_list = pm.ls(sl=True)
 
         # Paint the input attract weights of the cloth node
-        dynamic.clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
+        dynamic.clothPaintInputAttract(clothNode, vtx_list, 0.4, smoothIteration=3)
 
     def update_settings(self):
         """
@@ -153,11 +153,11 @@ class Cloth(object):
         """
         # setup nCloth
         for cloth_items in self.cloth_data_list:
-            clothShape = cloth_items
+            cloth_shape = cloth_items
 
             # Collision
-            clothShape.thickness.set(0.1)
-            clothShape.selfCollideWidthScale.set(0)
+            cloth_shape.thickness.set(0.1)
+            cloth_shape.selfCollideWidthScale.set(0)
 
             # Dynamic Properties
             # clothShape.stretchResistance.set(10)

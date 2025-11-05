@@ -43,11 +43,11 @@ class StructureManager():
         for mod in self.module_list:
             try:
                 # Module Case
-                subPack = self.list_sub_packages(mod)
+                sub_pack = self.list_sub_packages(mod)
             except (AttributeError, ImportError):
                 self.moduleClassList.append(mod)
             else:
-                self.moduleClassList.extend(subPack)
+                self.moduleClassList.extend(sub_pack)
 
         for item in self.moduleClassList:
             # Class OR Function Case
@@ -64,15 +64,15 @@ class StructureManager():
         # Testing
         for item in self.finalClassList:
             split = item.split('.')
-            tmpDict = {}
+            tmp_dict = {}
             for key in reversed(split):
                 if key == split[-1]:
-                    tmpDict = {key: item}
+                    tmp_dict = {key: item}
                 else:
-                    tmpDict = self.incapsulate_dict(tmpDict, key)
+                    tmp_dict = self.incapsulate_dict(tmp_dict, key)
 
-            # print tmpDict
-            self.dict_merge(self.structLib, tmpDict)
+            # print tmp_dict
+            self.dict_merge(self.structLib, tmp_dict)
 
         # print(self.structLib)
         # for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
@@ -128,6 +128,14 @@ class StructureManager():
         return package_list
 
     def list_all_package_2(self):
+        """List all packages using inspect.getmembers approach.
+
+        Alternative method to list packages by inspecting module members,
+        filtering out dunder (double underscore) names.
+
+        Returns:
+            list: Package member objects from root_package
+        """
         package_list = [o[1] for o in inspect.getmembers(self.root_package) if '__' not in o[0]]
         # print(package_list)
         return package_list

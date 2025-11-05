@@ -538,7 +538,7 @@ def save_deformer_weights():
         wt_data = {}
         for deformer in pm.findDeformers(geo):
             wt_data[str(deformer)] = pm.getAttr(deformer + ".weightList")
-        with wt_file.open("w"):
+        with wt_file.open("w", encoding='utf-8'):
             pass
             # json.dump(wtData, f, indent=4)
 

@@ -27,9 +27,9 @@ def name_check(name):
     Returns:
         str, a new name that is not already in use in the current scene.
     """
-    nameList = pm.ls(name)
-    nameCount = len(nameList)
+    name_list = pm.ls(name)
+    name_count = len(name_list)
 
-    newNameRPart = str(name).rpartition('_')
-    newName = newNameRPart[0].replace('*', '') + str(nameCount + 1) + newNameRPart[1] + newNameRPart[2]
-    return newName
+    new_name_r_part = str(name).rpartition('_')
+    new_name = new_name_r_part[0].replace('*', '') + str(name_count + 1) + new_name_r_part[1] + new_name_r_part[2]
+    return new_name

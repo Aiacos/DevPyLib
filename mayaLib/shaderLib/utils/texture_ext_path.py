@@ -20,8 +20,8 @@ def replace_path(file_name, old_path, new_path):
     Returns:
         str: The modified filename.
     """
-    newString = file_name.replace(old_path, new_path)
-    return newString
+    new_string = file_name.replace(old_path, new_path)
+    return new_string
 
 
 def change_extension(filename, new_extension):

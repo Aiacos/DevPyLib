@@ -60,12 +60,12 @@ class TextureFolder(object):
         Returns:
             list: List of image filenames.
         """
-        imgList = []
+        img_list = []
         os.chdir(self.get_texture_folder())
         for filename in glob.glob('*.' + search_extension):
-            imgList.append(filename)
+            img_list.append(filename)
 
-        return imgList
+        return img_list
 
     def get_texture_base_name(self, texture_stem):
         """Get the base name of a texture file without '_BaseColor'.
@@ -179,19 +179,19 @@ class TextureFileNode():
             file_node.uvTilingMode.set(3)
 
         # alphaIsLuminance
-        if (self.texture_recongition.channel == config.backlight
-                or self.texture_recongition.channel == config.specularWeight
-                or self.texture_recongition.channel == config.specularRoughness
-                or self.texture_recongition.channel == config.fresnel
-                or self.texture_recongition.channel == config.normal
-                or self.texture_recongition.channel == config.height):
+        if (self.texture_recongition.channel == config.BACKLIGHT
+                or self.texture_recongition.channel == config.SPECULAR_WEIGHT
+                or self.texture_recongition.channel == config.SPECULAR_ROUGHNESS
+                or self.texture_recongition.channel == config.FRESNEL
+                or self.texture_recongition.channel == config.NORMAL
+                or self.texture_recongition.channel == config.HEIGHT):
             file_node.alphaIsLuminance.set(True)
         else:
             file_node.alphaIsLuminance.set(False)
 
         # Color Space
-        if (self.texture_recongition.channel == config.diffuse
-                or self.texture_recongition.channel == config.specularColor):
+        if (self.texture_recongition.channel == config.DIFFUSE
+                or self.texture_recongition.channel == config.SPECULAR_COLOR):
             file_node.colorSpace.set('sRGB')
         else:
             file_node.colorSpace.set('Raw')
@@ -248,8 +248,8 @@ class TexturePxrTexture():
             pxrtexture_node.filename.set(path + '/' + name)
 
         # Color Space
-        if (self.texture_recongition.channel == config.diffuse
-                or self.texture_recongition.channel == config.specularColor):
+        if (self.texture_recongition.channel == config.DIFFUSE
+                or self.texture_recongition.channel == config.SPECULAR_COLOR):
             pxrtexture_node.linearize.set(True)
         else:
             pxrtexture_node.linearize.set(False)

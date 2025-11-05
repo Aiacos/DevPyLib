@@ -145,6 +145,19 @@ class DynamicCurve:  # pylint: disable=too-many-instance-attributes
         prefix: str = 'new',
         base_rig: Any | None = None,
     ) -> None:
+        """Initialize dynamic curve system with hair simulation.
+
+        Creates a hair system setup on a curve for dynamic behavior like ropes,
+        tails, or flexible appendages driven by Maya nHair dynamics.
+
+        Args:
+            curve: Curve to make dynamic (name or PyNode)
+            prefix: Naming prefix for created nodes. Defaults to 'new'.
+            base_rig: Optional base rig module for parenting. Defaults to None.
+
+        Example:
+            >>> dyn = DynamicCurve('tail_CRV', prefix='tail')
+        """
         curve_node = _ensure_node(curve)
 
         main_grp_name = 'dynamicSystem_GRP'

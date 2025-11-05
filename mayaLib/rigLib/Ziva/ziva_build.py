@@ -33,15 +33,15 @@ def add_tissue(obj, tet_size=1, max_tet_resolution=512):
     pm.select(obj)
     nodes = pm.ls(mel.eval('ziva -t;'))
 
-    zGeo = pm.ls(nodes, type='zGeo')[-1]
-    zTissue = pm.ls(nodes, type='zTissue')[-1]
-    zTet = pm.ls(nodes, type='zTet')[-1]
-    zMaterial = pm.ls(nodes, type='zMaterial')[-1]
+    z_geo = pm.ls(nodes, type='zGeo')[-1]
+    z_tissue = pm.ls(nodes, type='zTissue')[-1]
+    z_tet = pm.ls(nodes, type='zTet')[-1]
+    z_material = pm.ls(nodes, type='zMaterial')[-1]
 
-    zTet.tetSize.set(tet_size)
-    zTet.maxResolution.set(max_tet_resolution)
+    z_tet.tetSize.set(tet_size)
+    z_tet.maxResolution.set(max_tet_resolution)
 
-    return zGeo, zTissue, zTet, zMaterial
+    return z_geo, z_tissue, z_tet, z_material
 
 
 def add_bone(obj):
@@ -56,10 +56,10 @@ def add_bone(obj):
     pm.select(obj)
     nodes = pm.ls(mel.eval('ziva -b;'))
 
-    zGeo = pm.ls(nodes, type='zGeo')[-1]
-    zBone = pm.ls(nodes, type='zBone')[-1]
+    z_geo = pm.ls(nodes, type='zGeo')[-1]
+    z_bone = pm.ls(nodes, type='zBone')[-1]
 
-    return zGeo, zBone
+    return z_geo, z_bone
 
 
 def add_cloth(obj):
@@ -74,11 +74,11 @@ def add_cloth(obj):
     pm.select(obj)
     nodes = pm.ls(mel.eval('ziva -c;'))
 
-    zGeo = pm.ls(nodes, type='zGeo')[-1]
-    zCloth = pm.ls(nodes, type='zCloth')[-1]
-    zMaterial = pm.ls(nodes, type='zMaterial')[-1]
+    z_geo = pm.ls(nodes, type='zGeo')[-1]
+    z_cloth = pm.ls(nodes, type='zCloth')[-1]
+    z_material = pm.ls(nodes, type='zMaterial')[-1]
 
-    return zGeo, zCloth, zMaterial
+    return z_geo, z_cloth, z_material
 
 
 def add_material(obj):
@@ -93,9 +93,9 @@ def add_material(obj):
     pm.select(obj)
     nodes = pm.ls(mel.eval('ziva -m;'))
 
-    zMaterial = pm.ls(nodes, type='zMaterial')[-1]
+    z_material = pm.ls(nodes, type='zMaterial')[-1]
 
-    return zMaterial
+    return z_material
 
 
 class ZivaBase():
