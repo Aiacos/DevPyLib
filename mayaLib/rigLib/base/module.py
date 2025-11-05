@@ -76,10 +76,8 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         attach_node = attach_node_list[0] if attach_node_list else None
 
         self.top_group = pm.group(n=f'{character_name}_rig_GRP', em=True)
-        self.topGrp = self.top_group  # pylint: disable=invalid-name
 
         self.rig_ctrl_locator = pm.spaceLocator(n='rigCtrl_LOC')
-        self.rigCtrlLoc = self.rig_ctrl_locator  # pylint: disable=invalid-name
         pm.rotate(self.rig_ctrl_locator, [0, -90, 0], r=True, ws=True)
         if attach_node:
             pm.delete(pm.pointConstraint(attach_node, self.rig_ctrl_locator))
@@ -101,7 +99,6 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             do_modify=False,
             do_offset=False,
         )
-        self.globalCtrl = self.global_control  # pylint: disable=invalid-name
 
         self.main_control = control.Control(
             prefix='main',
@@ -112,43 +109,33 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             do_modify=False,
             do_offset=False,
         )
-        self.mainCtrl = self.main_control  # pylint: disable=invalid-name
 
         self.model_group = pm.group(n='model_GRP', em=True, p=self.top_group)
-        self.modelGrp = self.model_group  # pylint: disable=invalid-name
         self.fast_model_group = pm.group(
             n='fastModel_GRP', em=True, p=self.model_group
         )
-        self.fastModelGrp = self.fast_model_group  # pylint: disable=invalid-name
         self.medium_model_group = pm.group(
             n='mediumModel_GRP', em=True, p=self.model_group
         )
-        self.mediumModelGrp = self.medium_model_group  # pylint: disable=invalid-name
         self.medium_slow_group = pm.group(
             n='mediumSlowModel_GRP', em=True, p=self.model_group
         )
-        self.mediumSlowGrp = self.medium_slow_group  # pylint: disable=invalid-name
         self.slow_model_group = pm.group(
             n='slowModel_GRP', em=True, p=self.model_group
         )
-        self.slowModelGrp = self.slow_model_group  # pylint: disable=invalid-name
         self.all_model_group = pm.group(
             n='allModel_GRP', em=True, p=self.model_group
         )
-        self.allModelGrp = self.all_model_group  # pylint: disable=invalid-name
         self.rig_model_group = pm.group(
             n='rigModel_GRP', em=True, p=self.model_group
         )
-        self.rigModelGrp = self.rig_model_group  # pylint: disable=invalid-name
         pm.hide(self.rig_model_group)
 
         self.rig_group = pm.group(
             n='rig_GRP', em=True, p=self.main_control.get_control()
         )
-        self.rigGrp = self.rig_group  # pylint: disable=invalid-name
 
         self.scale_locator = pm.spaceLocator(n='scale_LOC')
-        self.scaleLocator = self.scale_locator  # pylint: disable=invalid-name
         self.scale_locator.inheritsTransform.set(False)
         self.scale_locator.visibility.set(False)
         pm.connectAttr(
@@ -160,19 +147,15 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         self.joints_group = pm.group(
             n='skeleton_GRP', em=True, p=self.main_control.get_control()
         )
-        self.jointsGrp = self.joints_group  # pylint: disable=invalid-name
         self.modules_group = pm.group(
             n='modules_GRP', em=True, p=self.main_control.get_control()
         )
-        self.modulesGrp = self.modules_group  # pylint: disable=invalid-name
         self.rig_control_group = pm.group(
             n='rigctrl_GRP', em=True, p=self.global_control.get_control()
         )
-        self.rigCtrlGrp = self.rig_control_group  # pylint: disable=invalid-name
         util.lock_and_hide_all(self.rig_control_group)
 
         self.part_group = pm.group(n='parts_GRP', em=True, p=self.rig_group)
-        self.partGrp = self.part_group  # pylint: disable=invalid-name
         pm.setAttr(f'{self.part_group}.it', 0, l=True)
 
         self.halo_control = control.Control(
@@ -187,7 +170,6 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             do_modify=True,
             obj_bbox=attach_node,
         )
-        self.haloCtrl = self.halo_control  # pylint: disable=invalid-name
         self.halo_control.get_offset_grp().visibility.set(False)
         self.create_halo(attach_node, 1)
 
@@ -276,9 +258,7 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         )
 
         self.display_control = self.create_display(attach_node, 1)
-        self.displayCtrl = self.display_control  # pylint: disable=invalid-name
         self.ikfk_control = self.create_ik_fk(attach_node, 1)
-        self.ikfkCtrl = self.ikfk_control  # pylint: disable=invalid-name
         pm.delete(self.rig_ctrl_locator)
 
     def get_scale_locator(self) -> pm.PyNode:
@@ -386,28 +366,22 @@ class Module:  # pylint: disable=too-few-public-methods,too-many-instance-attrib
             )
 
         self.top_group = pm.group(n=f'{prefix}Module_GRP', em=True)
-        self.topGrp = self.top_group  # pylint: disable=invalid-name
 
         self.controls_group = pm.group(
             n=f'{prefix}Controls_GRP', em=True, p=self.top_group
         )
-        self.controlsGrp = self.controls_group  # pylint: disable=invalid-name
         self.secondary_controls_group = pm.group(
             n=f'{prefix}secondaryControls_GRP', em=True, p=self.top_group
         )
-        self.secControlsGrp = self.secondary_controls_group  # pylint: disable=invalid-name
         self.joints_group = pm.group(
             n=f'{prefix}Joints_GRP', em=True, p=self.top_group
         )
-        self.jointsGrp = self.joints_group  # pylint: disable=invalid-name
         self.parts_group = pm.group(
             n=f'{prefix}Parts_GRP', em=True, p=self.top_group
         )
-        self.partsGrp = self.parts_group  # pylint: disable=invalid-name
         self.parts_no_trans_group = pm.group(
             n=f'{prefix}PartsNoTrans_GRP', em=True, p=self.top_group
         )
-        self.partsNoTransGrp = self.parts_no_trans_group  # pylint: disable=invalid-name
 
         pm.hide(self.parts_group, self.parts_no_trans_group)
         pm.setAttr(f'{self.parts_no_trans_group}.it', 0, l=True)

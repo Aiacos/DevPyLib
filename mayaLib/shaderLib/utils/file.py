@@ -70,7 +70,7 @@ class TextureFileManager(object):
         """
         self.ext = ext
         self.path = dirname
-        self.fileList = self.search_in_directory(dirname, ext)
+        self.file_list = self.search_in_directory(dirname, ext)
         self.tex_list = []
         self.texture_dict = self.build_dict()
 
@@ -97,7 +97,7 @@ class TextureFileManager(object):
         channel_dict = {}
         material_dict = {}
 
-        for tex_name in self.fileList:
+        for tex_name in self.file_list:
             tex = TextureFile(self.path, tex_name)
             geo_dict[tex.mesh] = {}
             if tex.texture_set.isdigit():

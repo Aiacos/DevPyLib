@@ -255,8 +255,8 @@ class ZivaMuscle(ZivaBase):
         pm.parent(self.rivets_list, self.rivet_grp)
 
         # zOut
-        self.zMuscleCombined = tool.z_poly_combine(self.muscles)
-        self.zOut_grp = pm.group(self.zMuscleCombined, n='zOut_grp')
+        self.z_muscle_combined = tool.z_poly_combine(self.muscles)
+        self.z_out_grp = pm.group(self.z_muscle_combined, n='zOut_grp')
 
         # CleanUp
         super().__init__(character, rig_type='muscle', solver_scale=solver_scale, use_gpu=use_gpu)
@@ -267,8 +267,8 @@ class ZivaMuscle(ZivaBase):
         pm.parent(self.skeleton_grp, self.rig_grp)
         pm.parent(self.muscle_grp, self.rig_grp)
         pm.parent(self.loa_grp, self.rig_grp)
-        pm.parent(self.zOut_grp, self.rig_grp)
-        pm.rename(self.zMuscleCombined, 'zMuscleCombined_geo')
+        pm.parent(self.z_out_grp, self.rig_grp)
+        pm.rename(self.z_muscle_combined, 'zMuscleCombined_geo')
 
     def muscle_to_muscle_attachemnt(self, value=1):
         """Creates muscle-to-muscle attachments.
@@ -314,19 +314,19 @@ class ZivaSkin(ZivaBase):
         self.fat_list = util.list_objects_under_group(fat_grp)
         self.skin_list = pm.ls(skin_geo)
 
-        self.zIn_grp = pm.group(n='zIn', em=True)
+        self.z_in_grp = pm.group(n='zIn', em=True)
 
         # Prepare skeleton
         if len(self.skeleton) > 1:
             self.skeleton = tool.z_poly_combine(self.skeleton)
-            pm.parent(self.skeleton, self.zIn_grp)
+            pm.parent(self.skeleton, self.z_in_grp)
             pm.rename(self.skeleton, 'skeleton_combined_msh')
             self.skeleton = pm.ls('skeleton_combined_msh')[-1]
 
         # Prepare muscle
         if len(self.muscles) > 1:
             self.muscle_combined = tool.z_poly_combine(self.muscles)
-            pm.parent(self.muscle_combined, self.zIn_grp)
+            pm.parent(self.muscle_combined, self.z_in_grp)
             pm.rename(self.muscle_combined, 'muscle_combined_msh')
             self.muscle_combined = pm.ls('muscle_combined_msh')[-1]
 
@@ -371,7 +371,7 @@ class ZivaSkin(ZivaBase):
         pm.parent(self.muscle_grp, self.rig_grp)
         pm.parent(self.fascia_grp, self.rig_grp)
         pm.parent(self.fat_grp, self.rig_grp)
-        pm.parent(self.zIn_grp, self.rig_grp)
+        pm.parent(self.z_in_grp, self.rig_grp)
 
 
 if __name__ == "__main__":

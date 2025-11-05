@@ -143,9 +143,9 @@ class Control:
         self.scale = scale
         self.control = ctrl_object
         self.modify_grp = None
-        self.off_grp = None
+        self.offset_grp = None
 
-        self.off_grp = ctrl_offset if do_offset else None
+        self.offset_grp = ctrl_offset if do_offset else None
         self.modify_grp = ctrl_modify if do_modify else None
 
         if parent and pm.objExists(parent):
@@ -157,12 +157,10 @@ class Control:
                 prefix, scale, translate_to, rotate_to
             )
 
-        # Legacy attributes
         # Legacy attributes (CamelCase preserved for backward compatibility).
-        self.C = self.control  # pylint: disable=invalid-name
-        self.Modify = self.modify_grp  # pylint: disable=invalid-name
-        self.Off = self.off_grp  # pylint: disable=invalid-name
-        self.dynamicPivot = self.dynamic_pivot  # pylint: disable=invalid-name
+        self.C = self.control
+        self.Modify = self.modify_grp
+        self.Off = self.offset_grp
 
     def get_ctrl_scale(self):
         """Return the scale used when the control was created."""
@@ -211,7 +209,7 @@ class Control:
 
     def get_offset_grp(self):
         """Return the optional offset group."""
-        return self.off_grp
+        return self.offset_grp
 
     def get_modify_grp(self):
         """Return the optional modify group."""
@@ -219,8 +217,8 @@ class Control:
 
     def get_top(self):
         """Return the top-most node in the control hierarchy."""
-        if self.off_grp:
-            return self.off_grp
+        if self.offset_grp:
+            return self.offset_grp
         if self.modify_grp:
             return self.modify_grp
         return self.control

@@ -68,10 +68,10 @@ class ProxyGeo():
             >>> proxy = ProxyGeo('character_body_GEO', threshold=0.5)
             >>> proxy_meshes = proxy.get_proxy_geo_list()
         """
-        self.proxyGeoList = []
+        self.proxy_geo_list = []
         pivot_locator = pm.spaceLocator(n='pivotGeo_LOC')
         # Create proxy geo Group
-        self.shapeGrp = pm.group(n='fastGeo_GRP', em=True)
+        self.shape_grp = pm.group(n='fastGeo_GRP', em=True)
 
         # Get Shape and skin from Object
         skin_cluster = skin.findRelatedSkinCluster(geo)
@@ -97,8 +97,8 @@ class ProxyGeo():
                 common.deleteHistory(dupli_shape)
 
                 # parent under proxy group
-                pm.parent(transform, self.shapeGrp)
-                self.proxyGeoList.append(transform)
+                pm.parent(transform, self.shape_grp)
+                self.proxy_geo_list.append(transform)
 
                 # parentConstraint with joint
                 if do_parent_cnst:
@@ -149,7 +149,7 @@ class ProxyGeo():
         Returns:
             list: All proxy geometry transform nodes created during initialization
         """
-        return self.proxyGeoList
+        return self.proxy_geo_list
 
     def get_fast_geo_group(self):
         """Get parent group containing all proxy geometry.
@@ -157,7 +157,7 @@ class ProxyGeo():
         Returns:
             PyNode: The 'fastGeo_GRP' group node containing all proxy meshes
         """
-        return self.shapeGrp
+        return self.shape_grp
 
 
 if __name__ == "__main__":

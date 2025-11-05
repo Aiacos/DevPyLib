@@ -232,8 +232,6 @@ class TwistJoint:  # pylint: disable=too-many-instance-attributes
                 joint, num_twist_joints, rotation_axis.upper()
             )
 
-        self.twistJointsMainGrp = self.twist_joints_main_grp  # pylint: disable=invalid-name
-
     def make_twist_joints(
         self,
         parent_joint,

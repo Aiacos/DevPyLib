@@ -44,10 +44,10 @@ class Scapula():
 
         # group ik
         grp_name = name.remove_suffix(side + 'scapula_GRP')
-        self.scapulaGrp = pm.group(ikhandle, n=grp_name)
+        self.scapula_grp = pm.group(ikhandle, n=grp_name)
 
         # parent constraint group
-        pm.parentConstraint(spine_jnt, self.scapulaGrp, mo=True)
+        pm.parentConstraint(spine_jnt, self.scapula_grp, mo=True)
 
         # parent constraint only transform
         pm.parentConstraint(shoulder_jnt, scapula_shoulder_jnt, skipRotate=['x', 'y', 'z'], mo=True)
@@ -61,7 +61,7 @@ class Scapula():
         Returns:
             PyNode: The group containing scapula IK handle and related nodes
         """
-        return self.scapulaGrp
+        return self.scapula_grp
 
 
 if __name__ == "__main__":

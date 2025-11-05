@@ -39,7 +39,7 @@ class PoleVector():
         """
         if ik_handle:
             ik_handle = pm.ls(ik_handle)[0]
-            self.poleVector, self.poleVectorGrp = self.connect_pole_vector(ik_handle)
+            self.pole_vector, self.pole_vector_grp = self.connect_pole_vector(ik_handle)
 
     def create_pv(self, ik_handle):
         '''
@@ -139,7 +139,7 @@ class PoleVector():
         Returns:
             tuple: (pole_vector_locator, pole_vector_group) created during initialization
         """
-        return self.poleVector, self.poleVectorGrp
+        return self.pole_vector, self.pole_vector_grp
 
 
 if __name__ == "__main__":

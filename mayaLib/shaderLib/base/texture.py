@@ -32,7 +32,7 @@ class TextureFolder(object):
 
         self.texture_folder = pathlib.Path(folder) if folder else self.home / workspace / sourceimages
 
-        self.imgList = self.build_img_list()
+        self.img_list = self.build_img_list()
 
     def get_texture_folder(self):
         """Get the 'sourceimages' folder path.
@@ -48,7 +48,7 @@ class TextureFolder(object):
         Returns:
             list: List of image filenames.
         """
-        return self.imgList
+        return self.img_list
 
     def build_img_list(self, search_extension='png'):
         """Build a list of all images in the folder with the given extension.
@@ -85,7 +85,7 @@ class TextureFolder(object):
             dict: Dictionary mapping texture base names to lists of texture files.
         """
         texture_dict = {}
-        for img in self.imgList:
+        for img in self.img_list:
             texture = pathlib.Path(img)
             texture_base_name = self.get_texture_base_name(texture.stem)
             try:
@@ -119,12 +119,12 @@ class TextureFileNode():
             filename (str): Name of the texture file.
             single_place_node (optional): Place node for texture. Defaults to None.
         """
-        self.texture_recongition = file.TextureFile(path=path, filename=filename)
+        self.texture_recognition = file.TextureFile(path=path, filename=filename)
 
         self.place_node = single_place_node if single_place_node else False
 
-        file_name_filenode = (self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' +
-                              self.texture_recongition.texture_set + '.' + self.texture_recongition.ext)
+        file_name_filenode = (self.texture_recognition.mesh + '_' + self.texture_recognition.channel + '.' +
+                              self.texture_recognition.texture_set + '.' + self.texture_recognition.ext)
 
         self.filenode = self.connect_file_node(path=path, name=file_name_filenode, single_place_node=single_place_node)
 
@@ -178,19 +178,19 @@ class TextureFileNode():
             file_node.uvTilingMode.set(3)
 
         # alphaIsLuminance
-        if (self.texture_recongition.channel == config.BACKLIGHT
-                or self.texture_recongition.channel == config.SPECULAR_WEIGHT
-                or self.texture_recongition.channel == config.SPECULAR_ROUGHNESS
-                or self.texture_recongition.channel == config.FRESNEL
-                or self.texture_recongition.channel == config.NORMAL
-                or self.texture_recongition.channel == config.HEIGHT):
+        if (self.texture_recognition.channel == config.BACKLIGHT
+                or self.texture_recognition.channel == config.SPECULAR_WEIGHT
+                or self.texture_recognition.channel == config.SPECULAR_ROUGHNESS
+                or self.texture_recognition.channel == config.FRESNEL
+                or self.texture_recognition.channel == config.NORMAL
+                or self.texture_recognition.channel == config.HEIGHT):
             file_node.alphaIsLuminance.set(True)
         else:
             file_node.alphaIsLuminance.set(False)
 
         # Color Space
-        if (self.texture_recongition.channel == config.DIFFUSE
-                or self.texture_recongition.channel == config.SPECULAR_COLOR):
+        if (self.texture_recognition.channel == config.DIFFUSE
+                or self.texture_recognition.channel == config.SPECULAR_COLOR):
             file_node.colorSpace.set('sRGB')
         else:
             file_node.colorSpace.set('Raw')
@@ -214,10 +214,10 @@ class TexturePxrTexture():
             path (str): Path to the texture file.
             filename (str): Name of the texture file.
         """
-        self.texture_recongition = file.TextureFile(path=path, filename=filename)
+        self.texture_recognition = file.TextureFile(path=path, filename=filename)
 
-        file_name_filenode = (self.texture_recongition.mesh + '_' + self.texture_recongition.channel + '.' +
-                              self.texture_recongition.texture_set + '.' + self.texture_recongition.ext)
+        file_name_filenode = (self.texture_recognition.mesh + '_' + self.texture_recognition.channel + '.' +
+                              self.texture_recognition.texture_set + '.' + self.texture_recognition.ext)
 
         self.filenode = self.connect_file_node(path=path, name=file_name_filenode)
 
@@ -247,8 +247,8 @@ class TexturePxrTexture():
             pxrtexture_node.filename.set(path + '/' + name)
 
         # Color Space
-        if (self.texture_recongition.channel == config.DIFFUSE
-                or self.texture_recongition.channel == config.SPECULAR_COLOR):
+        if (self.texture_recognition.channel == config.DIFFUSE
+                or self.texture_recognition.channel == config.SPECULAR_COLOR):
             pxrtexture_node.linearize.set(True)
         else:
             pxrtexture_node.linearize.set(False)

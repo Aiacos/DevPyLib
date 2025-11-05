@@ -67,7 +67,7 @@ class Convention():
 
         # mesh
         self.geo = geo
-        self.proxyGeo = proxy_geo
+        self.proxy_geo = proxy_geo
 
         # curve
         self.cv = cv
@@ -76,12 +76,12 @@ class Convention():
         self.joint = joint
 
         # IK handle
-        self.ikHandle = ik_handle
+        self.ik_handle = ik_handle
 
         # control
         self.control = control
 
-        self.conventionDict = {'separator': separator,
+        self.convention_dict = {'separator': separator,
                                'left': left,
                                'right': right,
                                'group': grp,

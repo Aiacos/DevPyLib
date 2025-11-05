@@ -80,22 +80,18 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         skin_geo_node = _as_single_node(skin_geo, 'skin_geo')
         head_joint_node = _as_single_node(head_joint, 'head_joint')
         self.skin_geo = skin_geo_node
-        self.skinGeo = skin_geo_node  # pylint: disable=invalid-name
         self.head_joint = head_joint_node
-        self.headJnt = head_joint_node  # pylint: disable=invalid-name
 
         if points_number < 2:
             raise ValueError('points_number must be at least 2.')
 
         self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
-        self.rigmodule = self.rig_module  # Legacy attribute
 
         self.points_number = points_number
         self.spacing = 1.0 / (points_number - 1)
 
         face_geo = pm.duplicate(skin_geo_node, n=f'{prefix}_GEO')[0]
         self.face_geo = face_geo
-        self.faceGeo = face_geo  # pylint: disable=invalid-name
         pm.parent(face_geo, self.rig_module.partsNoTransGrp)
         deform.blend_shape_deformer(
             skin_geo_node,

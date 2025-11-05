@@ -29,40 +29,40 @@ class StructureManager():
         Initialize the class with the root package
         """
         self.root_package = lib
-        self.structLib = {}
+        self.struct_lib = {}
 
-        self.finalClassList = []
-        self.moduleClassList = []
+        self.final_class_list = []
+        self.module_class_list = []
 
         self.package_list = self.list_all_package()
 
         self.module_list = self.list_all_module()
         self.module_list = sum(self.module_list, [])
 
-        self.subPackage_list = []
+        self.sub_package_list = []
         for mod in self.module_list:
             try:
                 # Module Case
                 sub_pack = self.list_sub_packages(mod)
             except (AttributeError, ImportError):
-                self.moduleClassList.append(mod)
+                self.module_class_list.append(mod)
             else:
-                self.moduleClassList.extend(sub_pack)
+                self.module_class_list.extend(sub_pack)
 
-        for item in self.moduleClassList:
+        for item in self.module_class_list:
             # Class OR Function Case
 
             # Add Class to path
             self.class_list = self.get_all_class(item)
             for c in self.class_list:
-                self.finalClassList.append(item + '.' + c[0])
+                self.final_class_list.append(item + '.' + c[0])
             # Add Function to path
             self.function_list = self.get_all_function(item)
             for f in self.function_list:
-                self.finalClassList.append(item + '.' + f[0])
+                self.final_class_list.append(item + '.' + f[0])
 
         # Testing
-        for item in self.finalClassList:
+        for item in self.final_class_list:
             split = item.split('.')
             tmp_dict = {}
             for key in reversed(split):
@@ -72,10 +72,10 @@ class StructureManager():
                     tmp_dict = self.incapsulate_dict(tmp_dict, key)
 
             # print tmp_dict
-            self.dict_merge(self.structLib, tmp_dict)
+            self.dict_merge(self.struct_lib, tmp_dict)
 
-        # print(self.structLib)
-        # for k, v in self.structLib['mayaLib']['fluidLib'].iteritems():
+        # print(self.struct_lib)
+        # for k, v in self.struct_lib['mayaLib']['fluidLib'].iteritems():
         #    print(k, v)
         # func = self.import_and_exec('mayaLib.fluidLib.fire', 'Fire')
         # print('FUNCTION: ', func)
@@ -108,7 +108,7 @@ class StructureManager():
     def get_struct_lib(self):
         """ Return the structure dictionary
         """
-        return self.structLib
+        return self.struct_lib
 
     def import_and_exec(self, module_string, function):
         """ Import the module and execute the given function

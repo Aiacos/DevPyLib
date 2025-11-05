@@ -264,17 +264,17 @@ class ModelFix():
 
     Attributes:
         geo (str or PyNode): The Maya node to fix modeling issues.
-        checkFaceWithMoreThan4Sides (list): List of faces with more than 4 sides.
-        checkConcaveFaces (list): List of concave faces.
-        checkFaceWithHoles (list): List of faces with holes.
-        checkNonPlanarFaces (list): List of non-planar faces.
-        checkLaminaFaces (list): List of lamina faces.
-        checkNonmanifoldGeometry (list): List of non-manifold geometry.
-        checkEdgesWithZeroLenght (list): List of edges with zero length.
-        checkFacesWithZeroGeometryArea (list): List of faces with zero geometry
+        check_face_with_more_than_4_sides (list): List of faces with more than 4 sides.
+        check_concave_faces (list): List of concave faces.
+        check_face_with_holes (list): List of faces with holes.
+        check_non_planar_faces (list): List of non-planar faces.
+        check_lamina_faces (list): List of lamina faces.
+        check_nonmanifold_geometry (list): List of non-manifold geometry.
+        check_edges_with_zero_lenght (list): List of edges with zero length.
+        check_faces_with_zero_geometry_area (list): List of faces with zero geometry
             area.
-        checkFacesWithZeroMapArea (list): List of faces with zero map area.
-        checkInvalidComponents (list): List of invalid components.
+        check_faces_with_zero_map_area (list): List of faces with zero map area.
+        check_invalid_components (list): List of invalid components.
     """
     def __init__(self, geo, check=True):
         """Initialize the ModelFix object.
@@ -289,16 +289,16 @@ class ModelFix():
         merge_duplicated_vertex(self.geo)
 
         if check:
-            self.checkFaceWithMoreThan4Sides = fix_face_with_more_than_4_sides(self.geo, query=True)
-            self.checkConcaveFaces = fix_concave_faces(self.geo, query=True)
-            self.checkFaceWithHoles = fix_face_with_holes(self.geo, query=True)
-            self.checkNonPlanarFaces = fix_non_planar_faces(self.geo, query=True)
-            self.checkLaminaFaces = remove_lamina_faces(self.geo, query=True)
-            self.checkNonmanifoldGeometry = remove_nonmanifold_geometry(self.geo, query=True)
-            self.checkEdgesWithZeroLenght = remove_edges_with_zero_length(self.geo, query=True)
-            self.checkFacesWithZeroGeometryArea = remove_faces_with_zero_geometry_area(self.geo, query=True)
-            self.checkFacesWithZeroMapArea = remove_faces_with_zero_map_area(self.geo, query=True)
-            self.checkInvalidComponents = remove_invalid_components(self.geo, query=True)
+            self.check_face_with_more_than_4_sides = fix_face_with_more_than_4_sides(self.geo, query=True)
+            self.check_concave_faces = fix_concave_faces(self.geo, query=True)
+            self.check_face_with_holes = fix_face_with_holes(self.geo, query=True)
+            self.check_non_planar_faces = fix_non_planar_faces(self.geo, query=True)
+            self.check_lamina_faces = remove_lamina_faces(self.geo, query=True)
+            self.check_nonmanifold_geometry = remove_nonmanifold_geometry(self.geo, query=True)
+            self.check_edges_with_zero_lenght = remove_edges_with_zero_length(self.geo, query=True)
+            self.check_faces_with_zero_geometry_area = remove_faces_with_zero_geometry_area(self.geo, query=True)
+            self.check_faces_with_zero_map_area = remove_faces_with_zero_map_area(self.geo, query=True)
+            self.check_invalid_components = remove_invalid_components(self.geo, query=True)
 
     def auto_fix(self,
                 face_with_more_than_4_sides=False,
@@ -397,43 +397,43 @@ class ModelFix():
 
     def get_face_with_more_than_4_sides(self):
         """Get the list of faces with more than 4 sides."""
-        return self.checkFaceWithMoreThan4Sides
+        return self.check_face_with_more_than_4_sides
 
     def get_concave_faces(self):
         """Get the list of concave faces."""
-        return self.checkConcaveFaces
+        return self.check_concave_faces
 
     def get_face_with_holes(self):
         """Get the list of faces with holes."""
-        return self.checkFaceWithHoles
+        return self.check_face_with_holes
 
     def get_non_planar_faces(self):
         """Get the list of non planar faces."""
-        return self.checkNonPlanarFaces
+        return self.check_non_planar_faces
 
     def get_lamina_faces(self):
         """Get the list of lamina faces."""
-        return self.checkLaminaFaces
+        return self.check_lamina_faces
 
     def get_nonmanifold_geometry(self):
         """Get the list of non-manifold geometry."""
-        return self.checkNonmanifoldGeometry
+        return self.check_nonmanifold_geometry
 
     def get_edges_with_zero_length(self):
         """Get the list of edges with zero length."""
-        return self.checkEdgesWithZeroLenght
+        return self.check_edges_with_zero_lenght
 
     def get_faces_with_zero_geometry_area(self):
         """Get the list of faces with zero geometry area."""
-        return self.checkFacesWithZeroGeometryArea
+        return self.check_faces_with_zero_geometry_area
 
     def get_faces_with_zero_map_area(self):
         """Get the list of faces with zero map area."""
-        return self.checkFacesWithZeroMapArea
+        return self.check_faces_with_zero_map_area
 
     def get_invalid_components(self):
         """Get the list of invalid components."""
-        return self.checkInvalidComponents
+        return self.check_invalid_components
 
 
 if __name__ == "__main__":

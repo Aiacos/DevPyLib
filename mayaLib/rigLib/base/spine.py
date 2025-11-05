@@ -128,7 +128,6 @@ class Spine:
             )
 
         self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
-        self.rigmodule = self.rig_module  # Legacy attribute
         self.prefix = prefix
 
         body_locator_node = _as_pynode(body_locator)
@@ -237,13 +236,12 @@ class Spine:
 
         self.created_locators = created_locators
         self.body_ctrl = self.body_control
-        self.bodyCtrl = self.body_control  # pylint: disable=invalid-name
 
     def get_module_dict(self) -> dict[str, Any]:
         """Return rig module bookkeeping data."""
         return {
             'module': self.rig_module,
-            'bodyCtrl': self.body_control,
+            'body_ctrl': self.body_control,
             'body_control': self.body_control,
         }
 

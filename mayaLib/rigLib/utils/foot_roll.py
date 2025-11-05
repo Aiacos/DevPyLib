@@ -84,22 +84,6 @@ class FootRoll:
 
         self.move_grp()
 
-        # Legacy attribute mirrors for compatibility.
-        self.ballIkHandleList = self.ball_ik_handles  # pylint: disable=invalid-name
-        self.toeIkHandleList = self.toe_ik_handles  # pylint: disable=invalid-name
-        self.prefixJnt1 = self.prefix_joint_hip  # pylint: disable=invalid-name
-        self.prefixJnt2 = self.prefix_joint_ankle  # pylint: disable=invalid-name
-        self.ankleIkHandle = self.ankle_ik_handle  # pylint: disable=invalid-name
-
-        self.peelHeelGrp = self.peel_heel_grp  # pylint: disable=invalid-name
-        self.toeTapGrp = self.toe_tap_grp  # pylint: disable=invalid-name
-        self.tippyToeGrp = self.tippy_toe_grp  # pylint: disable=invalid-name
-        self.frontRollGrp = self.front_roll_grp  # pylint: disable=invalid-name
-        self.backRollGrp = self.back_roll_grp  # pylint: disable=invalid-name
-        self.innerRollGrp = self.inner_roll_grp  # pylint: disable=invalid-name
-        self.outerRollGrp = self.outer_roll_grp  # pylint: disable=invalid-name
-        self.moveGrp = self.move_grp_node  # pylint: disable=invalid-name
-
         # set OFF Sticky
         self.set_sticky(0)
 
@@ -191,7 +175,6 @@ class FootRoll:
 
         common.center_pivot(group, self.ankle_ik_handle)
         self.move_grp_node = group
-        self.moveGrp = group  # pylint: disable=invalid-name
 
     def get_group_list(self):
         """Return the created group nodes in hierarchy order."""

@@ -67,7 +67,6 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             )
 
         self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
-        self.rigmodule = self.rig_module  # Legacy attribute
 
         neck_joint_nodes = pm.ls(neck_joints)
         if not neck_joint_nodes:
@@ -91,13 +90,11 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             em=True,
             p=self.rig_module.partsGrp,
         )
-        self.bodyAttachGrp = self.body_attach_group  # pylint: disable=invalid-name
         self.base_attach_group = pm.group(
             n=f'{prefix}BaseAttach_GRP',
             em=True,
             p=self.rig_module.partsGrp,
         )
-        self.baseAttachGrp = self.base_attach_group  # pylint: disable=invalid-name
 
         pm.delete(pm.pointConstraint(neck_joint_nodes[0], self.base_attach_group))
 
@@ -170,9 +167,9 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         """Return rig module bookkeeping data."""
         return {
             'module': self.rig_module,
-            'baseAttachGrp': self.base_attach_group,
             'base_attach_grp': self.base_attach_group,
-            'bodyAttachGrp': self.body_attach_group,
+            'base_attach_grp': self.base_attach_group,
+            'body_attach_grp': self.body_attach_group,
             'body_attach_grp': self.body_attach_group,
         }
 

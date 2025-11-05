@@ -654,11 +654,8 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         )
 
         self.rig_module = rig_module
-        self.rigmodule = rig_module  # Legacy attribute
         self.body_attach_group = body_attach_group
-        self.bodyAttachGrp = body_attach_group  # pylint: disable=invalid-name
         self.base_attach_group = base_attach_group
-        self.baseAttachGrp = base_attach_group  # pylint: disable=invalid-name
 
         fk_limb_controls: list[control.Control] = []
         fk_limb_constraints: list[pm.PyNode] = []
@@ -786,11 +783,8 @@ class Limb:  # pylint: disable=too-many-instance-attributes
                 )
 
         self.limb_ik = ik_handle
-        self.limbIK = ik_handle  # pylint: disable=invalid-name
         self.main_ik_control = main_ik_ctrl
-        self.mainIKControl = main_ik_ctrl  # pylint: disable=invalid-name
         self.pole_vector_control = pole_vector_ctrl
-        self.poleVectorCtrl = pole_vector_ctrl  # pylint: disable=invalid-name
         self.pole_vector_locator = pole_vector_locator
 
     def get_main_limb_ik(self) -> pm.PyNode | None:
@@ -807,9 +801,9 @@ class Limb:  # pylint: disable=too-many-instance-attributes
             'module': self.rig_module,
             'module_obj': self.rig_module,
             'rig_module': self.rig_module,
-            'baseAttachGrp': self.base_attach_group,
             'base_attach_grp': self.base_attach_group,
-            'bodyAttachGrp': self.body_attach_group,
+            'base_attach_grp': self.base_attach_group,
+            'body_attach_grp': self.body_attach_group,
             'body_attach_grp': self.body_attach_group,
         }
 

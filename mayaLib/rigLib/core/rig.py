@@ -78,7 +78,6 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
             main_proxy_geo = pm.ls('mainProxy_GEO')[0]
             proxy_geo_instance = proxy_geo.ProxyGeo(main_proxy_geo)
             self.proxy_geo_list = proxy_geo_instance.get_proxy_geo_list()
-        self.prxGeoList = self.proxy_geo_list  # pylint: disable=invalid-name
 
         self.prepare()
 
@@ -87,14 +86,12 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
         if model_group:
             radius = util.get_planar_radius_bbox(model_group[0])['planarY']
             self.scene_radius = radius
-        self.sceneRadius = self.scene_radius  # pylint: disable=invalid-name
 
         self.base_module = Base(
             character_name=character_name,
             scale=self.scene_radius,
             main_ctrl_attach_obj=head_joint,
         )
-        self.baseModule = self.base_module  # pylint: disable=invalid-name
         self.rig()
 
         if model_group:
@@ -327,16 +324,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
         self.do_flexyplane = do_flexyplane
         self.go_to_t_pose = go_to_t_pose
         self.scene_scale = scene_scale
-        self.rootJnt = self.root_joint  # pylint: disable=invalid-name
-        self.headJnt = self.head_joint  # pylint: disable=invalid-name
-        self.doSpine = self.do_spine  # pylint: disable=invalid-name
-        self.doNeck = self.do_neck  # pylint: disable=invalid-name
-        self.doTail = self.do_tail  # pylint: disable=invalid-name
-        self.doDynamicTail = self.do_dynamic_tail  # pylint: disable=invalid-name
-        self.doStretchy = self.do_stretchy  # pylint: disable=invalid-name
-        self.doFlexyplane = self.do_flexyplane  # pylint: disable=invalid-name
-        self.sceneScale = self.scene_scale  # pylint: disable=invalid-name
-        self.goToTPose = self.go_to_t_pose  # pylint: disable=invalid-name
 
         super().__init__(
             character_name=character_name,
@@ -365,7 +352,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 spine_joints=spine_joints,
                 scene_scale=self.scene_scale,
             )
-            self.spineRig = self.spine_rig  # pylint: disable=invalid-name
 
         if self.do_neck:
             neck_joints = pm.ls('neckJ?_JNT')
@@ -377,7 +363,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 spine_rig=getattr(self, 'spine_rig', None),
                 spine_joints=spine_joints,
             )
-            self.neckRig = self.neck_rig  # pylint: disable=invalid-name
 
         if self.do_tail:
             tail_joints = pm.ls('tail*_JNT')
@@ -388,7 +373,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 self.do_dynamic_tail,
                 self.scene_scale,
             )
-            self.tailRig = self.tail_rig  # pylint: disable=invalid-name
         else:
             pelvis_joint = None
 
@@ -434,7 +418,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 ),
                 spine_driver,
             )
-            self.lArmRig = self.l_arm_rig  # pylint: disable=invalid-name
             self.r_arm_rig = self.make_limb(
                 self.spine_rig,
                 pm.ls('r_clavicleJA_JNT')[0],
@@ -449,7 +432,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 ),
                 spine_driver,
             )
-            self.rArmRig = self.r_arm_rig  # pylint: disable=invalid-name
             self.l_leg_rig = self.make_limb(
                 self.spine_rig,
                 '',
@@ -464,7 +446,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 ),
                 hip_joint,
             )
-            self.lLegRig = self.l_leg_rig  # pylint: disable=invalid-name
             self.r_leg_rig = self.make_limb(
                 self.spine_rig,
                 '',
@@ -479,7 +460,6 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
                 ),
                 hip_joint,
             )
-            self.rLegRig = self.r_leg_rig  # pylint: disable=invalid-name
 
         if self.do_stretchy:
             stretchy_ik_chain.StretchyIKChain(

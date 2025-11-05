@@ -42,94 +42,94 @@ from maya import OpenMaya, OpenMayaAnim, cmds, mel
 #
 #         tab_widget.addTab(objectsTab, "Objects")
 #         tab_widget.addTab(verticesTab, "Vertices")
-#         self.descLabel = QtWidgets.QLabel("(C) 2015 by Thomas Bittner", parent=self)
+#         self.desc_label = QtWidgets.QLabel("(C) 2015 by Thomas Bittner", parent=self)
 #         self.setWindowTitle('bSkinSaver 1.1')
 #
-#         self.objectsFileLine = QtWidgets.QLineEdit('/Users/thomas/default.weights', parent=self)
-#         self.selectObjectsFileButton = QtWidgets.QPushButton("Set File", parent=self)
-#         self.saveObjectsButton = QtWidgets.QPushButton("Save Weights from selected Objects", parent=self)
-#         self.loadObjectsButton = QtWidgets.QPushButton("Load", parent=self)
-#         self.loadObjectsSelectionButton = QtWidgets.QPushButton("Load to Selected Object", parent=self)
+#         self.objects_file_line = QtWidgets.QLineEdit('/Users/thomas/default.weights', parent=self)
+#         self.select_objects_file_button = QtWidgets.QPushButton("Set File", parent=self)
+#         self.save_objects_button = QtWidgets.QPushButton("Save Weights from selected Objects", parent=self)
+#         self.load_objects_button = QtWidgets.QPushButton("Load", parent=self)
+#         self.load_objects_selection_button = QtWidgets.QPushButton("Load to Selected Object", parent=self)
 #
 #         objectsLayout = QtWidgets.QVBoxLayout(objectsTab)
 #         objectsLayout.setAlignment(QtCore.Qt.AlignTop)
 #         objectsLayout.setSpacing(3)
 #         objectsFileLayout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.LeftToRight)
-#         objectsFileLayout.addWidget(self.objectsFileLine)
-#         objectsFileLayout.addWidget(self.selectObjectsFileButton)
+#         objectsFileLayout.addWidget(self.objects_file_line)
+#         objectsFileLayout.addWidget(self.select_objects_file_button)
 #         objectsLayout.addLayout(objectsFileLayout)
 #
 #         objectsButtonLayout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.TopToBottom)
 #         objectsButtonLayout.setSpacing(0)
-#         objectsButtonLayout.addWidget(self.saveObjectsButton)
-#         objectsButtonLayout.addWidget(self.loadObjectsButton)
-#         objectsButtonLayout.addWidget(self.loadObjectsSelectionButton)
+#         objectsButtonLayout.addWidget(self.save_objects_button)
+#         objectsButtonLayout.addWidget(self.load_objects_button)
+#         objectsButtonLayout.addWidget(self.load_objects_selection_button)
 #
 #         objectsLayout.addLayout(objectsButtonLayout)
 #
-#         self.verticesFileLine = QtWidgets.QLineEdit('/Users/thomas/defaultVertex.weights', parent=self)
-#         self.selectVerticesFileButton = QtWidgets.QPushButton("Set File", parent=self)
-#         self.saveVerticesButton = QtWidgets.QPushButton("Save Weights from selected Vertices", parent=self)
-#         self.loadVerticesButton = QtWidgets.QPushButton("Load onto selected Object", parent=self)
-#         self.ignoreSoftSelectionWhenSaving = QtWidgets.QCheckBox("ignore Soft Selection when Saving", parent=self)
-#         self.ignoreJointLocksWhenLoading = QtWidgets.QCheckBox("ignore Joint Locks when Loading", parent=self)
+#         self.vertices_file_line = QtWidgets.QLineEdit('/Users/thomas/defaultVertex.weights', parent=self)
+#         self.select_vertices_file_button = QtWidgets.QPushButton("Set File", parent=self)
+#         self.save_vertices_button = QtWidgets.QPushButton("Save Weights from selected Vertices", parent=self)
+#         self.load_vertices_button = QtWidgets.QPushButton("Load onto selected Object", parent=self)
+#         self.ignore_soft_selection_when_saving = QtWidgets.QCheckBox("ignore Soft Selection when Saving", parent=self)
+#         self.ignore_joint_locks_when_loading = QtWidgets.QCheckBox("ignore Joint Locks when Loading", parent=self)
 #
 #         verticesLayout = QtWidgets.QVBoxLayout(verticesTab)
 #         verticesLayout.setAlignment(QtCore.Qt.AlignTop)
 #         verticesLayout.setSpacing(3)
 #         verticesFileLayout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.LeftToRight)
-#         verticesFileLayout.addWidget(self.verticesFileLine)
-#         verticesFileLayout.addWidget(self.selectVerticesFileButton)
+#         verticesFileLayout.addWidget(self.vertices_file_line)
+#         verticesFileLayout.addWidget(self.select_vertices_file_button)
 #         verticesLayout.addLayout(verticesFileLayout)
 #
 #         verticesButtonLayout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.TopToBottom)
 #         verticesButtonLayout.setSpacing(0)
-#         verticesButtonLayout.addWidget(self.saveVerticesButton)
-#         verticesButtonLayout.addWidget(self.loadVerticesButton)
-#         verticesButtonLayout.addWidget(self.ignoreSoftSelectionWhenSaving)
-#         verticesButtonLayout.addWidget(self.ignoreJointLocksWhenLoading)
+#         verticesButtonLayout.addWidget(self.save_vertices_button)
+#         verticesButtonLayout.addWidget(self.load_vertices_button)
+#         verticesButtonLayout.addWidget(self.ignore_soft_selection_when_saving)
+#         verticesButtonLayout.addWidget(self.ignore_joint_locks_when_loading)
 #         verticesLayout.addLayout(verticesButtonLayout)
 #
 #         self.layout = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.TopToBottom, self)
 #         self.layout.addWidget(tab_widget)
-#         self.layout.addWidget(self.descLabel)
+#         self.layout.addWidget(self.desc_label)
 #         self.resize(400, 10)
 #
 #         # select files
-#         self.connect(self.selectObjectsFileButton, QtCore.SIGNAL("clicked()"), self.selectObjectsFile)
-#         self.connect(self.selectVerticesFileButton, QtCore.SIGNAL("clicked()"), self.selectVerticesFile)
+#         self.connect(self.select_objects_file_button, QtCore.SIGNAL("clicked()"), self.selectObjectsFile)
+#         self.connect(self.select_vertices_file_button, QtCore.SIGNAL("clicked()"), self.selectVerticesFile)
 #
-#         self.connect(self.saveObjectsButton, QtCore.SIGNAL("clicked()"), self.saveObjects)
-#         self.connect(self.loadObjectsButton, QtCore.SIGNAL("clicked()"), self.loadObjects)
-#         self.connect(self.loadObjectsSelectionButton, QtCore.SIGNAL("clicked()"), self.loadObjectsSelection)
+#         self.connect(self.save_objects_button, QtCore.SIGNAL("clicked()"), self.saveObjects)
+#         self.connect(self.load_objects_button, QtCore.SIGNAL("clicked()"), self.loadObjects)
+#         self.connect(self.load_objects_selection_button, QtCore.SIGNAL("clicked()"), self.loadObjectsSelection)
 #
-#         self.connect(self.saveVerticesButton, QtCore.SIGNAL("clicked()"), self.saveVertices)
-#         self.connect(self.loadVerticesButton, QtCore.SIGNAL("clicked()"), self.loadVertices)
+#         self.connect(self.save_vertices_button, QtCore.SIGNAL("clicked()"), self.saveVertices)
+#         self.connect(self.load_vertices_button, QtCore.SIGNAL("clicked()"), self.loadVertices)
 #
 #     def selectObjectsFile(self):
 #         fileResult = cmds.fileDialog2()
 #         if fileResult != None:
-#             self.objectsFileLine.setText(fileResult[0])
+#             self.objects_file_line.setText(fileResult[0])
 #
 #     def selectVerticesFile(self):
 #         fileResult = cmds.fileDialog2()
 #         if fileResult != None:
-#             self.verticesFileLine.setText(fileResult[0])
+#             self.vertices_file_line.setText(fileResult[0])
 #
 #     def loadObjects(self):
-#         b_load_skin_values(False, str(self.objectsFileLine.text()))
+#         b_load_skin_values(False, str(self.objects_file_line.text()))
 #
 #     def loadObjectsSelection(self):
-#         b_load_skin_values(True, str(self.objectsFileLine.text()))
+#         b_load_skin_values(True, str(self.objects_file_line.text()))
 #
 #     def saveObjects(self):
-#         b_save_skin_values(str(self.objectsFileLine.text()))
+#         b_save_skin_values(str(self.objects_file_line.text()))
 #
 #     def loadVertices(self):
-#         b_load_vertex_skin_values(str(self.verticesFileLine.text()), self.ignoreJointLocksWhenLoading.isChecked())
+#         b_load_vertex_skin_values(str(self.vertices_file_line.text()), self.ignore_joint_locks_when_loading.isChecked())
 #
 #     def saveVertices(self):
-#         b_save_vertex_skin_values(str(self.verticesFileLine.text()), self.ignoreSoftSelectionWhenSaving.isChecked())
+#         b_save_vertex_skin_values(str(self.vertices_file_line.text()), self.ignore_soft_selection_when_saving.isChecked())
 
 
 def b_find_skin_cluster(object_name, b_skin_path=OpenMaya.MDagPath()):

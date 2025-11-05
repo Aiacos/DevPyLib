@@ -54,8 +54,8 @@ class PxrStyleCtrl():
             >>> pxr = PxrStyleCtrl('character_body_GEO')
         """
         # Create backup Group
-        self.shapeGrp = pm.group(n='oldShape_GRP', em=True)
-        self.shapeGrp.visibility.set(0)
+        self.shape_grp = pm.group(n='oldShape_GRP', em=True)
+        self.shape_grp.visibility.set(0)
 
         # Get Shape and skin from Object
         skin_cluster = skin.findRelatedSkinCluster(obj)
@@ -92,7 +92,7 @@ class PxrStyleCtrl():
                 shape.selectionChildHighlighting.set(0)
 
         if delete_old_shape_grp:
-            pm.delete(self.shapeGrp)
+            pm.delete(self.shape_grp)
 
         print('DONE!')
 
@@ -117,7 +117,7 @@ class PxrStyleCtrl():
         """
         # Remove and backUp oldShape
         old_shape = destination[0].getShape()
-        pm.parent(old_shape, self.shapeGrp, r=True, s=True)
+        pm.parent(old_shape, self.shape_grp, r=True, s=True)
         # pm.delete(old_shape)
 
         # Replace Shape

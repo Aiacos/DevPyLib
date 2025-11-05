@@ -67,7 +67,7 @@ class TinyDAG(object):
             p_obj: Parent BVHNode object. Defaults to None.
         """
         self.obj = obj
-        self.pObj = p_obj
+        self.p_obj = p_obj
 
     def __str__(self):
         # returns object name
@@ -75,8 +75,8 @@ class TinyDAG(object):
 
     def _full_path(self):
         # returns full object path
-        if self.pObj is not None:
-            return "%s|%s" % (self.pObj._full_path(), self.__str__())
+        if self.p_obj is not None:
+            return "%s|%s" % (self.p_obj._full_path(), self.__str__())
         return str(self.obj)
 
 
@@ -106,13 +106,13 @@ class BVHImporterDialog(object):
 
         # UI related
         self._textfield = ""
-        self._scaleField = ""
-        self._frameField = ""
-        self._rotationOrder = ""
+        self._scale_field = ""
+        self._frame_field = ""
+        self._rotation_order = ""
         self._reload = ""
 
         # Other
-        self._rootNode = None  # Used for targeting
+        self._root_node = None  # Used for targeting
         self._debug = debug
 
         # BVH specific stuff
@@ -147,11 +147,11 @@ class BVHImporterDialog(object):
                            rs=[(1, 5), (2, 5)])
 
         mc.text("Rig scale")
-        self._scaleField = mc.floatField(minValue=0.01, maxValue=2, value=1)
+        self._scale_field = mc.floatField(minValue=0.01, maxValue=2, value=1)
         mc.text("Frame offset")
-        self._frameField = mc.intField(minValue=0)
+        self._frame_field = mc.intField(minValue=0)
         mc.text("Rotation Order")
-        self._rotationOrder = mc.optionMenu()
+        self._rotation_order = mc.optionMenu()
         mc.menuItem(label='XYZ')
         mc.menuItem(label='YZX')
         mc.menuItem(label='ZXY')
@@ -212,9 +212,9 @@ class BVHImporterDialog(object):
         self._channels = []
 
         # Scale the entire rig and animation
-        rig_scale = mc.floatField(self._scaleField, q=True, value=True)
-        frame = mc.intField(self._frameField, q=True, value=True)
-        rot_order = mc.optionMenu(self._rotationOrder, q=True, select=True) - 1
+        rig_scale = mc.floatField(self._scale_field, q=True, value=True)
+        frame = mc.intField(self._frame_field, q=True, value=True)
+        rot_order = mc.optionMenu(self._rotation_order, q=True, select=True) - 1
 
         with open(self._filename, encoding='utf-8') as f:
             # Check to see if the file is valid (sort of)
@@ -222,7 +222,7 @@ class BVHImporterDialog(object):
                 mc.error("No valid .bvh file selected.")
                 return False
 
-            if self._rootNode is None:
+            if self._root_node is None:
                 # Create a group for the rig, easier to scale. (Freeze transform when ungrouping please..)
                 mocap_name = os.path.basename(self._filename)
                 grp = pm.group(em=True, name="_mocap_%s_grp" % mocap_name)
@@ -231,7 +231,7 @@ class BVHImporterDialog(object):
                 # The group is now the 'root'
                 my_parent = TinyDAG(str(grp), None)
             else:
-                my_parent = TinyDAG(str(self._rootNode), None)
+                my_parent = TinyDAG(str(self._root_node), None)
                 self._clear_animation()
 
             for line in f:
@@ -240,8 +240,8 @@ class BVHImporterDialog(object):
                     # root joint
                     if line.startswith("ROOT"):
                         # Set the Hip joint as root
-                        if self._rootNode:
-                            my_parent = TinyDAG(str(self._rootNode), None)
+                        if self._root_node:
+                            my_parent = TinyDAG(str(self._root_node), None)
                         else:
                             my_parent = TinyDAG(line[5:].rstrip(), my_parent)
 
@@ -262,7 +262,7 @@ class BVHImporterDialog(object):
 
                         # Go up one level
                         if my_parent is not None:
-                            my_parent = my_parent.pObj
+                            my_parent = my_parent.p_obj
                             if my_parent is not None:
                                 mc.select(my_parent._full_path())
 
@@ -327,7 +327,7 @@ class BVHImporterDialog(object):
 
     def _clear_animation(self):
         # select root joint
-        pm.select(str(self._rootNode), hi=True)
+        pm.select(str(self._root_node), hi=True)
         nodes = pm.ls(sl=True)
 
         trans_attrs = ["translateX", "translateY", "translateZ"]
@@ -345,11 +345,11 @@ class BVHImporterDialog(object):
         # When targeting, set the root joint (Hips)
         selection = pm.ls(sl=True, type="joint")
         if len(selection) == 0:
-            self._rootNode = None
+            self._root_node = None
             mc.textField(self._textfield, e=True, text="")
         else:
-            self._rootNode = selection[0]
-            mc.textField(self._textfield, e=True, text=str(self._rootNode))
+            self._root_node = selection[0]
+            mc.textField(self._textfield, e=True, text=str(self._root_node))
 
 
 if __name__ == "__main__":

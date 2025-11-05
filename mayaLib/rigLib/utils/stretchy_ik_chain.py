@@ -119,10 +119,6 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         if do_flexyplane:
             self.do_flexy_plane(prefix)
 
-        # Legacy attributes
-        self.stretchyGrp = self.stretchy_group  # pylint: disable=invalid-name
-        self.jointList = self.joint_list  # pylint: disable=invalid-name
-
     def get_stretchy_group(self) -> pm.PyNode:
         """Return the grouping node that contains the stretch system."""
         return self.stretchy_group

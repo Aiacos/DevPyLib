@@ -34,9 +34,9 @@ class FunctionUI(QtWidgets.QWidget):
         layout: The grid layout containing UI elements
         lineedit_list: List of input widgets
         label_list: List of parameter labels
-        fillButton_list: List of fill-from-selection buttons
-        execButton: The execute button
-        advancedCheckBox: Toggle for advanced parameters
+        fill_button_list: List of fill-from-selection buttons
+        exec_button: The execute button
+        advanced_checkbox: Toggle for advanced parameters
         doclabel: Label displaying function documentation
 
     Example:
@@ -69,7 +69,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         self.label_list = []
         self.lineedit_list = []
-        self.fillButton_list = []
+        self.fill_button_list = []
 
         row = 0
         for arg in self.args:
@@ -95,7 +95,7 @@ class FunctionUI(QtWidgets.QWidget):
 
                 if fill_button is not None:
                     self.layout.addWidget(fill_button, row, 1)
-                self.fillButton_list.append(fill_button)
+                self.fill_button_list.append(fill_button)
 
                 self.layout.addWidget(lineedit, row, 2)
                 self.lineedit_list.append(lineedit)
@@ -103,13 +103,13 @@ class FunctionUI(QtWidgets.QWidget):
                 row += 1
 
         # Create execute button
-        self.execButton = QtWidgets.QPushButton("Execute")
+        self.exec_button = QtWidgets.QPushButton("Execute")
         # Create advanced checkbox
-        self.advancedCheckBox = QtWidgets.QCheckBox("Advanced")
-        self.advancedCheckBox.setChecked(False)
+        self.advanced_checkbox = QtWidgets.QCheckBox("Advanced")
+        self.advanced_checkbox.setChecked(False)
         self.toggle_default_parameter(False)
-        self.layout.addWidget(self.execButton, row, 2)
-        self.layout.addWidget(self.advancedCheckBox, row, 0)
+        self.layout.addWidget(self.exec_button, row, 2)
+        self.layout.addWidget(self.advanced_checkbox, row, 0)
 
         # Display function documentation
         self.doclabel = QtWidgets.QLabel(doc.get_docs(func))
@@ -117,10 +117,10 @@ class FunctionUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         # Connect signals to slots
-        self.execButton.clicked.connect(self.exec_function)
-        self.advancedCheckBox.stateChanged.connect(self.toggle_default_parameter)
+        self.exec_button.clicked.connect(self.exec_function)
+        self.advanced_checkbox.stateChanged.connect(self.toggle_default_parameter)
 
-        for button in self.fillButton_list:
+        for button in self.fill_button_list:
             if button is not None:
                 button.clicked.connect(self.fill_with_selected)
 
@@ -147,7 +147,7 @@ class FunctionUI(QtWidgets.QWidget):
         button = self.sender()
 
         # Get the index of the button in the list of buttons
-        index = self.fillButton_list.index(button)
+        index = self.fill_button_list.index(button)
 
         # Get the line edit associated with the button
         lineedit = self.lineedit_list[index]
@@ -207,15 +207,15 @@ class FunctionUI(QtWidgets.QWidget):
                     if arg[1] is not None:
                         self.label_list[counter].show()
                         self.lineedit_list[counter].show()
-                        if self.fillButton_list[counter] is not None:
-                            self.fillButton_list[counter].show()
+                        if self.fill_button_list[counter] is not None:
+                            self.fill_button_list[counter].show()
                 else:
                     # Hide related widgets if the argument has a default value
                     if arg[1] is not None:
                         self.label_list[counter].hide()
                         self.lineedit_list[counter].hide()
-                        if self.fillButton_list[counter] is not None:
-                            self.fillButton_list[counter].hide()
+                        if self.fill_button_list[counter] is not None:
+                            self.fill_button_list[counter].hide()
 
                 counter += 1
 

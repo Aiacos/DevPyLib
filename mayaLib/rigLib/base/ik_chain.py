@@ -74,7 +74,6 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             )
 
         self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
-        self.rigmodule = self.rig_module  # pylint: disable=invalid-name
 
         joint_nodes = pm.ls(chain_joints)
         if len(joint_nodes) < 2:
@@ -112,7 +111,6 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             em=True,
             p=self.rig_module.partsGrp,
         )
-        self.baseAttachGrp = self.base_attach_group  # pylint: disable=invalid-name
         pm.delete(pm.pointConstraint(joint_nodes[0], self.base_attach_group))
 
         chain_controls = []
@@ -181,13 +179,13 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
                 front_of_chain=True,
             )
 
-        self.chainControls = chain_controls  # pylint: disable=invalid-name
+        self.chain_controls = chain_controls
 
     def get_module_dict(self) -> dict[str, Any]:
         """Return rig module bookkeeping data."""
         return {
             'module': self.rig_module,
-            'baseAttachGrp': self.base_attach_group,
+            'base_attach_grp': self.base_attach_group,
             'base_attach_grp': self.base_attach_group,
         }
 
