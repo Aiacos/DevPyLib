@@ -1,3 +1,9 @@
+"""ngSkinTools batch save/load test.
+
+Example script for batch saving and loading skin weights
+using ngSkinTools2 integration.
+"""
+
 from pathlib import Path
 
 import pymel.core as pm
@@ -6,6 +12,8 @@ from maya import mel
 from ngSkinTools2 import api as ngst_api
 from ngSkinTools2.api import init_layers
 from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
+
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def findRelatedSkinCluster(geo):
@@ -21,31 +29,6 @@ def findRelatedSkinCluster(geo):
             return None
 
     return pm.ls(skincluster)[0]
-
-
-def getAllObjectUnderGroup(group, type='mesh'):
-    """
-    Return all object of given type under group
-    :param group: str, group name
-    :param type: str, object type
-    :return: object list
-    """
-    objList = None
-
-    if type == 'mesh':
-        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-
-    if type == 'nurbsSurface':
-        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-
-    if type == 'transform':
-        geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
-        objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
-
-    objList = list(set(objList))
-    objList.sort()
-
-    return objList
 
 
 def ng_batch_export(geo_list, path):
@@ -89,6 +72,6 @@ def ng_batch_import(geo_list, path):
 
 if __name__ == "__main__":
     export_dir = 'C:/Users/lorenzo.argentieri/Desktop/SamTeen_ng'
-    geo_list = getAllObjectUnderGroup('x_geo_mdl_grp')
+    geo_list = list_objects_under_group('x_geo_mdl_grp')
     # ng_batch_export(geo_list, export_dir)
     ng_batch_import(geo_list, export_dir)

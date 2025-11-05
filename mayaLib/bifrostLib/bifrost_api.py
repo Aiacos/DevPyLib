@@ -1,3 +1,9 @@
+"""Low-level Bifrost graph and USD stage creation API.
+
+Provides functions for creating Bifrost graphs, USD stages, and managing
+the connection between Bifrost and Maya USD proxy nodes.
+"""
+
 import maya.cmds as cmds
 import maya.mel as mel
 
@@ -73,7 +79,7 @@ def create_bifrost_maya_shape(name='bifrost_geo'):
     return sphere_shape
 
 
-def create_bifrostGeoToMaya_node():
+def create_bifrost_geo_to_maya_node():
     """
     Create conversion node from Bifrost to Maya shape
     Returns:
@@ -122,7 +128,7 @@ def bf_get_port_type(bifrost_shape, node, port_name):
     return port_type
 
 
-def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, listPortChildren=''):
+def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, list_port_children=''):
     """
     List all ports on a Bifrost Graph Node
     Args:
@@ -137,17 +143,17 @@ def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, lis
     """
     if not node.startswith('/'):
         # port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
-        if listPortChildren:
-            tmp_port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, listPortChildren=listPortChildren)
-            port_list = [node + '.' + listPortChildren + '.' + p for p in tmp_port_list]
+        if list_port_children:
+            tmp_port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, listPortChildren=list_port_children)
+            port_list = [node + '.' + list_port_children + '.' + p for p in tmp_port_list]
         else:
             port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True)
         # port_list = cmds.vnnCompound(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
     else:
         # port_list = cmds.vnnNode(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
-        if listPortChildren:
-            tmp_port_list = cmds.vnnNode(bifrost_shape, node, listPorts=True, listPortChildren=listPortChildren)
-            port_list = [node + '.' + listPortChildren + '.' + p for p in tmp_port_list]
+        if list_port_children:
+            tmp_port_list = cmds.vnnNode(bifrost_shape, node, listPorts=True, listPortChildren=list_port_children)
+            port_list = [node + '.' + list_port_children + '.' + p for p in tmp_port_list]
         else:
             port_list = cmds.vnnNode(bifrost_shape, node, listPorts=True)
         # port_list = cmds.vnnCompound(bifrost_shape, '/' + node, listPorts=True, inputPort=input_port, outputPort=output_port)
@@ -237,7 +243,7 @@ def bf_connect(bifrost_shape, source_port, destination_port):
     cmds.vnnConnect(bifrost_shape, '/' + source_port, '/' + destination_port)
 
 
-def bf_create_compound(bifrost_shape, compound_node_list=[], compound_name='compound', parent='/'):
+def bf_create_compound(bifrost_shape, compound_node_list=None, compound_name='compound', parent='/'):
     """
     Create Bifrost Graph Compound node from specified nodes
     Args:
@@ -250,6 +256,8 @@ def bf_create_compound(bifrost_shape, compound_node_list=[], compound_name='comp
         None
 
     """
+    if compound_node_list is None:
+        compound_node_list = []
 
     value_node_list = {'moveNodeIn': compound_node_list}
     bf_compound = cmds.vnnCompound(bifrost_shape, parent, create=compound_name, **value_node_list)

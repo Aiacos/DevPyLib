@@ -1,321 +1,458 @@
-__author__ = 'Lorenzo Argentieri'
+"""High-level rig assembly routines for DevPyLib."""
+
+from __future__ import annotations
+
+from typing import Sequence
 
 import pymel.core as pm
 
-from mayaLib.rigLib.base import ikChain
-from mayaLib.rigLib.base import limb
-from mayaLib.rigLib.base import neck
-from mayaLib.rigLib.base import spine
+from mayaLib.rigLib.base import ik_chain, limb, neck, spine
 from mayaLib.rigLib.base.module import Base
-from mayaLib.rigLib.utils import ctrlShape
-from mayaLib.rigLib.utils import ikfkSwitch
-from mayaLib.rigLib.utils import joint
-from mayaLib.rigLib.utils import proxyGeo
-from mayaLib.rigLib.utils import skin
-from mayaLib.rigLib.utils import stretchyIKChain
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import ctrl_shape, ikfk_switch, joint, proxy_geo, skin, stretchy_ik_chain, util
+
+__all__ = ['BaseRig', 'HumanoidRig']
 
 
-class BaseRig(object):
-    def __init__(self, characterName='new',
-                 model_filePath='', buildScene_filePath='',
-                 rootJnt='spineJA_jnt',
-                 headJnt='headJA_jnt',
-                 loadSkinCluster=True,
-                 doProxyGeo=True,
-                 goToTPose=True
-                 ):
-        """
-        Create Base Rig
-        :param characterName: str
-        :param model_filePath: str
-        :param buildScene_filePath: str
-        :param rootJnt: str
-        :param loadSkinCluster: bool
-        :param doProxyGeo: bool
-        :param goToTPose: bool
-        """
+class BaseRig:  # pylint: disable=too-many-instance-attributes
+    """Bootstrap common rig-building flows used by specialised rigs."""
 
-        start = pm.timerX()
+    def __init__(  # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements,too-many-positional-arguments
+        self,
+        character_name: str = 'new',
+        model_file_path: str = '',
+        build_scene_file_path: str = '',
+        root_joint: str = 'spineJA_jnt',
+        head_joint: str = 'headJA_jnt',
+        load_skin_cluster: bool = True,
+        do_proxy_geo: bool = True,
+        go_to_t_pose: bool = True,
+    ) -> None:
+        start_time = pm.timerX()
         print('-- START --')
 
-        # New Scene
-        if buildScene_filePath:
+        if build_scene_file_path:
             pm.newFile(force=True)
 
-        # Import model
-        if model_filePath:
-            pm.importFile(model_filePath)
+        if model_file_path:
+            pm.importFile(model_file_path)
 
-        # Import buildScene
-        if buildScene_filePath:
-            pm.importFile(buildScene_filePath)
+        if build_scene_file_path:
+            pm.importFile(build_scene_file_path)
 
-        if goToTPose:
-            joint.loadTPose(rootJnt)
+        if go_to_t_pose:
+            joint.loadTPose(root_joint)
 
-        # Create proxy geo
-        self.prxGeoList = pm.ls('*_PRX')
-        if doProxyGeo:
-            if len(self.prxGeoList) == 0 and len(pm.ls('mainProxy_GEO')) > 0:
-                mainProxyGeo = pm.ls('mainProxy_GEO')[0]
-                prxGeoInstance = proxyGeo.ProxyGeo(mainProxyGeo)
-                self.prxGeoList = prxGeoInstance.getProxyGeoList()
+        self.proxy_geo_list = pm.ls('*_PRX')
+        proxy_geo_instance = None
+        if do_proxy_geo and not self.proxy_geo_list and pm.ls('mainProxy_GEO'):
+            main_proxy_geo = pm.ls('mainProxy_GEO')[0]
+            proxy_geo_instance = proxy_geo.ProxyGeo(main_proxy_geo)
+            self.proxy_geo_list = proxy_geo_instance.get_proxy_geo_list()
+        self.prxGeoList = self.proxy_geo_list  # pylint: disable=invalid-name
 
         self.prepare()
 
-        # search model grp
-        self.sceneRadius = 1
-        modelGrp = pm.ls(characterName + '_model' + '_GRP')
-        if modelGrp:
-            radius = util.getPlanarRadiusBBOXFromTransform(modelGrp[0])['planarY']
-            self.sceneRadius = radius
+        self.scene_radius = 1
+        model_group = pm.ls(f'{character_name}_model_GRP')
+        if model_group:
+            radius = util.get_planar_radius_bbox(model_group[0])['planarY']
+            self.scene_radius = radius
+        self.sceneRadius = self.scene_radius  # pylint: disable=invalid-name
 
-        # Create rig
-        self.baseModule = Base(characterName=characterName, scale=self.sceneRadius, mainCtrlAttachObj=headJnt)
+        self.base_module = Base(
+            character_name=character_name,
+            scale=self.scene_radius,
+            main_ctrl_attach_obj=head_joint,
+        )
+        self.baseModule = self.base_module  # pylint: disable=invalid-name
         self.rig()
 
-        # parent model group and clean scene
-        if modelGrp:
-            pm.parent(modelGrp, self.baseModule.mediumSlowGrp)
-            if len(self.prxGeoList) > 0:
-                pm.parent(self.prxGeoList, self.baseModule.fastModelGrp)
-                if doProxyGeo and len(pm.ls('mainProxy_GEO')) > 0 and pm.objExists(prxGeoInstance.getFastGeoGroup()):
-                    pm.delete(prxGeoInstance.getFastGeoGroup(), pm.ls('mainProxy_GEO'))
+        if model_group:
+            pm.parent(model_group, self.base_module.medium_slow_group)
+            if self.proxy_geo_list:
+                pm.parent(self.proxy_geo_list, self.base_module.fast_model_group)
+                if (
+                    do_proxy_geo
+                    and pm.ls('mainProxy_GEO')
+                    and proxy_geo_instance
+                    and pm.objExists(proxy_geo_instance.get_fast_geo_group())
+                ):
+                    pm.delete(proxy_geo_instance.get_fast_geo_group(), pm.ls('mainProxy_GEO'))
 
         if pm.objExists('skeletonModel_GRP'):
-            pm.parent('skeletonModel_GRP', self.baseModule.rigModelGrp)
+            pm.parent('skeletonModel_GRP', self.base_module.rig_model_group)
 
-        # parent joint group
-        if pm.objExists(rootJnt):
-            pm.parent(rootJnt, self.baseModule.jointsGrp)
+        if pm.objExists(root_joint):
+            pm.parent(root_joint, self.base_module.joints_group)
 
-        # Load SkinCluster
-        if loadSkinCluster:
-            joint.loadProjectionPose(rootJnt)
-            geoList = [geo.name() for geo in pm.ls('*_GEO')]
-            skin.loadSkinWeights(characterName, geoList)
+        if load_skin_cluster:
+            joint.loadProjectionPose(root_joint)
+            geo_list = [geo.name() for geo in pm.ls('*_GEO')]
+            skin.loadSkinWeights(character_name, geo_list)
 
         self.upgrade()
 
-        # control shape
         if pm.objExists('controlShapes_GRP'):
-            controlShapeList = pm.ls('*_shape_CTRL*')
-            controlList = [cv for cv in pm.ls('*_CTRL', '*_CTRL?') if cv not in controlShapeList]
-            for ctrl in controlList:
-                for ctrlshape in controlShapeList:
-                    if str(ctrlshape.name()).replace('_shape_CTRL', '_CTRL') == str(ctrl.name()):
-                        print(('Transfering Shape: ', str(ctrlshape.name()), ' <-----> ', str(ctrl.name())))
-                        ctrlShape.copyShape(ctrlshape, ctrl)
+            control_shape_nodes = pm.ls('*_shape_CTRL*')
+            ctrl_nodes = [
+                node for node in pm.ls('*_CTRL', '*_CTRL?') if node not in control_shape_nodes
+            ]
+            for ctrl_node in ctrl_nodes:
+                for shape_node in control_shape_nodes:
+                    ctrl_name = str(ctrl_node.name())
+                    shape_name = str(shape_node.name())
+                    if shape_name.replace('_shape_CTRL', '_CTRL') == ctrl_name:
+                        print(f'Transfering Shape: {shape_name} <-----> {ctrl_name}')
+                        ctrl_shape.copyShape(shape_node, ctrl_node)
             pm.delete('controlShapes_GRP')
 
         self.finalize()
 
-        totalTime = pm.timerX(startTime=start)
+        total = pm.timerX(startTime=start_time)
         print('-- END --')
-        print(('Total time: ', totalTime))
+        print(('Total time: ', total))
 
-    def prepare(self):
-        pass
+    def prepare(self) -> None:  # pragma: no cover - intended override hook
+        """Hook for subclasses to prepare prerequisites before rigging."""
         print('-- PREPARE --')
 
-    def rig(self):
-        pass
+    def rig(self) -> None:  # pragma: no cover - intended override hook
+        """Hook invoked to build the specific rig implementation."""
         print('-- RIG --')
 
-    def upgrade(self):
-        pass
+    def upgrade(self) -> None:  # pragma: no cover - intended override hook
+        """Hook invoked after rig creation for additional setup."""
         print('-- UPGRADE --')
 
-    def finalize(self):
-        pass
+    def finalize(self) -> None:  # pragma: no cover - intended override hook
+        """Hook invoked after rig building to perform clean-up."""
         print('-- FINALIZE --')
 
-    def makeSpine(self, prefix, rootJnt, spineJoints, sceneScale):
-        """
-        Make general Spine
-        :param rootJnt:
-        :param spineJoints:
-        :param sceneScale:
-        :return:
-        """
-        spineRig = spine.Spine(spineJoints, rootJnt, prefix=prefix, rigScale=sceneScale, baseRig=self.baseModule)
+    def make_spine(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        prefix: str,
+        root_joint: str,
+        spine_joints: Sequence[str],
+        scene_scale: float,
+    ) -> spine.Spine:
+        """Create a spine rig module."""
+        return spine.Spine(
+            spine_joints,
+            root_joint,
+            prefix=prefix,
+            rig_scale=scene_scale,
+            base_rig=self.base_module,
+        )
 
-        return spineRig
+    def make_neck(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        prefix: str,
+        head_joint: str,
+        neck_joints: Sequence[str],
+        scene_scale: float,
+        spine_rig: spine.Spine | None = None,
+        spine_joints: Sequence[str] | None = None,
+    ) -> neck.Neck:
+        """Create a neck rig module and parent it to the spine when available."""
+        neck_rig = neck.Neck(
+            neck_joints,
+            head_joint,
+            prefix=prefix,
+            rig_scale=scene_scale,
+            base_rig=self.base_module,
+        )
 
-    def makeNeck(self, prefix, headJnt, neckJoints, sceneScale, spineRig=None, spineJoints=[]):
-        neckRig = neck.Neck(neckJoints, headJnt, prefix=prefix, rigScale=sceneScale, baseRig=self.baseModule)
+        if spine_rig and spine_joints:
+            pm.parentConstraint(
+                spine_joints[-1],
+                neck_rig.getModuleDict()['baseAttachGrp'],
+                mo=1,
+            )
+            pm.parentConstraint(
+                spine_rig.getModuleDict()['bodyCtrl'].C,
+                neck_rig.getModuleDict()['bodyAttachGrp'],
+                mo=1,
+            )
 
-        if spineRig and len(spineJoints) > 0:
-            pm.parentConstraint(spineJoints[-1], neckRig.getModuleDict()['baseAttachGrp'], mo=1)
-            pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
+        return neck_rig
 
-        return neckRig
-
-    def makeTail(self, pelvisJnt, tailJoints, doDynamicTail, sceneScale):
-        tailRig = ikChain.IKChain(
-            chainJoints=tailJoints,
+    def make_tail(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        pelvis_joint: pm.PyNode,
+        tail_joints: Sequence[str],
+        do_dynamic_tail: bool,
+        scene_scale: float,
+    ) -> ik_chain.IKChain:
+        """Create a tail rig as an IK chain attached to the pelvis joint."""
+        tail_rig = ik_chain.IKChain(
+            chain_joints=tail_joints,
             prefix='tail',
-            rigScale=sceneScale,
-            doDynamic=doDynamicTail,
-            smallestScalePercent=0.4,
-            fkParenting=False,
-            baseRig=self.baseModule)
+            rig_scale=scene_scale,
+            do_dynamic=do_dynamic_tail,
+            smallest_scale_percent=0.4,
+            fk_parenting=False,
+            base_rig=self.base_module,
+        )
 
-        pm.parentConstraint(pelvisJnt, tailRig.getModuleDict()['baseAttachGrp'], mo=1)
+        pm.parentConstraint(
+            pelvis_joint,
+            tail_rig.getModuleDict()['baseAttachGrp'],
+            mo=1,
+        )
 
-        return tailRig
+        return tail_rig
 
-    def makeLimb(self, spineRig, clavicleJnt, scapulaJoint, limbJoints, topFngJoints, spineDriverJoint='',
-                 useMetacarpalJoint=False):
-        """
-        Make general Limb
-        :param spineRig: instance
-        :param clavicleJnt: str
-        :param scapulaJoint: str
-        :param limbJoints: list(str)
-        :param topFngJoints: list(str)
-        :param spineDriverJoint: str
-        :param useMetacarpalJoint: bool
-        :return: instance, limbRig
-        """
-        limbRig = limb.Limb(limbJoints=limbJoints, topFingerJoints=topFngJoints, clavicleJoint=clavicleJnt,
-                            scapulaJnt=scapulaJoint,
-                            baseRig=self.baseModule, useMetacarpalJoint=useMetacarpalJoint)
+    def make_limb(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        spine_rig: spine.Spine,
+        clavicle_joint: str,
+        scapula_joint: str,
+        limb_joints: Sequence[str],
+        top_finger_joints: Sequence[str],
+        spine_driver_joint: str = '',
+        use_metacarpal_joint: bool = False,
+    ) -> limb.Limb:
+        """Create an arm or leg rig and attach it to the provided spine module."""
+        limb_rig = limb.Limb(
+            limb_joints=limb_joints,
+            top_finger_joints=top_finger_joints,
+            clavicle_joint=clavicle_joint,
+            scapula_joint=scapula_joint,
+            base_rig=self.base_module,
+            use_metacarpal_joint=use_metacarpal_joint,
+        )
 
-        if clavicleJnt:
-            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
-        elif scapulaJoint:
-            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
-        else:
-            pm.parentConstraint(spineDriverJoint, limbRig.getModuleDict()['baseAttachGrp'], mo=1)
+        if spine_driver_joint:
+            pm.parentConstraint(
+                spine_driver_joint,
+                limb_rig.getModuleDict()['baseAttachGrp'],
+                mo=1,
+            )
+        pm.parentConstraint(
+            spine_rig.getModuleDict()['bodyCtrl'].C,
+            limb_rig.getModuleDict()['bodyAttachGrp'],
+            mo=1,
+        )
 
-        pm.parentConstraint(spineRig.getModuleDict()['bodyCtrl'].C, limbRig.getModuleDict()['bodyAttachGrp'], mo=1)
-
-        return limbRig
+        return limb_rig
 
 
-class HumanoidRig(BaseRig):
-    """
-    Rig
-    """
+class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
+    """Concrete rig builder targeting humanoid character templates."""
 
-    def __init__(self, characterName='new',
-                 model_filePath='', buildScene_filePath='',
-                 sceneScale=1,
-                 rootJnt='rootJA_JNT',
-                 headJnt='headJA_JNT',
-                 loadSkinCluster=True,
-                 doProxyGeo=True,
-                 doSpine=True,
-                 doNeck=True,
-                 doTail=False, doDynamicTail=False,
-                 doStretchy=False,
-                 doFlexyplane=False,
-                 goToTPose=True
-                 ):
-        """
-        Create Base Rig
-        :param characterName: str
-        :param model_filePath: str
-        :param buildScene_filePath: str
-        :param sceneScale: float
-        :param rootJnt: str
-        :param headJnt: str
-        :param loadSkinCluster: bool
-        :param doProxyGeo: bool
-        :param doSpine: bool
-        :param doNeck: bool
-        :param doTail: bool
-        :param doDynamicTail: bool
-        :param goToTPose: bool
-        """
+    def __init__(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
+        self,
+        character_name: str = 'new',
+        model_file_path: str = '',
+        build_scene_file_path: str = '',
+        scene_scale: float = 1.0,
+        root_joint: str = 'rootJA_JNT',
+        head_joint: str = 'headJA_JNT',
+        load_skin_cluster: bool = True,
+        do_proxy_geo: bool = True,
+        do_spine: bool = True,
+        do_neck: bool = True,
+        do_tail: bool = False,
+        do_dynamic_tail: bool = False,
+        do_stretchy: bool = False,
+        do_flexyplane: bool = False,
+        go_to_t_pose: bool = True,
+    ) -> None:
+        self.root_joint = root_joint
+        self.head_joint = head_joint
+        self.do_spine = do_spine
+        self.do_neck = do_neck
+        self.do_tail = do_tail
+        self.do_dynamic_tail = do_dynamic_tail
+        self.do_stretchy = do_stretchy
+        self.do_flexyplane = do_flexyplane
+        self.go_to_t_pose = go_to_t_pose
+        self.scene_scale = scene_scale
+        self.rootJnt = self.root_joint  # pylint: disable=invalid-name
+        self.headJnt = self.head_joint  # pylint: disable=invalid-name
+        self.doSpine = self.do_spine  # pylint: disable=invalid-name
+        self.doNeck = self.do_neck  # pylint: disable=invalid-name
+        self.doTail = self.do_tail  # pylint: disable=invalid-name
+        self.doDynamicTail = self.do_dynamic_tail  # pylint: disable=invalid-name
+        self.doStretchy = self.do_stretchy  # pylint: disable=invalid-name
+        self.doFlexyplane = self.do_flexyplane  # pylint: disable=invalid-name
+        self.sceneScale = self.scene_scale  # pylint: disable=invalid-name
+        self.goToTPose = self.go_to_t_pose  # pylint: disable=invalid-name
 
-        self.rootJnt = rootJnt
-        self.headJnt = headJnt
+        super().__init__(
+            character_name=character_name,
+            model_file_path=model_file_path,
+            build_scene_file_path=build_scene_file_path,
+            root_joint=root_joint,
+            head_joint=head_joint,
+            load_skin_cluster=load_skin_cluster,
+            do_proxy_geo=do_proxy_geo,
+            go_to_t_pose=go_to_t_pose,
+        )
 
-        self.doSpine = doSpine
-        self.doNeck = doNeck
-        self.doTail = doTail
-        self.doDynamicTail = doDynamicTail
-        self.doStretchy = doStretchy
-        self.doFlexyplane = doFlexyplane
-        self.goToTPose = goToTPose
-
-        self.sceneScale = sceneScale
-
-        super(HumanoidRig, self).__init__(characterName, model_filePath, buildScene_filePath, rootJnt, headJnt,
-                                          loadSkinCluster, doProxyGeo, goToTPose=goToTPose)
-
-    def rig(self):
+    def rig(self) -> None:  # pylint: disable=too-many-locals
+        """Build the humanoid rig by instantiating spine, limbs, and accessories."""
         print('-- RIG HUMANOID --')
 
-        if self.goToTPose:
-            joint.loadTPose(self.rootJnt)
+        if self.go_to_t_pose:
+            joint.loadTPose(self.root_joint)
 
-        if self.doSpine:
-            spineJoints = pm.ls('spineJ?_JNT')
-            self.spineRig = self.makeSpine(self.rootJnt, spineJoints, self.sceneScale)
+        spine_joints = []
+        if self.do_spine:
+            spine_joints = pm.ls('spineJ?_JNT')
+            self.spine_rig = self.make_spine(
+                prefix='spine',
+                root_joint=self.root_joint,
+                spine_joints=spine_joints,
+                scene_scale=self.scene_scale,
+            )
+            self.spineRig = self.spine_rig  # pylint: disable=invalid-name
 
-        if self.doNeck:
-            neckJoints = pm.ls('neckJ?_JNT')
-            self.neckRig = self.makeNeck(self.headJnt, neckJoints, self.sceneScale, self.spineRig)
+        if self.do_neck:
+            neck_joints = pm.ls('neckJ?_JNT')
+            self.neck_rig = self.make_neck(
+                prefix='neck',
+                head_joint=self.head_joint,
+                neck_joints=neck_joints,
+                scene_scale=self.scene_scale,
+                spine_rig=getattr(self, 'spine_rig', None),
+                spine_joints=spine_joints,
+            )
+            self.neckRig = self.neck_rig  # pylint: disable=invalid-name
 
-        if self.doSpine and self.doNeck:
-            pm.parentConstraint(spineJoints[-1], self.neckRig.getModuleDict()['baseAttachGrp'], mo=1)
-            pm.parentConstraint(self.spineRig.getModuleDict()['bodyCtrl'].C,
-                                self.neckRig.getModuleDict()['bodyAttachGrp'], mo=1)
+        if self.do_tail:
+            tail_joints = pm.ls('tail*_JNT')
+            pelvis_joint = pm.ls(self.root_joint)[0]
+            self.tail_rig = self.make_tail(
+                pelvis_joint,
+                tail_joints,
+                self.do_dynamic_tail,
+                self.scene_scale,
+            )
+            self.tailRig = self.tail_rig  # pylint: disable=invalid-name
+        else:
+            pelvis_joint = None
 
-        if self.doTail:
-            tailJoints = pm.ls('tail*_JNT')
-            pelvisJnt = pm.ls(self.rootJnt)[0]
-            self.tailRig = self.makeTail(pelvisJnt, tailJoints, self.doDynamicTail, self.sceneScale)
+        if getattr(self, 'spine_rig', None) and spine_joints:
+            spine_module = self.spine_rig.getModuleDict()
+            spine_driver = spine_joints[-1]
+        else:
+            spine_module = None
+            spine_driver = ''
 
-        # left arm
-        lClavicleJoint = pm.ls('l_clavicleJA_JNT')[0]
-        lScapulaJoint = ''
-        lArmJoints = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
-        lTopFngJoints = pm.ls('l_fngThumbJA_JNT', 'l_fngIndexJA_JNT', 'l_fngMiddleJA_JNT', 'l_fngRingJA_JNT',
-                              'l_fngPinkyJA_JNT')
-        self.lArmRig = self.makeLimb(self.spineRig, lClavicleJoint, lScapulaJoint, lArmJoints, lTopFngJoints,
-                                     spineJoints[-1])
+        if getattr(self, 'neck_rig', None) and spine_module:
+            pm.parentConstraint(
+                spine_driver,
+                self.neck_rig.getModuleDict()['baseAttachGrp'],
+                mo=1,
+            )
+            pm.parentConstraint(
+                spine_module['bodyCtrl'].C,
+                self.neck_rig.getModuleDict()['bodyAttachGrp'],
+                mo=1,
+            )
 
-        # right arm
-        rClavicleJoint = pm.ls('r_clavicleJA_JNT')[0]
-        rScapulaJoint = ''
-        rArmJoints = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
-        rTopFngJoints = pm.ls('r_fngThumbJA_JNT', 'r_fngIndexJA_JNT', 'r_fngMiddleJA_JNT', 'r_fngRingJA_JNT',
-                              'r_fngPinkyJA_JNT')
-        self.rArmRig = self.makeLimb(self.spineRig, rClavicleJoint, rScapulaJoint, rArmJoints, rTopFngJoints,
-                                     spineJoints[-1])
+        if getattr(self, 'tail_rig', None) and spine_module and pelvis_joint:
+            pm.parentConstraint(
+                pelvis_joint,
+                self.tail_rig.getModuleDict()['baseAttachGrp'],
+                mo=1,
+            )
 
-        # left leg
-        lLegJoints = pm.ls('l_legJ?_JNT', 'l_footJA_JNT')
-        lTopToeJoints = pm.ls('l_toeThumbJA_JNT', 'l_toeIndexJA_JNT', 'l_toeMiddleJA_JNT', 'l_toeRingJA_JNT',
-                              'l_toePinkyJA_JNT')
-        self.lLegRig = self.makeLimb(self.spineRig, '', '', lLegJoints, lTopToeJoints, spineJoints[0])
+        if getattr(self, 'spine_rig', None):
+            hip_joint = spine_joints[0] if spine_joints else ''
+            self.l_arm_rig = self.make_limb(
+                self.spine_rig,
+                pm.ls('l_clavicleJA_JNT')[0],
+                '',
+                pm.ls('l_armJ?_JNT', 'l_handJA_JNT'),
+                pm.ls(
+                    'l_fngThumbJA_JNT',
+                    'l_fngIndexJA_JNT',
+                    'l_fngMiddleJA_JNT',
+                    'l_fngRingJA_JNT',
+                    'l_fngPinkyJA_JNT',
+                ),
+                spine_driver,
+            )
+            self.lArmRig = self.l_arm_rig  # pylint: disable=invalid-name
+            self.r_arm_rig = self.make_limb(
+                self.spine_rig,
+                pm.ls('r_clavicleJA_JNT')[0],
+                '',
+                pm.ls('r_armJ?_JNT', 'r_handJA_JNT'),
+                pm.ls(
+                    'r_fngThumbJA_JNT',
+                    'r_fngIndexJA_JNT',
+                    'r_fngMiddleJA_JNT',
+                    'r_fngRingJA_JNT',
+                    'r_fngPinkyJA_JNT',
+                ),
+                spine_driver,
+            )
+            self.rArmRig = self.r_arm_rig  # pylint: disable=invalid-name
+            self.l_leg_rig = self.make_limb(
+                self.spine_rig,
+                '',
+                '',
+                pm.ls('l_legJ?_JNT', 'l_footJA_JNT'),
+                pm.ls(
+                    'l_toeThumbJA_JNT',
+                    'l_toeIndexJA_JNT',
+                    'l_toeMiddleJA_JNT',
+                    'l_toeRingJA_JNT',
+                    'l_toePinkyJA_JNT',
+                ),
+                hip_joint,
+            )
+            self.lLegRig = self.l_leg_rig  # pylint: disable=invalid-name
+            self.r_leg_rig = self.make_limb(
+                self.spine_rig,
+                '',
+                '',
+                pm.ls('r_legJ?_JNT', 'r_footJA_JNT'),
+                pm.ls(
+                    'r_toeThumbJA_JNT',
+                    'r_toeIndexJA_JNT',
+                    'r_toeMiddleJA_JNT',
+                    'r_toeRingJA_JNT',
+                    'r_toePinkyJA_JNT',
+                ),
+                hip_joint,
+            )
+            self.rLegRig = self.r_leg_rig  # pylint: disable=invalid-name
 
-        # right leg
-        rLegJoints = pm.ls('r_legJ?_JNT', 'r_footJA_JNT')
-        rTopToeJoints = pm.ls('r_toeThumbJA_JNT', 'r_toeIndexJA_JNT', 'r_toeMiddleJA_JNT', 'r_toeRingJA_JNT',
-                              'r_toePinkyJA_JNT')
-        self.rLegRig = self.makeLimb(self.spineRig, '', '', rLegJoints, rTopToeJoints, spineJoints[0])
+        if self.do_stretchy:
+            stretchy_ik_chain.StretchyIKChain(
+                self.l_arm_rig.getMainLimbIK(),
+                self.l_arm_rig.getMainIKControl().getControl(),
+                doFlexyplane=self.do_flexyplane,
+            )
+            stretchy_ik_chain.StretchyIKChain(
+                self.r_arm_rig.getMainLimbIK(),
+                self.r_arm_rig.getMainIKControl().getControl(),
+                doFlexyplane=self.do_flexyplane,
+            )
+            stretchy_ik_chain.StretchyIKChain(
+                self.l_leg_rig.getMainLimbIK(),
+                self.l_leg_rig.getMainIKControl().getControl(),
+                doFlexyplane=self.do_flexyplane,
+            )
+            stretchy_ik_chain.StretchyIKChain(
+                self.r_leg_rig.getMainLimbIK(),
+                self.r_leg_rig.getMainIKControl().getControl(),
+                doFlexyplane=self.do_flexyplane,
+            )
 
-        if self.doStretchy:
-            stretchyIKChain.StretchyIKChain(self.lArmRig.getMainLimbIK(), self.lArmRig.getMainIKControl().getControl(),
-                                            doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.rArmRig.getMainLimbIK(), self.rArmRig.getMainIKControl().getControl(),
-                                            doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.lLegRig.getMainLimbIK(), self.lLegRig.getMainIKControl().getControl(),
-                                            doFlexyplane=self.doFlexyplane)
-            stretchyIKChain.StretchyIKChain(self.rLegRig.getMainLimbIK(), self.rLegRig.getMainIKControl().getControl(),
-                                            doFlexyplane=self.doFlexyplane)
-
-        # install IKFK Switch
-        ikfkSwitch.installIKFK(
-            [self.lArmRig.getMainLimbIK(), self.rArmRig.getMainLimbIK(), self.lLegRig.getMainLimbIK(),
-             self.rLegRig.getMainLimbIK()])
+        ikfk_switch.installIKFK(
+            [
+                self.l_arm_rig.getMainLimbIK(),
+                self.r_arm_rig.getMainLimbIK(),
+                self.l_leg_rig.getMainLimbIK(),
+                self.r_leg_rig.getMainLimbIK(),
+            ]
+        )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     pass

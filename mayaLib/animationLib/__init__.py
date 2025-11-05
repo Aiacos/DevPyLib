@@ -1,3 +1,7 @@
-from . import bvh_importer
+"""Animation utilities and importers.
 
-__all__ = ["bvh_importer"]
+Provides tools for animation workflows including BVH import
+and animation data management.
+"""
+
+from . import bvh_importer

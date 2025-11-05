@@ -33,8 +33,8 @@ def main():
     except subprocess.CalledProcessError as e:
         print(f"Error running texture_tools.py: {e}")
         sys.exit(e.returncode)
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+    except (OSError, FileNotFoundError) as e:
+        print(f"Error accessing texture_tools.py: {e}")
         sys.exit(1)
 
 

@@ -1,3 +1,7 @@
-from . import usd
+"""USD (Universal Scene Description) utilities.
 
-__all__ = ["usd"]
+Provides tools for working with USD stages, layers, and
+Maya USD integration.
+"""
+
+from . import usd

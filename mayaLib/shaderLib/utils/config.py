@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Shader configuration and settings.
+
+Provides configuration constants and settings for shader creation
+workflows.
+"""
+
 diffuse = 'Diffuse'
 backlight = 'Backlight'
 specularColor = 'Specular'

@@ -23,6 +23,13 @@
 # </license>
 
 __author__ = "Jeroen Hoolmans"
+
+"""BVH motion capture file importer.
+
+Provides utilities for importing BVH motion capture data
+onto Maya skeletons.
+"""
+
 __copyright__ = "Copyright 2012, Jeroen Hoolmans"
 __credits__ = ["Jeroen Hoolmans"]
 __license__ = "GPL"
@@ -52,18 +59,18 @@ class TinyDAG(object):
     # Small helper class to keep track of parents
     """
 
-    def __init__(self, obj, pObj=None):
+    def __init__(self, obj, p_obj=None):
         self.obj = obj
-        self.pObj = pObj
+        self.pObj = p_obj
 
     def __str__(self):
         # returns object name
         return str(self.obj)
 
-    def _fullPath(self):
+    def _full_path(self):
         # returns full object path
         if self.pObj is not None:
-            return "%s|%s" % (self.pObj._fullPath(), self.__str__())
+            return "%s|%s" % (self.pObj._full_path(), self.__str__())
         return str(self.obj)
 
 
@@ -232,7 +239,7 @@ class BVHImporterDialog(object):
                         if myParent is not None:
                             myParent = myParent.pObj
                             if myParent is not None:
-                                mc.select(myParent._fullPath())
+                                mc.select(myParent._full_path())
 
                     if "CHANNELS" in line:
                         chan = line.strip().split(" ")
@@ -241,7 +248,7 @@ class BVHImporterDialog(object):
 
                         # Append the channels that are animated
                         for i in range(int(chan[1])):
-                            self._channels.append("%s.%s" % (myParent._fullPath(), translationDict[chan[2 + i]]))
+                            self._channels.append("%s.%s" % (myParent._full_path(), translationDict[chan[2 + i]]))
 
                     if "OFFSET" in line:
                         offset = line.strip().split(" ")
@@ -254,8 +261,8 @@ class BVHImporterDialog(object):
                             jntName += "_tip"
 
                         # skip if exists
-                        if mc.objExists(myParent._fullPath()):
-                            jnt = pm.PyNode(myParent._fullPath())
+                        if mc.objExists(myParent._full_path()):
+                            jnt = pm.PyNode(myParent._full_path())
                             jnt.rotateOrder.set(rotOrder)
                             jnt.translate.set([float(offset[1]), float(offset[2]), float(offset[3])])
                             continue
@@ -271,7 +278,7 @@ class BVHImporterDialog(object):
 
                     if self._debug:
                         if myParent is not None:
-                            print(("parent: %s" % myParent._fullPath()))
+                            print(("parent: %s" % myParent._full_path()))
 
                 else:
                     # We don't really need to use Framecount and time(since Python handles file reads nicely)

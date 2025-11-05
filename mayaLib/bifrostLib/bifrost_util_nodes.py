@@ -1,3 +1,9 @@
+"""Bifrost utility node creation functions.
+
+Provides functions for creating common Bifrost utility nodes
+and graph components.
+"""
+
 import importlib as imp
 from contextlib import suppress
 

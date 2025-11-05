@@ -1,10 +1,15 @@
 __author__ = "Lorenzo Argentieri"
 
+"""Explosion fluid effect preset.
+
+Provides the Explosion class for creating explosion simulations with
+rapid expansion and dissipation properties.
+"""
 import pymel.core as pm
 
-from mayaLib.fluidLib.base.baseFluid import BaseFluid
-from mayaLib.fluidLib.utility import densityColor
-from mayaLib.fluidLib.utility import mathFunction
+from mayaLib.fluidLib.base.base_fluid import BaseFluid
+from mayaLib.fluidLib.base.ramp_utils import setup_repart_opacity_ramp
+from mayaLib.fluidLib.utility import density_color
 
 
 class Explosion(BaseFluid):
@@ -12,25 +17,25 @@ class Explosion(BaseFluid):
     Explosion Preset
     """
 
-    def __init__(self, fluidName="", baseRes=32, emitObj=None):
+    def __init__(self, fluid_name="", base_res=32, emit_obj=None):
         """
         Constructor for the Explosion class.
 
         Args:
-            fluidName (str): The name of the fluid.
-            baseRes (int): The base resolution of the fluid.
-            emitObj (str): The name of the emitter object.
+            fluid_name (str): The name of the fluid.
+            base_res (int): The base resolution of the fluid.
+            emit_obj (str): The name of the emitter object.
         """
-        BaseFluid.__init__(self, fluidName=fluidName, baseRes=baseRes, emitObj=emitObj)
-        self.fluidContainer = BaseFluid.getFluidShape(self)
-        self.fluidEmitter = BaseFluid.getFluidEmitter(self)
+        BaseFluid.__init__(self, fluid_name=fluid_name, base_res=base_res, emit_obj=emit_obj)
+        self.fluidContainer = BaseFluid.get_fluid_shape(self)
+        self.fluidEmitter = BaseFluid.get_fluid_emitter(self)
 
         # Update Emitter Type
-        if emitObj is None:
+        if emit_obj is None:
             self.fluidEmitter.emitterType.set(4)
             self.fluidEmitter.volumeShape.set(1)
 
-        self.setEmitter()
+        self.set_emitter()
 
         # Update Dynamic Simulation
         self.fluidContainer.velocityDamp.set(0.025)
@@ -41,23 +46,23 @@ class Explosion(BaseFluid):
         self.fluidContainer.fuelMethod.set(2)
 
         # Parameter
-        self.setDensity()
-        self.setVelocity()
-        self.setTurbolence()
-        self.setTemperature()
-        self.setFuel()
+        self.set_density()
+        self.set_velocity()
+        self.set_turbulence()
+        self.set_temperature()
+        self.set_fuel()
 
         # Shading
-        self.setShading()
+        self.set_shading()
 
         pm.select(self.fluidContainer)
 
-    def setEmitter(self, startFrame=1):
+    def set_emitter(self, start_frame=1):
         """
         Set the emitter properties for the explosion.
 
         Args:
-            startFrame (int): The start frame of the emitter.
+            start_frame (int): The start frame of the emitter.
         """
         pm.setKeyframe(self.fluidEmitter, attribute="fluidDensityEmission", time=1, value=8)
         pm.setKeyframe(self.fluidEmitter, attribute="fluidDensityEmission", time=6, value=0)
@@ -69,7 +74,7 @@ class Explosion(BaseFluid):
         self.fluidEmitter.turbulenceSpeed.set(0.25)
         self.fluidEmitter.detailTurbulence.set(1)
 
-    def setDensity(self):
+    def set_density(self):
         """
         Set the density properties for the explosion.
         """
@@ -80,7 +85,7 @@ class Explosion(BaseFluid):
         self.fluidContainer.densityNoise.set(0.1)
         self.fluidContainer.densityGradientForce.set(35)
 
-    def setVelocity(self):
+    def set_velocity(self):
         """
         Set the velocity properties for the explosion.
         """
@@ -90,9 +95,9 @@ class Explosion(BaseFluid):
         pm.setKeyframe(self.fluidContainer, attribute='velocitySwirl', time=50, value=2.5)
         self.fluidContainer.velocityNoise.set(1)
 
-    def setTurbolence(self):
+    def set_turbulence(self):
         """
-        Set the turbolence properties for the explosion.
+        Set the turbulence properties for the explosion.
         """
         # self.fluidContainer.turbulenceStrength.set(3.5) # al frame 1
         pm.setKeyframe(self.fluidContainer, attribute='turbulenceStrength', time=1, value=3.5)
@@ -101,7 +106,7 @@ class Explosion(BaseFluid):
         self.fluidContainer.turbulenceFrequency.set(0.5)
         self.fluidContainer.turbulenceSpeed.set(0.5)
 
-    def setTemperature(self):
+    def set_temperature(self):
         """
         Set the temperature properties for the explosion.
         """
@@ -126,7 +131,7 @@ class Explosion(BaseFluid):
         self.fluidContainer.temperatureNoise.set(0.35)
         self.fluidContainer.temperatureTension.set(1)
 
-    def setFuel(self):
+    def set_fuel(self):
         """
         Set the fuel properties for the explosion.
         """
@@ -138,7 +143,7 @@ class Explosion(BaseFluid):
         self.fluidContainer.heatReleased.set(2.5)
         self.fluidContainer.lightReleased.set(1)
 
-    def setShading(self):
+    def set_shading(self):
         """
         Set the shading properties for the explosion.
         """
@@ -146,7 +151,7 @@ class Explosion(BaseFluid):
         self.fluidContainer.glowIntensity.set(0.075)
 
         # Density Color
-        dr, dg, db = densityColor.explosionSmokeColor()
+        dr, dg, db = density_color.explosion_smoke_color()
         self.fluidContainer.color[0].color_Color.set(dr, dg, db, type="double3")
         self.fluidContainer.colorInput.set(5)
 
@@ -175,26 +180,8 @@ class Explosion(BaseFluid):
 
         # Opacity
         self.fluidContainer.opacityInput.set(5)  # density
-        self.opacityGraph()
+        setup_repart_opacity_ramp(self.fluidContainer, sampling=20, curve_parameter=15.0)
         self.fluidContainer.opacityInputBias.set(0.65)
-
-    def opacityGraph(self, sampling=20):
-        """
-        Create a opacity graph for the explosion with a "repart" function
-
-        The "repart" function is a simple curve that starts at 0, goes to 1 and
-        then comes back to 0. It is used to create a nice opacity curve for the
-        explosion
-
-        Args:
-            sampling (int): The number of points to sample in the opacity graph
-        """
-        step = int(100 / sampling)
-        for i in [round(x * 0.01, 4) for x in range(0, 100 + 1, step)]:
-            y = mathFunction.repart_function(i, l=15)
-            self.fluidContainer.opacity[int(i * sampling)].opacity_Position.set(i)
-            self.fluidContainer.opacity[int(i * sampling)].opacity_FloatValue.set(y)
-            self.fluidContainer.opacity[int(i * sampling)].opacity_Interp.set(1)
 
 
 if __name__ == "__main__":

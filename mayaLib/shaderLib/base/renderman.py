@@ -8,10 +8,10 @@ and connects the textures to the shader.
 
 from pymel import core as pm
 
-from mayaLib.shaderLib.base.shader_base import Shader_base
+from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
-class PxrDisneyBSDF(Shader_base):
+class PxrDisneyBSDF(ShaderBase):
     """
     Create PxrDisneyBSDF shader
 

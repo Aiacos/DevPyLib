@@ -1,220 +1,239 @@
-"""
-module for making rig controls 
-"""
+"""Factory helpers for constructing rig controls."""
+
+from __future__ import annotations
 
 import pymel.core as pm
 
-import mayaLib.pipelineLib.utility.nameCheck as nc
+from mayaLib.pipelineLib.utility import name_check as nc
 from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import ctrlShape
+from mayaLib.rigLib.utils import ctrl_shape as ctrl_shape_lib
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements
+# pylint: disable=too-many-instance-attributes
 
 
-class Control():
-    """
-    class for building rig control
-    """
+class Control:
+    """Build rig controls with optional offset/modify groups."""
 
     def __init__(
             self,
             prefix='new',
             scale=1.0,
-            translateTo='',
-            rotateTo='',
+            translate_to='',
+            rotate_to='',
             parent='',
             shape='circle',
-            lockChannels=['s', 'v'],
-            doOffset=True,
-            doModify=False,
-            doDynamicPivot=False,
+            lock_channels=None,
+            do_offset=True,
+            do_modify=False,
+            do_dynamic_pivot=False,
     ):
+        """Initialise the control, offset, and modify hierarchy.
 
-        """
-        class for building rig control
-        :param prefix: str, prefix to name new objects
-        :param scale: float, scale value for size of control shapes
-        :param translateTo: str, reference object for control position
-        :param rotateTo: str, reference object for control orientation
-        :param parent: str, object to be parent of new control
-        :param shape: str, control shape type (normal direction)
-        :param lockChannels: list( str ), list of channels on control to be locked and non-keyable
-        :param objBBox: str, object to calculate ctrl scale
-        :param autoBBox: bool, auto find scale value from Proxy Geo if exist
-        :return: None
+        Args:
+            prefix: Prefix for new node names.
+            scale: Uniform scale for control shapes.
+            translate_to: Reference object for positioning.
+            rotate_to: Reference object for orientation.
+            parent: Optional parent for the control hierarchy.
+            shape: Control shape type.
+            lock_channels: Channels to lock/non-keyable.
+            do_offset: Whether to create an offset group.
+            do_modify: Whether to create a modify group.
+            do_dynamic_pivot: Whether to add a dynamic pivot locator.
         """
 
         # name handle
         if '*' in prefix:
-            prefix = nc.nameCheck(prefix + '_CTRL').split('_')[0]
+            prefix = nc.name_check(prefix + '_CTRL').split('_')[0]
 
-        ctrlObject = None
-        circleNormal = [1, 0, 0]
+        lock_channels = lock_channels or ['s', 'v']
+        ctrl_object = None
+        circle_normal = [1, 0, 0]
 
-        # custom shape
-        if shape in ['circle', 'circleX']:
-            circleNormal = [1, 0, 0]
+        if shape in {'circle', 'circleX'}:
+            circle_normal = [1, 0, 0]
 
         elif shape == 'circleY':
-            circleNormal = [0, 1, 0]
+            circle_normal = [0, 1, 0]
 
         elif shape == 'circleZ':
-            circleNormal = [0, 0, 1]
+            circle_normal = [0, 0, 1]
 
         elif shape == 'sphere':
-            ctrlObject = ctrlShape.sphereCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.sphereCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'move':
-            ctrlObject = ctrlShape.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.moveCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'spine':
-            ctrlObject = ctrlShape.trapeziumCtrlShape(name=prefix + '_CTRL', scale=scale)
-            ctrlObject.translateY.set(3 * scale)
-            common.freezeTranform(ctrlObject)
+            ctrl_object = ctrl_shape_lib.trapeziumCtrlShape(
+                name=f'{prefix}_CTRL', scale=scale
+            )
+            ctrl_object.translateY.set(3 * scale)
+            common.freeze_transform(ctrl_object)
 
         elif shape == 'chest':
-            ctrlObject = ctrlShape.chestCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.chestCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'hip':
-            ctrlObject = ctrlShape.hipCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.hipCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'head':
-            ctrlObject = ctrlShape.headCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.headCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'display':
-            ctrlObject = ctrlShape.displayCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.displayCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         elif shape == 'ikfk':
-            ctrlObject = ctrlShape.ikfkCtrlShape(name=prefix + '_CTRL', scale=scale)
+            ctrl_object = ctrl_shape_lib.ikfkCtrlShape(name=prefix + '_CTRL', scale=scale)
 
         # default ctrl
-        if not ctrlObject:
-            ctrlObject = pm.circle(n=prefix + '_CTRL', ch=False, normal=circleNormal, radius=scale)[0]
+        if not ctrl_object:
+            ctrl_object = pm.circle(
+                n=f'{prefix}_CTRL', ch=False, normal=circle_normal, radius=scale
+            )[0]
 
-        if doModify:
-            ctrlModify = pm.group(n=prefix + 'Modify_GRP', em=1)
-            pm.parent(ctrlObject, ctrlModify)
+        if do_modify:
+            ctrl_modify = pm.group(n=f'{prefix}Modify_GRP', em=1)
+            pm.parent(ctrl_object, ctrl_modify)
 
-        if doOffset:
-            ctrlOffset = pm.group(n=prefix + 'Offset_GRP', em=1)
-            if doModify:
-                pm.parent(ctrlModify, ctrlOffset)
+        if do_offset:
+            ctrl_offset = pm.group(n=f'{prefix}Offset_GRP', em=1)
+            if do_modify:
+                pm.parent(ctrl_modify, ctrl_offset)
             else:
-                pm.parent(ctrlObject, ctrlOffset)
+                pm.parent(ctrl_object, ctrl_offset)
 
         # color control
-        ctrlShapes = ctrlObject.getShapes()
-        for ctrl_shape in ctrlShapes:
+        ctrl_shapes = ctrl_object.getShapes()
+        for ctrl_shape in ctrl_shapes:
             ctrl_shape.ove.set(1)
 
-            if prefix.startswith('l_'):
-                ctrl_shape.ovc.set(6)
-
-            elif prefix.startswith('r_'):
-                ctrl_shape.ovc.set(13)
-
-            else:
-                ctrl_shape.ovc.set(22)
+            colour = (
+                6
+                if prefix.startswith('l_')
+                else 13 if prefix.startswith('r_') else 22
+            )
+            ctrl_shape.ovc.set(colour)
 
         # translate control
-        if translateTo is not None and translateTo != '':
-            if pm.objExists(translateTo):
-                pm.delete(pm.pointConstraint(translateTo, ctrlOffset))
+        if translate_to is not None and translate_to != '':
+            if pm.objExists(translate_to):
+                pm.delete(pm.pointConstraint(translate_to, ctrl_offset))
 
         # rotate control
-        if rotateTo is not None and rotateTo != '':
-            if pm.objExists(rotateTo):
-                pm.delete(pm.orientConstraint(rotateTo, ctrlOffset))
+        if rotate_to is not None and rotate_to != '':
+            if pm.objExists(rotate_to):
+                pm.delete(pm.orientConstraint(rotate_to, ctrl_offset))
 
         # lock control channels
-        singleAttributeLockList = []
-
-        for lockChannel in lockChannels:
-
-            if lockChannel in ['t', 'r', 's']:
-
-                for axis in ['x', 'y', 'z']:
-                    at = lockChannel + axis
-                    singleAttributeLockList.append(at)
-
+        locked = []
+        for lock_channel in lock_channels:
+            if lock_channel in {'t', 'r', 's'}:
+                locked.extend(f'{lock_channel}{axis}' for axis in 'xyz')
             else:
-                singleAttributeLockList.append(lockChannel)
+                locked.append(lock_channel)
 
-        for at in singleAttributeLockList:
-            pm.setAttr(ctrlObject + '.' + at, l=1, k=0)
+        for attr in locked:
+            pm.setAttr(f"{ctrl_object}.{attr}", l=True, k=False)
 
         # add public members
         self.scale = scale
-        self.C = ctrlObject
-        self.Modify = None
-        self.Off = None
+        self.control = ctrl_object
+        self.modify_grp = None
+        self.off_grp = None
 
-        if doOffset:
-            self.Off = ctrlOffset
-        if doModify:
-            self.Modify = ctrlModify
+        self.off_grp = ctrl_offset if do_offset else None
+        self.modify_grp = ctrl_modify if do_modify else None
 
-        # parent control
-        if parent is not None and parent != '':
-            if pm.objExists(parent):
-                pm.parent(self.getTop(), parent)
+        if parent and pm.objExists(parent):
+            pm.parent(self.get_top(), parent)
 
-        self.dynamicPivot = None
-        if doDynamicPivot:
-            self.dynamicPivot = self.makeDynamicPivot(prefix, scale, translateTo, rotateTo)
+        self.dynamic_pivot = None
+        if do_dynamic_pivot:
+            self.dynamic_pivot = self.make_dynamic_pivot(
+                prefix, scale, translate_to, rotate_to
+            )
 
-    def getCtrlScale(self):
+        # Legacy attributes
+        # Legacy attributes (CamelCase preserved for backward compatibility).
+        self.C = self.control  # pylint: disable=invalid-name
+        self.Modify = self.modify_grp  # pylint: disable=invalid-name
+        self.Off = self.off_grp  # pylint: disable=invalid-name
+        self.dynamicPivot = self.dynamic_pivot  # pylint: disable=invalid-name
+
+    def get_ctrl_scale(self):
+        """Return the scale used when the control was created."""
         return self.scale
 
-    def makeDynamicPivot(self, prefix, scale, translateTo, rotateTo):
-        pivotCtrl = Control(prefix=prefix + 'Pivot', scale=scale / 5, translateTo=translateTo, rotateTo=rotateTo,
-                            parent=self.C,
-                            shape='sphere', doOffset=True, doDynamicPivot=False)
-        pm.connectAttr(pivotCtrl.getControl().translate, self.C.rotatePivot, f=True)
-        control = pm.group(n=prefix + 'Con_GRP', p=self.getControl(), em=True)
+    def make_dynamic_pivot(self, prefix, scale, translate_to, rotate_to):
+        """Create a dynamic pivot control constrained to this control."""
+        pivot_ctrl = Control(
+            prefix=f"{prefix}Pivot",
+            scale=scale / 5,
+            translate_to=translate_to,
+            rotate_to=rotate_to,
+            parent=self.control,
+            shape='sphere',
+            do_offset=True,
+            do_dynamic_pivot=False,
+        )
+        pm.connectAttr(
+            pivot_ctrl.get_control().translate,
+            self.control.rotatePivot,
+            f=True,
+        )
+        control = pm.group(
+            n=f"{prefix}Con_GRP", p=self.get_control(), em=True
+        )
 
         # add visibility Attribute on CTRL
-        pm.addAttr(self.C, ln='PivotVisibility', at='enum', enumName='off:on', k=1, dv=0)
-        pm.connectAttr(self.C.PivotVisibility, pivotCtrl.getOffsetGrp().visibility, f=True)
+        pm.addAttr(
+            self.control, ln='PivotVisibility', at='enum', enumName='off:on', k=1, dv=0
+        )
+        pm.connectAttr(
+            self.control.PivotVisibility,
+            pivot_ctrl.get_offset_grp().visibility,
+            f=True,
+        )
         control.visibility.set(0)
 
         return control
 
-    def getControl(self):
-        """
-        Return Control
-        :return:
-        """
+    def get_control(self):
+        """Return the active control node."""
+        if self.dynamic_pivot:
+            return self.dynamic_pivot
 
-        if self.dynamicPivot:
-            return self.dynamicPivot
+        return self.control
 
-        return self.C
+    def get_offset_grp(self):
+        """Return the optional offset group."""
+        return self.off_grp
 
-    def getOffsetGrp(self):
-        """
-        Return Offset Grp if exist or None
-        :return:
-        """
-        if self.Off:
-            return self.Off
-        return None
+    def get_modify_grp(self):
+        """Return the optional modify group."""
+        return self.modify_grp
 
-    def getModifyGrp(self):
-        """
-        Return Modify Grp if exist or None
-        :return:
-        """
-        if self.Modify:
-            return self.Modify
-        return None
+    def get_top(self):
+        """Return the top-most node in the control hierarchy."""
+        if self.off_grp:
+            return self.off_grp
+        if self.modify_grp:
+            return self.modify_grp
+        return self.control
 
-    def getTop(self):
-        """
-        Return control's top Grp or Control
-        :return:
-        """
-        if self.Off:
-            return self.Off
-        elif self.Modify:
-            return self.Modify
-        else:
-            return self.C
+
+# Legacy API compatibility
+Control.getCtrlScale = Control.get_ctrl_scale
+Control.makeDynamicPivot = Control.make_dynamic_pivot
+Control.getControl = Control.get_control
+Control.getOffsetGrp = Control.get_offset_grp
+Control.getModifyGrp = Control.get_modify_grp
+Control.getTop = Control.get_top
+
+
+if __name__ == "__main__":
+    raise SystemExit('Invoke within Maya to construct controls.')

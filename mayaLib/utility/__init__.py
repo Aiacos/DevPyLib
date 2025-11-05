@@ -1,3 +1,3 @@
-from . import bSkinSaver
+"""Utility helpers that back DevPyLib's Maya tooling."""
 
-__all__ = ["bSkinSaver"]
+from . import b_skin_saver

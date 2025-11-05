@@ -36,7 +36,7 @@ def add_sweep(cv_list, size=0.05):
     return destination_list
 
 
-def ctrl_paintEffect(cv_list):
+def ctrl_paint_effect(cv_list):
     """Paint effects to a list of curves.
 
     Args:
@@ -99,7 +99,7 @@ def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, 
     if sweep:
         add_sweep(ctrl_list)
     else:
-        ctrl_paintEffect(ctrl_list)
+        ctrl_paint_effect(ctrl_list)
 
         for cv in ctrl_list:
             cv_shape_list = cv.getShapes()
@@ -113,7 +113,7 @@ def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, 
 
                 try:
                     rgb_color = pm.colorIndex(cv.overrideColor.get(), q=True)
-                except Exception:
+                except (RuntimeError, TypeError):
                     if cv.getShape().overrideEnabled.get() == 0:
                         cv.getShape().overrideEnabled.set(1)
                         cv.getShape().ovc.set(1)

@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Maya menu creation utilities.
+
+Provides tools for creating and managing Maya menus with
+dynamic content.
+"""
+
 import maya
 import pymel.core as pm
 
@@ -53,7 +59,7 @@ class Menu():
         ret_parent = self.item[item_name]
         return ret_parent.rpartition('|')[-1]
 
-    def add_menuCheckBox(self, item_name, cmd, parent=None):
+    def add_menu_check_box(self, item_name, cmd, parent=None):
         """Bind function to menuItem
 
         Args:

@@ -1,3 +1,11 @@
+"""Deformer creation and weight painting utilities for Maya.
+
+Provides tools for creating and manipulating various Maya deformers including
+proximity wrap, blend shapes, shrink wrap, delta mush, wrap, soft mod, tension map,
+and cMuscle systems. Also includes utilities for painting deformer weights,
+inverting shapes, and managing deformer hierarchies.
+"""
+
 __author__ = "Lorenzo Argentieri"
 
 from pathlib import Path
@@ -8,15 +16,15 @@ import pymel.core as pm
 from maya import mel
 
 
-def remove_shapeDeformed():
+def remove_shape_deformed():
     """
     Remove the suffix "Deformed" from all deformed geometry shape nodes.
     """
     # Get all deformed geometry shape nodes
-    shapeDeformed_node_list = pm.ls("*ShapeDeformed", "*:*ShapeDeformed")
+    shape_deformed_node_list = pm.ls("*ShapeDeformed", "*:*ShapeDeformed")
 
     # Rename each shape node to remove the suffix
-    for shape in shapeDeformed_node_list:
+    for shape in shape_deformed_node_list:
         shape_old_name = str(shape.name())
         new_name = shape_old_name.replace("Deformed", "")
         pm.rename(shape, new_name)
@@ -39,7 +47,7 @@ def reorder_deformer(node, geo_list, search_type="skincluster"):
         pm.reorderDeformers(deformer_history_list[-1], node, geo)
 
 
-def paintDeformerWeights(channel, vtx_list, value, smoothIteration=1):
+def paint_deformer_weights(channel, vtx_list, value, smooth_iteration=1):
     """
     Paint deformer weights on selected vertices.
 
@@ -47,7 +55,7 @@ def paintDeformerWeights(channel, vtx_list, value, smoothIteration=1):
         channel (str): Channel to paint weights on.
         vtx_list (list): List of vertices to paint weights on.
         value (float): Value to set weights to.
-        smoothIteration (int): Number of iterations to smooth the weights. Defaults to 1.
+        smooth_iteration (int): Number of iterations to smooth the weights. Defaults to 1.
 
     Returns:
         None
@@ -68,7 +76,7 @@ def paintDeformerWeights(channel, vtx_list, value, smoothIteration=1):
     mel.eval("artAttrCtx -e -clear `currentCtx`;")
 
     # Smooth the weights
-    for i in range(0, smoothIteration):
+    for i in range(0, smooth_iteration):
         mel.eval("artAttrPaintOperation artAttrCtx Smooth;")
         mel.eval("artAttrCtx -e -clear `currentCtx`;")
 
@@ -140,16 +148,16 @@ class PaintDeformer(object):
         # Execute the MEL command to invert the current selection
         mel.eval("invertSelection;")
 
-    def grow_selection(self, growSelection):
+    def grow_selection(self, grow_selection):
         """Expand the current selection in the scene.
 
         This method grows the current selection by traversing
         the mesh components a specified number of times.
 
         Args:
-            growSelection (int): Number of times to grow the selection.
+            grow_selection (int): Number of times to grow the selection.
         """
-        for _ in range(growSelection):
+        for _ in range(grow_selection):
             # Traverse and expand the current selection by one level
             mel.eval("select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;")
 
@@ -172,16 +180,16 @@ class PaintDeformer(object):
         mel.eval("artAttrPaintOperation artAttrCtx Replace;")
         mel.eval("artAttrCtx -e -clear `currentCtx`;")
 
-    def smooth(self, smoothIteration=1):
+    def smooth(self, smooth_iteration=1):
         """Smooths the weights of the selected vertices.
 
         Iterates the Maya paint tool's smooth operation a specified number of
         times to smooth the weights of the selected vertices.
 
         Args:
-            smoothIteration (int): Number of times to smooth the weights.
+            smooth_iteration (int): Number of times to smooth the weights.
         """
-        for _ in range(0, smoothIteration):
+        for _ in range(0, smooth_iteration):
             # Smooth the weights of the selected vertices
             mel.eval("artAttrPaintOperation artAttrCtx Smooth;")
             # Clear the current painting context
@@ -234,7 +242,7 @@ def add_meshes_to_wrap(obj_list, wrap_target):
         pm.select(cl=True)
 
 
-def createProximityWrap(source, target_list):
+def create_proximity_wrap(source, target_list):
     """
     Creates a proximity with the given source and target transforms.
 
@@ -262,43 +270,44 @@ def createProximityWrap(source, target_list):
     return deformer
 
 
-def blendShapeDeformer(
+def blend_shape_deformer(
     base,
-    blendshapeList,
-    nodeName,
-    defaultValue=[
-        1,
-    ],
-    frontOfChain=False,
+    blendshape_list,
+    node_name,
+    default_value=None,
+    front_of_chain=False,
 ):
     """
     Create a blendshape deformer using the given parameters.
 
     Args:
         base: The base object.
-        blendshapeList: A list of targets to add to the blendshape.
-        nodeName: The name of the blendshape deformer to create.
-        defaultValue: The default weight values for the targets.
-        frontOfChain: Whether to add the deformer to the front of the chain.
+        blendshape_list: A list of targets to add to the blendshape.
+        node_name: The name of the blendshape deformer to create.
+        default_value: The default weight values for the targets.
+        front_of_chain: Whether to add the deformer to the front of the chain.
 
     Returns:
         The blendshape deformer created.
     """
+    if default_value is None:
+        default_value = [1.0]
+
     # Set the default weights
-    w = (0, float(defaultValue[0]))
-    if isinstance(blendshapeList, list):
-        for i, df in zip(list(range(0, len(blendshapeList))), defaultValue):
+    w = (0, float(default_value[0]))
+    if isinstance(blendshape_list, list):
+        for i, df in zip(list(range(0, len(blendshape_list))), default_value):
             w = (i, float(df))
 
     # Create the blendshape deformer
-    blendshapeNode = pm.blendShape(
-        blendshapeList, base, n=nodeName, frontOfChain=frontOfChain, weight=w
+    blendshape_node = pm.blendShape(
+        blendshape_list, base, n=node_name, frontOfChain=front_of_chain, weight=w
     )
 
-    return blendshapeNode
+    return blendshape_node
 
 
-def wrapDeformer(wrappedObjs, wrapperObj):
+def wrap_deformer(wrapped_objs, wrapper_obj):
     """
     Create a wrap deformer.
 
@@ -306,102 +315,102 @@ def wrapDeformer(wrappedObjs, wrapperObj):
     Then call the mel command to create a wrap deformer.
 
     Args:
-        wrappedObjs (list): The objects to wrap.
-        wrapperObj (str): The wrapper object.
+        wrapped_objs (list): The objects to wrap.
+        wrapper_obj (str): The wrapper object.
 
     Returns:
         The wrap deformer node.
     """
     # Select all wrapped objects and the wrapper object
-    pm.select(wrappedObjs)
-    pm.select(wrapperObj, add=1)
+    pm.select(wrapped_objs)
+    pm.select(wrapper_obj, add=1)
     # Call the mel command to create a wrap deformer
-    deformerNode = mel.eval(
+    deformer_node = mel.eval(
         'doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }'
     )
-    return pm.ls(deformerNode)[0]
+    return pm.ls(deformer_node)[0]
 
 
-def deltaMushDeformer(geo, smoothingIterations=10, smoothingStep=0.5):
+def delta_mush_deformer(geo, smoothing_iterations=10, smoothing_step=0.5):
     """Create a Delta Mush Deformer on the given geometry.
 
     Args:
         geo: The geometry to apply the deformer to.
-        smoothingIterations: Number of smoothing iterations.
-        smoothingStep: Smoothing step.
+        smoothing_iterations: Number of smoothing iterations.
+        smoothing_step: Smoothing step.
 
     Returns:
         The deformer node.
 
     """
-    deformerNode = pm.deltaMush(
-        geo, smoothingIterations=smoothingIterations, smoothingStep=smoothingStep
+    deformer_node = pm.deltaMush(
+        geo, smoothingIterations=smoothing_iterations, smoothingStep=smoothing_step
     )[0]
-    return deformerNode
+    return deformer_node
 
 
-def shrinkWrapDeformer(wrappedObj, wrapperObj):
+def shrink_wrap_deformer(wrapped_obj, wrapper_obj):
     """
     Apply Shrink Wrap Deformer to wrapped object. The deformer will deform the wrapped object
     to match the shape of the wrapper object.
 
     Args:
-        wrappedObj: The object to be wrapped.
-        wrapperObj: The object to wrap around.
+        wrapped_obj: The object to be wrapped.
+        wrapper_obj: The object to wrap around.
 
     Returns:
         The deformer node.
     """
-    shrinkWrapNode = pm.deformer(wrappedObj, type="shrinkWrap")[0]
+    shrink_wrap_node = pm.deformer(wrapped_obj, type="shrinkWrap")[0]
     # Set the target geometry of the deformer to the wrapper object
-    pm.PyNode(wrapperObj).worldMesh[0] >> shrinkWrapNode.targetGeom
+    pm.PyNode(wrapper_obj).worldMesh[0] >> shrink_wrap_node.targetGeom
     # Set the deformer to use the closest point on the wrapper object if no intersection is found
-    shrinkWrapNode.closestIfNoIntersection.set(True)
-    return shrinkWrapNode
+    shrink_wrap_node.closestIfNoIntersection.set(True)
+    return shrink_wrap_node
 
 
-def cMuscleSystemDeformer(obj, relativeSticky=True):
+def c_muscle_system_deformer(obj, relative_sticky=True):
     """Create a cMuscleSystem deformer on the given object.
 
     Args:
         obj: The geometry object to apply the deformer to.
-        relativeSticky (bool): Whether to use a sticky muscle system.
+        relative_sticky (bool): Whether to use a sticky muscle system.
 
     Returns:
         The deformer node.
 
     """
-    deformerNode = None
+    deformer_node = None
 
-    if relativeSticky:
+    if relative_sticky:
         # Select the object and create a sticky muscle system
         pm.select(obj)
         d = mel.eval("cMuscle_makeMuscleSystem(1);")
-        deformerNode = pm.ls(d)[0]
+        deformer_node = pm.ls(d)[0]
     else:
         # Create a regular cMuscleSystem deformer
-        deformerNode = pm.deformer(obj, type="cMuscleSystem")[0]
+        deformer_node = pm.deformer(obj, type="cMuscleSystem")[0]
 
-    return deformerNode
+    return deformer_node
 
 
-def cMuscleConnectMuscle(muscleMainObj, muscleObjList):
+def c_muscle_connect_muscle(muscle_main_obj, muscle_obj_list):
     """Connects the given muscle objects to the muscle system of the main muscle object.
 
     Selects the muscle objects and the main muscle object, then calls the mel command
     to connect them to the same muscle system.
 
     Args:
-        muscleMainObj (str): The name of the main muscle object.
-        muscleObjList (list[str]): The list of muscle objects to connect to the main
+        muscle_main_obj (str): The name of the main muscle object.
+        muscle_obj_list (list[str]): The list of muscle objects to connect to the main
             muscle object.
     """
-    pm.select(muscleObjList)
-    pm.select(muscleMainObj, add=1)
+    pm.select(muscle_obj_list)
+    pm.select(muscle_main_obj, add=1)
     mel.eval("cMuscle_connectToSystem();")
 
 
-def softModDeformer(vertex):
+def soft_mod_deformer(vertex):
     """Creates a softMod deformer on the given vertex.
 
     Selects the given vertex and creates a softMod deformer on it. The falloff
@@ -417,15 +426,15 @@ def softModDeformer(vertex):
     pm.select(vertex)
 
     # Create the softMod deformer
-    deformerNode = pm.softMod(vertex)[0]
+    deformer_node = pm.softMod(vertex)[0]
 
     # Set the falloff masking to 0
-    deformerNode.falloffMasking.set(0)
+    deformer_node.falloffMasking.set(0)
 
-    return deformerNode
+    return deformer_node
 
 
-def meshCollision(deformer, deformed):
+def mesh_collision(deformer, deformed):
     """Create a Mesh Collision deformer on the given deformer object and apply it to the given deformed object.
 
     Selects the given deformer and deformed objects, then calls the mel command to create a mesh collision deformer.
@@ -448,15 +457,15 @@ def meshCollision(deformer, deformed):
     mel.eval("collisionDeformer()")
 
     # Get the deformer node
-    deformerNode = pm.listConnections(deformer.worldMesh[0], c=True, p=False)[-1][1]
+    deformer_node = pm.listConnections(deformer.worldMesh[0], c=True, p=False)[-1][1]
 
     # Clear the selection
     pm.select(cl=True)
 
-    return deformerNode
+    return deformer_node
 
 
-def tensionMap(obj):
+def tension_map(obj):
     """
     Create a Tension Map node to relax the input geometry of a mesh.
 
@@ -478,7 +487,7 @@ def tensionMap(obj):
             # Attempt to load the plugin
             pm.loadPlugin("plugin/tensionMap.py")
             print(f"Plugin '{plugin_name}' loaded successfully.")
-        except Exception as e:
+        except (RuntimeError, IOError) as e:
             print(f"Failed to load plugin '{plugin_name}': {e}")
             return None
     else:
@@ -487,7 +496,7 @@ def tensionMap(obj):
     obj = pm.ls(obj)[-1]
     shape = obj.getShape()
     # Get the original geometry of the mesh
-    shapeOrig = pm.ls(str(shape.name()) + "Orig")[-1]
+    shape_orig = pm.ls(str(shape.name()) + "Orig")[-1]
     # Get the deformed geometry of the mesh
     shape_input = pm.listConnections(
         shape.inMesh, source=True, destination=False, plugs=True
@@ -507,10 +516,15 @@ def tensionMap(obj):
 
 
 def save_deformer_weights():
-    """Save deformer weights for character geometry objects"""
-    # TODO: complete
-    geoList = pm.ls(sl=True)
-    if not geoList:
+    """Save deformer weights for character geometry objects.
+
+    Note:
+        This function is incomplete. The JSON serialization is not implemented.
+        Use mayaLib.utility.b_skin_saver module for skin weight operations instead.
+    """
+    # TODO: Implement JSON serialization of deformer weight data or deprecate this function
+    geo_list = pm.ls(sl=True)
+    if not geo_list:
         pm.warning("No objects selected!")
         return
 
@@ -519,44 +533,44 @@ def save_deformer_weights():
     if not directory.exists():
         directory.mkdir(parents=True)
 
-    for geo in geoList:
-        wtFile = directory / (geo.name() + ".json")
-        wtData = {}
+    for geo in geo_list:
+        wt_file = directory / (geo.name() + ".json")
+        wt_data = {}
         for deformer in pm.findDeformers(geo):
-            wtData[str(deformer)] = pm.getAttr(deformer + ".weightList")
-        with wtFile.open("w"):
+            wt_data[str(deformer)] = pm.getAttr(deformer + ".weightList")
+        with wt_file.open("w"):
             pass
             # json.dump(wtData, f, indent=4)
 
 
 def load_deformer_weights(
-    geoList,
-    projectPath=Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1])),
-    skinWeightsDir="weights/deformer",
+    geo_list,
+    project_path=Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1])),
+    skin_weights_dir="weights/deformer",
 ):
     """
     load deformer weights for character geometry objects
     """
     # check folder
-    directory = projectPath / skinWeightsDir
+    directory = project_path / skin_weights_dir
     if not directory.exists():
         print("Path to load Deformer Weights not found!")
         return
 
-    if not isinstance(geoList, list):
-        geoList = pm.ls(geoList)
+    if not isinstance(geo_list, list):
+        geo_list = pm.ls(geo_list)
 
     # weights folders
-    wtFiles = (projectPath / skinWeightsDir).glob("*.json")
+    wt_files = (project_path / skin_weights_dir).glob("*.json")
 
     # load skin weights
-    for wtFile in wtFiles:
+    for wt_file in wt_files:
         # check geometry list
-        if geoList and str(wtFile.stem) not in geoList:
+        if geo_list and str(wt_file.stem) not in geo_list:
             continue
 
         # check if objects exist
-        if not pm.objExists(str(wtFile.stem)):
+        if not pm.objExists(str(wt_file.stem)):
             continue
 
 
@@ -587,7 +601,7 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
             # Attempt to load the plugin
             pm.loadPlugin(plugin_name)
             print(f"Plugin '{plugin_name}' loaded successfully.")
-        except Exception as e:
+        except (RuntimeError, IOError) as e:
             print(f"Failed to load plugin '{plugin_name}': {e}")
             return None
     else:
@@ -630,7 +644,7 @@ def generate_new_blendshspae(
 
     bs_list = [original] + blendhspae_original_list
 
-    out_bs = blendShapeDeformer(
+    out_bs = blend_shape_deformer(
         blendhspae_target,
         bs_list,
         bs_name,

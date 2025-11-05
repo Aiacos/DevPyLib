@@ -1,3 +1,9 @@
+"""Scapula IK rig setup utilities for shoulder mechanics.
+
+Provides the Scapula class for creating automated scapula (shoulder blade)
+IK setups with proper constraints between spine, shoulder, and scapula joints.
+"""
+
 __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
@@ -6,38 +12,38 @@ from mayaLib.rigLib.utils import name
 
 
 class Scapula():
-    def __init__(self, spine_jnt, shoulder_jnt, scapulaShoulder_jnt):
+    def __init__(self, spine_jnt, shoulder_jnt, scapula_shoulder_jnt):
         """
         Create scapula IK
         :param spine_jnt: str
         :param shoulder_jnt: str
-        :param scapulaShoulder_jnt: str
+        :param scapula_shoulder_jnt: str
         """
         # get side and name
-        side = name.getSide(scapulaShoulder_jnt)
+        side = name.get_side(scapula_shoulder_jnt)
 
         # get childern of shoulder
-        scapula_jnt = pm.listRelatives(scapulaShoulder_jnt, type='joint')[0]
+        scapula_jnt = pm.listRelatives(scapula_shoulder_jnt, type='joint')[0]
 
         # create ik
-        ikhandle = pm.ikHandle(n=side + 'scapula_IKH', sj=scapulaShoulder_jnt, ee=scapula_jnt)
+        ikhandle = pm.ikHandle(n=side + 'scapula_IKH', sj=scapula_shoulder_jnt, ee=scapula_jnt)
         effector = pm.listConnections(ikhandle[0].endEffector, source=True)
 
         # group ik
-        grpName = name.removeSuffix(side + 'scapula_GRP')
+        grpName = name.remove_suffix(side + 'scapula_GRP')
         self.scapulaGrp = pm.group(ikhandle, n=grpName)
 
         # parent constraint group
         pm.parentConstraint(spine_jnt, self.scapulaGrp, mo=True)
 
         # parent constraint only transform
-        pm.parentConstraint(shoulder_jnt, scapulaShoulder_jnt, skipRotate=['x', 'y', 'z'], mo=True)
+        pm.parentConstraint(shoulder_jnt, scapula_shoulder_jnt, skipRotate=['x', 'y', 'z'], mo=True)
 
         # parent effector
-        pm.parent(effector, scapulaShoulder_jnt)
+        pm.parent(effector, scapula_shoulder_jnt)
 
-    def getScapulaGrp(self):
-        return self.getScapulaGrp()
+    def get_scapula_grp(self):
+        return self.scapulaGrp
 
 
 if __name__ == "__main__":

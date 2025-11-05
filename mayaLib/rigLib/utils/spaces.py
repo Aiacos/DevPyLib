@@ -1,67 +1,72 @@
-__author__ = "Lorenzo Argentieri"
+"""Space switching utilities for rig controls."""
+
+from __future__ import annotations
 
 import pymel.core as pm
 
 from mayaLib.rigLib.utils import common
 
+__all__ = ["create_space_switch"]
 
-def spaces(
-    driverList,
-    driverNames,
-    destinationConstraint,
-    destinationAttribute,
-    name="space",
-    maintainOffset=True,
-):
-    """
-    Create a space system on the given destinationConstraint with the given list
-    of drivers and names. The given destinationAttribute is used to store the value
-    of the active space. The value of the active space is used to set the weight of
-    the parent constraint on the destinationConstraint. The optional maintainOffset
-    parameter is used to set the maintainOffset flag on the parent constraint.
+
+def _ensure_enum_attribute(node, attr_name: str, labels: list[str]) -> pm.general.Attribute:
+    """Create or update an enum attribute used to select spaces."""
+    if node.hasAttr(attr_name):
+        enum_attr = node.attr(attr_name)
+        enum_attr.setEnums({label: index for index, label in enumerate(labels)})
+    else:
+        enum_attr = pm.addAttr(
+            node,
+            longName=attr_name,
+            attributeType="enum",
+            enumName=":".join(labels),
+            k=True,
+            dv=0,
+        )
+        enum_attr = node.attr(attr_name)
+    return enum_attr
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def create_space_switch(
+    drivers,
+    driver_names,
+    destination_constraint,
+    destination_node,
+    attribute_name: str = "space",
+    maintain_offset: bool = True,
+) -> None:
+    """Create a classic space-switch setup driven by an enum attribute.
 
     Args:
-        driverList (list): List of objects that will drive the space system
-        driverNames (list): List of names associated with the drivers
-        destinationConstraint (str): Name of the constraint that will be controlled
-            by the space system
-        destinationAttribute (str): Name of the attribute that will store the value
-            of the active space
-        name (str): Name of the attribute that will be added to the destination
-            attribute. Defaults to "space"
-        maintainOffset (bool): Whether to maintain the offset of the parent
-            constraint. Defaults to True
-
-    Returns:
-        None
+        drivers: Sequence of transforms providing the spaces.
+        driver_names: Matching list of labels for each driver.
+        destination_constraint: The parent constraint controlling the driven node.
+        destination_node: Control object receiving the enum attribute.
+        attribute_name: Name of the enum attribute to add. Defaults to ``"space"``.
+        maintain_offset: Whether to keep offset on the constraint. Defaults to True.
     """
-    pm.addAttr(
-        destinationAttribute,
-        longName=name,
-        attributeType="enum",
-        enumName=":".join(driverNames),
-        k=1,
-        dv=0,
-    )
+    if len(drivers) != len(driver_names):
+        raise ValueError("drivers and driver_names must have matching lengths.")
 
-    constraintList = []
-    for driver in driverList:
-        cnst = pm.parentConstraint(driver, destinationConstraint, mo=maintainOffset)
-        constraintList.append(cnst)
+    destination_constraint = pm.PyNode(destination_constraint)
+    destination_node = pm.PyNode(destination_node)
+    enum_attr = _ensure_enum_attribute(destination_node, attribute_name, list(driver_names))
 
-    for counter, cnst in enumerate(constraintList):
-        sourceValue = list(range(0, len(constraintList)))
-        targetValue = [0] * len(constraintList)
-        targetValue[counter] = 1
+    constraints = [
+        pm.parentConstraint(driver, destination_constraint, mo=maintain_offset)
+        for driver in drivers
+    ]
 
-        target = pm.listConnections(
-            cnst.target[counter].targetWeight, source=True, plugs=True
+    driver_enum = enum_attr
+    space_count = len(constraints)
+    driver_values = list(range(space_count))
+
+    for index, constraint in enumerate(constraints):
+        driven_values = [0] * space_count
+        driven_values[index] = 1
+        target_plug = pm.listConnections(
+            constraint.target[index].targetWeight,
+            source=True,
+            plugs=True,
         )[0]
-        common.set_driven_key(
-            destinationAttribute + "." + name, sourceValue, target, targetValue
-        )
-
-
-if __name__ == "__main__":
-    pass
-    # spaces()
+        common.set_driven_key(driver_enum, driver_values, target_plug, driven_values)

@@ -1,24 +1,30 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Abstract base class for shader creation.
+
+Defines the interface for shader creation across different render engines
+with common material property methods.
+"""
+
 import pymel.core as pm
 
 
-def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
+def build_lambert(shader_type='lambert', shader_name='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
     """Creates a Lambert shader with specified attributes.
 
     Args:
-        shaderType (str): The type of shader to create.
-        shaderName (str): The name to assign the shader.
+        shader_type (str): The type of shader to create.
+        shader_name (str): The name to assign the shader.
         color (tuple): The RGB color of the shader.
         transparency (tuple): Transparency of the shader.
 
     Returns:
         pm.nt.Shader: The created shader node.
     """
-    shader = pm.shadingNode(shaderType, asShader=True, name=shaderName)
+    shader = pm.shadingNode(shader_type, asShader=True, name=shader_name)
 
     # a shading group
-    shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shaderName)
+    shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
     pm.connectAttr('%s.outColor' % shader, '%s.surfaceShader' % shading_group)
 
@@ -28,21 +34,21 @@ def build_lambert(shaderType='lambert', shaderName='tmp-shader', color=(0.5, 0.5
     return shader
 
 
-def build_surfaceshader(shaderType='surfaceShader', shaderName='tmp-shader', color=(0.5, 0.5, 0.5)):
+def build_surfaceshader(shader_type='surfaceShader', shader_name='tmp-shader', color=(0.5, 0.5, 0.5)):
     """Builds a basic surface shader.
 
     Args:
-        shaderType (str): The type of shader to create.
-        shaderName (str): The name to assign the shader.
+        shader_type (str): The type of shader to create.
+        shader_name (str): The name to assign the shader.
         color (tuple): The RGB color to assign to the shader.
 
     Returns:
         pm.nt.Shader: The created shader node.
     """
-    shader = pm.shadingNode(shaderType, asShader=True, name=shaderName)
+    shader = pm.shadingNode(shader_type, asShader=True, name=shader_name)
 
     # a shading group
-    shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shaderName)
+    shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
     pm.connectAttr('%s.outColor' % shader, '%s.surfaceShader' % shading_group)
 
@@ -72,7 +78,7 @@ def connect_shader_to_shading_node(shader, shading_engine):
     pm.connectAttr(shader.outColor, shading_engine.surfaceShader, f=True)
 
 
-class Shader_base(object):
+class ShaderBase(object):
     """Base class for creating shaders with texture connections."""
 
     base_color_name_list = str('diffuse diff albedo base col color basecolor d').split(' ')
@@ -292,7 +298,7 @@ class Shader_base(object):
         return file_node
 
 
-class UsdPreviewSurface(Shader_base):
+class UsdPreviewSurface(ShaderBase):
     """Class for creating a usdPreviewSurface shader."""
 
     diffuse = 'diffuseColor'

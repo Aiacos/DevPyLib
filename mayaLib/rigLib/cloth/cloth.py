@@ -1,3 +1,9 @@
+"""nCloth simulation setup class.
+
+Provides the Cloth class for creating nCloth simulations with collision
+geometry and nucleus solvers for character cloth simulation.
+"""
+
 import maya.mel as mel
 import pymel.core as pm
 
@@ -32,7 +38,7 @@ class Cloth(object):
             n="cloth_geo_grp", em=True, p=self.cloth_system_grp
         )
 
-        self.cloth_data_list, self.nucleus = self.createNCloth(geo_list)
+        self.cloth_data_list, self.nucleus = self.create_ncloth(geo_list)
 
         # setup Nucleus
         pm.rename(self.nucleus, "clothSystem_nucleus")
@@ -41,12 +47,12 @@ class Cloth(object):
         # self.nucleus.enable.set(0)
 
         # setup Colliders
-        self.collisionSetup(collision_geo_list)
+        self.collision_setup(collision_geo_list)
 
-        # sim_geo_list = util.getAllObjectUnderGroup(pm.ls('clothOut_grp')[-1])
+        # sim_geo_list = util.list_objects_under_group(pm.ls('clothOut_grp')[-1])
         # deform.deltaMushDeformer(sim_geo_list)
 
-    def createNCloth(self, geo_list):
+    def create_ncloth(self, geo_list):
         """
         Create nCloth for each geometry in the provided list.
 
@@ -76,7 +82,7 @@ class Cloth(object):
 
         return cloth_data_list, nucleus
 
-    def collisionSetup(self, collision_geo_list):
+    def collision_setup(self, collision_geo_list):
         """
         Set up colliders for the provided geometries.
 
@@ -97,7 +103,7 @@ class Cloth(object):
 
         return collision_data_list
 
-    def paintInputAttract(self, clothNode, growSelection=5):
+    def paint_input_attract(self, cloth_node, grow_selection=5):
         """
         Paint the input attract weights of the provided cloth node.
 
@@ -107,10 +113,10 @@ class Cloth(object):
         cloth node.
 
         Args:
-            clothNode (pm.PyNode): The cloth node to paint.
-            growSelection (int): The number of times to grow the selection.
+            cloth_node (pm.PyNode): The cloth node to paint.
+            grow_selection (int): The number of times to grow the selection.
         """
-        geo = pm.listConnections(clothNode.inputMesh, s=True)[0]
+        geo = pm.listConnections(cloth_node.inputMesh, s=True)[0]
         print(("PAINT: ", geo))
 
         # Select the geometry connected to the cloth node
@@ -126,7 +132,7 @@ class Cloth(object):
         # mel.eval('polySelectContraint -dis;')
 
         # Grow the selection by a specified amount
-        for i in range(growSelection):
+        for i in range(grow_selection):
             mel.eval("select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;")
 
         # Invert the selection
@@ -138,7 +144,7 @@ class Cloth(object):
         # Paint the input attract weights of the cloth node
         dynamic.clothPaintInputAttract(clothNode, vtxList, 0.4, smoothIteration=3)
 
-    def updateSettings(self):
+    def update_settings(self):
         """
         Update the settings of the cloth node.
 
@@ -176,7 +182,7 @@ class Cloth(object):
 
         self.nucleus.enable.set(1)
 
-    def selectVtx(self, geo, vertices):
+    def select_vtx(self, geo, vertices):
         """
         Selects a list of vertices on a given geometry.
 
@@ -189,7 +195,7 @@ class Cloth(object):
             try:
                 # Construct the selection string
                 vertex_select_list.append("{0}.vtx[{1}]".format(geo, vertex))
-            except Exception:
+            except (ValueError, TypeError):
                 print("Skip vtx: ", vertex)
 
         # Select the vertices

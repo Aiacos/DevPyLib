@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""High-level shader creation interface.
+
+Provides simplified functions for creating shaders with automatic
+texture setup and material property configuration.
+"""
+
 import glob
 import os
 import pathlib
@@ -8,10 +14,10 @@ from pymel import core as pm
 
 import mayaLib.utility.json_tool as json_tool
 from mayaLib.shaderLib.base import texture
-from mayaLib.shaderLib.base.arnold import aiStandardSurface
-from mayaLib.shaderLib.base.delight import Principled_3dl
+from mayaLib.shaderLib.base.arnold import AiStandardSurface
+from mayaLib.shaderLib.base.delight import Principled3dl
 from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
-from mayaLib.shaderLib.base.shader_base import Shader_base, UsdPreviewSurface
+from mayaLib.shaderLib.base.shader_base import ShaderBase, UsdPreviewSurface
 
 
 class TextureShader():
@@ -31,13 +37,13 @@ class TextureShader():
         self.renderer = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
 
         if self.renderer == 'arnold':
-            self.shader = self.build_aiStandard(texture_path, geo_name, textureset_dict, single_place_node=True)
+            self.shader = self.build_ai_standard(texture_path, geo_name, textureset_dict, single_place_node=True)
         elif self.renderer == 'renderman':
-            self.shader = self.build_pxrDisneyBSDF(texture_path, geo_name, textureset_dict)
+            self.shader = self.build_pxr_disney_bsdf(texture_path, geo_name, textureset_dict)
         else:
             print('No valid active render engine')
 
-    def build_aiStandard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
+    def build_ai_standard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         """
         Build an aiStandardSurface shader and connect it with all associated textures.
 
@@ -61,9 +67,9 @@ class TextureShader():
                                          single_place_node=self.place_node)
             self.filenode_dict[texture_channel] = fn.filenode
 
-        return aiStandardSurface(shader_name=geo_name, file_node_dict=self.filenode_dict)
+        return AiStandardSurface(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
-    def build_pxrDisneyBSDF(self, texture_path, geo_name, textureset_dict, pxrTextureNode=True, single_place_node=True):
+    def build_pxr_disney_bsdf(self, texture_path, geo_name, textureset_dict, pxr_texture_node=True, single_place_node=True):
         """
         Build a PxrDisneyBSDF shader and connect it with all associated textures.
 
@@ -71,7 +77,7 @@ class TextureShader():
             texture_path (str): Path to the texture files.
             geo_name (str): Geometry name.
             textureset_dict (dict): Material IDs used in Substance Painter or UDIM.
-            pxrTextureNode (bool): Use pxrTexture nodes instead of file nodes (default is True).
+            pxr_texture_node (bool): Use pxrTexture nodes instead of file nodes (default is True).
             single_place_node (bool): Use a single place2dTexture node for all textures (default is True).
 
         Returns:
@@ -84,7 +90,7 @@ class TextureShader():
 
         return PxrDisneyBSDF(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
-    def getShader(self):
+    def get_shader(self):
         """
         Get the shader created by the Shader class.
 
@@ -160,7 +166,7 @@ class ConvertShaders(object):
                 #self.reconnect_filenode(shader, usd_shader)
                 # usd_shader.assign_shader(assigned_geometry)
             elif to_shader_type == '3delight':
-                Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Principled3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, delight_shader)
                 # delight_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'renderaman':
@@ -276,12 +282,12 @@ class ConvertShaders(object):
             normal_socket = pm.PyNode(shader.name() + '.' + UsdPreviewSurface.normal)
 
         if shader.type() == 'dlPrincipled':
-            diffuse_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.diffuse)
-            metallic_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.metallic)
-            roughness_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.roughness)
-            emission_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.emission)
-            alpha_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.alpha)
-            normal_socket = pm.PyNode(shader.name() + '.' + Principled_3dl.normal)
+            diffuse_socket = pm.PyNode(shader.name() + '.' + Principled3dl.diffuse)
+            metallic_socket = pm.PyNode(shader.name() + '.' + Principled3dl.metallic)
+            roughness_socket = pm.PyNode(shader.name() + '.' + Principled3dl.roughness)
+            emission_socket = pm.PyNode(shader.name() + '.' + Principled3dl.emission)
+            alpha_socket = pm.PyNode(shader.name() + '.' + Principled3dl.alpha)
+            normal_socket = pm.PyNode(shader.name() + '.' + Principled3dl.normal)
 
         if shader.type() == 'PxrDisneyBsdf':
             diffuse_socket = pm.PyNode(shader.name() + '.' + PxrDisneyBSDF.diffuse)
@@ -306,7 +312,7 @@ class ConvertShaders(object):
             pass
             try:
                 pm.connectAttr(alpha_socket.listConnections(plugs=True)[-1], pm.PyNode(new_shader.get_shader().name() + '.' + new_shader.alpha), f=True)
-            except Exception:
+            except (AttributeError, RuntimeError):
                 print('Alpha Error')
                 #pm.connectAttr(shader.name() + '.outAlpha', pm.PyNode(new_shader.get_shader().name() + '.' + new_shader.alpha))
         if normal_socket.isConnected():
@@ -364,7 +370,7 @@ class ShaderFromJson(object):
                 UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # usd_shader.assign_shader(assigned_geometry)
             elif to_shader_type == '3delight':
-                Principled_3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
+                Principled3dl(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # delight_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'renderaman':
                 UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)

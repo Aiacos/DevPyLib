@@ -1,8 +1,14 @@
+"""Base utilities for Arise rig system.
+
+Provides foundational classes and functions for the Arise character
+rigging framework.
+"""
+
 import pymel.core as pm
 from mayaLib.rigLib.utils.common import set_driven_key
-from mayaLib.rigLib.utils import humanIK
+from mayaLib.rigLib.utils import human_ik
 from mayaLib.rigLib.utils import joint
-from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 class BaseRig:
@@ -184,9 +190,9 @@ class BaseRig:
         ctrl_set = pm.sets(pm.ls(body_ctrl_set, face_ctrl_set), n="ctrls_set")
 
         # Meshes
-        render_geo_list = getAllObjectUnderGroup("render")
-        proxy_geo_list = getAllObjectUnderGroup("proxy")
-        guide_geo_list = getAllObjectUnderGroup("guide")
+        render_geo_list = list_objects_under_group("render")
+        proxy_geo_list = list_objects_under_group("proxy")
+        guide_geo_list = list_objects_under_group("guide")
 
         render_model_set = pm.sets(render_geo_list, n="render_model_set")
         proxy_model_set = pm.sets(proxy_geo_list, n="proxy_model_set")
@@ -377,14 +383,14 @@ class BaseRig:
         if self.auto_t_pose:
             # Check if all left arm controls exist
             if all(pm.objExists(ctrl) for ctrl in l_arms_ctrl_list):
-                joint.setArmParallelToGrid(l_arms_ctrl_list)
+                joint.set_arm_parallel_to_grid(l_arms_ctrl_list)
             # Check if all right arm controls exist
             if all(pm.objExists(ctrl) for ctrl in r_arms_ctrl_list):
-                joint.setArmParallelToGrid(r_arms_ctrl_list)
+                joint.set_arm_parallel_to_grid(r_arms_ctrl_list)
 
         # Initialize HumanIK
         human_ik_name = f"{self.character_name}_HIK"
-        humanIK.HumanIK(human_ik_name, auto_T_pose=self.auto_t_pose)
+        human_ik.HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
 
     def _rename_skin_cluster(self):
         """Rename skin clusters for each geometry to be more descriptive.

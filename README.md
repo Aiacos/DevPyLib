@@ -172,7 +172,7 @@ DevPyLib/
 DevPyLib automatically generates UI for Python functions:
 
 ```python
-import mayaLib.guiLib.mainMenu as mm
+import mayaLib.guiLib.main_menu as mm
 
 # Menu is created automatically
 # All functions with docstrings appear in the menu
@@ -362,7 +362,7 @@ def myFunction(param1, param2=True):
 import sys
 print('/path/to/DevPyLib' in sys.path)  # Must be True
 
-import mayaLib.guiLib.mainMenu as mm
+import mayaLib.guiLib.main_menu as mm
 mm.MainMenu('/path/to/DevPyLib')  # Create menu manually
 ```
 

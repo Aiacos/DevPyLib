@@ -1,34 +1,16 @@
+"""Ziva VFX attachment creation and management tools.
+
+Provides utilities for creating and configuring Ziva attachments
+between tissues, bones, and muscles.
+"""
+
 import maya.mel as mel
 import pymel.core as pm
 
-
-def getAllObjectUnderGroup(group, type='mesh'):
-    """
-    Return all object of given type under group
-
-    Args:
-        group (string): group name
-        type (string): object type
-
-    Returns:
-        (pm.PyNode[]): object list
-    """
-    objList = None
-
-    if type == 'mesh':
-        objList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-
-    if type == 'transform':
-        geoList = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
-        objList = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geoList]
-
-    objList = list(set(objList))
-    objList.sort()
-
-    return objList
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
-def zivaFixedAttachment(stiffness=8):
+def ziva_fixed_attachment(stiffness=8):
     """
     Create a fixed Ziva attachment with specified stiffness.
 
@@ -44,7 +26,7 @@ def zivaFixedAttachment(stiffness=8):
     return zAttachment
 
 
-def zivaSlidingAttachment(stiffness=8):
+def ziva_sliding_attachment(stiffness=8):
     """
     Create a sliding Ziva attachment with specified stiffness.
 
@@ -61,7 +43,7 @@ def zivaSlidingAttachment(stiffness=8):
     return zAttachment
 
 
-def paintProximity(zAttachement, min=0.0001, max=1):
+def paint_proximity(z_attachement, min=0.0001, max=1):
     """
     Paint a Ziva attachment based on proximity.
 
@@ -73,11 +55,11 @@ def paintProximity(zAttachement, min=0.0001, max=1):
     Returns:
         None
     """
-    pm.select(zAttachement)
+    pm.select(z_attachement)
     mel.eval('zPaintAttachmentsByProximity -min ' + str(min) + ' -max ' + str(max) + ';')
 
 
-def addAttachment(source, dest, value, fixed=True):
+def add_attachment(source, dest, value, fixed=True):
     """
     Create a Ziva attachment between the source and destination objects.
 
@@ -94,13 +76,13 @@ def addAttachment(source, dest, value, fixed=True):
     pm.select(dest, add=True)
 
     if fixed:
-        current_zAttachemnt = zivaFixedAttachment()
+        current_zAttachemnt = ziva_fixed_attachment()
     else:
-        current_zAttachemnt = zivaSlidingAttachment(6)
+        current_zAttachemnt = ziva_sliding_attachment(6)
 
-    paintProximity(current_zAttachemnt, 0.0001, value)
+    paint_proximity(current_zAttachemnt, 0.0001, value)
 
 
 if __name__ == "__main__":
     source, dest = pm.ls(sl=True)
-    addAttachment(source, dest, 0.5, fixed=False)
+    add_attachment(source, dest, 0.5, fixed=False)

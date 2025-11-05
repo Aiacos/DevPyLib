@@ -1,3 +1,10 @@
+"""Skin cluster utilities for binding, copying, and managing skin weights.
+
+Provides comprehensive tools for working with Maya skin clusters including
+weight copying, mirroring, saving/loading weights to disk, and integration
+with ngSkinTools2 for advanced layered skin weighting workflows.
+"""
+
 __author__ = "Lorenzo Argentieri"
 
 import os
@@ -10,7 +17,7 @@ from ngSkinTools2 import api as ngst_api
 from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
 from ngSkinTools2.api import init_layers
 
-from mayaLib.utility import bSkinSaver
+from mayaLib.utility import b_skin_saver
 
 
 def get_skincluster_object():
@@ -245,7 +252,7 @@ def save_skin_weights(
 
         # save skin weight file
         pm.select(obj)
-        bSkinSaver.bSaveSkinValues(wt_file)
+        b_skin_saver.bSaveSkinValues(wt_file)
 
 
 def load_skin_weights(
@@ -276,7 +283,7 @@ def load_skin_weights(
         fullpath_wt_file = directory / wt_file
         if fullpath_wt_file.exists():
             print("file to read: ", fullpath_wt_file)
-            bSkinSaver.bLoadSkinValues(
+            b_skin_saver.bLoadSkinValues(
                 loadOnSelection=False, inputFile=fullpath_wt_file
             )
 

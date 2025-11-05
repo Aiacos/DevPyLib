@@ -1,3 +1,6 @@
-from . import base
+"""Arise Rig integration utilities.
 
-__all__ = ["base"]
+Provides utilities for working with the Arise rigging system including
+base classes and helper functions.
+"""
+from . import base

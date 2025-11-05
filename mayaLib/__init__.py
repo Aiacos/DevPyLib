@@ -1,3 +1,9 @@
+"""DevPyLib Maya utilities - Professional DCC tools for Maya.
+
+Comprehensive library for rigging, animation, modeling, shading,
+fluids, and pipeline integration in Autodesk Maya.
+"""
+
 from . import animationLib
 from . import bifrostLib
 from . import fluidLib
@@ -8,16 +14,3 @@ from . import pipelineLib
 from . import rigLib
 from . import shaderLib
 from . import utility
-
-__all__ = [
-    "animationLib",
-    "bifrostLib",
-    "fluidLib",
-    "guiLib",
-    "lookdevLib",
-    "modelLib",
-    "pipelineLib",
-    "rigLib",
-    "shaderLib",
-    "utility",
-]

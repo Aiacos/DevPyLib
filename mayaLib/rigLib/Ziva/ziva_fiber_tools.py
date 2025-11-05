@@ -1,31 +1,13 @@
+"""Ziva VFX fiber creation and editing tools.
+
+Provides utilities for creating and manipulating muscle fibers
+for Ziva VFX simulations.
+"""
+
 import maya.mel as mel
 import pymel.core as pm
 
-
-def get_all_objects_under_group(group, type='mesh'):
-    """
-    Return all object of given type under group
-
-    Args:
-        group (str): Group name
-        type (str): Object type
-
-    Returns:
-        list: A list of object names
-    """
-    obj_list = None
-
-    if type == 'mesh':
-        obj_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type=type)]
-
-    if type == 'transform':
-        geo_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(group, ad=1, type='mesh')]
-        obj_list = [o for o in pm.listRelatives(group, ad=1, type=type) if o not in geo_list]
-
-    obj_list = list(set(obj_list))
-    obj_list.sort()
-
-    return obj_list
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def add_ziva_fiber(obj):
@@ -128,5 +110,5 @@ def create_line_of_action(obj, skeleton):
 
 
 if __name__ == '__main__':
-    for geo in get_all_objects_under_group('muscles_grp'):
+    for geo in list_objects_under_group('muscles_grp'):
         create_line_of_action(geo, 'C_charBison_skeleton_GEO')

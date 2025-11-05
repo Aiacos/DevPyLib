@@ -1,5 +1,9 @@
-from . import baseContainer
-from . import baseEmitter
-from . import baseFluid
+"""Base classes for fluid simulation components.
 
-__all__ = ["baseContainer", "baseEmitter", "baseFluid"]
+Provides foundational classes for fluid containers, emitters, and complete
+fluid systems that are composed to create specific fluid effects.
+"""
+
+from . import base_container
+from . import base_emitter
+from . import base_fluid

@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Asset naming convention utilities.
+
+Provides functions for enforcing and validating studio asset
+naming conventions.
+"""
+
 class Convention():
     """Class to manage naming conventions of Maya assets
 
@@ -25,10 +31,10 @@ class Convention():
                  grp='GRP',
                  loc='LOC',
                  geo='GEO',
-                 proxyGeo='PRX',
+                 proxy_geo='PRX',
                  cv='CRV',
                  joint='JNT',
-                 ikHandle='IKH',
+                 ik_handle='IKH',
                  control='CTRL'):
         """Init Convention
 
@@ -61,7 +67,7 @@ class Convention():
 
         # mesh
         self.geo = geo
-        self.proxyGeo = proxyGeo
+        self.proxyGeo = proxy_geo
 
         # curve
         self.cv = cv
@@ -70,7 +76,7 @@ class Convention():
         self.joint = joint
 
         # IK handle
-        self.ikHandle = ikHandle
+        self.ikHandle = ik_handle
 
         # control
         self.control = control
@@ -87,7 +93,7 @@ class Convention():
                                'ikHandle': ikHandle,
                                'control': control}
 
-    def toLower(self, s):
+    def to_lower(self, s):
         """Convert a string to lower case
 
         Args:
@@ -98,7 +104,7 @@ class Convention():
         """
         return s.lower()
 
-    def toUpper(self, s):
+    def to_upper(self, s):
         """Convert a string to upper case
 
         Args:
@@ -109,11 +115,11 @@ class Convention():
         """
         return s.upper()
 
-    def convertAllToDefault(self):
+    def convert_all_to_default(self):
         """Convert all tags to default convention"""
         pass
 
-    def convertAllToScene(self):
+    def convert_all_to_scene(self):
         """Convert all tags to scene convention"""
         pass
 

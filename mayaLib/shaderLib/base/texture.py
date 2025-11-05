@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Texture node creation and management utilities.
+
+Provides utilities for creating and connecting Maya texture nodes including
+file textures, place2dTexture, and color correction nodes.
+"""
+
 import glob
 import os
 import pathlib
@@ -27,7 +33,7 @@ class TextureFolder(object):
 
         self.texture_folder = pathlib.Path(folder) if folder else self.home / workspace / sourceimages
 
-        self.imgList = self.buildImgList()
+        self.imgList = self.build_img_list()
 
     def get_texture_folder(self):
         """Get the 'sourceimages' folder path.
@@ -45,7 +51,7 @@ class TextureFolder(object):
         """
         return self.imgList
 
-    def buildImgList(self, search_extension='png'):
+    def build_img_list(self, search_extension='png'):
         """Build a list of all images in the folder with the given extension.
 
         Args:
@@ -61,7 +67,7 @@ class TextureFolder(object):
 
         return imgList
 
-    def getTextureBaseName(self, texture_stem):
+    def get_texture_base_name(self, texture_stem):
         """Get the base name of a texture file without '_BaseColor'.
 
         Args:
@@ -82,17 +88,17 @@ class TextureFolder(object):
         texture_dict = {}
         for img in self.imgList:
             texture = pathlib.Path(img)
-            texture_base_name = self.getTextureBaseName(texture.stem)
+            texture_base_name = self.get_texture_base_name(texture.stem)
             try:
                 txt_tmp_list = texture_dict[texture_base_name]
-            except Exception:
+            except KeyError:
                 txt_tmp_list = []
 
             txt_tmp_list.append(img)
             texture_dict[texture_base_name] = txt_tmp_list
         return texture_dict
 
-def getTextureFromNode(file):
+def get_texture_from_node(file):
     """Get texture file path as a pathlib object.
 
     Args:
@@ -149,7 +155,7 @@ class TextureFileNode():
         pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node)
         pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
 
-    def connect_file_node(self, path, name, single_place_node, gammaCorrect=True, alphaIsLuminance=True):
+    def connect_file_node(self, path, name, single_place_node, gamma_correct=True, alpha_is_luminance=True):
         """Create and connect a file node.
 
         Args:

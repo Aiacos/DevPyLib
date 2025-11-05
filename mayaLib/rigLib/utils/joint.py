@@ -1,449 +1,400 @@
-"""
-joint @ utils
+"""Joint utility helpers used across the rigging toolkit."""
 
-Various joint utility functions
-"""
+from __future__ import annotations
 
 import math
+from typing import Sequence
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import attributes
-from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import name
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import attributes, common, name, util
+
+__all__ = [
+    'lock_transformation',
+    'joint_direction',
+    'list_hierarchy',
+    'save_pose',
+    'load_pose',
+    'save_projection_pose',
+    'save_t_pose',
+    'load_projection_pose',
+    'load_t_pose',
+    'set_joint_parallel_to_grid',
+    'set_arm_parallel_to_grid',
+    'set_arm_parallel_to_grid_old',
+    'TwistJoint',
+    'rename_human_ik_joint',
+]
 
 
-def lock_transformation(obj, t=['x', 'y', 'z'], r=['x', 'y']):
-    if not pm.objExists(obj):
+def lock_transformation(
+    node,
+    translate_axes: Sequence[str] | None = None,
+    rotate_axes: Sequence[str] | None = None,
+) -> None:
+    """Lock translation and rotation limits on the supplied node."""
+    if not pm.objExists(node):
         return
-    
-    obj = pm.ls(obj)[-1]
-    translate = obj.translate.get()
-    rotate = obj.rotate.get()
 
-    for axis in t:
+    translate_axes = tuple(translate_axes or ('x', 'y', 'z'))
+    rotate_axes = tuple(rotate_axes or ('x', 'y'))
+
+    node = pm.PyNode(node)
+    translation = node.translate.get()
+    rotation = node.rotate.get()
+
+    for axis in translate_axes:
         if 'x' in axis:
-            pm.transformLimits(obj, tx=[translate[0], translate[0]], etx=[1, 1])
+            pm.transformLimits(node, tx=[translation[0]] * 2, etx=[1, 1])
         if 'y' in axis:
-            pm.transformLimits(obj, ty=[translate[1], translate[1]], ety=[1, 1])
+            pm.transformLimits(node, ty=[translation[1]] * 2, ety=[1, 1])
         if 'z' in axis:
-            pm.transformLimits(obj, tz=[translate[2], translate[2]], etz=[1, 1])
+            pm.transformLimits(node, tz=[translation[2]] * 2, etz=[1, 1])
 
-    for axis in r:
+    for axis in rotate_axes:
         if 'x' in axis:
-            pm.transformLimits(obj, rx=[rotate[0], rotate[0]], erx=[1, 1])
+            pm.transformLimits(node, rx=[rotation[0]] * 2, erx=[1, 1])
         if 'y' in axis:
-            pm.transformLimits(obj, ry=[rotate[1], rotate[1]], ery=[1, 1])
+            pm.transformLimits(node, ry=[rotation[1]] * 2, ery=[1, 1])
         if 'z' in axis:
-            pm.transformLimits(obj, rz=[rotate[2], rotate[2]], erz=[1, 1])
-
-def jointDirection(joint):
-    """
-    Get joint orient direction
-    :param joint: str, pymel object
-    :return: int (1 || -1)
-    """
-    child = pm.listRelatives(joint, c=True, type='joint')[0]
-    t = child.getTranslation()
-    max = 0.0
-    maxsign = 0
-    for tv in t:
-        if abs(tv) > max:
-            max = abs(tv)
-            if tv < 0.0:
-                maxsign = -1
-            else:
-                maxsign = 1
-    return maxsign
+            pm.transformLimits(node, rz=[rotation[2]] * 2, erz=[1, 1])
 
 
-def listHierarchy(topJoint, withEndJoints=True):
-    """
-    list joint hierarchy starting with top joint
-    
-    :param topJoint: str, joint to get listed with its joint hierarchy
-    :param withEndJoints: bool, list hierarchy including end joints
-    :return: list( str ), listed joints starting with top joint
-    """
-
-    listedJoints = pm.listRelatives(topJoint, type='joint', ad=True)
-    listedJoints.append(topJoint)
-    listedJoints.reverse()
-
-    completeJoints = listedJoints[:]
-
-    if not withEndJoints:
-        completeJoints = [j for j in listedJoints if pm.listRelatives(j, c=1, type='joint')]
-
-    return completeJoints
+def joint_direction(joint) -> int:
+    """Return the primary direction of the child joint."""
+    child_joints = pm.listRelatives(joint, c=True, type='joint') or []
+    if not child_joints:
+        return 0
+    translation = child_joints[0].getTranslation()
+    max_value = 0.0
+    sign = 0
+    for value in translation:
+        abs_value = abs(value)
+        if abs_value > max_value:
+            max_value = abs_value
+            sign = -1 if value < 0.0 else 1
+    return sign
 
 
-def savePose(topJoint, poseName):
-    jointList = pm.ls(listHierarchy(topJoint))
-    for jnt in jointList:
-        # translate
-        translate = jnt.translate.get()
-        attributes.addVectorAttribute(jnt, poseName + 'Translate', translate)
-        # rotate
-        rotate = jnt.rotate.get()
-        attributes.addVectorAttribute(jnt, poseName + 'Rotate', rotate)
-        # scale
-        scale = jnt.scale.get()
-        attributes.addVectorAttribute(jnt, poseName + 'Scale', scale)
-        # rotation order
-        rotateOrder = jnt.rotateOrder.get()
-        attributes.addFloatAttribute(jnt, poseName + 'RotateOrder', rotateOrder)
-        # joint orient
-        jointOrient = jnt.jointOrient.get()
-        attributes.addVectorAttribute(jnt, poseName + 'JointOrient', jointOrient)
+def list_hierarchy(top_joint, include_end_joints: bool = True) -> list[pm.PyNode]:
+    """Return joints in the hierarchy rooted at ``top_joint``."""
+    joint_list = pm.listRelatives(top_joint, type='joint', ad=True) or []
+    joint_list.append(pm.PyNode(top_joint))
+    joint_list.reverse()
+
+    if include_end_joints:
+        return joint_list
+    return [
+        joint for joint in joint_list if pm.listRelatives(joint, c=True, type='joint')
+    ]
 
 
-def loadPose(topJoint, poseName):
-    jointList = pm.ls(listHierarchy(topJoint))
-    for jnt in jointList:
-        # translate
-        attributeList = pm.ls(jnt + '.' + poseName + 'Translate')
-        if len(attributeList) == 1:
-            attribute = attributeList[0]
-            translatePose = attribute.get()
-            jnt.translate.set(translatePose)
-        # rotate
-        attributeList = pm.ls(jnt + '.' + poseName + 'Rotate')
-        if len(attributeList) == 1:
-            attribute = attributeList[0]
-            rotatePose = attribute.get()
-            jnt.rotate.set(rotatePose)
-        # scale
-        attributeList = pm.ls(jnt + '.' + poseName + 'Scale')
-        if len(attributeList) == 1:
-            attribute = attributeList[0]
-            scalePose = attribute.get()
-            jnt.scale.set(scalePose)
-        # rotate order
-        attributeList = pm.ls(jnt + '.' + poseName + 'RotateOrder')
-        if len(attributeList) == 1:
-            attribute = attributeList[0]
-            rotateOrderPose = attribute.get()
-            jnt.rotateOrder.set(rotateOrderPose)
-        # joint orient
-        attributeList = pm.ls(jnt + '.' + poseName + 'JointOrient')
-        if len(attributeList) == 1:
-            attribute = attributeList[0]
-            jointOrientPose = attribute.get()
-            jnt.jointOrient.set(jointOrientPose)
+def save_pose(top_joint, pose_name: str) -> None:
+    """Store the current pose on every joint in the hierarchy as custom attrs."""
+    for joint in pm.ls(list_hierarchy(top_joint)):
+        translate = joint.translate.get()
+        attributes.add_vector_attribute(joint, f'{pose_name}Translate', translate)
+
+        rotate = joint.rotate.get()
+        attributes.add_vector_attribute(joint, f'{pose_name}Rotate', rotate)
+
+        scale = joint.scale.get()
+        attributes.add_vector_attribute(joint, f'{pose_name}Scale', scale)
+
+        rotate_order = joint.rotateOrder.get()
+        attributes.add_float_attribute(joint, f'{pose_name}RotateOrder', rotate_order)
+
+        joint_orient = joint.jointOrient.get()
+        attributes.add_vector_attribute(joint, f'{pose_name}JointOrient', joint_orient)
 
 
-def saveProjectionPose(topJnt='god_M:godnode_srt'):
-    mainJoint = pm.ls(topJnt)[0]
-    savePose(mainJoint, 'projectionPose')
+def load_pose(top_joint, pose_name: str) -> None:
+    """Restore a pose previously stored via :func:`save_pose`."""
+    for joint in pm.ls(list_hierarchy(top_joint)):
+        translate_attr = pm.ls(f'{joint}.{pose_name}Translate')
+        if len(translate_attr) == 1:
+            joint.translate.set(translate_attr[0].get())
+
+        rotate_attr = pm.ls(f'{joint}.{pose_name}Rotate')
+        if len(rotate_attr) == 1:
+            joint.rotate.set(rotate_attr[0].get())
+
+        scale_attr = pm.ls(f'{joint}.{pose_name}Scale')
+        if len(scale_attr) == 1:
+            joint.scale.set(scale_attr[0].get())
+
+        rotate_order_attr = pm.ls(f'{joint}.{pose_name}RotateOrder')
+        if len(rotate_order_attr) == 1:
+            joint.rotateOrder.set(rotate_order_attr[0].get())
+
+        joint_orient_attr = pm.ls(f'{joint}.{pose_name}JointOrient')
+        if len(joint_orient_attr) == 1:
+            joint.jointOrient.set(joint_orient_attr[0].get())
 
 
-def saveTPose(topJnt='god_M:godnode_srt'):
-    mainJoint = pm.ls(topJnt)[0]
-    savePose(mainJoint, 'TPose')
+def save_projection_pose(top_joint='god_M:godnode_srt') -> None:
+    """Store the projection pose attributes on the joint hierarchy."""
+    save_pose(top_joint, 'projectionPose')
 
 
-def loadProjectionPose(topJnt='god_M:godnode_srt'):
-    mainJoint = pm.ls(topJnt)[0]
-    loadPose(mainJoint, 'projectionPose')
+def save_t_pose(top_joint='god_M:godnode_srt') -> None:
+    """Store a T-pose on the joint hierarchy."""
+    save_pose(top_joint, 'TPose')
 
 
-def loadTPose(topJnt='god_M:godnode_srt'):
-    mainJoint = pm.ls(topJnt)[0]
-    loadPose(mainJoint, 'TPose')
+def load_projection_pose(top_joint='god_M:godnode_srt') -> None:
+    """Apply the previously stored projection pose to the joint hierarchy."""
+    load_pose(top_joint, 'projectionPose')
 
 
-def setJointParallelToGrid(p1, p2):
-    p1x, p1y, p1z = pm.xform(p1, query=True, translation=True, worldSpace=True)
-    p2x, p2y, p2z = pm.xform(p2, query=True, translation=True, worldSpace=True)
+def load_t_pose(top_joint='god_M:godnode_srt') -> None:
+    """Apply the previously stored T-pose to the joint hierarchy."""
+    load_pose(top_joint, 'TPose')
 
-    xOffset = p1x - p2x
-    yOffset = p1y - p2y
-    angle = math.atan(yOffset / xOffset)
 
+def set_joint_parallel_to_grid(joint_a, joint_b) -> float:
+    """Return the rotation angle required to align ``joint_a`` to the grid."""
+    p1x, p1y, _ = pm.xform(joint_a, query=True, translation=True, worldSpace=True)
+    p2x, p2y, _ = pm.xform(joint_b, query=True, translation=True, worldSpace=True)
+    x_offset = p1x - p2x
+    y_offset = p1y - p2y
+    angle = math.atan(y_offset / x_offset) if x_offset else 0.0
     return math.degrees(angle)
 
-def setArmParallelToGrid(arm_transforms=[]):
-    """
-    Set Clavicle, Shoulder, Elbow and Wrist parallel to grid
-    :param arm_transforms: str or obj list, list of transform to orient
-    """
 
-    arm_transforms = pm.ls(arm_transforms)
-    for i, jnt in enumerate(arm_transforms[:-1]):
-        angle = setJointParallelToGrid(arm_transforms[i], arm_transforms[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-def setArmParallelToGrid_old():
-    leftClavicleJntList = pm.ls('l_clavicleJA_JNT', 'l_armJA_JNT')
-    for i, jnt in enumerate(leftClavicleJntList[:-1]):
-        angle = setJointParallelToGrid(leftClavicleJntList[i], leftClavicleJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-    rightClavicleJntList = pm.ls('r_clavicleJA_JNT', 'r_armJA_JNT')
-    for i, jnt in enumerate(rightClavicleJntList[:-1]):
-        angle = setJointParallelToGrid(rightClavicleJntList[i], rightClavicleJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-    leftArmJntList = pm.ls('l_armJ?_JNT', 'l_handJA_JNT')
-    for i, jnt in enumerate(leftArmJntList[:-1]):
-        angle = setJointParallelToGrid(leftArmJntList[i], leftArmJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-    rightArmJntList = pm.ls('r_armJ?_JNT', 'r_handJA_JNT')
-    for i, jnt in enumerate(rightArmJntList[:-1]):
-        angle = setJointParallelToGrid(rightArmJntList[i], rightArmJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-    leftHandJntList = pm.ls('l_handJA_JNT', 'l_fngMiddleJA_JNT')
-    for i, jnt in enumerate(leftHandJntList[:-1]):
-        angle = setJointParallelToGrid(leftHandJntList[i], leftHandJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
-
-    rightHandJntList = pm.ls('r_handJA_JNT', 'r_fngMiddleJA_JNT')
-    for i, jnt in enumerate(rightHandJntList[:-1]):
-        angle = setJointParallelToGrid(rightHandJntList[i], rightHandJntList[i + 1])
-        pm.xform(jnt, r=True, ro=(0, 0, -angle), ws=True)
+def set_arm_parallel_to_grid(transforms: Sequence) -> None:
+    """Rotate transforms so the chain aligns parallel to the ground plane."""
+    nodes = pm.ls(transforms)
+    for index, joint in enumerate(nodes[:-1]):
+        angle = set_joint_parallel_to_grid(nodes[index], nodes[index + 1])
+        pm.xform(joint, r=True, ro=(0, 0, -angle), ws=True)
 
 
-class TwistJoint():
-    """
-    Add Twist Joint for selected Joint
-    :param joint_selection:
-    :param n_twist_joint:
-    :return:
-    """
+def set_arm_parallel_to_grid_old() -> None:
+    """Legacy helper that aligns default Arise arm joints to the grid."""
+    for joint_pair in [
+        pm.ls('l_clavicleJA_JNT', 'l_armJA_JNT'),
+        pm.ls('r_clavicleJA_JNT', 'r_armJA_JNT'),
+        pm.ls('l_armJ?_JNT', 'l_handJA_JNT'),
+        pm.ls('r_armJ?_JNT', 'r_handJA_JNT'),
+        pm.ls('l_handJA_JNT', 'l_fngMiddleJA_JNT'),
+        pm.ls('r_handJA_JNT', 'r_fngMiddleJA_JNT'),
+    ]:
+        for index, joint in enumerate(joint_pair[:-1]):
+            angle = set_joint_parallel_to_grid(
+                joint_pair[index], joint_pair[index + 1]
+            )
+            pm.xform(joint, r=True, ro=(0, 0, -angle), ws=True)
 
-    def __init__(self, parentJoint, parentGrp='rig_GRP', nTwistJoint=3, rotAxis='X'):
-        if not pm.objExists(parentGrp):
-            pm.group(n=parentGrp, em=True)
+
+class TwistJoint:  # pylint: disable=too-many-instance-attributes
+    """Construct a twist joint chain for a given parent joint."""
+
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        parent_joint,
+        parent_group: str = 'rig_GRP',
+        num_twist_joints: int = 3,
+        rotation_axis: str = 'X',
+    ) -> None:
+        if not pm.objExists(parent_group):
+            pm.group(n=parent_group, em=True)
 
         if not pm.objExists('twistJoints_GRP'):
-            self.twistJointsMainGrp = pm.group(n='twistJoints_GRP', p=parentGrp, em=1)
+            self.twist_joints_main_grp = pm.group(
+                n='twistJoints_GRP', p=parent_group, em=True
+            )
         else:
-            self.twistJointsMainGrp = pm.ls('twistJoints_GRP')[0]
+            self.twist_joints_main_grp = pm.ls('twistJoints_GRP')[0]
 
-        if isinstance(parentJoint, str):
-            self.maketwistJoints(pm.ls(parentJoint)[0], nTwistJoint, rotAxis)
-        else:
-            for jnt in parentJoint:
-                self.maketwistJoints(jnt, nTwistJoint, rotAxis)
+        targets = (
+            pm.ls(parent_joint)
+            if isinstance(parent_joint, str)
+            else [pm.PyNode(joint) for joint in parent_joint]
+        )
+        for joint in targets:
+            self.make_twist_joints(
+                joint, num_twist_joints, rotation_axis.upper()
+            )
 
-    def maketwistJoints(self, parentJnt, nTwistJoint, rotAxis):
-        prefix = name.removeSuffix(parentJnt)
-        parentJntChild = pm.listRelatives(parentJnt, c=1, type='joint')[0]
+        self.twistJointsMainGrp = self.twist_joints_main_grp  # pylint: disable=invalid-name
 
-        # make twist joints
-        twistJntGrp = pm.group(n=prefix + 'TwistJoint_GRP', p=self.twistJointsMainGrp, em=1)
+    def make_twist_joints(
+        self,
+        parent_joint,
+        num_twist_joints: int,
+        rotation_axis: str,
+    ) -> None:
+        """Create a pair of twist joints and optional inner twist joints."""
+        prefix = name.remove_suffix(parent_joint)
+        child_joint = pm.listRelatives(parent_joint, c=True, type='joint')[0]
 
-        twistParentJnt = pm.duplicate(parentJnt, n=prefix + 'TwistStart_JNT', parentOnly=True)[0]
-        twistChildJnt = pm.duplicate(parentJntChild, n=prefix + 'TwistEnd_JNT', parentOnly=True)[0]
+        twist_group = pm.group(
+            n=f"{prefix}TwistJoint_GRP",
+            p=self.twist_joints_main_grp,
+            em=True,
+        )
 
-        # adjust twist joints
-        origJntRadius = pm.getAttr(parentJnt + '.radius')
+        start_joint = pm.duplicate(
+            parent_joint, n=f"{prefix}TwistStart_JNT", parentOnly=True
+        )[0]
+        end_joint = pm.duplicate(
+            child_joint, n=f"{prefix}TwistEnd_JNT", parentOnly=True
+        )[0]
 
-        for j in [twistParentJnt, twistChildJnt]:
-            pm.setAttr(j + '.radius', origJntRadius * 2)
-            pm.color(j, ud=1)
+        radius = pm.getAttr(f'{parent_joint}.radius')
+        for joint in (start_joint, end_joint):
+            pm.setAttr(f'{joint}.radius', radius * 2)
+            pm.color(joint, ud=1)
 
-        pm.parent(twistChildJnt, twistParentJnt)
-        pm.parent(twistParentJnt, twistJntGrp)
+        pm.parent(end_joint, start_joint)
+        pm.parent(start_joint, twist_group)
 
-        # attach twist joints
-        pm.pointConstraint(parentJnt, twistParentJnt)
+        pm.pointConstraint(parent_joint, start_joint)
+        twist_ik = pm.ikHandle(
+            n=f"{prefix}TwistJoint_IKH",
+            sol='ikSCsolver',
+            sj=start_joint,
+            ee=end_joint,
+        )[0]
+        pm.hide(twist_ik)
+        pm.parent(twist_ik, twist_group)
+        pm.parentConstraint(child_joint, twist_ik)
+        pm.hide(start_joint)
 
-        # make IK handle
-        twistIk = pm.ikHandle(n=prefix + 'TwistJoint_IKH', sol='ikSCsolver', sj=twistParentJnt, ee=twistChildJnt)[0]
-        pm.hide(twistIk)
-        pm.parent(twistIk, twistJntGrp)
-        pm.parentConstraint(parentJntChild, twistIk)
+        inner_joints = self.make_inner_twist_joints(
+            prefix,
+            start_joint,
+            end_joint,
+            num_twist_joints,
+            rotation_axis,
+        )
+        pm.parent(inner_joints, twist_group)
+        pm.parentConstraint(parent_joint, twist_group, mo=True)
 
-        pm.hide(twistParentJnt)
+    def make_inner_twist_joints(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        prefix: str,
+        start_joint,
+        end_joint,
+        num_twist_joints: int = 3,
+        rotation_axis: str = 'X',
+    ) -> list[pm.PyNode]:
+        """Insert evenly spaced twist joints between start and end joints."""
+        distance = util.get_distance(start_joint, end_joint) / (num_twist_joints + 1)
+        joint_list: list[pm.PyNode] = []
 
-        innerJointList = self.makeInnerTwistJoints(prefix, twistParentJnt, twistChildJnt, nTwistJoint, rotAxis)
-        pm.parent(innerJointList, twistJntGrp)
-
-        # Constriant twistJoint group to main Joint
-        pm.parentConstraint(parentJnt, twistJntGrp, mo=True)
-
-    def makeInnerTwistJoints(self, prefix, startJnt, endJnt, nTwistJoint=3, rotAxis='X'):
-        """
-        Add Twist Joint for selected Joint
-        :param joint_selection:
-        :param nTwistJoint:
-        :return:
-        """
-        distance = util.get_distance(startJnt, endJnt) / (nTwistJoint + 1)
-
-        joint_list = []
-        for i in range(0, nTwistJoint):
-            # Create new twist Joint
-            joint_name = prefix + '_twistJ' + str(i + 1) + 'JNT'
+        for index in range(num_twist_joints):
+            joint_name = f"{prefix}_twistJ{index + 1}JNT"
             new_joint = pm.joint(n=joint_name)
-            pm.delete(pm.parentConstraint(startJnt, new_joint))
-            common.freezeTranform(new_joint)
-            pm.parent(new_joint, startJnt)
+            pm.delete(pm.parentConstraint(start_joint, new_joint))
+            common.freeze_transform(new_joint)
+            pm.parent(new_joint, start_joint)
 
-            direction = jointDirection(startJnt)
-            pm.move((i + 1) * distance * direction, 0, 0, new_joint, relative=True, localSpace=True)
+            direction = joint_direction(start_joint)
+            pm.move(
+                (index + 1) * distance * direction,
+                0,
+                0,
+                new_joint,
+                relative=True,
+                localSpace=True,
+            )
 
-            # connect to mulDoubleLinear node
-            multiplyNode = pm.shadingNode('multDoubleLinear', asUtility=True)
-            pm.connectAttr(startJnt.name() + '.rotate' + rotAxis, multiplyNode.input1, f=True)
-            pm.connectAttr(multiplyNode.output, new_joint.name() + '.rotate' + rotAxis)
-            weight = (1.0 / (nTwistJoint + 1.0)) * (i + 1)
-            multiplyNode.input2.set(weight)
+            multiply_node = pm.shadingNode('multDoubleLinear', asUtility=True)
+            pm.connectAttr(
+                f'{start_joint}.rotate{rotation_axis}',
+                multiply_node.input1,
+                f=True,
+            )
+            pm.connectAttr(
+                multiply_node.output,
+                f'{new_joint}.rotate{rotation_axis}',
+            )
+            weight = (1.0 / (num_twist_joints + 1.0)) * (index + 1)
+            multiply_node.input2.set(weight)
 
-            # ovveride joint color
             new_joint.ove.set(1)
             new_joint.ovc.set(13)
-
             joint_list.append(new_joint)
 
         return joint_list
 
 
-def renameHumanIKJoint(element='Character1', deleteHumanIK=True):
-    # Hip - Spine
-    spineList = pm.ls(element + '_Hips', element + '_Spine*')
-    for jnt, i in zip(spineList, list(range(0, len(spineList)))):
-        newName = 'spineJ' + name.getAlpha(i) + '_JNT'
-        pm.rename(jnt, newName)
+def rename_human_ik_joint(  # pylint: disable=too-many-locals
+    element: str = 'Character1',
+    delete_human_ik: bool = True,
+) -> None:
+    """Rename HumanIK-generated joints to the studio naming convention."""
 
-    # Neck
-    neckList = pm.ls(element + '_Neck*')
-    for jnt, i in zip(neckList, list(range(0, len(neckList)))):
-        newName = 'neckJ' + name.getAlpha(i) + '_JNT'
-        pm.rename(jnt, newName)
+    def alpha_name(prefix: str, index: int) -> str:
+        return f"{prefix}{name.get_alpha(index)}_JNT"
 
-    # Head
-    headList = pm.ls(element + '_Head*')
-    for jnt, i in zip(headList, list(range(0, len(headList)))):
-        newName = 'headJ' + name.getAlpha(i) + '_JNT'
-        pm.rename(jnt, newName)
+    spine_joints = pm.ls(f'{element}_Hips', f'{element}_Spine*')
+    for index, joint in enumerate(spine_joints):
+        pm.rename(joint, alpha_name('spineJ', index))
 
-    # Jaw
-    jawList = pm.ls(element + '_Jaw*')
-    for jnt, i in zip(jawList, list(range(0, len(jawList)))):
-        newName = 'jawJ' + name.getAlpha(i) + '_JNT'
-        pm.rename(jnt, newName)
+    neck_joints = pm.ls(f'{element}_Neck*')
+    for index, joint in enumerate(neck_joints):
+        pm.rename(joint, alpha_name('neckJ', index))
 
-    # Left - Right
-    leftList = pm.ls(element + '_Left*')
-    rightList = pm.ls(element + '_Right*')
+    head_joints = pm.ls(f'{element}_Head*')
+    for index, joint in enumerate(head_joints):
+        pm.rename(joint, alpha_name('headJ', index))
 
-    for sideList, i in zip([leftList, rightList], list(range(0, 2))):
-        if i == 0:
-            side = 'l_'
-            oldSide = 'Left'
-        else:
-            side = 'r_'
-            oldSide = 'Right'
+    jaw_joints = pm.ls(f'{element}_Jaw*')
+    for index, joint in enumerate(jaw_joints):
+        pm.rename(joint, alpha_name('jawJ', index))
 
-        for jnt in sideList:
-            elementSplit, jointSplit = jnt.name().split('_')
-            newName = side + jointSplit.replace(oldSide, '') + '_JNT'
-            pm.rename(jnt, newName)
+    for side_label, prefix in (('Left', 'l_'), ('Right', 'r_')):
+        side_nodes = pm.ls(f'{element}_{side_label}*')
+        for joint in side_nodes:
+            _, joint_suffix = joint.name().split('_', 1)
+            new_name = f"{prefix}{joint_suffix.replace(side_label, '')}_JNT"
+            pm.rename(joint, new_name)
 
-        # Clavicle
-        clavicleList = pm.ls(side + 'Shoulder_JNT')
-        for jnt, i in zip(clavicleList, list(range(0, len(clavicleList)))):
-            newName = side + 'clavicleJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
+        rename_sets = [
+            (pm.ls(f'{prefix}Shoulder_JNT'), 'clavicleJ'),
+            (pm.ls(f'{prefix}Arm_JNT', f'{prefix}ForeArm_JNT'), 'armJ'),
+            (pm.ls(f'{prefix}*Hand_JNT'), 'handJ'),
+            (pm.ls(f'{prefix}*HandThumb*_JNT'), 'fngThumbJ'),
+            (pm.ls(f'{prefix}*HandIndex*_JNT'), 'fngIndexJ'),
+            (pm.ls(f'{prefix}*HandMiddle*_JNT'), 'fngMiddleJ'),
+            (pm.ls(f'{prefix}*HandRing*_JNT'), 'fngRingJ'),
+            (pm.ls(f'{prefix}*HandPinky*_JNT'), 'fngPinkyJ'),
+            (pm.ls(f'{prefix}UpLeg_JNT', f'{prefix}Leg_JNT'), 'legJ'),
+            (pm.ls(f'{prefix}*Foot_JNT'), 'footJ'),
+            (pm.ls(f'{prefix}*FootExtraFinger*_JNT'), 'toeThumbJ'),
+            (pm.ls(f'{prefix}*FootIndex*_JNT'), 'toeIndexJ'),
+            (pm.ls(f'{prefix}*FootMiddle*_JNT'), 'toeMiddleJ'),
+            (pm.ls(f'{prefix}*FootRing*_JNT'), 'toeRingJ'),
+            (pm.ls(f'{prefix}*FootPinky*_JNT'), 'toePinkyJ'),
+        ]
+        for joint_list, base_name in rename_sets:
+            for index, joint in enumerate(joint_list):
+                pm.rename(joint, alpha_name(f'{prefix}{base_name}', index))
 
-        # Arms
-        armList = pm.ls(side + 'Arm_JNT', side + 'ForeArm_JNT')
-        for jnt, i in zip(armList, list(range(0, len(armList)))):
-            newName = side + 'armJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
+    hips = pm.ls(f'{element}_Hips')
+    if hips:
+        end_joints = pm.ls(hips[0], type='joint', dagObjects=True, leaf=True)
+        for joint in end_joints:
+            pm.rename(joint, f"{joint.name()[:-5]}End_JNT")
 
-        # Hand
-        handList = pm.ls(side + '*Hand_JNT')
-        for jnt, i in zip(handList, list(range(0, len(handList)))):
-            newName = side + 'handJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
+    if delete_human_ik:
+        hik_nodes = pm.ls(type=['HIKCharacterNode', 'HIKState2SK'])
+        if hik_nodes:
+            pm.delete(hik_nodes)
 
-        # Fng - HandThumb
-        fngThumbList = pm.ls(side + '*HandThumb*_JNT')
-        for jnt, i in zip(fngThumbList, list(range(0, len(fngThumbList)))):
-            newName = side + 'fngThumbJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
 
-        # Fng - HandIndex
-        fngIndexList = pm.ls(side + '*HandIndex*_JNT')
-        for jnt, i in zip(fngIndexList, list(range(0, len(fngIndexList)))):
-            newName = side + 'fngIndexJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Fng - HandMiddle
-        fngMidList = pm.ls(side + '*HandMiddle*_JNT')
-        for jnt, i in zip(fngMidList, list(range(0, len(fngMidList)))):
-            newName = side + 'fngMiddleJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Fng - HandRing
-        fngRingList = pm.ls(side + '*HandRing*_JNT')
-        for jnt, i in zip(fngRingList, list(range(0, len(fngRingList)))):
-            newName = side + 'fngRingJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Fng - HandPinky
-        fngPinkyList = pm.ls(side + '*HandPinky*_JNT')
-        for jnt, i in zip(fngPinkyList, list(range(0, len(fngPinkyList)))):
-            newName = side + 'fngPinkyJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        ###
-        # Legs
-        legList = pm.ls(side + 'UpLeg_JNT', side + 'Leg_JNT')
-        for jnt, i in zip(legList, list(range(0, len(legList)))):
-            newName = side + 'legJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Foot
-        footList = pm.ls(side + '*Foot_JNT')
-        for jnt, i in zip(footList, list(range(0, len(footList)))):
-            newName = side + 'footJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Toe - FootExtraFinger
-        fngThumbList = pm.ls(side + '*FootExtraFinger*_JNT')
-        for jnt, i in zip(fngThumbList, list(range(0, len(fngThumbList)))):
-            newName = side + 'toeThumbJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Toe - FootIndex
-        fngIndexList = pm.ls(side + '*FootIndex*_JNT')
-        for jnt, i in zip(fngIndexList, list(range(0, len(fngIndexList)))):
-            newName = side + 'toeIndexJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Toe - FootMiddle
-        fngMidList = pm.ls(side + '*FootMiddle*_JNT')
-        for jnt, i in zip(fngMidList, list(range(0, len(fngMidList)))):
-            newName = side + 'toeMiddleJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Toe - FootRing
-        fngRingList = pm.ls(side + '*FootRing*_JNT')
-        for jnt, i in zip(fngRingList, list(range(0, len(fngRingList)))):
-            newName = side + 'toeRingJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-        # Toe - FootPinky
-        fngPinkyList = pm.ls(side + '*FootPinky*_JNT')
-        for jnt, i in zip(fngPinkyList, list(range(0, len(fngPinkyList)))):
-            newName = side + 'toePinkyJ' + name.getAlpha(i) + '_JNT'
-            pm.rename(jnt, newName)
-
-    # End Joint
-    endJointList = pm.ls(spineList[0], type='joint', dagObjects=True, leaf=True)
-    for endJnt in endJointList:
-        newName = str(endJnt.name())[:-5] + 'End_JNT'
-        pm.rename(endJnt, newName)
-
-    # delete HumanIK node
-    if deleteHumanIK:
-        hikNode = pm.ls(type=['HIKCharacterNode', 'HIKState2SK'])
-        pm.delete(hikNode)
+lockTransformation = lock_transformation  # pylint: disable=invalid-name
+jointDirection = joint_direction  # pylint: disable=invalid-name
+listHierarchy = list_hierarchy  # pylint: disable=invalid-name
+savePose = save_pose  # pylint: disable=invalid-name
+loadPose = load_pose  # pylint: disable=invalid-name
+saveProjectionPose = save_projection_pose  # pylint: disable=invalid-name
+saveTPose = save_t_pose  # pylint: disable=invalid-name
+loadProjectionPose = load_projection_pose  # pylint: disable=invalid-name
+loadTPose = load_t_pose  # pylint: disable=invalid-name
+setJointParallelToGrid = set_joint_parallel_to_grid  # pylint: disable=invalid-name
+setArmParallelToGrid = set_arm_parallel_to_grid  # pylint: disable=invalid-name
+setArmParallelToGrid_old = set_arm_parallel_to_grid_old  # pylint: disable=invalid-name

@@ -1,3 +1,7 @@
-from . import collision
+"""Matrix-based rigging utilities for Maya.
 
-__all__ = ['collision']
+Provides collision and constraint systems using matrix operations
+for efficient rigging workflows.
+"""
+
+from . import collision

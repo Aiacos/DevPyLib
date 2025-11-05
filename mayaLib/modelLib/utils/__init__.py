@@ -1,4 +1,8 @@
-from . import displayLayer
-from . import meshDirectConnection
+"""Modeling utility functions.
 
-__all__ = ["displayLayer", "meshDirectConnection"]
+Provides helper functions for display layers, mesh connections,
+and modeling operations.
+"""
+
+from . import display_layer
+from . import mesh_direct_connection

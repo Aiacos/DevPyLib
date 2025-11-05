@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""File and texture path utilities.
+
+Provides functions for managing texture file paths, UDIM sequences,
+and texture file organization.
+"""
+
 import os
 
 import pymel.core as pm
@@ -25,7 +31,7 @@ class TextureFile(object):  # ToDo: move in util?
 
         try:
             self._partition()
-        except Exception:
+        except (ValueError, IndexError):
             print('No matching pattern for texture')
 
     def _partition(self):
@@ -127,7 +133,7 @@ class TextureFileManager(object):
                 if d[geo_key][textureset_key]['Diffuse'] == {}:
                     try:
                         d[geo_key].pop(textureset_key)
-                    except Exception:
+                    except KeyError:
                         pass
         return d
 

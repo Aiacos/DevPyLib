@@ -80,7 +80,7 @@ def install_requirements(requirements_dir):
     except subprocess.TimeoutExpired:
         print("Error: pip install timed out after 5 minutes")
         return False
-    except Exception as e:
+    except (OSError, subprocess.SubprocessError) as e:
         print(f"An error occurred during installation: {e}")
         return False
 
@@ -102,7 +102,7 @@ try:
     if not cmds.commandPort(port, q=True):
         cmds.commandPort(n=port)
         print(f"Maya command port opened on: {port}")
-except Exception as e:
+except RuntimeError as e:
     print(f"Could not open command port {port}: {e}")
 
 # Add DevPyLib to Python path and import mayaLib
@@ -123,7 +123,7 @@ except ImportError as e:
     print(f"Error importing {libName}: {e}")
 
 # Create main menu (deferred to ensure Maya UI is ready)
-command = f"import mayaLib.guiLib.mainMenu as mm; libmenu = mm.MainMenu('{libDir}')"
+command = f"import mayaLib.guiLib.main_menu as mm; libmenu = mm.MainMenu('{libDir}')"
 cmds.evalDeferred(command, lowestPriority=True)
 
 print("DevPyLib setup complete!")

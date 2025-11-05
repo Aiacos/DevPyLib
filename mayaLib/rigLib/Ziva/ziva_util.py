@@ -1,3 +1,9 @@
+"""Ziva VFX general utilities and helpers.
+
+Provides common utility functions for working with Ziva VFX
+nodes and attributes.
+"""
+
 import pymel.core as pm
 
 from mayaLib.rigLib.utils import deform, common
@@ -37,7 +43,7 @@ def mirror_geo(geo_list):
         # Get the name of the original geometry
         mirror_geo_name = str(geo.name()).replace('_mirror', '')
         # BlendShape the original geometry with the mirrored one
-        deform.blendShapeDeformer(mirror_geo_name, [geo], mirror_geo_name + '_tmp_BS')
+        deform.blend_shape_deformer(mirror_geo_name, [geo], mirror_geo_name + '_tmp_BS')
         # Delete the history of the original geometry
         common.deleteHistory(mirror_geo_name)
         

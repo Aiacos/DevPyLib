@@ -24,10 +24,10 @@ Methods:
 
 import pymel.core as pm
 
-from mayaLib.shaderLib.base.shader_base import Shader_base
+from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
-class Principled_3dl(Shader_base):
+class Principled3dl(ShaderBase):
     """Create 3Delight Principled shader"""
 
     diffuse = 'color'

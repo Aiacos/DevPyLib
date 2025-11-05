@@ -1,3 +1,9 @@
+"""Matrix-based collision system for character rigging.
+
+Provides the Collider class for creating collision detection and response
+between controls and meshes using matrix operations for deformation.
+"""
+
 import pymel.core as pm
 
 

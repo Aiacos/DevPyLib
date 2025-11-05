@@ -1,5 +1,11 @@
 __author__ = 'Lorenzo Argentieri'
 
+"""Batch shader creation from texture directories.
+
+Provides tools for automatically creating shaders from organized
+texture file hierarchies with naming conventions.
+"""
+
 import pymel.core as pm
 
 from mayaLib.shaderLib import shader
@@ -9,14 +15,14 @@ from mayaLib.shaderLib.utils import texture_ext_path
 
 class ShadersManager():
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr',
-                 autoAssingShader=True):
+                 auto_assing_shader=True):
         """
         Initialize the ShadersManager class.
 
         Args:
             path (str): Directory path where textures are located. Defaults to the 'sourceimages' directory in the current workspace.
             ext (str): File extension for texture files. Defaults to 'exr'.
-            autoAssingShader (bool): Flag to automatically assign shaders to geometry. Defaults to True.
+            auto_assing_shader (bool): Flag to automatically assign shaders to geometry. Defaults to True.
 
         Initializes and manages shaders for geometry based on texture files found in the specified directory.
         Detects the active renderer and creates appropriate shaders for each geometry and texture set.
@@ -39,8 +45,8 @@ class ShadersManager():
                                                          geo_name=geo_key,
                                                          textureset_dict=textureset_dict)
 
-                    if autoAssingShader:
-                        currentShader.getShader().assign_shader(geo_key)
+                    if auto_assing_shader:
+                        currentShader.get_shader().assign_shader(geo_key)
 
                     break
                 else:
@@ -49,8 +55,8 @@ class ShadersManager():
                                                          geo_name=texture_set,
                                                          textureset_dict=textureset_dict)
 
-                    if autoAssingShader:
-                        currentShader.getShader().assign_shader(geo_key)
+                    if auto_assing_shader:
+                        currentShader.get_shader().assign_shader(geo_key)
 
         # set tx or tex file format
         if self.render_engine == 'arnold':

@@ -1,4 +1,8 @@
-from . import modelIssueFix
-from . import uv
+"""Base modeling classes and utilities.
 
-__all__ = ["modelIssueFix", "uv"]
+Provides foundational modeling utilities including UV tools
+and mesh issue fixing.
+"""
+
+from . import model_issue_fix
+from . import uv

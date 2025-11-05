@@ -1,3 +1,9 @@
+"""USD stage creation and management.
+
+Provides functions for creating and manipulating USD stages
+within Maya.
+"""
+
 import pymel.core as pm
 
 USD_PURPOSES = {"render", "proxy", "guide", "default"}

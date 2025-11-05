@@ -1,3 +1,9 @@
+"""Rope simulation test script.
+
+Demonstrates creating rope simulations using nCloth or
+other dynamics systems.
+"""
+
 import pymel.core as pm
 
 

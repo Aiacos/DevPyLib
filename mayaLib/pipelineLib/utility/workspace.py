@@ -1,3 +1,9 @@
+"""Maya workspace management utilities.
+
+Provides functions for managing Maya workspace paths, project
+settings, and file organization.
+"""
+
 import maya.cmds as cmd
 import pymel.core as pm
 

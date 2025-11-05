@@ -10,7 +10,7 @@ if pm.about(version=True) == '2022':
     import zBuilder.commands as zva_cmds
 
 
-def zPolyCombine(geos):
+def z_poly_combine(geos):
     """
     Combine multiple geometry objects into a single one using Ziva's command.
 
@@ -106,7 +106,7 @@ def ziva_check_intersection(geo1, geo2):
 
 
 # Rename
-def zivaRenameAll():
+def ziva_rename_all():
     """
     Rename all Ziva nodes in the scene.
     """
@@ -114,7 +114,7 @@ def zivaRenameAll():
 
 
 # Mirror
-def zivaMirror(from_side='L_', to_side='R_', suffix='_GEO'):
+def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
     """
     Mirror a Ziva setup from one side of the body to the other.
 
@@ -136,5 +136,5 @@ def zivaMirror(from_side='L_', to_side='R_', suffix='_GEO'):
 
 
 if __name__ == "__main__":
-    zivaRenameAll()
-    zivaMirror('R_', 'L_')
+    ziva_rename_all()
+    ziva_mirror('R_', 'L_')

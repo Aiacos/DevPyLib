@@ -1,50 +1,14 @@
+"""USD stage builder for Bifrost integration.
+
+Provides high-level composition of Bifrost graphs with Maya
+USD proxy stages.
+"""
+
 import maya.cmds as cmds
 
 from mayaLib.bifrostLib import bifrost_api as bifrost
 from mayaLib.bifrostLib import bifrost_util_nodes
-
-
-def getAllObjectUnderGroup(group, type="mesh", full_path=True):
-    """
-    Return all object of given type under group
-    Args:
-        group (string): group name
-        type (string): object type
-
-    Returns:
-        (string[]): object list
-
-    """
-
-    objList = None
-
-    if type == "mesh":
-        objList = [
-            cmds.listRelatives(o, p=1, fullPath=full_path)[0]
-            for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path)
-        ]
-
-    if type == "nurbsSurface":
-        objList = [
-            cmds.listRelatives(o, p=1, fullPath=full_path)[0]
-            for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path)
-        ]
-
-    if type == "transform":
-        geoList = [
-            cmds.listRelatives(o, p=1, fullPath=full_path)[0]
-            for o in cmds.listRelatives(group, ad=1, type="mesh", fullPath=full_path)
-        ]
-        objList = [
-            o
-            for o in cmds.listRelatives(group, ad=1, type=type, fullPath=full_path)
-            if o not in geoList
-        ]
-
-    objList = list(set(objList))
-    objList.sort()
-
-    return objList
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def get_all_deformed_and_constrained(group):
@@ -58,7 +22,7 @@ def get_all_deformed_and_constrained(group):
         (string[]): list of mesh without deformer
 
     """
-    mesh_list = getAllObjectUnderGroup(group, type="mesh")
+    mesh_list = list_objects_under_group(group, type="mesh")
 
     deformed_list = []
     undeformed_list = []
@@ -262,7 +226,8 @@ class USDCharacterBuild(object):
             bifrost.bf_add_input_port(
                 self.bifrost_shape, "output", "id_array", "array<long>"
             )
-        except Exception:
+        except RuntimeError:
+            # Port may already exist
             pass
 
         bifrost.bf_connect(
@@ -320,11 +285,15 @@ class USDCharacterBuild(object):
 
     def add_product(
         self,
-        deformed_geo_list=[],
-        undeformed_geo_list=[],
+        deformed_geo_list=None,
+        undeformed_geo_list=None,
         product_name="product",
-        custom_layer_data={},
+        custom_layer_data=None,
     ):
+        deformed_geo_list = deformed_geo_list or []
+        undeformed_geo_list = undeformed_geo_list or []
+        custom_layer_data = custom_layer_data or {}
+
         node_list = []
 
         # Publish Structure
@@ -1217,7 +1186,7 @@ if __name__ == "__main__":
     ## Use case
     to_delete = cmds.ls("*_bifrostGraph", "*_bifrostGraph?" "mayaUsdProxy*")
     cmds.delete(to_delete)
-    geo_list = getAllObjectUnderGroup("geo")
+    geo_list = list_objects_under_group("geo")
     print("Geo list: ", geo_list)
     usd_character_manager = USDCharacterBuild(
         geo_list, name="test", root_node="root", file_ext="usdc", debug=True
