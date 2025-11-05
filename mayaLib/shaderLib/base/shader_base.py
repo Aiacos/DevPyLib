@@ -324,8 +324,8 @@ class UsdPreviewSurface(ShaderBase):
             standard (bool): Flag to determine texture connection method. Default is True.
             shading_engine: Shading engine to use. Default is None.
         """
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
-        self.shader = Shader_base.get_shader(self)
+        ShaderBase.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        self.shader = ShaderBase.get_shader(self)
 
         # init faceColor
         self.shader.diffuseColor.set((0.2, 0.5, 0.8))

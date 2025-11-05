@@ -34,6 +34,27 @@ def get_maya_main_window():
 
 
 class PyQtMayaWindow(QtWidgets.QMainWindow):
+    """Qt main window integrated with Maya's UI system.
+
+    Provides a base class for creating PySide/PySide6 windows that integrate seamlessly
+    with Maya's main window and UI system. Automatically detects and connects to Maya's
+    main window as parent if not specified, allowing custom Qt widgets to be embedded
+    in Maya's interface.
+
+    Attributes:
+        parent: Parent widget (defaults to Maya main window)
+        unique_handle: Unique identifier string for the window
+
+    Example:
+        >>> class MyWindow(PyQtMayaWindow):
+        ...     def set_window(self):
+        ...         # Add custom widgets here
+        ...         layout = QtWidgets.QVBoxLayout()
+        ...         button = QtWidgets.QPushButton("Click Me")
+        ...         self.setCentralWidget(button)
+        >>> window = MyWindow()
+        >>> window.show()
+    """
     def __init__(self, parent=None, unique_handle="PyQtWindow"):
         """Initialize PyQtMayaWindow.
 

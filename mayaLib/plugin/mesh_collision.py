@@ -60,6 +60,25 @@ else:
 
 # Node definition
 class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
+    """Maya deformer plugin for mesh collision with bulge effects.
+
+    Implements a deformation node that collides mesh vertices against a collision
+    surface and pushes them away with optional bulge deformation for organic results.
+    Supports backface culling, sculpt mode locking, and customizable bulge curves.
+
+    Attributes:
+        collider: Input collider mesh geometry
+        offset: Offset distance along collider normals
+        bulge: Bulge strength multiplier (0-10)
+        bulgeextend: Maximum bulge range (0-10)
+        bulgeshape: Ramp curve for bulge falloff
+        backface_culling: Enable/disable backface collision detection
+        sculpt_mode: Lock deformation for sculpting
+
+    Notes:
+        This is a Maya Python API 2.0 deformer plugin. Must be loaded via
+        the Plug-in Manager or programmatically via pm.loadPlugin().
+    """
     # class variables
     mm_accel_params = OpenMaya.MMeshIsectAccelParams()
     intersector = OpenMaya.MMeshIntersector()
@@ -68,6 +87,7 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
     base_collider_points = OpenMaya.MFloatPointArray()
 
     def __init__(self):
+        """Initialize CollisionDeformer deformer node."""
         OpenMayaMPx.MPxDeformerNode.__init__(self)
 
     def _get_input_mesh_data(self, data_block, plug):
@@ -448,6 +468,11 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
     # accessoryNodeSetup used to initialize the ramp attributes
     def accessoryNodeSetup(self, cmd):
+        """Initialize ramp attributes for the bulge shape curve.
+
+        Args:
+            cmd (MDGModifier): Modifier for adding dependency nodes.
+        """
         this_node = self.thisMObject()
 
         bulgeshape_handle = OpenMaya.MRampAttribute(this_node, self.bulgeshape)
@@ -472,6 +497,14 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
 
 def float_m_matrix_to_m_matrix(fm):
+    """Convert MFloatMatrix to MMatrix.
+
+    Args:
+        fm (MFloatMatrix): Float matrix to convert.
+
+    Returns:
+        MMatrix: Standard precision matrix.
+    """
     mat = OpenMaya.MMatrix()
     OpenMaya.MScriptUtil.createMatrixFromList([
         fm(0, 0), fm(0, 1), fm(0, 2), fm(0, 3),
@@ -482,11 +515,20 @@ def float_m_matrix_to_m_matrix(fm):
 
 
 def node_creator():
+    """Create and return a new CollisionDeformer node instance.
+
+    Returns:
+        CollisionDeformer: New instance of the deformer.
+    """
     return OpenMayaMPx.asMPxPtr(CollisionDeformer())
 
 
 # initializer
 def node_initializer():
+    """Initialize CollisionDeformer node attributes.
+
+    Creates and registers all input/output attributes for the deformer.
+    """
     g_attr = OpenMaya.MFnGenericAttribute()
 
     CollisionDeformer.collider = g_attr.create("collider", "coll")
@@ -576,6 +618,14 @@ def node_initializer():
 
 # initialize the script plug-in
 def initialize_plugin(mobject):
+    """Register the CollisionDeformer plugin with Maya.
+
+    Args:
+        mobject (MObject): The plugin's MObject passed by Maya.
+
+    Raises:
+        RuntimeError: If node registration fails.
+    """
     mplugin = OpenMayaMPx.MFnPlugin(mobject, "Lorenzo Argentieri", "0.1")
     try:
         mplugin.registerNode(K_PLUGIN_NODE_TYPE_NAME, COLLISION_DEFORMER_ID, node_creator, node_initializer,
@@ -586,6 +636,14 @@ def initialize_plugin(mobject):
 
 # uninitialize the script plug-in
 def uninitialize_plugin(mobject):
+    """Unregister the CollisionDeformer plugin from Maya.
+
+    Args:
+        mobject (MObject): The plugin's MObject passed by Maya.
+
+    Raises:
+        RuntimeError: If node deregistration fails.
+    """
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
     try:
         mplugin.deregisterNode(COLLISION_DEFORMER_ID)

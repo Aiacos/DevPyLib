@@ -56,8 +56,8 @@ class Principled3dl(ShaderBase):
             shading_engine (str): Shading engine name (Default: None)
         """
         # init base class
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
-        self.shader = Shader_base.get_shader(self)
+        ShaderBase.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        self.shader = ShaderBase.get_shader(self)
 
         # init faceColor
         self.shader.color.set((0.2, 0.5, 0.8))

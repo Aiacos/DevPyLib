@@ -11,6 +11,22 @@ import pymel.core as pm
 
 
 class Menu():
+    """Maya menu creation and management utility.
+
+    Provides a high-level interface for creating Maya menus and menu items with
+    support for submenus, checkboxes, and custom commands. Simplifies menu creation
+    by handling PyMEL callbacks and menu hierarchy automatically.
+
+    Attributes:
+        lib_menu: The main PyMEL menu object
+        item: Dictionary of menu items keyed by name
+
+    Example:
+        >>> menu = Menu('MyMenu')
+        >>> menu.add_menuitem('Test Item', cmd=my_function)
+        >>> submenu = menu.add_submenu('Submenu')
+        >>> menu.add_menuitem('Submenu Item', parent=submenu, cmd=another_function)
+    """
     g_main_window = maya.mel.eval('$tmpVar=$gMainWindow')
 
     def __init__(self, menu_name='test', parent=g_main_window):

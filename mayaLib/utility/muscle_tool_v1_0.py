@@ -17,6 +17,14 @@ from maya import mel
 
 
 def apply_collision_solve_values(arg=None):
+    """Apply collision solve preset values to nCloth attributes.
+
+    Sets predefined values for cloth simulation collision solving,
+    including thickness, stretch resistance, rigidity, and pressure.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     mc.floatField('clothThickness', e=True, v=0.01)
     mc.intField('stretchResistance', e=True, v=20)
     mc.floatField('rigidity', e=True, v=0)
@@ -45,6 +53,14 @@ def apply_collision_solve_values(arg=None):
 
 
 def apply_fill_values(arg=None):
+    """Apply expand and fill preset values to nCloth attributes.
+
+    Sets predefined values for cloth simulation with lower stretch resistance
+    for expansion behavior.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     mc.floatField('clothThickness', e=True, v=0.01)
     mc.intField('stretchResistance', e=True, v=1)
     mc.floatField('rigidity', e=True, v=0)
@@ -72,6 +88,14 @@ def apply_fill_values(arg=None):
     mc.checkBox('restLengthScale', e=True, en=True, v=False)
 
 def apply_values(arg=None):
+    """Apply current UI values to all nCloth nodes in the scene.
+
+    Reads values from UI fields (thickness, resistance, pressure, etc.) and
+    applies them to all nCloth nodes. Handles rest length scale checkbox logic.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     n_cloth_list = mc.ls(type='nCloth', fl=True)
     for each in n_cloth_list:
         mc.setAttr(each + '.thickness', mc.floatField('clothThickness', q=True, v=True))
@@ -103,6 +127,14 @@ def apply_values(arg=None):
             mc.setAttr(each + '.restLengthScale', 1)
 
 def apply_values_rigid(arg=None):
+    """Apply current UI values to all nRigid nodes in the scene.
+
+    Reads values from UI fields (thickness, push out, crossover push)
+    and applies them to all nRigid nodes.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     n_rigid_list = mc.ls(type='nRigid', fl=True)
     for each in n_rigid_list:
         mc.setAttr(each + '.thickness', mc.floatField('rigidThickness', q=True, v=True))
@@ -111,6 +143,14 @@ def apply_values_rigid(arg=None):
         mc.setAttr(each + '.pushOutRadius', 1)
 
 def clear_ncloth(arg=None):
+    """Remove nCloth deformer from selected objects and clean up mesh history.
+
+    Deletes nCloth nodes and intermediate mesh objects while preserving the
+    original mesh geometry. Handles blendShape cleanup if present.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, fl=True)
     remove = []
     for each in sel:
@@ -145,6 +185,14 @@ def clear_ncloth(arg=None):
             mc.hyperShade(a='initialShadingGroup')
 
 def clear_nrigid(arg=None):
+    """Remove nRigid passive collider from selected objects.
+
+    Deletes nRigid nodes connected to selected objects and resets
+    shading to initial shading group.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, fl=True)
     for each in sel:
         sel_children = mc.listRelatives(each, c=True)
@@ -156,9 +204,19 @@ def clear_nrigid(arg=None):
                     mc.sets(sel, e=True, fe='initialShadingGroup')
 
 def reset_ui(arg=None):
+    """Refresh the muscle tool UI by recreating the window.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     muscle_tool()
 
 def make_shaders():
+    """Create muscle and rigid Lambert shaders for visualization.
+
+    Creates two shaders: 'rigidLambert' (dark semi-transparent) and
+    'muscleLambert' (pink) if they don't already exist.
+    """
     shader_name = 'rigidLambert'
     if mc.objExists(shader_name) == 0:
         mc.shadingNode('lambert', asShader=True, n=shader_name)
@@ -175,6 +233,14 @@ def make_shaders():
     mc.setAttr(shader_name2 + '.color', 1, .5, .5)
 
 def make_rigid(arg=None):
+    """Convert selected objects to nRigid passive colliders.
+
+    Creates nRigid nodes for selected meshes with passive collider setup
+    and applies rigid shader. Sets gravity to zero for simulation.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel_rigids = mc.ls(sl=True, fl=True)
     make_shaders()
     for this in sel_rigids:
@@ -193,6 +259,15 @@ def make_rigid(arg=None):
     apply_values_rigid()
 
 def make_muscle(arg=None):
+    """Convert selected objects to nCloth muscle simulation objects.
+
+    Creates nCloth nodes for selected meshes and applies muscle shader.
+    Sets gravity to zero for simulation. Filters out objects with
+    multiple connections.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel_muscles = mc.ls(sl=True, fl=True)
     make_shaders()
     for this in sel_muscles:
@@ -211,10 +286,20 @@ def make_muscle(arg=None):
     apply_values()
 
 def reverse_normal(arg=None):
+    """Reverse mesh normals for selected objects.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel_rigids = mc.ls(sl=True, fl=True)
     mc.polyNormal(sel_rigids, nm=0, unm=1, ch=0)
 
 def select_nrigid(arg=None):
+    """Select all mesh objects with nRigid deformers.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel_rigid = mc.ls(type='nRigid')
     sel = []
     for each in sel_rigid:
@@ -223,6 +308,11 @@ def select_nrigid(arg=None):
     mc.select(sel)
 
 def select_ncloth(arg=None):
+    """Select all mesh objects with nCloth deformers.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel_n_cloth = mc.ls(type='nCloth')
     sel = []
     for each in sel_n_cloth:
@@ -231,6 +321,11 @@ def select_ncloth(arg=None):
     mc.select(sel)
 
 def relax_edges(arg=None):
+    """Relax mesh edges on selected objects.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, o=True, fl=True)
     for each in sel:
         mc.polyMoveEdge(each, ch=0, ran=0, lc=0, lsx=0)
@@ -238,6 +333,11 @@ def relax_edges(arg=None):
     mc.select(sel)
 
 def move_along_normal(arg=None):
+    """Inflate mesh edges by moving vertices along surface normals.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, o=True, fl=True)
     for each in sel:
         mc.polyMoveVertex(each, ch=0, ran=0, ltz=.01)
@@ -245,18 +345,49 @@ def move_along_normal(arg=None):
     mc.select(sel)
 
 def time_reset(arg=None):
+    """Reset timeline to frame 1.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     mc.currentTime(1)
+
 def time_next(arg=None):
+    """Advance timeline to next frame.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     mc.currentTime(mc.currentTime(q=True) +1)
+
 def time_stop(arg=None):
+    """Stop timeline playback.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     mc.play(st=False)
+
 def time_play(arg=None):
+    """Toggle timeline playback on/off.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     if mc.play(q=True, st=True):
         mc.play(st=False)
     else:
         mc.play(st=True)
 
 def freeze_setup(arg=None):
+    """Create blendShape weight painting setup for selected nCloth mesh.
+
+    Creates a duplicate mesh with blendShape connection, enabling weight
+    painting on cloth deformation.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     connections = mc.listConnections(mc.listRelatives(mc.ls(sl=True, fl=True)))
 
     if any('nCloth' in s for s in connections) and any('blendShape' not in k for k in connections):
@@ -274,10 +405,20 @@ def freeze_setup(arg=None):
         mc.ArtPaintBlendShapeWeightsTool(sel)
 
 def paint_weight(arg=None):
+    """Open blendShape weight painting tool for selected object.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     if mc.listConnections(mc.listRelatives(mc.ls(sl=True, fl=True))[0], type='blendShape') is not None:
         mc.ArtPaintBlendShapeWeightsTool()
 
 def fix_shape_name(arg=None):
+    """Rename mesh shape nodes to match their parent transform names.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, fl=True)
     for this in sel:
         shapes = mc.listRelatives(this, c=True)
@@ -288,6 +429,11 @@ def fix_shape_name(arg=None):
                 mc.rename(mc.listRelatives(each, c=True)[0], each + 'Shape')
 
 def toggle_io(arg=None):
+    """Toggle intermediate object flag between two mesh shapes.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, fl=True)
     for each in sel:
         shapes = mc.listRelatives(each, c=True)
@@ -300,6 +446,11 @@ def toggle_io(arg=None):
                 mc.setAttr(shapes[1] + '.intermediateObject', 0)
 
 def delete_io(arg=None):
+    """Delete intermediate object mesh shape from selected object.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, fl=True)[0]
     shapes = mc.listRelatives(sel, c=True)
 
@@ -319,11 +470,21 @@ def delete_io(arg=None):
         mc.rename(mc.listRelatives(sel, c=True)[0], sel + 'Shape')
 
 def transform_constraint(arg=None):
+    """Apply nConstraint transform to selected objects.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.ls(sl=True, o=True)
     mc.nConstraintTransform()
     mc.select(mc.listRelatives(sel, p=True))
 
 def remove_constraint(arg=None):
+    """Remove nConstraint components from selected objects.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     sel = mc.listRelatives(mc.ls(sl=True, fl=True), c=True, type='mesh')
     for each in sel:
         if not mc.getAttr(each + '.intermediateObject'):
@@ -336,6 +497,11 @@ def remove_constraint(arg=None):
                     mc.delete(each)
 
 def rest_length_scale_box(arg=None):
+    """Update rest length scale value based on checkbox state.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     if mc.checkBox('restLengthScale', q=True, v=True):
         n_cloth_list = mc.ls(type='nCloth', fl=True)
         for each in n_cloth_list:
@@ -347,6 +513,14 @@ def rest_length_scale_box(arg=None):
     apply_values()
 
 def muscle_tool(arg=None):
+    """Create and display the muscle tool UI window.
+
+    Creates a comprehensive muscle tool interface with nCloth, nRigid, skin,
+    freeze, time, and shape management controls.
+
+    Args:
+        arg (None): Unused callback argument (optional for MEL button callbacks).
+    """
     window_name = "Muscle_Tool"
     window_size = (310, 360)
     if mc.window(window_name, exists=True):

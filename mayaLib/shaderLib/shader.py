@@ -21,6 +21,26 @@ from mayaLib.shaderLib.base.shader_base import ShaderBase, UsdPreviewSurface
 
 
 class TextureShader():
+    """Automatic shader creation from textures with renderer detection.
+
+    Automatically creates shaders with connected textures based on the active renderer
+    (Arnold, RenderMan, or standard). Handles texture node creation, material assignment,
+    and place2D texture node optimization automatically.
+
+    Attributes:
+        renderer: Detected active renderer (arnold, renderman, etc.)
+        shader: The created shader object
+        place_node: Optional shared place2dTexture node
+        filenode_dict: Dictionary of texture file nodes by channel
+
+    Example:
+        >>> ts = TextureShader(
+        ...     texture_path='/textures/',
+        ...     geo_name='character',
+        ...     textureset_dict={'diffuse': 'char_diffuse.exr', 'normal': 'char_normal.exr'}
+        ... )
+        >>> shader = ts.get_shader()
+    """
     def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
         """
         Initialize the class.
@@ -101,6 +121,18 @@ class TextureShader():
         return self.shader
 
 class BuildAllShaders(object):
+    """Batch shader builder for texture directories.
+
+    Automatically discovers and creates TextureShader objects for all texture sets
+    found in a directory. Simplifies bulk shader creation from organized texture folders.
+
+    Attributes:
+        folder: Path to folder containing organized texture files
+
+    Example:
+        >>> builder = BuildAllShaders('/path/to/textures/')
+        >>> # Automatically creates shaders for all texture sets found
+    """
     def __init__(self, folder):
         """
         Initialize the BuildAllShaders class.
@@ -158,7 +190,7 @@ class ConvertShaders(object):
             print('TEXTURE LIST: ', texture_list)
 
             if to_shader_type == 'standard':
-                Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                ShaderBase(shader_name, folder, texture_list, shading_engine=shading_engine)
                 #self.reconnect_filenode(shader, base_shader)
                 # base_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'usd':
@@ -266,12 +298,12 @@ class ConvertShaders(object):
             new_shader (Shader_base): The shader to copy the file nodes to.
         """
         if shader.type() == 'standardSurface':
-            diffuse_socket = pm.PyNode(shader.name() + '.' + Shader_base.diffuse)
-            metallic_socket = pm.PyNode(shader.name() + '.' + Shader_base.metallic)
-            roughness_socket = pm.PyNode(shader.name() + '.' + Shader_base.roughness)
-            emission_socket = pm.PyNode(shader.name() + '.' + Shader_base.emission)
-            alpha_socket = pm.PyNode(shader.name() + '.' + Shader_base.alpha)
-            normal_socket = pm.PyNode(shader.name() + '.' + Shader_base.normal)
+            diffuse_socket = pm.PyNode(shader.name() + '.' + ShaderBase.diffuse)
+            metallic_socket = pm.PyNode(shader.name() + '.' + ShaderBase.metallic)
+            roughness_socket = pm.PyNode(shader.name() + '.' + ShaderBase.roughness)
+            emission_socket = pm.PyNode(shader.name() + '.' + ShaderBase.emission)
+            alpha_socket = pm.PyNode(shader.name() + '.' + ShaderBase.alpha)
+            normal_socket = pm.PyNode(shader.name() + '.' + ShaderBase.normal)
 
         if shader.type() == 'usdPreviewSurface':
             diffuse_socket = pm.PyNode(shader.name() + '.' + UsdPreviewSurface.diffuse)
@@ -364,7 +396,7 @@ class ShaderFromJson(object):
             shading_engine = pm.ls(shader_name)[-1].connections(type='shadingEngine')[-1]
 
             if to_shader_type == 'standard':
-                Shader_base(shader_name, folder, texture_list, shading_engine=shading_engine)
+                ShaderBase(shader_name, folder, texture_list, shading_engine=shading_engine)
                 # base_shader.assign_shader(assigned_geometry)
             elif to_shader_type == 'usd':
                 UsdPreviewSurface(shader_name, folder, texture_list, shading_engine=shading_engine)

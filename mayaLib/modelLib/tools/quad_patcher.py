@@ -10,6 +10,8 @@
 ****************************************************************************"""
 
 import random
+from dataclasses import dataclass, field
+from typing import List, Tuple
 
 import maya.cmds as mc
 import maya.mel as mel
@@ -17,51 +19,92 @@ from maya import OpenMaya
 
 WINDOW_NAME = "quadPatcher"
 
-# Runtime globals initialised within the UI callbacks.
-obj_name_dup = None
-obj_name_orig = None
-side_a_bridge_node = ()
-side_b_bridge_node = ()
-side_c_bridge_node = ()
-ordered_edges = []
-ordered_edge_components = []
-side_a_edges = []
-ordered_edges_extended = []
-ordered_edges_components_extended = []
-side_a_edge_components = []
-side_a_len = 0
-side_b_len = 0
-side_b_remove_set = None
-side_c_remove_set = None
-div_offset = 0
-dup_base_verts = []
-dup_edges_set = None
-new_created_verts = []
-inset_node = ()
-relax_nodes = []
-smooth_nodes = []
-dup_faces_to_hide = []
-sel_edges_orig = []
-fm_transfer_attributes_node = ()
-wrap_base_mesh = []
-live_obj = []
-face_mode_edge_components_orig_set = None
-is_face_mode = False
-sel_edges = []
-sel_obj = ""
-end_offset = 0
-ordered_whole_border_components = []
-ordered_whole_border_components_ext = []
-whole_border = []
-ordered_whole_border = []
-close_bridge_node = ()
-end_a_orig = ""
-end_b_orig = ""
-close_side_a_bridge_node = ()
-close_side_b_bridge_node = ()
-close_side_c_bridge_node = ()
-side_b1_edges = []
-side_c1_edges = []
+
+@dataclass
+class QuadPatcherState:
+    """Encapsulates all runtime state for the quad patcher tool.
+
+    This replaces 42+ global variables with a single state object
+    that can be passed to functions or stored as a window attribute.
+    """
+    # Object names
+    obj_name_dup: str = ""
+    obj_name_orig: str = ""
+    sel_obj: str = ""
+
+    # Bridge nodes
+    side_a_bridge_node: Tuple = ()
+    side_b_bridge_node: Tuple = ()
+    side_c_bridge_node: Tuple = ()
+    close_bridge_node: Tuple = ()
+    close_side_a_bridge_node: Tuple = ()
+    close_side_b_bridge_node: Tuple = ()
+    close_side_c_bridge_node: Tuple = ()
+    inset_node: Tuple = ()
+    fm_transfer_attributes_node: Tuple = ()
+
+    # Edge data
+    ordered_edges: List = field(default_factory=list)
+    ordered_edge_components: List = field(default_factory=list)
+    ordered_edges_extended: List = field(default_factory=list)
+    ordered_edges_components_extended: List = field(default_factory=list)
+    ordered_whole_border: List = field(default_factory=list)
+    ordered_whole_border_components: List = field(default_factory=list)
+    ordered_whole_border_components_ext: List = field(default_factory=list)
+    whole_border: List = field(default_factory=list)
+
+    side_a_edges: List = field(default_factory=list)
+    side_a_edge_components: List = field(default_factory=list)
+    side_b1_edges: List = field(default_factory=list)
+    side_c1_edges: List = field(default_factory=list)
+    sel_edges: List = field(default_factory=list)
+    sel_edges_orig: List = field(default_factory=list)
+
+    # Vertex and face data
+    dup_base_verts: List = field(default_factory=list)
+    new_created_verts: List = field(default_factory=list)
+    dup_faces_to_hide: List = field(default_factory=list)
+
+    # Sets
+    dup_edges_set: str = None
+    side_b_remove_set: str = None
+    side_c_remove_set: str = None
+    face_mode_edge_components_orig_set: str = None
+
+    # Deformer nodes
+    relax_nodes: List = field(default_factory=list)
+    smooth_nodes: List = field(default_factory=list)
+    wrap_base_mesh: List = field(default_factory=list)
+    live_obj: List = field(default_factory=list)
+
+    # Numeric parameters
+    side_a_len: int = 0
+    side_b_len: int = 0
+    div_offset: int = 0
+    end_offset: int = 0
+
+    # Originals for extrude mode
+    end_a_orig: str = ""
+    end_b_orig: str = ""
+
+    # Mode flags
+    is_face_mode: bool = False
+
+
+# Global state instance - accessed by UI callbacks
+_state = QuadPatcherState()
+
+
+def _get_state() -> QuadPatcherState:
+    """Get the global state instance."""
+    global _state
+    return _state
+
+
+def _reset_state():
+    """Reset the global state to initial values."""
+    global _state
+    _state = QuadPatcherState()
 
 
 def face_checker(_unused_arg=None):
@@ -138,38 +181,32 @@ def quad_patch_init(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
-    if not is_face_mode:
+    state = _get_state()
+
+    if not state.is_face_mode:
         edge_checker()
+
     # Disable buttons and sliders in the UI
     mc.button("edgeBorderMode", label="Edge Border Mode", en=0, e=True)
     mc.button("faceMode", label="Face Mode", en=0, e=True)
     mc.button("extrudeMode", label="Extrude Mode", en=0, e=True)
     mc.intSliderGrp("extrudeSlider", en=0, e=True)
 
-    # Declare global variables
-    global obj_name_dup, obj_name_orig, side_a_bridge_node, side_b_bridge_node
-    global side_c_bridge_node, ordered_edges, ordered_edge_components, side_a_edges
-    global ordered_edges_extended, ordered_edges_components_extended, side_a_edge_components
-    global side_a_len, side_b_len, side_b_remove_set, side_c_remove_set, div_offset
-    global dup_base_verts, dup_edges_set, new_created_verts, inset_node
-    global relax_nodes, smooth_nodes, dup_faces_to_hide
-    global sel_edges_orig, fm_transfer_attributes_node, wrap_base_mesh
-
     # Source object
-    sel_edges_orig = mc.ls(sl=True, fl=True)
-    mc.polyListComponentConversion(sel_edges_orig, tv=True)
-    obj_name_orig = sel_edges_orig[0].split(".")[0]
+    state.sel_edges_orig = mc.ls(sl=True, fl=True)
+    mc.polyListComponentConversion(state.sel_edges_orig, tv=True)
+    state.obj_name_orig = state.sel_edges_orig[0].split(".")[0]
 
     # Duplicate the original object
-    obj_name_dup = mc.duplicate(
-        obj_name_orig,
-        n=f"quadPatcher{random.randint(1000, 9999)}_{obj_name_orig}",
+    state.obj_name_dup = mc.duplicate(
+        state.obj_name_orig,
+        n=f"quadPatcher{random.randint(1000, 9999)}_{state.obj_name_orig}",
     )[0]
 
     # Prepare the duplicated edges
-    sel_edges = [f"{obj_name_dup}.{each.split('.')[1]}" for each in sel_edges_orig]
+    sel_edges = [f"{state.obj_name_dup}.{each.split('.')[1]}" for each in state.sel_edges_orig]
     mc.select(sel_edges)
-    dup_edges_set = mc.sets(
+    state.dup_edges_set = mc.sets(
         n=f"quadPatcher{random.randint(1000, 9999)}_dupSet"
     )
     sel_verts = mc.ls(mc.polyListComponentConversion(sel_edges, tv=True), fl=True)
@@ -178,95 +215,95 @@ def quad_patch_init(_unused_arg=None):
     # Remove unnecessary faces from the duplicated object
     dup_face_delete_set = [
         x
-        for x in mc.ls(mc.polyListComponentConversion(obj_name_dup, tf=True), fl=True)
+        for x in mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tf=True), fl=True)
         if x not in sel_faces
     ]
     mc.delete(dup_face_delete_set)
-    mc.select(dup_edges_set)
+    mc.select(state.dup_edges_set)
 
     sel_edges = mc.ls(sl=True, fl=True)
-    dup_base_verts = mc.ls(mc.polyListComponentConversion(obj_name_dup, tv=True), fl=True)
+    state.dup_base_verts = mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tv=True), fl=True)
 
     # Calculate side lengths
-    side_a_len = int(len(sel_edges) / 4)
-    side_b_len = int((len(sel_edges) - (side_a_len * 2)) / 2)
+    state.side_a_len = int(len(sel_edges) / 4)
+    state.side_b_len = int((len(sel_edges) - (state.side_a_len * 2)) / 2)
     if len(sel_edges) == 12:
-        side_a_len = 1
-        side_b_len = 5
+        state.side_a_len = 1
+        state.side_b_len = 5
     elif len(sel_edges) == 10:
-        side_a_len = 1
-        side_b_len = 4
+        state.side_a_len = 1
+        state.side_b_len = 4
     elif len(sel_edges) == 8:
-        side_a_len = 1
-        side_b_len = 3
+        state.side_a_len = 1
+        state.side_b_len = 3
 
     # Order edges for processing
-    ordered_edges = initiate(sel_edges)
-    ordered_edge_components = [
-        f"{obj_name_dup}.e[{each}]" for each in ordered_edges
+    state.ordered_edges = initiate(sel_edges)
+    state.ordered_edge_components = [
+        f"{state.obj_name_dup}.e[{each}]" for each in state.ordered_edges
     ]
 
     # Wrap duplicated edges to the original object
-    mc.select(sel_edges, obj_name_orig)
+    mc.select(sel_edges, state.obj_name_orig)
     mc.CreateWrap()
-    wrap_node = mc.listConnections(obj_name_orig, type="wrap")[0]
-    wrap_base_mesh = mc.listConnections(f"{wrap_node}.basePoints")
+    wrap_node = mc.listConnections(state.obj_name_orig, type="wrap")[0]
+    state.wrap_base_mesh = mc.listConnections(f"{wrap_node}.basePoints")
     mc.setAttr(f"{wrap_node}.weightThreshold", 0)
     mc.setAttr(f"{wrap_node}.maxDistance", 1)
     mc.setAttr(f"{wrap_node}.autoWeightThreshold", 1)
     mc.setAttr(f"{wrap_node}.exclusiveBind", 0)
 
     # Setup for SideA
-    ordered_edges_extended = ordered_edges * 3
-    ordered_edges_components_extended = ordered_edge_components * 3
+    state.ordered_edges_extended = state.ordered_edges * 3
+    state.ordered_edges_components_extended = state.ordered_edge_components * 3
 
-    mc.intSliderGrp("rotationSlider", e=True, v=side_a_len)
-    offset_num = side_a_len * 2
+    mc.intSliderGrp("rotationSlider", e=True, v=state.side_a_len)
+    offset_num = state.side_a_len * 2
     mc.intSliderGrp("rotationSlider", e=True, v=offset_num)
 
-    side_a_edges = (
-        ordered_edges_extended[offset_num : side_a_len + offset_num]
-        + ordered_edges_extended[
-            side_a_len + side_b_len + offset_num : side_a_len * 2 + side_b_len + offset_num
+    state.side_a_edges = (
+        state.ordered_edges_extended[offset_num : state.side_a_len + offset_num]
+        + state.ordered_edges_extended[
+            state.side_a_len + state.side_b_len + offset_num : state.side_a_len * 2 + state.side_b_len + offset_num
         ]
     )
-    side_a_edge_components = (
-        ordered_edges_components_extended[offset_num : side_a_len + offset_num]
-        + ordered_edges_components_extended[
-            side_a_len + side_b_len + offset_num : side_a_len * 2 + side_b_len + offset_num
+    state.side_a_edge_components = (
+        state.ordered_edges_components_extended[offset_num : state.side_a_len + offset_num]
+        + state.ordered_edges_components_extended[
+            state.side_a_len + state.side_b_len + offset_num : state.side_a_len * 2 + state.side_b_len + offset_num
         ]
     )
 
     # Remove edges for SideB
     side_b_remove = [
-        ordered_edges_components_extended[offset_num + side_a_len],
-        ordered_edges_components_extended[side_a_len + offset_num + side_b_len - 1],
+        state.ordered_edges_components_extended[offset_num + state.side_a_len],
+        state.ordered_edges_components_extended[state.side_a_len + offset_num + state.side_b_len - 1],
     ]
     mc.select(side_b_remove)
-    side_b_remove_set = mc.sets(
+    state.side_b_remove_set = mc.sets(
         n=f"quadPatcher{random.randint(1000, 9999)}_sideBRemoveSet"
     )
 
     # Remove edges for SideC
     side_c_remove = [
-        ordered_edges_components_extended[offset_num + (2 * side_a_len) + side_b_len],
-        ordered_edges_components_extended[(2 * side_a_len) + offset_num + (2 * side_b_len) - 1],
+        state.ordered_edges_components_extended[offset_num + (2 * state.side_a_len) + state.side_b_len],
+        state.ordered_edges_components_extended[(2 * state.side_a_len) + offset_num + (2 * state.side_b_len) - 1],
     ]
     mc.select(side_c_remove)
-    side_c_remove_set = mc.sets(
+    state.side_c_remove_set = mc.sets(
         n=f"quadPatcher{random.randint(1000, 9999)}_sideCRemoveSet"
     )
 
     # Transform components
-    smooth_nodes = [
-        mc.polyMoveEdge(sel_edges_orig, ch=1, random=0, localCenter=0, lsx=1)[0]
+    state.smooth_nodes = [
+        mc.polyMoveEdge(state.sel_edges_orig, ch=1, random=0, localCenter=0, lsx=1)[0]
         for _ in range(3)
     ]
 
     # Create edge bridges
-    mc.select(side_a_edge_components, r=True)
-    side_a_bridge_node = mc.polyBridgeEdge(
-        divisions=side_b_len - 3,
+    mc.select(state.side_a_edge_components, r=True)
+    state.side_a_bridge_node = mc.polyBridgeEdge(
+        divisions=state.side_b_len - 3,
         ch=True,
         twist=0,
         taper=1,
@@ -275,67 +312,67 @@ def quad_patch_init(_unused_arg=None):
     )
 
     side_b_edge_loop = mc.ls(
-        mc.polySelect(q=True, eb=ordered_edges_extended[offset_num + side_a_len], ass=True),
+        mc.polySelect(q=True, eb=state.ordered_edges_extended[offset_num + state.side_a_len], ass=True),
         fl=True,
     )
-    side_b_edge_remove = mc.sets(side_b_remove_set, q=True)
+    side_b_edge_remove = mc.sets(state.side_b_remove_set, q=True)
     side_b_edge_components = [x for x in side_b_edge_loop if x not in side_b_edge_remove]
     mc.select(side_b_edge_components, r=True)
-    side_b_bridge_node = mc.polyBridgeEdge(
+    state.side_b_bridge_node = mc.polyBridgeEdge(
         divisions=0, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
     side_c_edge_loop = mc.ls(
         mc.polySelect(
             q=True,
-            eb=ordered_edges_extended[offset_num + (2 * side_a_len) + side_b_len],
+            eb=state.ordered_edges_extended[offset_num + (2 * state.side_a_len) + state.side_b_len],
             ass=True,
         ),
         fl=True,
     )
-    side_c_edge_remove = mc.sets(side_c_remove_set, q=True)
+    side_c_edge_remove = mc.sets(state.side_c_remove_set, q=True)
     side_c_edge_components = [x for x in side_c_edge_loop if x not in side_c_edge_remove]
     mc.select(side_c_edge_components, r=True)
-    side_c_bridge_node = mc.polyBridgeEdge(
+    state.side_c_bridge_node = mc.polyBridgeEdge(
         divisions=0, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
     # Configure UI sliders
     mc.select(cl=True)
     mc.intSliderGrp(
-        "rotationSlider", e=True, v=side_a_len * 2, max=len(ordered_edges), min=0
+        "rotationSlider", e=True, v=state.side_a_len * 2, max=len(state.ordered_edges), min=0
     )
     mc.intSliderGrp(
         "divisionSlider",
         e=True,
-        v=mc.getAttr(f"{side_a_bridge_node[0]}.divisions"),
-        max=(side_b_len - 2) * 2 - (side_b_len - side_a_len),
+        v=mc.getAttr(f"{state.side_a_bridge_node[0]}.divisions"),
+        max=(state.side_b_len - 2) * 2 - (state.side_b_len - state.side_a_len),
     )
-    div_offset = 0
+    state.div_offset = 0
 
     # Identify newly created vertices and faces
-    new_created_verts = [
+    state.new_created_verts = [
         x
-        for x in mc.ls(mc.polyListComponentConversion(obj_name_dup, tv=True), fl=True)
-        if x not in dup_base_verts
+        for x in mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tv=True), fl=True)
+        if x not in state.dup_base_verts
     ]
     new_created_faces = mc.ls(
-        mc.polyListComponentConversion(new_created_verts, tf=True), fl=True
+        mc.polyListComponentConversion(state.new_created_verts, tf=True), fl=True
     )
 
     # Apply inset extrusion to new faces
-    inset_node = mc.polyExtrudeFacet(new_created_faces, nds=1, off=0, d=0)
+    state.inset_node = mc.polyExtrudeFacet(new_created_faces, nds=1, off=0, d=0)
 
     # Relax vertices by averaging
-    relax_nodes = [
-        mc.polyAverageVertex(new_created_verts, i=10, ch=1)[0] for _ in range(10)
+    state.relax_nodes = [
+        mc.polyAverageVertex(state.new_created_verts, i=10, ch=1)[0] for _ in range(10)
     ]
 
     # Transfer attributes in face mode
-    if is_face_mode:
-        fm_transfer_attributes_node = mc.transferAttributes(
-            live_obj,
-            obj_name_dup,
+    if state.is_face_mode:
+        state.fm_transfer_attributes_node = mc.transferAttributes(
+            state.live_obj,
+            state.obj_name_dup,
             pos=1,
             nml=0,
             uvs=1,
@@ -350,8 +387,8 @@ def quad_patch_init(_unused_arg=None):
             clb=1,
         )
         mc.transferAttributes(
-            live_obj,
-            sel_edges_orig,
+            state.live_obj,
+            state.sel_edges_orig,
             pos=1,
             nml=0,
             uvs=1,
@@ -367,12 +404,12 @@ def quad_patch_init(_unused_arg=None):
         )
 
     # Hide faces to be hidden
-    dup_faces_to_hide = [
+    state.dup_faces_to_hide = [
         x
-        for x in mc.ls(mc.polyListComponentConversion(obj_name_dup, tf=True), fl=True)
+        for x in mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tf=True), fl=True)
         if x not in new_created_faces
     ]
-    mc.select(dup_faces_to_hide)
+    mc.select(state.dup_faces_to_hide)
     mc.HideSelectedObjects()
     mc.select(cl=True)
 
@@ -383,27 +420,28 @@ def rotate_slider(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)
 
     offset_num = mc.intSliderGrp("rotationSlider", q=True, v=True)
 
     # Node state off B and C bridges and inset
-    mc.setAttr(f"{side_b_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{side_c_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{inset_node[0]}.nodeState", 1)
-    if is_face_mode:
-        mc.setAttr(f"{fm_transfer_attributes_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.side_b_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.side_c_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.inset_node[0]}.nodeState", 1)
+    if state.is_face_mode:
+        mc.setAttr(f"{state.fm_transfer_attributes_node[0]}.nodeState", 0)
 
     # sideA Bridge First
     side_a_edges = (
-        ordered_edges_extended[0 + offset_num : side_a_len + offset_num + div_offset]
-        + ordered_edges_extended[
-            side_a_len
-            + side_b_len
-            + offset_num : side_a_len * 2
-            + side_b_len
+        state.ordered_edges_extended[0 + offset_num : state.side_a_len + offset_num + state.div_offset]
+        + state.ordered_edges_extended[
+            state.side_a_len
+            + state.side_b_len
+            + offset_num : state.side_a_len * 2
+            + state.side_b_len
             + offset_num
-            + div_offset
+            + state.div_offset
         ]
     )
     side_a_edges_string = " ".join(f'"e[{each}]"' for each in side_a_edges)
@@ -411,7 +449,7 @@ def rotate_slider(_unused_arg=None):
         side_a_edges_string = " " + side_a_edges_string
     component_count = len(side_a_edges)
     input_component_str_a = (
-        f'setAttr -type "componentList" ( "{side_a_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_a_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_a_edges_string}"
     )
 
@@ -419,14 +457,14 @@ def rotate_slider(_unused_arg=None):
 
     # sideB Adjust
     side_b_edge_remove = [
-        ordered_edges_components_extended[0 + offset_num + side_a_len + div_offset],
-        ordered_edges_components_extended[side_a_len + offset_num + side_b_len - 1],
+        state.ordered_edges_components_extended[0 + offset_num + state.side_a_len + state.div_offset],
+        state.ordered_edges_components_extended[state.side_a_len + offset_num + state.side_b_len - 1],
     ]
     side_b_edge_loop = mc.ls(
         mc.polySelect(
-            obj_name_dup,
+            state.obj_name_dup,
             q=True,
-            eb=ordered_edges_extended[offset_num + side_a_len + div_offset],
+            eb=state.ordered_edges_extended[offset_num + state.side_a_len + state.div_offset],
             ass=True,
         ),
         fl=True,
@@ -439,23 +477,23 @@ def rotate_slider(_unused_arg=None):
         side_b_edges_string = " " + side_b_edges_string
     component_count = len(side_b_edge_components)
     input_component_str_b = (
-        f'setAttr -type "componentList" ( "{side_b_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_b_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_b_edges_string}"
     )
 
     # sideC Adjust
     side_c_edge_remove = [
-        ordered_edges_components_extended[
-            0 + offset_num + (2 * side_a_len) + side_b_len + div_offset
+        state.ordered_edges_components_extended[
+            0 + offset_num + (2 * state.side_a_len) + state.side_b_len + state.div_offset
         ],
-        ordered_edges_components_extended[(2 * side_a_len) + offset_num + (2 * side_b_len) - 1],
+        state.ordered_edges_components_extended[(2 * state.side_a_len) + offset_num + (2 * state.side_b_len) - 1],
     ]
     side_c_edge_loop = mc.ls(
         mc.polySelect(
-            obj_name_dup,
+            state.obj_name_dup,
             q=True,
-            eb=ordered_edges_extended[
-                offset_num + (2 * side_a_len) + side_b_len + 1 + div_offset
+            eb=state.ordered_edges_extended[
+                offset_num + (2 * state.side_a_len) + state.side_b_len + 1 + state.div_offset
             ],
             ass=True,
         ),
@@ -469,21 +507,21 @@ def rotate_slider(_unused_arg=None):
         side_c_edges_string = " " + side_c_edges_string
     component_count = len(side_c_edge_components)
     input_component_str_c = (
-        f'setAttr -type "componentList" ( "{side_c_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_c_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_c_edges_string}"
     )
 
     # Execute Adjustment
     mel.eval(input_component_str_b)
-    mc.setAttr(f"{side_b_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.side_b_bridge_node[0]}.nodeState", 0)
     mel.eval(input_component_str_c)
-    mc.setAttr(f"{side_c_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.side_c_bridge_node[0]}.nodeState", 0)
     # Inset status check
     inset_status = mc.checkBox("insetCheckbox", q=True, v=True)
     if inset_status:
-        mc.setAttr(f"{inset_node[0]}.nodeState", 0)
-    if is_face_mode:
-        mc.setAttr(f"{fm_transfer_attributes_node[0]}.nodeState", 0)
+        mc.setAttr(f"{state.inset_node[0]}.nodeState", 0)
+    if state.is_face_mode:
+        mc.setAttr(f"{state.fm_transfer_attributes_node[0]}.nodeState", 0)
 
 
 def divide_slider(_unused_arg=None):
@@ -492,33 +530,33 @@ def divide_slider(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
-    global div_offset
+    state = _get_state()
     mc.undoInfo(swf=False)
 
     div_num = mc.intSliderGrp("divisionSlider", q=True, v=True)
     offset_num = mc.intSliderGrp("rotationSlider", q=True, v=True)
 
     # Turn off node state for B and C bridges and inset
-    mc.setAttr(f"{side_b_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{side_c_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{inset_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.side_b_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.side_c_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.inset_node[0]}.nodeState", 1)
 
     # Set divisions for sideA bridge
-    mc.setAttr(f"{side_a_bridge_node[0]}.divisions", div_num)
+    mc.setAttr(f"{state.side_a_bridge_node[0]}.divisions", div_num)
 
     # Calculate division offset
-    div_offset = side_a_len - 3 - div_num + (side_b_len - side_a_len)
+    state.div_offset = state.side_a_len - 3 - div_num + (state.side_b_len - state.side_a_len)
 
     # Prepare sideA edges for input
     side_a_edges = (
-        ordered_edges_extended[0 + offset_num : side_a_len + offset_num + div_offset]
-        + ordered_edges_extended[
-            side_a_len
-            + side_b_len
-            + offset_num : side_a_len * 2
-            + side_b_len
+        state.ordered_edges_extended[0 + offset_num : state.side_a_len + offset_num + state.div_offset]
+        + state.ordered_edges_extended[
+            state.side_a_len
+            + state.side_b_len
+            + offset_num : state.side_a_len * 2
+            + state.side_b_len
             + offset_num
-            + div_offset
+            + state.div_offset
         ]
     )
     side_a_edges_string = " ".join(f'"e[{each}]"' for each in side_a_edges)
@@ -526,7 +564,7 @@ def divide_slider(_unused_arg=None):
         side_a_edges_string = " " + side_a_edges_string
     component_count = len(side_a_edges)
     input_component_str_a = (
-        f'setAttr -type "componentList" ( "{side_a_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_a_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_a_edges_string}"
     )
 
@@ -534,14 +572,14 @@ def divide_slider(_unused_arg=None):
 
     # Prepare sideB edges for input
     side_b_edge_remove = [
-        ordered_edges_components_extended[0 + offset_num + side_a_len + div_offset],
-        ordered_edges_components_extended[side_a_len + offset_num + side_b_len - 1],
+        state.ordered_edges_components_extended[0 + offset_num + state.side_a_len + state.div_offset],
+        state.ordered_edges_components_extended[state.side_a_len + offset_num + state.side_b_len - 1],
     ]
     side_b_edge_loop = mc.ls(
         mc.polySelect(
-            obj_name_dup,
+            state.obj_name_dup,
             q=True,
-            eb=ordered_edges_extended[offset_num + side_a_len + div_offset],
+            eb=state.ordered_edges_extended[offset_num + state.side_a_len + state.div_offset],
             ass=True,
         ),
         fl=True,
@@ -554,23 +592,23 @@ def divide_slider(_unused_arg=None):
         side_b_edges_string = " " + side_b_edges_string
     component_count = len(side_b_edge_components)
     input_component_str_b = (
-        f'setAttr -type "componentList" ( "{side_b_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_b_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_b_edges_string}"
     )
 
     # Prepare sideC edges for input
     side_c_edge_remove = [
-        ordered_edges_components_extended[
-            0 + offset_num + (2 * side_a_len) + side_b_len + div_offset
+        state.ordered_edges_components_extended[
+            0 + offset_num + (2 * state.side_a_len) + state.side_b_len + state.div_offset
         ],
-        ordered_edges_components_extended[(2 * side_a_len) + offset_num + (2 * side_b_len) - 1],
+        state.ordered_edges_components_extended[(2 * state.side_a_len) + offset_num + (2 * state.side_b_len) - 1],
     ]
     side_c_edge_loop = mc.ls(
         mc.polySelect(
-            obj_name_dup,
+            state.obj_name_dup,
             q=True,
-            eb=ordered_edges_extended[
-                offset_num + (2 * side_a_len) + side_b_len + 1 + div_offset
+            eb=state.ordered_edges_extended[
+                offset_num + (2 * state.side_a_len) + state.side_b_len + 1 + state.div_offset
             ],
             ass=True,
         ),
@@ -584,20 +622,20 @@ def divide_slider(_unused_arg=None):
         side_c_edges_string = " " + side_c_edges_string
     component_count = len(side_c_edge_components)
     input_component_str_c = (
-        f'setAttr -type "componentList" ( "{side_c_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.side_c_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_c_edges_string}"
     )
 
     # Execute adjustments for sideB and sideC
     mel.eval(input_component_str_b)
-    mc.setAttr(f"{side_b_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.side_b_bridge_node[0]}.nodeState", 0)
     mel.eval(input_component_str_c)
-    mc.setAttr(f"{side_c_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.side_c_bridge_node[0]}.nodeState", 0)
 
     # Check and update inset status
     inset_status = mc.checkBox("insetCheckbox", q=True, v=True)
     if inset_status == 1:
-        mc.setAttr(f"{inset_node[0]}.nodeState", 0)
+        mc.setAttr(f"{state.inset_node[0]}.nodeState", 0)
 
     update_relax()
     update_inset()
@@ -613,10 +651,11 @@ def relax_slider(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)  # Disable undo queue flushing
     relax_num = mc.intSliderGrp("relaxSlider", q=True, v=True)  # Get slider value
 
-    for each in relax_nodes:
+    for each in state.relax_nodes:
         # Set the iterations attribute for each node
         mc.setAttr(f"{each}.iterations", relax_num)
 
@@ -631,10 +670,11 @@ def smooth_border_slider(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)  # Disable undo queue flushing
     smooth_num = (mc.floatSliderGrp("smoothBorderSlider", q=True, v=True) - 1) * -1
     # Set the localScaleX attribute for each node
-    for each in smooth_nodes:
+    for each in state.smooth_nodes:
         mc.setAttr(f"{each}.localScaleX", smooth_num)
 
 
@@ -648,18 +688,19 @@ def activate_inset(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)
     update_inset()
     inset_status = mc.checkBox("insetCheckbox", q=True, v=True)
 
     if inset_status:
         # Activate inset node and set offset and divisions to 0 and 1
-        mc.setAttr(f"{inset_node[0]}.nodeState", 0)
-        mc.setAttr(f"{inset_node[0]}.offset", 0)
-        mc.setAttr(f"{inset_node[0]}.divisions", 1)
+        mc.setAttr(f"{state.inset_node[0]}.nodeState", 0)
+        mc.setAttr(f"{state.inset_node[0]}.offset", 0)
+        mc.setAttr(f"{state.inset_node[0]}.divisions", 1)
     else:
         # Deactivate inset node
-        mc.setAttr(f"{inset_node[0]}.nodeState", 1)
+        mc.setAttr(f"{state.inset_node[0]}.nodeState", 1)
 
     # Update relaxation settings
     update_relax()
@@ -676,11 +717,12 @@ def inset_div_minus(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)
-    current_div_num = mc.getAttr(f"{inset_node[0]}.divisions")
+    current_div_num = mc.getAttr(f"{state.inset_node[0]}.divisions")
 
     if current_div_num > 1:
-        mc.setAttr(f"{inset_node[0]}.divisions", current_div_num - 1)
+        mc.setAttr(f"{state.inset_node[0]}.divisions", current_div_num - 1)
 
     update_relax()
     mc.undoInfo(swf=True)
@@ -696,11 +738,12 @@ def inset_div_plus(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)  # Disable undo queue flushing
-    current_div_num = mc.getAttr(f"{inset_node[0]}.divisions")
+    current_div_num = mc.getAttr(f"{state.inset_node[0]}.divisions")
 
     # Increase the number of inset divisions
-    mc.setAttr(f"{inset_node[0]}.divisions", current_div_num + 1)
+    mc.setAttr(f"{state.inset_node[0]}.divisions", current_div_num + 1)
 
     # Update relaxation settings
     update_relax()
@@ -717,11 +760,13 @@ def update_relax(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
+
     # Get the new vertices
     new_created_verts = [
         x
-        for x in mc.ls(mc.polyListComponentConversion(obj_name_dup, tv=True), fl=True)
-        if x not in dup_base_verts
+        for x in mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tv=True), fl=True)
+        if x not in state.dup_base_verts
     ]
 
     # Create a string of the new vertices
@@ -730,7 +775,7 @@ def update_relax(_unused_arg=None):
         new_verts_string = " " + new_verts_string
 
     # Update the input components of each node in relax_nodes
-    for each in relax_nodes:
+    for each in state.relax_nodes:
         component_count = len(new_created_verts)
         input_component_string = (
             f'setAttr -type "componentList" ( "{each}.inputComponents" ) '
@@ -749,11 +794,13 @@ def update_inset(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
+
     # Get the new vertices
     new_created_verts = [
         x
-        for x in mc.ls(mc.polyListComponentConversion(obj_name_dup, tv=True), fl=True)
-        if x not in dup_base_verts
+        for x in mc.ls(mc.polyListComponentConversion(state.obj_name_dup, tv=True), fl=True)
+        if x not in state.dup_base_verts
     ]
 
     # Get the new faces
@@ -769,7 +816,7 @@ def update_inset(_unused_arg=None):
     # Update the input components of the inset node
     component_count = len(new_created_faces)
     input_component_string = (
-        f'setAttr -type "componentList" ( "{inset_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.inset_node[0]}.inputComponents" ) '
         f"{component_count}{new_faces_string}"
     )
     mel.eval(input_component_string)
@@ -831,21 +878,23 @@ def patch_it(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
+
     # Delete the faces to hide
-    mc.delete(dup_faces_to_hide)
+    mc.delete(state.dup_faces_to_hide)
     # Get the original faces
     edges_to_merge = []
     # Iterate over the original edges and get their indices
-    for each in sel_edges_orig:
+    for each in state.sel_edges_orig:
         edges_to_merge.append(each.split(".")[1])
     # Unite the two objects, merge UV sets and center the pivot
     merged_obj = mc.polyUnite(
-        [obj_name_orig, obj_name_dup], ch=1, mergeUVSets=1, centerPivot=True
+        [state.obj_name_orig, state.obj_name_dup], ch=1, mergeUVSets=1, centerPivot=True
     )[0]
     # Rename the new object
-    obj_name_new = mc.rename(merged_obj, obj_name_orig)
+    obj_name_new = mc.rename(merged_obj, state.obj_name_orig)
     # Iterate over the duplicated edges and get their indices
-    for each in mc.sets(dup_edges_set, q=True):
+    for each in mc.sets(state.dup_edges_set, q=True):
         if each != "transform*":
             edges_to_merge.append(each.split(".")[1])
     # Delete the set if it exists
@@ -862,11 +911,11 @@ def patch_it(_unused_arg=None):
     mc.polyMergeVertex(verts_to_merge, d=0.001, am=1, ch=1)
 
     # Delete the live object if it exists
-    if is_face_mode:
-        mc.delete(live_obj)
+    if state.is_face_mode:
+        mc.delete(state.live_obj)
     # Delete the wrap base mesh if it exists
-    if mc.objExists(wrap_base_mesh[0]):
-        mc.delete(wrap_base_mesh)
+    if mc.objExists(state.wrap_base_mesh[0]):
+        mc.delete(state.wrap_base_mesh)
     # Delete the merged object set if it exists
     if mc.objExists("mergedObjSet"):
         mc.delete("mergedObjeSet")
@@ -911,6 +960,8 @@ def face_mode_init(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
+
     # Ensure that faces are selected and meet necessary conditions
     face_checker()
 
@@ -920,43 +971,40 @@ def face_mode_init(_unused_arg=None):
     mc.button("extrudeMode", label="Extrude Mode", en=0, e=True)
     mc.intSliderGrp("extrudeSlider", en=0, e=True)
 
-    # Declare global variables
-    global live_obj
-    global face_mode_edge_components_orig_set
-    global is_face_mode
-    is_face_mode = True
+    # Update state
+    state.is_face_mode = True
 
     # Get the original selected faces and object name
     sel_faces_orig = mc.ls(sl=True, fl=True)
     obj_name_orig = sel_faces_orig[0].split(".")[0]
 
     # Duplicate the original object for live manipulation
-    live_obj = mc.duplicate(
+    state.live_obj = mc.duplicate(
         obj_name_orig, n=f"quadPatcher{random.randint(1000, 9999)}_live"
     )
 
     # Prepare the duplicated object by keeping only the selected faces
-    live_obj_faces = [f"{live_obj[0]}.{each.split('.')[1]}" for each in sel_faces_orig]
+    live_obj_faces = [f"{state.live_obj[0]}.{each.split('.')[1]}" for each in sel_faces_orig]
     mc.delete(
         [
             x
-            for x in mc.ls(mc.polyListComponentConversion(live_obj, tf=True), fl=True)
+            for x in mc.ls(mc.polyListComponentConversion(state.live_obj, tf=True), fl=True)
             if x not in live_obj_faces
         ]
     )
 
     # Hide the duplicated object
-    mc.hide(live_obj)
+    mc.hide(state.live_obj)
 
     # Convert the selection to an edge perimeter and create a set
     mc.ConvertSelectionToEdgePerimeter()
-    face_mode_edge_components_orig_set = mc.sets(
+    state.face_mode_edge_components_orig_set = mc.sets(
         n=f"quadPatcher{random.randint(1000, 9999)}_{obj_name_orig}Set"
     )
 
     # Delete the original selected faces and select the edge component set
     mc.delete(sel_faces_orig)
-    mc.select(face_mode_edge_components_orig_set)
+    mc.select(state.face_mode_edge_components_orig_set)
 
     # Initiate the quad patching process
     quad_patch_init()
@@ -969,36 +1017,37 @@ def extrude_slider(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
     mc.undoInfo(swf=False)
-    end_offset = mc.intSliderGrp("extrudeSlider", q=True, v=True)
+    state.end_offset = mc.intSliderGrp("extrudeSlider", q=True, v=True)
 
     # Set the node state for the closing bridge nodes
-    mc.setAttr(f"{close_side_a_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{close_side_b_bridge_node[0]}.nodeState", 1)
-    mc.setAttr(f"{close_side_c_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.close_side_a_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.close_side_b_bridge_node[0]}.nodeState", 1)
+    mc.setAttr(f"{state.close_side_c_bridge_node[0]}.nodeState", 1)
 
     # Calculate the number of divisions for the closing bridge
-    div_num_ii = end_offset - 1
+    div_num_ii = state.end_offset - 1
 
     # Set the initial bridge
     side_components = [
-        side_b1_edges[end_offset].split(".")[1],
-        side_c1_edges[end_offset].split(".")[1],
+        state.side_b1_edges[state.end_offset].split(".")[1],
+        state.side_c1_edges[state.end_offset].split(".")[1],
     ]
     side_a_edges_string = " ".join(f'"{component}"' for component in side_components)
     if side_a_edges_string:
         side_a_edges_string = " " + side_a_edges_string
     input_component_str_i = (
-        f'setAttr -type "componentList" ( "{close_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.close_bridge_node[0]}.inputComponents" ) '
         f"2{side_a_edges_string}"
     )
     mel.eval(input_component_str_i)
 
     # Side A
     new_whole_border = mc.ls(
-        mc.polySelect(sel_obj, q=True, eb=ordered_edges[0], ass=True), fl=True
+        mc.polySelect(state.sel_obj, q=True, eb=state.ordered_edges[0], ass=True), fl=True
     )
-    temp_x_edges = side_b1_edges[0:end_offset] + side_c1_edges[0:end_offset]
+    temp_x_edges = state.side_b1_edges[0:state.end_offset] + state.side_c1_edges[0:state.end_offset]
     temp_x_edges = mc.ls(
         mc.polyListComponentConversion(
             mc.polyListComponentConversion(temp_x_edges, tv=True), te=True
@@ -1013,19 +1062,19 @@ def extrude_slider(_unused_arg=None):
         side_a_edges_string = " " + side_a_edges_string
     component_count = len(new_bridge_edges)
     input_component_str_a = (
-        f'setAttr -type "componentList" ( "{close_side_a_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.close_side_a_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_a_edges_string}"
     )
 
     mel.eval(input_component_str_a)
-    mc.setAttr(f"{close_side_a_bridge_node[0]}.divisions", div_num_ii)
-    mc.setAttr(f"{close_side_a_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.close_side_a_bridge_node[0]}.divisions", div_num_ii)
+    mc.setAttr(f"{state.close_side_a_bridge_node[0]}.nodeState", 0)
 
     # Side B
-    ext_side_b_edges_i = side_b1_edges[0:end_offset]
+    ext_side_b_edges_i = state.side_b1_edges[0:state.end_offset]
     ext_side_b_edges_whole = mc.ls(
         mc.polySelect(
-            sel_obj,
+            state.sel_obj,
             q=True,
             eb=int(ext_side_b_edges_i[0].split("[")[1].split("]")[0]),
             ass=True,
@@ -1047,17 +1096,17 @@ def extrude_slider(_unused_arg=None):
         side_b_edges_string = " " + side_b_edges_string
     component_count = len(side_b_edge_components)
     input_component_str_b = (
-        f'setAttr -type "componentList" ( "{close_side_b_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.close_side_b_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_b_edges_string}"
     )
     mel.eval(input_component_str_b)
-    mc.setAttr(f"{close_side_b_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.close_side_b_bridge_node[0]}.nodeState", 0)
 
     # Side C
-    ext_side_c_edges_i = side_c1_edges[0:end_offset]
+    ext_side_c_edges_i = state.side_c1_edges[0:state.end_offset]
     ext_side_c_edges_whole = mc.ls(
         mc.polySelect(
-            sel_obj,
+            state.sel_obj,
             q=True,
             eb=int(ext_side_c_edges_i[0].split("[")[1].split("]")[0]),
             ass=True,
@@ -1079,11 +1128,11 @@ def extrude_slider(_unused_arg=None):
         side_c_edges_string = " " + side_c_edges_string
     component_count = len(side_c_edge_components)
     input_component_str_c = (
-        f'setAttr -type "componentList" ( "{close_side_c_bridge_node[0]}.inputComponents" ) '
+        f'setAttr -type "componentList" ( "{state.close_side_c_bridge_node[0]}.inputComponents" ) '
         f"{component_count}{side_c_edges_string}"
     )
     mel.eval(input_component_str_c)
-    mc.setAttr(f"{close_side_c_bridge_node[0]}.nodeState", 0)
+    mc.setAttr(f"{state.close_side_c_bridge_node[0]}.nodeState", 0)
 
 
 def extrude_mode_init(_unused_arg=None):
@@ -1092,6 +1141,8 @@ def extrude_mode_init(_unused_arg=None):
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.
     """
+    state = _get_state()
+
     # Disable UI components for extrude mode
     mc.button("edgeBorderMode", label="Edge Border Mode", en=0, e=True)
     mc.button("faceMode", label="Face Mode", en=0, e=True)
@@ -1105,131 +1156,124 @@ def extrude_mode_init(_unused_arg=None):
     mc.button("plusButton", l="+", en=0, e=True)
     mc.button("patchItButton", l="Patch It!", en=0, e=True)
 
-    # Declare global variables
-    global sel_edges, sel_obj, end_offset, ordered_whole_border_components
-    global ordered_whole_border_components_ext, ordered_edges, ordered_edge_components
-    global whole_border, ordered_whole_border, close_bridge_node, end_a_orig
-    global end_b_orig, close_side_a_bridge_node, close_side_b_bridge_node, close_side_c_bridge_node
-    global side_b1_edges, side_c1_edges
-
     # Get the selected edges and object name
-    sel_edges = mc.ls(sl=True, fl=True)
-    sel_obj = sel_edges[0].split(".")[0]
+    state.sel_edges = mc.ls(sl=True, fl=True)
+    state.sel_obj = state.sel_edges[0].split(".")[0]
 
     # Initialize ordered edges
-    ordered_edges = initiate(sel_edges)
-    if len(ordered_edges) < len(sel_edges):
-        for _ in range(len(sel_edges) - len(ordered_edges)):
+    state.ordered_edges = initiate(state.sel_edges)
+    if len(state.ordered_edges) < len(state.sel_edges):
+        for _ in range(len(state.sel_edges) - len(state.ordered_edges)):
             options = mc.ls(
                 mc.polyListComponentConversion(
                     mc.polyListComponentConversion(
-                        f"{sel_obj}.e[{ordered_edges[0]}]", tv=True
+                        f"{state.sel_obj}.e[{state.ordered_edges[0]}]", tv=True
                     ),
                     te=True,
                 ),
                 fl=True,
             )
 
-            ordered_edge_components = [
-                f"{sel_edges[0].split('.')[0]}.e[{each}]"
-                for each in ordered_edges
+            state.ordered_edge_components = [
+                f"{state.sel_edges[0].split('.')[0]}.e[{each}]"
+                for each in state.ordered_edges
             ]
 
             # Find the key edge that needs to be added
-            key = [x for x in sel_edges if x not in ordered_edge_components]
+            key = [x for x in state.sel_edges if x not in state.ordered_edge_components]
             selected = [x for x in options if x in key]
-            ordered_edges.insert(0, int(selected[0].split("[")[1].split("]")[0]))
+            state.ordered_edges.insert(0, int(selected[0].split("[")[1].split("]")[0]))
 
-    ordered_edge_components = [
-        f"{sel_edges[0].split('.')[0]}.e[{each}]" for each in ordered_edges
+    state.ordered_edge_components = [
+        f"{state.sel_edges[0].split('.')[0]}.e[{each}]" for each in state.ordered_edges
     ]
 
     # Retrieve and extend the whole border edges
-    whole_border = mc.polySelect(q=True, eb=ordered_edges[0], ass=True)
-    ordered_whole_border = initiate(whole_border)
-    ordered_whole_border_components = [
-        f"{sel_edges[0].split('.')[0]}.e[{each}]"
-        for each in ordered_whole_border
+    state.whole_border = mc.polySelect(q=True, eb=state.ordered_edges[0], ass=True)
+    state.ordered_whole_border = initiate(state.whole_border)
+    state.ordered_whole_border_components = [
+        f"{state.sel_edges[0].split('.')[0]}.e[{each}]"
+        for each in state.ordered_whole_border
     ]
-    ordered_whole_border_components_ext = ordered_whole_border_components * 3
+    state.ordered_whole_border_components_ext = state.ordered_whole_border_components * 3
 
     # Set extrudeSlider range
     mc.intSliderGrp(
         "extrudeSlider",
         e=True,
         min=1,
-        max=(len(ordered_whole_border) - len(sel_edges)) / 2 - 2,
+        max=(len(state.ordered_whole_border) - len(state.sel_edges)) / 2 - 2,
     )
 
     # Determine the start index for sideB1 edges
-    if ordered_whole_border_components[0] == ordered_edge_components[0]:
-        if ordered_whole_border_components.index(ordered_edge_components[1]) == 1:
+    if state.ordered_whole_border_components[0] == state.ordered_edge_components[0]:
+        if state.ordered_whole_border_components.index(state.ordered_edge_components[1]) == 1:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[-1]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[-1]) + 1
             )
         else:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[0]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[0]) + 1
             )
-    elif ordered_whole_border_components.index(
-        ordered_edge_components[-1]
-    ) > ordered_whole_border_components.index(ordered_edge_components[0]):
-        if ordered_whole_border_components[0] in ordered_edge_components:
+    elif state.ordered_whole_border_components.index(
+        state.ordered_edge_components[-1]
+    ) > state.ordered_whole_border_components.index(state.ordered_edge_components[0]):
+        if state.ordered_whole_border_components[0] in state.ordered_edge_components:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[0]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[0]) + 1
             )
         else:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[-1]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[-1]) + 1
             )
     else:
         if (
-            ordered_whole_border_components.index(ordered_edge_components[0])
-            == len(ordered_whole_border_components) - 1
+            state.ordered_whole_border_components.index(state.ordered_edge_components[0])
+            == len(state.ordered_whole_border_components) - 1
         ):
-            if ordered_whole_border_components[0] in ordered_edge_components:
+            if state.ordered_whole_border_components[0] in state.ordered_edge_components:
                 side_b1_start_index = (
-                    ordered_whole_border_components.index(ordered_edge_components[-1]) + 1
+                    state.ordered_whole_border_components.index(state.ordered_edge_components[-1]) + 1
                 )
             else:
                 side_b1_start_index = 0
-        elif ordered_whole_border_components[0] in ordered_edge_components:
+        elif state.ordered_whole_border_components[0] in state.ordered_edge_components:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[-1]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[-1]) + 1
             )
         else:
             side_b1_start_index = (
-                ordered_whole_border_components.index(ordered_edge_components[0]) + 1
+                state.ordered_whole_border_components.index(state.ordered_edge_components[0]) + 1
             )
 
     # Define sideB1 and sideC1 edges
-    side_b1_edges = [
-        ordered_whole_border_components[i % len(ordered_whole_border_components)]
+    state.side_b1_edges = [
+        state.ordered_whole_border_components[i % len(state.ordered_whole_border_components)]
         for i in range(
             side_b1_start_index,
-            side_b1_start_index + len(ordered_whole_border_components) - len(sel_edges),
+            side_b1_start_index + len(state.ordered_whole_border_components) - len(state.sel_edges),
         )
     ]
-    side_c1_edges = side_b1_edges[::-1]
+    state.side_c1_edges = state.side_b1_edges[::-1]
 
     # Initial bridge setup
-    div_num = len(sel_edges) - 1
-    end_a_orig = ordered_edge_components[0]
-    end_b_orig = ordered_edge_components[len(sel_edges) - 1]
-    end_offset = mc.intSliderGrp("extrudeSlider", q=True, v=True)
-    div_num_ii = end_offset - 1
+    div_num = len(state.sel_edges) - 1
+    state.end_a_orig = state.ordered_edge_components[0]
+    state.end_b_orig = state.ordered_edge_components[len(state.sel_edges) - 1]
+    state.end_offset = mc.intSliderGrp("extrudeSlider", q=True, v=True)
+    div_num_ii = state.end_offset - 1
 
-    init_bridge_edges = [side_b1_edges[end_offset], side_c1_edges[end_offset]]
+    init_bridge_edges = [state.side_b1_edges[state.end_offset], state.side_c1_edges[state.end_offset]]
     mc.select(init_bridge_edges)
-    close_bridge_node = mc.polyBridgeEdge(
+    state.close_bridge_node = mc.polyBridgeEdge(
         divisions=div_num, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
     # Create side A bridge
     new_whole_border = mc.ls(
-        mc.polySelect(sel_obj, q=True, eb=ordered_edges[0], ass=True), fl=True
+        mc.polySelect(state.sel_obj, q=True, eb=state.ordered_edges[0], ass=True), fl=True
     )
-    temp_x_edges = side_b1_edges[0:end_offset] + side_c1_edges[0:end_offset]
+    temp_x_edges = state.side_b1_edges[0:state.end_offset] + state.side_c1_edges[0:state.end_offset]
     temp_x_edges = mc.ls(
         mc.polyListComponentConversion(
             mc.polyListComponentConversion(temp_x_edges, tv=True), te=True
@@ -1237,13 +1281,13 @@ def extrude_mode_init(_unused_arg=None):
         fl=True,
     )
     new_bridge_edges = [x for x in new_whole_border if x not in temp_x_edges]
-    mc.select(new_bridge_edges, ordered_edge_components[1 : len(sel_edges) - 1])
-    close_side_a_bridge_node = mc.polyBridgeEdge(
+    mc.select(new_bridge_edges, state.ordered_edge_components[1 : len(state.sel_edges) - 1])
+    state.close_side_a_bridge_node = mc.polyBridgeEdge(
         divisions=div_num_ii, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
     # Create side B bridge
-    ext_side_b_edges_i = side_b1_edges[0:end_offset]
+    ext_side_b_edges_i = state.side_b1_edges[0:state.end_offset]
     ext_side_b_edges_whole = mc.ls(
         mc.polySelect(
             q=True, eb=int(ext_side_b_edges_i[0].split("[")[1].split("]")[0]), ass=True
@@ -1258,12 +1302,12 @@ def extrude_mode_init(_unused_arg=None):
     )
     ext_side_b_edges_ii = [x for x in ext_side_b_edges_whole if x not in ext_side_b_remove]
     mc.select(ext_side_b_edges_i, ext_side_b_edges_ii)
-    close_side_b_bridge_node = mc.polyBridgeEdge(
+    state.close_side_b_bridge_node = mc.polyBridgeEdge(
         divisions=0, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
     # Create side C bridge
-    ext_side_c_edges_i = side_c1_edges[0:end_offset]
+    ext_side_c_edges_i = state.side_c1_edges[0:state.end_offset]
     ext_side_c_edges_whole = mc.ls(
         mc.polySelect(
             q=True, eb=int(ext_side_c_edges_i[0].split("[")[1].split("]")[0]), ass=True
@@ -1278,7 +1322,7 @@ def extrude_mode_init(_unused_arg=None):
     )
     ext_side_c_edges_ii = [x for x in ext_side_c_edges_whole if x not in ext_side_c_remove]
     mc.select(ext_side_c_edges_i, ext_side_c_edges_ii)
-    close_side_c_bridge_node = mc.polyBridgeEdge(
+    state.close_side_c_bridge_node = mc.polyBridgeEdge(
         divisions=0, ch=True, twist=0, taper=1, curveType=0, smoothingAngle=30
     )
 
@@ -1292,10 +1336,12 @@ def quad_patcher_ui():
     This function initializes and displays a UI window for the Quad Patcher tool,
     allowing users to switch modes and adjust various parameters for quad patching.
     """
-    global is_face_mode
+    # Reset state when opening new UI
+    _reset_state()
+    state = _get_state()
 
     # Initialize the face mode
-    is_face_mode = False
+    state.is_face_mode = False
     window_size = (400, 200)
 
     # Delete existing window if present

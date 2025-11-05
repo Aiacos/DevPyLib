@@ -133,6 +133,15 @@ from maya import OpenMaya, OpenMayaAnim, cmds, mel
 
 
 def b_find_skin_cluster(object_name, b_skin_path=OpenMaya.MDagPath()):
+    """Find skin cluster connected to a deformed object.
+
+    Args:
+        object_name (str): Name of the object to find skin cluster for.
+        b_skin_path (MDagPath): Optional path parameter (unused).
+
+    Returns:
+        MObject or bool: Skin cluster node if found, False otherwise.
+    """
     it = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kSkinClusterFilter)
     while not it.isDone():
         fn_skin_cluster = OpenMayaAnim.MFnSkinCluster(it.item())
@@ -151,6 +160,15 @@ def b_find_skin_cluster(object_name, b_skin_path=OpenMaya.MDagPath()):
 
 
 def b_load_vertex_skin_values(input_file, ignore_joint_locks):
+    """Load vertex-level skin weights from a file to selected object.
+
+    Reads skin weight data from a formatted file and applies it to vertices
+    of the selected mesh, handling joint locks and soft selection.
+
+    Args:
+        input_file (str): Path to the weight file.
+        ignore_joint_locks (bool): If True, ignore joint lock attributes.
+    """
     time_before = time.time()
 
     line = ""
@@ -401,10 +419,26 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
 
 
 def vertex_to_id(vertex):
+    """Extract vertex index from vertex component string.
+
+    Args:
+        vertex (str): Vertex component string (e.g., 'mesh.vtx[10]').
+
+    Returns:
+        int: Vertex index.
+    """
     return int(vertex.split("[")[1].split("]")[0])
 
 
 def vertex_to_id_list(verts):
+    """Convert list of vertex component strings to list of indices.
+
+    Args:
+        verts (list): List of vertex component strings.
+
+    Returns:
+        list: List of vertex indices.
+    """
     vert_ids = [0] * len(verts)
     for i, vert in enumerate(verts):
         vert_ids[i] = vertex_to_id(vert)
@@ -412,6 +446,15 @@ def vertex_to_id_list(verts):
 
 
 def b_save_vertex_skin_values(input_file, ignore_soft_selection):
+    """Save vertex-level skin weights from selected vertices to file.
+
+    Exports skin weight data for selected vertices to a formatted text file,
+    optionally including soft selection weights.
+
+    Args:
+        input_file (str): Path to save weight file to.
+        ignore_soft_selection (bool): If False, save soft selection weights.
+    """
     time_before = time.time()
 
     print("saving Vertex skinWeights.. ")
@@ -502,6 +545,14 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
 
 
 def b_save_skin_values(input_file):
+    """Save all skin weights from selected objects to file.
+
+    Exports skin weight data for all vertices of selected mesh objects
+    to a formatted text file.
+
+    Args:
+        input_file (str): Path to save weight file to.
+    """
     time_before = time.time()
 
     with open(input_file, "w", encoding="utf-8") as output:
@@ -592,6 +643,16 @@ def b_save_skin_values(input_file):
 
 
 def b_skin_object(object_name, file_joints, weights):
+    """Apply skin weights to object from file data.
+
+    Creates or updates a skin cluster on the specified object and applies
+    weight data from a saved file.
+
+    Args:
+        object_name (str): Name of the mesh object to apply weights to.
+        file_joints (list): List of joint names from the weight file.
+        weights (list): List of weight strings for each vertex.
+    """
     if not cmds.objExists(object_name):
         print((object_name, " doesn't exist - skipping. "))
         return
@@ -763,6 +824,15 @@ def b_skin_object(object_name, file_joints, weights):
 
 
 def b_load_skin_values(load_on_selection, input_file):
+    """Load skin weights from file and apply to objects.
+
+    Reads a skin weight file and applies weights to mesh objects.
+    Can load to selected object or all objects in the file.
+
+    Args:
+        load_on_selection (bool): If True, apply weights only to selected object.
+        input_file (str): Path to the weight file to load.
+    """
     time_before = time.time()
 
     joints = []
@@ -830,6 +900,12 @@ def b_load_skin_values(load_on_selection, input_file):
 
 
 def get_soft_selection():
+    """Get vertex components from soft selection with weights.
+
+    Returns:
+        tuple: (vertex_list, weight_list) where weights are influence values
+               from the soft selection.
+    """
     # Grab the soft selection
 
     selection = OpenMaya.MSelectionList()

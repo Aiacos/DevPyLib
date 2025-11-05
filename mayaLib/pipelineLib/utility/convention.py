@@ -87,10 +87,10 @@ class Convention():
                                'group': grp,
                                'locator': loc,
                                'geometry': geo,
-                               'proxyGeo': proxyGeo,
+                               'proxyGeo': proxy_geo,
                                'curve': cv,
                                'joint': joint,
-                               'ikHandle': ikHandle,
+                               'ikHandle': ik_handle,
                                'control': control}
 
     def to_lower(self, s):

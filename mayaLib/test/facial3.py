@@ -3453,7 +3453,7 @@ def decode_data_from_attr(node, attr_name):
                 list or dict
         """
     if not node.hasAttr(attr_name):
-        raise pm.MayaAttributeError(('Attribute does not exist:{}').format(attr_name))
+        raise pm.MayaAttributeError((f'Attribute does not exist:{attr_name}'))
     data = str(node.attr(attr_name).get())
     return pickle.loads(data)
 
@@ -3465,7 +3465,7 @@ def detach_bind_joints():
         """
     SKIN_JNT_GRP = '*facialRig_skinJnt_grp'
     if not pm.objExists(SKIN_JNT_GRP):
-        raise pm.MayaObjectError(('Missing node: {}').format(SKIN_JNT_GRP))
+        raise pm.MayaObjectError((f'Missing node: {SKIN_JNT_GRP}'))
     pm.select(SKIN_JNT_GRP, replace=True)
     bind_joints = pm.selected()
     for joint in bind_joints:
@@ -3568,23 +3568,23 @@ def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2,
     renamed_transforms = []
     for i, (transform, position) in enumerate(reversed(left_array)):
         if suffix:
-            transform.rename(('{}_{}_{}_{}').format(left_prefix, search_name, i, suffix))
+            transform.rename((f'{left_prefix}_{search_name}_{i}_{suffix}'))
         else:
-            transform.rename(('{}_{}_{}').format(left_prefix, search_name, i))
+            transform.rename((f'{left_prefix}_{search_name}_{i}'))
         renamed_transforms.append(transform)
 
     for i, (transform, position) in enumerate(right_array):
         if suffix:
-            transform.rename(('{}_{}_{}_{}').format(right_prefix, search_name, i, suffix))
+            transform.rename((f'{right_prefix}_{search_name}_{i}_{suffix}'))
         else:
-            transform.rename(('{}_{}_{}').format(right_prefix, search_name, i))
+            transform.rename((f'{right_prefix}_{search_name}_{i}'))
         renamed_transforms.append(transform)
 
     for i, (transform, position) in enumerate(center_array):
         if suffix:
-            transform.rename(('{}_{}_{}_{}').format(center_prefix, search_name, i, suffix))
+            transform.rename((f'{center_prefix}_{search_name}_{i}_{suffix}'))
         else:
-            transform.rename(('{}_{}_{}').format(center_prefix, search_name, i))
+            transform.rename((f'{center_prefix}_{search_name}_{i}'))
         renamed_transforms.append(transform)
 
     return renamed_transforms

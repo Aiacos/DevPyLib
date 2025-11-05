@@ -8,6 +8,23 @@ import pymel.core as pm
 
 
 class Collider(object):
+    """Matrix-based collision system for character rigging.
+
+    Creates a collision rig using matrix operations to deform a target mesh based on
+    a collision mesh and control point. Automatically constructs a complex node network
+    with matrix decomposition, vector products, and pair blending for smooth collision
+    response and weight-based fade effects.
+
+    Attributes:
+        ctrl: Control transform for the collision system
+        collision_point: Point that detects collision surface position
+        collision_mesh: Mesh that acts as the collision surface
+        target_mesh: Mesh that is deformed by the collision
+
+    Example:
+        >>> collider = Collider('arm', ctrl='arm_CTRL', target_mesh='arm_mesh')
+        >>> # Automatically sets up matrix-based collision detection and deformation
+    """
     def __init__(
         self,
         module_name,

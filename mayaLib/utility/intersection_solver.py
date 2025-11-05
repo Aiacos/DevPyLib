@@ -27,6 +27,14 @@ from maya import mel
 WINDOW_NAME = "intersectionSolver"
 
 def create_pfx_toon(arg=None):
+    """Create pfxToon node for intersection visualization.
+
+    Creates a pfxToon deformer that displays intersection lines on selected
+    meshes in red, useful for detecting interpenetration.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     sel = mc.ls(mc.listRelatives(c=True), fl=True)
     if not mc.objExists('pfxToon_set'):
         mc.sets(sel, n='pfxToon_set')
@@ -52,12 +60,22 @@ def create_pfx_toon(arg=None):
         i+=1
 
 def remove_pfx_toon(arg=None):
+    """Remove pfxToon node and its associated set.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     if mc.objExists('pfxToon_set'):
         mc.delete('pfxToon_set')
     if mc.objExists('pfxToonCollisionDetect'):
         mc.delete('pfxToonCollisionDetect')
 
 def near_clip_change(arg=None):
+    """Update camera near clip plane value from slider.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     clip_val = mc.floatSlider('nearClipSlider', q=True, v=True)
     cur_cam = 'perspShape'
     for each in mc.getPanel(type='modelPanel'):
@@ -66,16 +84,34 @@ def near_clip_change(arg=None):
     mc.text('nearClipValue', e=True, l=str(round(clip_val,3)))
 
 def display_width_field_change(arg=None):
+    """Update intersection line width from text field input.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     val = mc.floatField('lineWidth', q=True, v=True)
     mc.setAttr('pfxToonCollisionDetectShape.lineWidth', val)
     mc.floatSlider('displayWidthSlider', e=True, v=val)
 
 def display_width_slider_change(arg=None):
+    """Update intersection line width from slider input.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     val = mc.floatSlider('displayWidthSlider', q=True, v=True)
     mc.setAttr('pfxToonCollisionDetectShape.lineWidth', val)
     mc.floatField('lineWidth', e=True, v=val)
 
 def find_collision(null):
+    """Detect mesh interpenetrations using rigid body simulation.
+
+    Triangulates selected meshes, simulates rigid body collision, and
+    selects meshes where interpenetration was detected.
+
+    Args:
+        null: Unused callback argument.
+    """
     sel = mc.ls(sl=True, fl=True)
     for each in sel:
         mc.polyTriangulate(each, ch=1)
@@ -100,10 +136,23 @@ def find_collision(null):
     mc.select(collisionResults, r=True)
 
 def select_results(null):
+    """Select meshes with detected collisions.
+
+    Args:
+        null: Unused callback argument.
+    """
     global collisionResults
     mc.select(collisionResults)
 
 def apply_collision(none):
+    """Apply boolean operation to separate intersecting mesh faces.
+
+    Uses Polygon Boolean Operation to identify and separate intersecting
+    geometry, then relaxes resulting vertices.
+
+    Args:
+        none: Unused callback argument.
+    """
     flush_cbb()
 
     time.time()
@@ -187,10 +236,20 @@ def apply_collision(none):
     mc.delete(bool_mesh_name)
 
 def relax_brush(arg=None):
+    """Activate mesh relax sculpt tool with surface constraint.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     mel.eval('setMeshSculptTool "Relax";')
     mel.eval('sculptMeshCacheCtx -e -constrainToSurface true sculptMeshCacheContext;')
 
 def relax_flood(arg=None):
+    """Activate mesh relax sculpt tool and apply flood operation.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     mel.eval('setMeshSculptTool "Relax";')
     mel.eval('sculptMeshCacheCtx -e -constrainToSurface true sculptMeshCacheContext;')
     mel.eval('sculptMeshFlood; sculptMeshFlood; sculptMeshFlood;')
@@ -198,6 +257,14 @@ def relax_flood(arg=None):
     mel.eval('buildSelectMM; SelectToolOptionsMarkingMenuPopDown;')
 
 def flush_cbb(arg=None):
+    """Clean up temporary geometry created by collision solving process.
+
+    Deletes temporary boolean mesh, dummy planes, and constraint nodes
+    left over from intersection solving operations.
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     if mc.objExists('tempMeshBool*'):
         mc.DeleteHistory('tempMeshBool*')
         mc.delete('tempMeshBool*')
@@ -213,6 +280,11 @@ def flush_cbb(arg=None):
         mc.delete('rigidSolver')
 
 def fix_nan_verts(arg=None):
+    """Replace NaN vertex coordinates with valid positions (0, 0, 0).
+
+    Args:
+        arg (None): Unused callback argument.
+    """
     sel = mc.listRelatives(mc.ls(sl=True, fl=True), c=True, type='mesh')
     sel_verts = mc.ls(mc.polyListComponentConversion(sel, tv=True), fl=True)
     for each in sel_verts:
@@ -220,6 +292,11 @@ def fix_nan_verts(arg=None):
             mc.setAttr(each.split('.vtx[')[0] + '.pnts[' + each.split('.vtx[')[1], 0, 0, 0)
 
 def intersection_solver():
+    """Create and display the intersection solver UI window.
+
+    Provides tools for detecting and resolving mesh interpenetrations
+    including visualization, collision solving, and mesh relaxation.
+    """
     global isFaceMode
 
     isFaceMode = 0

@@ -11,6 +11,19 @@ import pymel.core as pm
 
 
 class AutoUV():
+    """Automatic UV unwrapping and optimization tool.
+
+    Streamlines the complete UV workflow by automating projection, seam creation,
+    unfolding, layout, and boundary cleanup. Handles non-manifold UV fixes and
+    ensures optimal texel density and UV tile layout for efficient texture usage.
+
+    Attributes:
+        None (operates on input geometry list)
+
+    Example:
+        >>> auto_uv = AutoUV(geo_list=['pCube1'], map_res=2048, texel_density=16.0)
+        >>> # Processes UV unwrapping on the selected geometry
+    """
 
     def __init__(self, geo_list=pm.ls(sl=True), map_res=1024, texel_density=16, auto_seam_angle=0,
                  auto_project=True, auto_seam=True, auto_cut_uv=True):

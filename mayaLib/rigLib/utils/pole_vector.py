@@ -10,6 +10,20 @@ import pymel.core as pm
 
 
 class PoleVector():
+    """Automatic pole vector locator creation and positioning for IK chains.
+
+    Automatically creates and positions a pole vector locator for IK handles based on
+    the chain's geometry. Calculates optimal pole vector placement using the joint chain
+    distance and creates proper constraints for intuitive control of IK limbs.
+
+    Attributes:
+        poleVector: The pole vector locator node
+        poleVectorGrp: The group containing the pole vector
+
+    Example:
+        >>> pv = PoleVector('arm_IK')
+        >>> pv_loc, pv_grp = pv.get_pole_vector()
+    """
     def __init__(self, ik_handle):
         """Initialize pole vector setup for an IK handle.
 

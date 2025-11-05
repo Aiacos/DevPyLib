@@ -21,6 +21,11 @@ spacing = 1.0 / (points_number - 1)
 ## Main --wip
 
 def delete_connection(plug):
+    """Delete connection from a plug (equivalent of MEL CBdeleteConnection).
+
+    Args:
+        plug (str): Plug path (node.attribute).
+    """
     # """ Equivalent of MEL: CBdeleteConnection """
 
     if cmds.connectionInfo(plug, isDestination=True):
@@ -35,6 +40,19 @@ def delete_connection(plug):
 
 
 def path_mode(path, follow=False, sphere_size=0.1, offset_active=False, loc_size=0.1, joint_radius=0.1):
+    """Create locators and joints distributed along a curve path.
+
+    Args:
+        path (str): Curve path name.
+        follow (bool): Whether locators follow curve direction.
+        sphere_size (float): Size of visual sphere control.
+        offset_active (bool): Create offset joint layer.
+        loc_size (float): Size of locator visual.
+        joint_radius (float): Radius of joint display.
+
+    Returns:
+        list: List of created locator names.
+    """
     name_builder_locator = path + "_loc"
     name_builder_offset = path + "_offset_jnt"
     name_builder_joint = path + "_jnt_ctrl"

@@ -78,6 +78,27 @@ def build_install_cmd(lib_dir, lib_name, port):
 
 
 class InstallLibrary:
+    """Library installation and management for Maya environments.
+
+    Handles cross-platform installation, updating, and configuration of the DevPyLib
+    library. Manages Python paths, Maya environment variables, and plugin loading
+    across Windows, macOS, and Linux platforms. Supports both development and
+    production installation modes.
+
+    Attributes:
+        libUrl: URL to the library zip file
+        homeUser: User home directory path
+        mayaScriptPath: Platform-specific Maya scripts directory
+        workspace_path: Workspace directory path
+        libDir: Installation directory path
+        libName: Library module name
+        dev_mode: Whether in development mode
+
+    Example:
+        >>> installer = InstallLibrary(lib_dir='/path/to/DevPyLib')
+        >>> installer.install_from_git()
+        >>> installer.install_in_maya_user_setup()
+    """
     def __init__(self, dev_mode=False, parent=None, lib_dir=None):
         """
         Initialize the InstallLibrary.

@@ -117,20 +117,20 @@ class ZivaBase():
         self.rig_grp = pm.group(n=character + '_' + rig_type + '_rig_grp', em=True)
         self.z_solver = pm.ls(type='zSolverTransform')[-1] if len(pm.ls(type='zSolverTransform')) > 0 else None
 
-        if self.zSolver:
-            pm.group(self.zSolver, n='zSolver_grp', p=self.rig_grp)
-            self.zSolver.scale.set(solver_scale, solver_scale, solver_scale)
-            self.zSolver.getShape().affectSolverGravity.set(1)
-            self.zSolver.getShape().affectInertialDamping.set(1)
-            self.zSolver.getShape().affectRestScaleEnvelope.set(1)
-            self.zSolver.getShape().affectPressureEnvelope.set(1)
-            self.zSolver.getShape().affectSurfaceTensionEnvelope.set(1)
-            self.zSolver.getShape().affectFiberExcitation.set(1)
-            self.zSolver.getShape().affectRestShapeEnvelope.set(1)
-            self.zSolver.getShape().collisionDetection.set(1)
+        if self.z_solver:
+            pm.group(self.z_solver, n='zSolver_grp', p=self.rig_grp)
+            self.z_solver.scale.set(solver_scale, solver_scale, solver_scale)
+            self.z_solver.getShape().affectSolverGravity.set(1)
+            self.z_solver.getShape().affectInertialDamping.set(1)
+            self.z_solver.getShape().affectRestScaleEnvelope.set(1)
+            self.z_solver.getShape().affectPressureEnvelope.set(1)
+            self.z_solver.getShape().affectSurfaceTensionEnvelope.set(1)
+            self.z_solver.getShape().affectFiberExcitation.set(1)
+            self.z_solver.getShape().affectRestShapeEnvelope.set(1)
+            self.z_solver.getShape().collisionDetection.set(1)
 
             if use_gpu:
-                self.zSolver.getShape().solver.set(2)
+                self.z_solver.getShape().solver.set(2)
 
         if ziva_cache:
             self.add_ziva_cache()
@@ -146,7 +146,7 @@ class ZivaBase():
         workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / 'scenes' / 'zBuilder'
         workspace_dir.mkdir(parents=True, exist_ok=True)
 
-        pm.select(self.zSolver)
+        pm.select(self.z_solver)
         z = zva.Ziva()
         z.retrieve_from_scene()
 
@@ -179,12 +179,12 @@ class ZivaBase():
         """Adds a Ziva cache to the solver.
 
         Args:
-            zSolver: The Ziva solver to add cache to.
+            z_solver: The Ziva solver to add cache to.
         """
-        if zSolver:
-            pm.select(zSolver)
+        if z_solver:
+            pm.select(z_solver)
         else:
-            pm.select(self.zSolver)
+            pm.select(self.z_solver)
 
         mel.eval('ziva -acn;')
 

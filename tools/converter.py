@@ -15,6 +15,11 @@ from pathlib import Path
 
 
 def main():
+    """Auto-detect and run texture_tools.py with passed arguments.
+
+    Auto-detects the tools directory based on this script's location
+    and runs texture_tools.py, forwarding all command-line arguments.
+    """
     # Auto-detect the tools directory based on this script's location
     script_dir = Path(__file__).parent.resolve()
     texture_tools_path = script_dir / "texture_tools.py"

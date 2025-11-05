@@ -30,6 +30,22 @@ def maya_use_new_api():
     pass
 
 class TensionMap( om2.MPxNode ):
+    """Maya plugin node for visualizing mesh deformation tension via vertex colors.
+
+    Compares original and deformed mesh geometry to calculate edge length changes,
+    then applies a color ramp to visualize areas of compression (green) and stretching
+    (red) on the mesh surface. Useful for skin weight evaluation and deformation quality control.
+
+    Attributes:
+        a_orig_shape: Original undeformed mesh geometry input
+        a_deformed_shape: Deformed mesh geometry input
+        a_out_shape: Output mesh with vertex colors applied
+        a_color_ramp: Color ramp for tension visualization
+
+    Notes:
+        This is a Maya Python API 2.0 node. Requires maya_useNewAPI() declaration.
+        Color ramp is automatically initialized with green (0.0), black (0.5), red (1.0).
+    """
 
     a_orig_shape = om2.MObject()
     a_deformed_shape = om2.MObject()
@@ -43,9 +59,23 @@ class TensionMap( om2.MPxNode ):
 
 
     def __init__( self ):
+        """Initialize TensionMap node.
+
+        Calls parent class constructor to set up MPxNode.
+        """
         om2.MPxNode.__init__( self )
 
     def initialize_ramp( self, parent_node, ramp_obj, index, position, value, interpolation ):
+        """Initialize a color ramp attribute with a specific value and position.
+
+        Args:
+            parent_node (MObject): Parent node containing the ramp attribute.
+            ramp_obj (MObject): Ramp attribute object.
+            index (int): Index of the ramp entry.
+            position (float): Position along the ramp (0.0-1.0).
+            value (list): RGB color value as [r, g, b].
+            interpolation (int): Interpolation type (1 for linear).
+        """
 
         ramp_plug = om2.MPlug( parent_node, ramp_obj )
         element_plug = ramp_plug.elementByLogicalIndex(index)
@@ -60,11 +90,24 @@ class TensionMap( om2.MPxNode ):
         interp_plug.setInt(interpolation)
 
     def postConstructor( self ):
+        """Initialize color ramp with green-black-red gradient.
+
+        Sets up the default color ramp for tension visualization:
+        - Green at 0.0 (compression)
+        - Black at 0.5 (neutral)
+        - Red at 1.0 (stretching)
+        """
         self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 0, 0.0, om2.MColor( (0, 1, 0, 1) ), 1 )
         self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor( (0, 0, 0, 1) ), 1 )
         self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor( (1, 0, 0, 1) ), 1 )
 
     def setDependentsDirty( self, dirty_plug, affected_plugs ):
+        """Mark geometry plugs dirty when input meshes change.
+
+        Args:
+            dirty_plug (MPlug): The plug that was dirtied.
+            affected_plugs (MPlugArray): Array of plugs affected by the change.
+        """
         if dirty_plug.partialName() == DEFORMED_ATTR_NAME:
             self.is_deformed_dirty = True
         else:
@@ -76,7 +119,15 @@ class TensionMap( om2.MPxNode ):
             self.is_orig_dirty = False
 
     def compute( self, plug, data ):
+        """Main compute method for tension map visualization.
 
+        Calculates edge length changes between original and deformed meshes,
+        then applies color ramp to visualize tension as vertex colors.
+
+        Args:
+            plug (MPlug): The output plug being computed.
+            data (MDataBlock): Data block containing input and output values.
+        """
         if plug == self.a_out_shape:
             this_obj = self.thisMObject()
             orig_handle = data.inputValue( self.a_orig_shape )
@@ -114,6 +165,14 @@ class TensionMap( om2.MPxNode ):
         data.setClean( plug )
 
     def get_edge_len( self, mesh_handle ):
+        """Calculate average edge length for each vertex.
+
+        Args:
+            mesh_handle (MDataHandle): Handle to mesh geometry.
+
+        Returns:
+            list: Average edge length for each vertex in the mesh.
+        """
         edge_len_array = []
 
         mesh_obj = mesh_handle.asMesh()
@@ -135,10 +194,19 @@ class TensionMap( om2.MPxNode ):
 
 
 def node_creator():
+    """Create and return a new TensionMap node instance.
+
+    Returns:
+        TensionMap: New instance of the TensionMap node.
+    """
     return TensionMap()
 
 
 def initialize():
+    """Initialize TensionMap node attributes.
+
+    Creates and registers the input/output attributes for the node.
+    """
     t_attr = om2.MFnTypedAttribute()
 
     TensionMap.a_orig_shape = t_attr.create( ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh )
@@ -164,6 +232,14 @@ def initialize():
 # AE template that put the main attributes into the main attribute section
 #@staticmethod
 def ae_template_string(node_name):
+    """Generate Attribute Editor template MEL code for TensionMap node.
+
+    Args:
+        node_name (str): Name of the node to create template for.
+
+    Returns:
+        str: MEL procedure code for the Attribute Editor template.
+    """
     templ_str = ''
     templ_str += 'global proc AE%sTemplate(string $nodeName)\n' % node_name
     templ_str += '{\n'
@@ -180,6 +256,14 @@ def ae_template_string(node_name):
 
 
 def initialize_plugin( mobject ):
+    """Register the TensionMap plugin with Maya.
+
+    Args:
+        mobject (MObject): The plugin's MObject passed by Maya.
+
+    Raises:
+        RuntimeError: If node registration fails.
+    """
     mplugin = om2.MFnPlugin( mobject )
     try:
         mplugin.registerNode( K_PLUGIN_NODE_NAME, K_PLUGIN_NODE_ID, node_creator, initialize )
@@ -190,6 +274,14 @@ def initialize_plugin( mobject ):
 
 
 def uninitialize_plugin(mobject):
+    """Unregister the TensionMap plugin from Maya.
+
+    Args:
+        mobject (MObject): The plugin's MObject passed by Maya.
+
+    Raises:
+        RuntimeError: If node deregistration fails.
+    """
     mplugin = om2.MFnPlugin( mobject )
     try:
         mplugin.deregisterNode( K_PLUGIN_NODE_ID )

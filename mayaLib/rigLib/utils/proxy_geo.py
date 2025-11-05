@@ -34,6 +34,22 @@ def invert_selection(shape, faces):
 
 
 class ProxyGeo():
+    """Per-joint proxy geometry generator for fast viewport display.
+
+    Automatically creates optimized proxy geometry from a skinned mesh by duplicating
+    and removing faces based on skin weight influence. Useful for creating fast/medium/
+    slow display hierarchy levels that maintain proper deformation while reducing
+    viewport geometry for performance.
+
+    Attributes:
+        proxyGeoList: List of created proxy geometry transform nodes
+        shapeGrp: Parent group containing all proxy geometry ('fastGeo_GRP')
+
+    Example:
+        >>> proxy = ProxyGeo('character_body', do_parent_cnst=True, threshold=0.5)
+        >>> proxy_meshes = proxy.get_proxy_geo_list()
+        >>> fast_group = proxy.get_fast_geo_group()
+    """
     def __init__(self, geo, do_parent_cnst=True, threshold=0.45):
         """Create per-joint proxy geometry from a skinned mesh.
 

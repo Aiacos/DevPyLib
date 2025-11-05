@@ -142,7 +142,7 @@ class Cloth(object):
         vtx_list = pm.ls(sl=True)
 
         # Paint the input attract weights of the cloth node
-        dynamic.clothPaintInputAttract(clothNode, vtx_list, 0.4, smoothIteration=3)
+        dynamic.clothPaintInputAttract(cloth_node, vtx_list, 0.4, smoothIteration=3)
 
     def update_settings(self):
         """
@@ -153,32 +153,32 @@ class Cloth(object):
         """
         # setup nCloth
         for cloth_items in self.cloth_data_list:
-            cloth_shape = cloth_items
+            cloth_shape = cloth_items[3]  # cloth_shape is the 4th element in the list
 
             # Collision
             cloth_shape.thickness.set(0.1)
             cloth_shape.selfCollideWidthScale.set(0)
 
             # Dynamic Properties
-            # clothShape.stretchResistance.set(10)
-            # clothShape.bendResistance.set(5)
-            clothShape.inputMeshAttract.set(1)
-            clothShape.inputAttractMethod.set(0)
+            # cloth_shape.stretchResistance.set(10)
+            # cloth_shape.bendResistance.set(5)
+            cloth_shape.inputMeshAttract.set(1)
+            cloth_shape.inputAttractMethod.set(0)
 
             # Quality Settings
-            clothShape.collideLastThreshold.set(0.2)
-            clothShape.sortLinks.set(1)
+            cloth_shape.collideLastThreshold.set(0.2)
+            cloth_shape.sortLinks.set(1)
 
-            # clothShape.evaluationOrder.set(1)
-            clothShape.bendSolver.set(2)
+            # cloth_shape.evaluationOrder.set(1)
+            cloth_shape.bendSolver.set(2)
 
-            clothShape.trappedCheck.set(1)
-            clothShape.selfTrappedCheck.set(1)
+            cloth_shape.trappedCheck.set(1)
+            cloth_shape.selfTrappedCheck.set(1)
 
-            clothShape.pushOut.set(0.05)
-            clothShape.pushOutRadius.set(1)
+            cloth_shape.pushOut.set(0.05)
+            cloth_shape.pushOutRadius.set(1)
 
-            clothShape.isDynamic.set(1)
+            cloth_shape.isDynamic.set(1)
 
         self.nucleus.enable.set(1)
 
@@ -194,7 +194,7 @@ class Cloth(object):
         for vertex in vertices:
             try:
                 # Construct the selection string
-                vertex_select_list.append("{0}.vtx[{1}]".format(geo, vertex))
+                vertex_select_list.append(f"{geo}.vtx[{vertex}]")
             except (ValueError, TypeError):
                 print("Skip vtx: ", vertex)
 

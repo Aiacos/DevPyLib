@@ -85,6 +85,23 @@ def paint_deformer_weights(channel, vtx_list, value, smooth_iteration=1):
 
 
 class PaintDeformer(object):
+    """Interactive deformer weight painting tool.
+
+    Provides a high-level interface to Maya's artAttr paint tools for editing deformer
+    weights. Simplifies selection operations, weight painting, and smoothing without
+    directly calling MEL commands. Includes utilities for selection manipulation and
+    batch weight operations.
+
+    Attributes:
+        geo: The geometry being painted on
+        channel: The deformer attribute channel being painted
+
+    Example:
+        >>> painter = PaintDeformer('pCube1.pFFD1.weights', 'ffd.ffd1.weights')
+        >>> painter.select_all()
+        >>> painter.replace([1.0, 0.5, 0.0], value=0.5)
+        >>> painter.smooth(smooth_iteration=3)
+    """
     def __init__(self, geo, channel):
         """Initialize the PaintDeformer tool on a specific geometry and channel.
 
@@ -506,7 +523,7 @@ def tension_map(obj):
     tensionmap_node = pm.createNode("tensionMap")
 
     # Connect the original geometry to the input of the Tension Map node
-    pm.connectAttr(shapeOrig.worldMesh[0], tensionmap_node.orig, f=True)
+    pm.connectAttr(shape_orig.worldMesh[0], tensionmap_node.orig, f=True)
     # Connect the deformed geometry to the deform input of the Tension Map node
     pm.connectAttr(shape_input, tensionmap_node.deform, f=True)
     # Connect the output of the Tension Map node to the input geometry of the mesh

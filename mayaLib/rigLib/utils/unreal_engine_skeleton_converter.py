@@ -30,6 +30,24 @@ right_hand_ring_joint_list_default = ['R_Fingers_finger_2_0_FS_jnt', 'R_Fingers_
 right_hand_pinky_joint_list_default = ['R_Fingers_finger_3_0_FS_jnt', 'R_Fingers_finger_3_1_FS_jnt', 'R_Fingers_finger_3_2_FS_jnt', 'R_Fingers_finger_3_3_FS_jnt']
 
 class UnrealEngineSkeleton(object):
+    """Skeleton converter for Unreal Engine HumanIK naming convention.
+
+    Converts custom rig joint hierarchies to Unreal Engine's standard HumanIK skeleton
+    naming convention, enabling proper retargeting and animation import into Unreal
+    Engine 4/5. Handles complete skeleton transformation including spine, limbs, and
+    finger joints with support for extended hierarchies.
+
+    Attributes:
+        human_ik_joint_dict: Mapping of HumanIK bone names to UE naming conventions
+
+    Example:
+        >>> converter = UnrealEngineSkeleton(
+        ...     reference_joint='Base_main_FS_jnt',
+        ...     hip_joint='M_Spine_pelvis_FS_jnt',
+        ...     spine_joint_list=[spine joints...]
+        ... )
+        >>> # Automatically renames all joints to UE standards
+    """
 
     human_ik_joint_dict = {
         'Reference': 'root',

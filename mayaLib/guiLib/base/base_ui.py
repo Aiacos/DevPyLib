@@ -20,6 +20,32 @@ import mayaLib.pipelineLib.utility.docs as doc
 
 
 class FunctionUI(QtWidgets.QWidget):
+    """Introspective UI generator for Maya functions and classes.
+
+    Automatically generates Qt widgets from function or class signatures using
+    Python's inspect module. Creates input fields for each parameter, with type-aware
+    widgets (checkboxes for booleans, line edits for other types) and fill buttons
+    to populate from Maya selection. Includes an Execute button and Advanced mode
+    toggle to show/hide optional parameters.
+
+    Attributes:
+        function: The function or class being wrapped
+        sig: The function signature
+        layout: The grid layout containing UI elements
+        lineedit_list: List of input widgets
+        label_list: List of parameter labels
+        fillButton_list: List of fill-from-selection buttons
+        execButton: The execute button
+        advancedCheckBox: Toggle for advanced parameters
+        doclabel: Label displaying function documentation
+
+    Example:
+        >>> def my_function(param1, param2=10):
+        ...     '''My test function.'''
+        ...     pass
+        >>> ui = FunctionUI(my_function)
+        >>> ui.show()
+    """
     def __init__(self, func, parent=None):
         """Initializes the FunctionUI widget.
 

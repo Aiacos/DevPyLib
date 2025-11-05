@@ -14,6 +14,21 @@ from mayaLib.shaderLib.utils import texture_ext_path
 
 
 class ShadersManager():
+    """Automatic shader manager for workspace textures.
+
+    Scans a texture directory for organized texture sets, creates appropriate shaders
+    based on the active renderer, and optionally assigns them to corresponding geometry.
+    Handles renderer-specific texture format conversion (TX for Arnold, TEX for RenderMan).
+
+    Attributes:
+        render_engine: Detected render engine (arnold, renderman, etc.)
+        file_manager: TextureFileManager instance for texture discovery
+        texture_dict: Dictionary of discovered texture hierarchies
+
+    Example:
+        >>> manager = ShadersManager(path='/project/sourceimages/', ext='exr')
+        >>> # Automatically creates and assigns shaders for all texture sets
+    """
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr',
                  auto_assing_shader=True):
         """

@@ -56,8 +56,8 @@ class PxrDisneyBSDF(ShaderBase):
             shading_engine (str): Name of the shading engine
         """
         # init base class
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
-        self.shader = Shader_base.get_shader(self)
+        ShaderBase.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        self.shader = ShaderBase.get_shader(self)
 
         self.folder = folder
 

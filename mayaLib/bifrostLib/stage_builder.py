@@ -12,15 +12,13 @@ from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def get_all_deformed_and_constrained(group):
-    """
-    Get all mesh deformed and constrained under a group
+    """Get all mesh deformed and constrained under a group.
+
     Args:
-        group (string): root group name
+        group (str): Root group name.
 
     Returns:
-        (string[]): list of mesh with deformer
-        (string[]): list of mesh without deformer
-
+        tuple: (deformed_list, undeformed_list) - Lists of deformed and undeformed meshes.
     """
     mesh_list = list_objects_under_group(group, type="mesh")
 

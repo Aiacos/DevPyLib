@@ -12,6 +12,19 @@ from mayaLib.rigLib.utils import name
 
 
 class Scapula():
+    """Scapula (shoulder blade) IK rig setup utility.
+
+    Automates the creation of a scapula IK system that connects spine, shoulder, and
+    scapula joints with proper constraints for realistic shoulder mechanics. Creates
+    an IK handle driven by the shoulder joint with constraints that follow spine rotation.
+
+    Attributes:
+        scapulaGrp: Group containing the scapula IK handle and system
+
+    Example:
+        >>> scapula = Scapula('spine_jnt', 'shoulder_jnt', 'scapula_shoulder_jnt')
+        >>> scapula_grp = scapula.get_scapula_grp()
+    """
     def __init__(self, spine_jnt, shoulder_jnt, scapula_shoulder_jnt):
         """
         Create scapula IK
