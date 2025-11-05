@@ -31,10 +31,10 @@ Support: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7K
 import copy
 import sys
 
+import maya.cmds as cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
 from maya.mel import eval as meval
-import maya.cmds as cmds
 
 K_PLUGIN_NODE_TYPE_NAME = "collisionDeformer"
 
@@ -467,7 +467,7 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                 pass
 
     # accessoryNodeSetup used to initialize the ramp attributes
-    def accessoryNodeSetup(self, cmd):
+    def accessoryNodeSetup(self, cmd):  # noqa: N802
         """Initialize ramp attributes for the bulge shape curve.
 
         Args:
@@ -714,5 +714,5 @@ global proc collisionDeformer()
 meval(mel)
 
 # Maya plugin entry points (must use exact names)
-initializePlugin = initialize_plugin
-uninitializePlugin = uninitialize_plugin
+initializePlugin = initialize_plugin  # noqa: N816
+uninitializePlugin = uninitialize_plugin  # noqa: N816

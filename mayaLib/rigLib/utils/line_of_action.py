@@ -2,9 +2,8 @@
 
 import math
 
-from maya import OpenMaya
-from maya import cmds
 import pymel.core as pm
+from maya import OpenMaya, cmds
 
 
 def vector_diff(v1, v2):

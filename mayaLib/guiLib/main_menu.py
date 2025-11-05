@@ -17,14 +17,14 @@ from maya import mel
 # from mayaLib.utility.Qt import QtCore, QtWidgets, QtGui
 
 try:
-    from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6 import QtCore, QtGui, QtWidgets
+    from PySide6.QtCore import SIGNAL, QObject
     from PySide6.QtGui import QAction
-    from PySide6.QtCore import QObject, SIGNAL
     from shiboken6 import wrapInstance
 except ImportError:
-    from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2 import QtCore, QtGui, QtWidgets
+    from PySide2.QtCore import SIGNAL, QObject
     from PySide2.QtWidgets import QAction
-    from PySide2.QtCore import QObject, SIGNAL
     from shiboken2 import wrapInstance
 
 

@@ -8,8 +8,13 @@ from typing import Any, Iterable
 import pymel.core as pm
 
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.utils import control, deform, parameter_resolution, skin
-from mayaLib.rigLib.utils import follow_ctrl
+from mayaLib.rigLib.utils import (
+    control,
+    deform,
+    follow_ctrl,
+    parameter_resolution,
+    skin,
+)
 
 __all__ = ['Face']
 

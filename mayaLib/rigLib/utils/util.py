@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from maya import mel
 import pymel.core as pm
+from maya import mel
 
 __all__ = [
     'get_driver_driven_from_constraint',

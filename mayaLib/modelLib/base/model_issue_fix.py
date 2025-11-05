@@ -30,7 +30,7 @@ Example
 import maya.mel as mel
 import pymel.core as pm
 
-from mayaLib.rigLib.utils.util import unlock_and_unhide_all, list_objects_under_group
+from mayaLib.rigLib.utils.util import list_objects_under_group, unlock_and_unhide_all
 
 
 def merge_duplicated_vertex(geo, threshold=0.001, only_2_vertex=False):
@@ -437,8 +437,8 @@ class ModelFix():
 
 
 if __name__ == "__main__":
-    geoList = list_objects_under_group(pm.ls(sl=True)[0])
-    for geo in geoList:
+    geo_list = list_objects_under_group(pm.ls(sl=True)[0])
+    for geo in geo_list:
         print((geo.name()))
-        modelFix = ModelFix(geo)
-        modelFix.auto_fix()
+        model_fix = ModelFix(geo)
+        model_fix.auto_fix()

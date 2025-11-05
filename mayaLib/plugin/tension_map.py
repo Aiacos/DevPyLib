@@ -16,6 +16,7 @@ Attributes:
 """
 
 import sys
+
 import maya.api.OpenMaya as om2
 import maya.OpenMaya as om
 
@@ -89,7 +90,7 @@ class TensionMap( om2.MPxNode ):
         interp_plug = element_plug.child(2)
         interp_plug.setInt(interpolation)
 
-    def postConstructor( self ):
+    def postConstructor( self ):  # noqa: N802
         """Initialize color ramp with green-black-red gradient.
 
         Sets up the default color ramp for tension visualization:
@@ -101,7 +102,7 @@ class TensionMap( om2.MPxNode ):
         self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor( (0, 0, 0, 1) ), 1 )
         self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor( (1, 0, 0, 1) ), 1 )
 
-    def setDependentsDirty( self, dirty_plug, affected_plugs ):
+    def setDependentsDirty( self, dirty_plug, affected_plugs ):  # noqa: N802
         """Mark geometry plugs dirty when input meshes change.
 
         Args:
@@ -290,5 +291,5 @@ def uninitialize_plugin(mobject):
         raise
 
 # Maya plugin entry points (must use exact names)
-initializePlugin = initialize_plugin
-uninitializePlugin = uninitialize_plugin
+initializePlugin = initialize_plugin  # noqa: N816
+uninitializePlugin = uninitialize_plugin  # noqa: N816

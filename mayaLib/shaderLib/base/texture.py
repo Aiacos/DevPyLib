@@ -12,8 +12,7 @@ import pathlib
 
 import pymel.core as pm
 
-from mayaLib.shaderLib.utils import config
-from mayaLib.shaderLib.utils import file
+from mayaLib.shaderLib.utils import config, file
 
 
 class TextureFolder(object):

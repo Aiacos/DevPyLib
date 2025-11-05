@@ -5,7 +5,4 @@ including fire, smoke, explosions, and custom fluid configurations with
 containers and emitters.
 """
 
-from . import base
-from . import fire
-from . import utility
-from . import fire_smoke
+from . import base, fire, fire_smoke, utility

@@ -8,24 +8,24 @@ import os
 import sys
 
 try:
-    from PySide6 import QtCore
+    from PySide6 import QtCore, QtWidgets
     from PySide6 import QtGui as QtG
-    from PySide6 import QtWidgets
     from shiboken6 import wrapInstance
 except (ImportError, ModuleNotFoundError):
-    from PySide2 import QtCore
+    from PySide2 import QtCore, QtWidgets
     from PySide2 import QtGui as QtG
-    from PySide2 import QtWidgets
     from shiboken2 import wrapInstance
 
+import json
+import logging
+
 import maya.cmds as cmds
+import maya.mel as mel
+import maya.OpenMaya as OpenMaya
 import maya.OpenMayaUI as omui
 import pymel.all as pm
-import maya.mel as mel
-import json
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
-import maya.OpenMaya as OpenMaya
-import logging
+
 try:
     import cPickle as pickle
 except (ImportError, ModuleNotFoundError):
@@ -121,10 +121,10 @@ def findMainNameB():
     return checkButtonTest
 
 
-class headGeoWidget(QtWidgets.QWidget):
+class HeadGeoWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
-        super(headGeoWidget, self).__init__(parent)
+        super(HeadGeoWidget, self).__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(False)
@@ -513,10 +513,10 @@ class headGeoWidget(QtWidgets.QWidget):
         layout.addWidget(self.perseusLayoutGrp)
 
 
-class settingsWidget(QtWidgets.QWidget):
+class SettingsWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
-        super(settingsWidget, self).__init__(parent)
+        super(SettingsWidget, self).__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(True)
@@ -676,10 +676,10 @@ class settingsWidget(QtWidgets.QWidget):
             ctrl.setFixedHeight(30)
 
 
-class skinWidget(QtWidgets.QWidget):
+class SkinWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
-        super(skinWidget, self).__init__(parent)
+        super(SkinWidget, self).__init__(parent)
         self.progressColor = 'background-color:rgb(76,50,50);color : white;'
         self.prExportSkin = QtWidgets.QPushButton('Export Skin')
         self.prImpSkinAll = QtWidgets.QPushButton('Import Skin')
@@ -841,9 +841,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             self.geometry = self.saveGeometry()
 
     def create_widgets(self):
-        self.headGeo_wdg = headGeoWidget()
-        self.settings_wdg = settingsWidget()
-        self.skin_wdg = skinWidget()
+        self.headGeo_wdg = HeadGeoWidget()
+        self.settings_wdg = SettingsWidget()
+        self.skin_wdg = SkinWidget()
         self.tab_widget = CustomTabWidget()
         self.tab_widget.addTab(self.headGeo_wdg, 'Set Models and Components')
         self.tab_widget.addTab(self.settings_wdg, 'Facial Settings')
@@ -1550,12 +1550,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 self.Adjustment_a(DownLipEdgeSel, TopLipEdgeSel)
         return
 
-    def Adjustment_a(self, DownLipEdgeSel, TopLipEdgeSel):
+    def Adjustment_a(self, down_lip_edge_sel, top_lip_edge_sel):
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        pos1 = cmds.xform(TopLipEdgeSel[0], q=1, ws=1, t=1)
-        pos2 = cmds.xform(TopLipEdgeSel[int(len(TopLipEdgeSel) / 4)], q=1, ws=1, t=1)
-        pos3 = cmds.xform(TopLipEdgeSel[int(len(TopLipEdgeSel) / 3)], q=1, ws=1, t=1)
-        pos4 = cmds.xform(TopLipEdgeSel[int(int(len(TopLipEdgeSel) / 2))], q=1, ws=1, t=1)
+        pos1 = cmds.xform(top_lip_edge_sel[0], q=1, ws=1, t=1)
+        pos2 = cmds.xform(top_lip_edge_sel[int(len(top_lip_edge_sel) / 4)], q=1, ws=1, t=1)
+        pos3 = cmds.xform(top_lip_edge_sel[int(len(top_lip_edge_sel) / 3)], q=1, ws=1, t=1)
+        pos4 = cmds.xform(top_lip_edge_sel[int(int(len(top_lip_edge_sel) / 2))], q=1, ws=1, t=1)
         curve2 = str(cmds.curve(p=[(pos1[0], pos1[1], pos1[2]), (pos2[0], pos2[1], pos2[2]), (pos3[0], pos3[1], pos3[2]), (pos4[0], pos4[1], pos4[2])], k=[0, 1, 2, 3], d=1))
         sizeScale = float(cmds.arclen(curve2))
         cmds.delete(curve2)
@@ -1749,7 +1749,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.setAttr('l_jawCurve1.visibility', 0)
         cmds.setAttr('l_browsCurve1.visibility', 0)
         cmds.setAttr('l_cheekCurve1.visibility', 0)
-        cmds.select(DownLipEdgeSel[int(int(len(DownLipEdgeSel) / 2))], r=1)
+        cmds.select(down_lip_edge_sel[int(int(len(down_lip_edge_sel) / 2))], r=1)
         pm.mel.newCluster(' -n adjustClust -envelope 1')
         cmds.parentConstraint('adjustClustHandle', 'all_facial_grp')
         cmds.delete('adjustClustHandle')
@@ -1802,11 +1802,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.setAttr('l_jawCurve.overrideColor', 16)
         cmds.setAttr('l_browsCurve.overrideEnabled', 1)
         cmds.setAttr('l_browsCurve.overrideColor', 17)
-        cmds.select(DownLipEdgeSel[int(int(len(DownLipEdgeSel) / 2))], r=1)
+        cmds.select(down_lip_edge_sel[int(int(len(down_lip_edge_sel) / 2))], r=1)
         pm.mel.newCluster(' -n adjustClust -envelope 1')
         cmds.parentConstraint('adjustClustHandle', 'all_facial_grp')
         cmds.delete('adjustClustHandle')
-        cmds.select(DownLipEdgeSel[2], r=1)
+        cmds.select(down_lip_edge_sel[2], r=1)
         pm.mel.modelPanelBarXRayCallback('XRayJointsBtn', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar')
         pm.mel.restoreLastPanelWithFocus()
         pm.mel.updateModelPanelBar('MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4')
@@ -2043,16 +2043,16 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.connectAttr(str(sel) + '.s', 'r_' + sel[2:size] + '.s')
             cmds.setAttr('r_' + sel[2:size] + '.overrideColor', 1)
 
-    def checkVarExists(self, NewList, invert, type):
+    def checkVarExists(self, new_list, invert, type):
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        if len(NewList) != 0:
-            pm.select(NewList, r=1)
+        if len(new_list) != 0:
+            pm.select(new_list, r=1)
             if invert == 1:
                 cmds.ConvertSelectionToVertices()
                 headGeoName = LHeadGeoSel
                 pm.select(headGeoName + '.vtx[*]', r=1)
-                pm.select(NewList, d=1)
-            if len(NewList) != 1:
+                pm.select(new_list, d=1)
+            if len(new_list) != 1:
                 if type == 0:
                     cmds.ConvertSelectionToVertices()
                 if type == 1:
@@ -2063,12 +2063,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             pm.select(cl=1)
             print('The variable has not been assigned ')
 
-    def checkVarExistsB(self, NewList, NewListB, invert, type):
-        if len(NewList) != 0:
-            pm.select(NewList, NewListB, r=1)
+    def checkVarExistsB(self, new_list, new_list_b, invert, type):
+        if len(new_list) != 0:
+            pm.select(new_list, new_list_b, r=1)
             if invert == 1:
                 pm.mel.invertSelection()
-            if len(NewList) != 1:
+            if len(new_list) != 1:
                 if type == 0:
                     cmds.ConvertSelectionToContainedEdges()
                 if type == 1:
@@ -2079,7 +2079,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             pm.select(cl=1)
             print('The variable has not been assigned ')
 
-    def findEdgeUpDown(self, upDown):
+    def findEdgeUpDown(self, up_down):
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         vertexList = ['']
         vertexList = []
@@ -2119,13 +2119,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         upDownSel = cmds.ls(fl=1, sl=1)
         pos1 = cmds.xform(upDownSel[0], q=1, t=1)
         pos2 = cmds.xform(upDownSel[1], q=1, t=1)
-        if upDown == 1:
+        if up_down == 1:
             if pos1[1] < pos2[1]:
                 cmds.select(upDownSel[0], r=1)
             else:
                 cmds.select(upDownSel[1], r=1)
         else:
-            if upDown == 0:
+            if up_down == 0:
                 if pos1[1] > pos2[1]:
                     cmds.select(upDownSel[0], r=1)
                 else:
@@ -2144,7 +2144,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                         if selNew[j] == vertexList[i]:
                             cmds.select(selNew[j], add=1)
 
-                self.wfFixEdgeLoopA(upDown)
+                self.wfFixEdgeLoopA(up_down)
                 second = cmds.ls(fl=1, sl=1)
                 pos1 = cmds.xform(second[0], q=1, t=1)
                 pos2 = cmds.xform(end[0], q=1, t=1)
@@ -2160,24 +2160,24 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.catch(lambda : pm.mel.doMenuComponentSelection(name, 'edge'))
         return downVertex
 
-    def wfFixEdgeLoopA(self, upDown):
+    def wfFixEdgeLoopA(self, up_down):
         upDownSel = cmds.ls(fl=1, sl=1)
         if len(upDownSel) == 2:
             upDownSel = cmds.ls(fl=1, sl=1)
             pos1 = cmds.xform(upDownSel[0], q=1, t=1)
             pos2 = cmds.xform(upDownSel[1], q=1, t=1)
-            if upDown == 1:
+            if up_down == 1:
                 if pos1[1] < pos2[1]:
                     cmds.select(upDownSel[0], r=1)
                 else:
                     cmds.select(upDownSel[1], r=1)
-            elif upDown == 0:
+            elif up_down == 0:
                 if pos1[1] > pos2[1]:
                     cmds.select(upDownSel[0], r=1)
                 else:
                     cmds.select(upDownSel[1], r=1)
 
-    def findEdgeUpDownTongue(self, upDown):
+    def findEdgeUpDownTongue(self, up_down):
         self.perseus_dic['LHeadGeoSel']
         vertexList = []
         edgeSel = cmds.ls(fl=1, sl=1)
@@ -2215,13 +2215,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         upDownSel = cmds.ls(fl=1, sl=1)
         pos1 = cmds.xform(upDownSel[0], q=1, t=1)
         pos2 = cmds.xform(upDownSel[1], q=1, t=1)
-        if upDown == 1:
+        if up_down == 1:
             if pos1[1] < pos2[1]:
                 cmds.select(upDownSel[0], r=1)
             else:
                 cmds.select(upDownSel[1], r=1)
         else:
-            if upDown == 0:
+            if up_down == 0:
                 if pos1[1] > pos2[1]:
                     cmds.select(upDownSel[0], r=1)
                 else:
@@ -2415,10 +2415,10 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.settings_wdg.progress.setValue(0)
         self.settings_wdg.progressText.setText('')
 
-    def FacialLoadCtlShapesNoUI(self, ctrlPath, nameRig):
-        name = nameRig
-        fDialogLd = ctrlPath
-        if nameRig is not None:
+    def FacialLoadCtlShapesNoUI(self, ctrl_path, name_rig):
+        name = name_rig
+        fDialogLd = ctrl_path
+        if name_rig is not None:
             if cmds.objExists(name + '_facial_shapeCtrl_grp') == 0:
                 cmds.file(fDialogLd, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
                 cmds.select(name + '_facialRig_controllers_grp', r=1)
@@ -2473,9 +2473,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.select(cl=1)
         return
 
-    def FacialLoadNoUI(self, jsonPath):
+    def FacialLoadNoUI(self, json_path):
         pm.mel.reflectionSetMode('none')
-        fDialogLd = jsonPath
+        fDialogLd = json_path
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
         with open(fDialogLd, 'r') as (fp):
             data = json.load(fp)
@@ -2931,29 +2931,29 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
         return skinCluster
 
-    def skinCopy(self, sourceMesh=None, targetMesh=None, *args):
-        if not sourceMesh or not targetMesh:
+    def skinCopy(self, source_mesh=None, target_mesh=None, *args):
+        if not source_mesh or not target_mesh:
             if len(cmds.ls(sl=1)) >= 2:
-                sourceMesh = pm.ls(sl=1)[0]
+                source_mesh = pm.ls(sl=1)[0]
                 targetMeshes = pm.ls(sl=1)[1:]
             else:
                 pm.displayWarning('Please select target mesh/meshes and source mesh with skinCluster.')
                 return
         else:
             targetMeshes = [
-             targetMesh]
-            if isinstance(sourceMesh, basestring):
-                sourceMesh = pm.PyNode(sourceMesh)
-            for targetMesh in targetMeshes:
-                if isinstance(targetMesh, basestring):
-                    sourceMesh = pm.PyNode(targetMesh)
-                ss = self.getSkinCluster(sourceMesh)
+             target_mesh]
+            if isinstance(source_mesh, basestring):
+                source_mesh = pm.PyNode(source_mesh)
+            for target_mesh in targetMeshes:
+                if isinstance(target_mesh, basestring):
+                    source_mesh = pm.PyNode(target_mesh)
+                ss = self.getSkinCluster(source_mesh)
                 if ss:
-                    oDef = pm.skinCluster(sourceMesh, query=True, influence=True)
-                    skinCluster = pm.skinCluster(oDef, targetMesh, tsb=True, nw=1, n=targetMesh.name() + '_SkinCluster')
+                    oDef = pm.skinCluster(source_mesh, query=True, influence=True)
+                    skinCluster = pm.skinCluster(oDef, target_mesh, tsb=True, nw=1, n=target_mesh.name() + '_SkinCluster')
                     pm.copySkinWeights(ss=ss.stripNamespace(), ds=skinCluster.name(), noMirror=True, ia='oneToOne', sm=True, nr=True)
                 else:
-                    pm.displayError('Source Mesh :' + sourceMesh.name() + " Don't have skinCluster")
+                    pm.displayError('Source Mesh :' + source_mesh.name() + " Don't have skinCluster")
 
     def source_define(self):
         base = cmds.ls(sl=1)
@@ -2969,7 +2969,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         print(destinationVertexLs)
         cmds.select(base)
 
-    def SourceDestinationSel(self, sdType):
+    def SourceDestinationSel(self, sd_type):
         global destinationVertexLs
         global sourceVertexLs
         selectionList = pm.ls(sl=1, flatten=1)
@@ -2977,9 +2977,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             if pm.nodeType(selectionList[0]) == 'mesh':
                 mel.eval('PolySelectConvert 3;')
                 selectionList = pm.ls(sl=1, flatten=1)
-                if sdType == 'destination':
+                if sd_type == 'destination':
                     destinationVertexLs = selectionList
-                if sdType == 'source':
+                if sd_type == 'source':
                     sourceVertexLs = selectionList
 
     def copySkinGlobal(self):
@@ -3164,7 +3164,7 @@ def prExportSkin():
         prSkinExp()
 
 
-def prSkinExp(packPath=None, objs=None, *args):
+def prSkinExp(pack_path=None, objs=None, *args):
     if not objs:
         if pm.selected():
             objs = pm.selected()
@@ -3173,13 +3173,13 @@ def prSkinExp(packPath=None, objs=None, *args):
             return
     packDic = {'objectsList': [], 'rootPath': []}
     startDir = pm.workspace(q=True, rootDirectory=True)
-    packPath = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
-    if not packPath:
+    pack_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
+    if not pack_path:
         return
-    packPath = packPath[0]
-    if not packPath.endswith(PACK_EXT):
-        packPath += PACK_EXT
-    packDic['Path'], packName = os.path.split(packPath)
+    pack_path = pack_path[0]
+    if not pack_path.endswith(PACK_EXT):
+        pack_path += PACK_EXT
+    packDic['Path'], packName = os.path.split(pack_path)
     for obj in objs:
         fileName = obj.stripNamespace() + FILE_EXT
         filePath = os.path.join(packDic['Path'], fileName)
@@ -3191,15 +3191,15 @@ def prSkinExp(packPath=None, objs=None, *args):
 
     if packDic['objectsList']:
         data_string = json.dumps(packDic, indent=4, sort_keys=True)
-        f = open(packPath, 'w')
+        f = open(pack_path, 'w')
         f.write(data_string + '\n')
         f.close()
-        pm.displayInfo('Skin Data exported: ' + packPath)
+        pm.displayInfo('Skin Data exported: ' + pack_path)
     else:
         pm.displayWarning('Any of the selected objects have Skin Cluster. Skin Pack export aborted.')
 
 
-def exportSkin(filePath=None, objs=None, *args):
+def exportSkin(file_path=None, objs=None, *args):
     if not objs:
         if pm.selected():
             objs = pm.selected()
@@ -3207,14 +3207,14 @@ def exportSkin(filePath=None, objs=None, *args):
             pm.displayWarning('Please Select One or more objects')
             return False
     packDic = {'objs': [], 'objDDic': [], 'bypassObj': []}
-    if not filePath:
+    if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        filePath = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
-        filePath = filePath[0]
-    if not filePath:
+        file_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
+        file_path = file_path[0]
+    if not file_path:
         return False
-    if not filePath.endswith(FILE_EXT):
-        filePath += FILE_EXT
+    if not file_path.endswith(FILE_EXT):
+        file_path += FILE_EXT
     for obj in objs:
         skinCls = getSkinCluster(obj)
         if not skinCls:
@@ -3235,7 +3235,7 @@ def exportSkin(filePath=None, objs=None, *args):
              obj.name()))
 
     if packDic['objs']:
-        fh = open(filePath, 'wb')
+        fh = open(file_path, 'wb')
         pickle.dump(packDic, fh, pickle.HIGHEST_PROTOCOL)
         fh.close()
         return True
@@ -3271,29 +3271,29 @@ def getSkinCluster(obj):
     return skinCluster
 
 
-def prImpSkinAll(filePath=None, *args):
-    if not filePath:
+def prImpSkinAll(file_path=None, *args):
+    if not file_path:
         startDir = cmds.workspace(q=True, rootDirectory=True)
-        filePath = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
-    if not filePath:
+        file_path = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
+    if not file_path:
         return
-    if not isinstance(filePath, basestring):
-        filePath = filePath[0]
-    packDic = json.load(open(filePath))
+    if not isinstance(file_path, basestring):
+        file_path = file_path[0]
+    packDic = json.load(open(file_path))
     for pFile in packDic['objectsList']:
-        filePath = os.path.join(os.path.split(filePath)[0], pFile)
-        prImpSkin(filePath, True)
+        file_path = os.path.join(os.path.split(file_path)[0], pFile)
+        prImpSkin(file_path, True)
 
 
-def prImpSkin(filePath=None, *args):
-    if not filePath:
+def prImpSkin(file_path=None, *args):
+    if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        filePath = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
-    if not filePath:
+        file_path = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
+    if not file_path:
         return
-    if not isinstance(filePath, basestring):
-        filePath = filePath[0]
-    fh = open(filePath, 'rb')
+    if not isinstance(file_path, basestring):
+        file_path = file_path[0]
+    fh = open(file_path, 'rb')
     listPack = pickle.load(fh)
     fh.close()
     for list in listPack['objDDic']:
@@ -3335,16 +3335,16 @@ def prImpSkin(filePath=None, *args):
             pm.displayWarning('Object: ' + objName + ' Skiped. Can NOT be found in the scene')
 
 
-def setlist(skinCls, listDic):
-    dagPath, components = getGeometryComponents(skinCls)
-    setInfluenceWeights(skinCls, dagPath, components, listDic)
-    setBlendWeights(skinCls, dagPath, components, listDic)
+def setlist(skin_cls, list_dic):
+    dagPath, components = getGeometryComponents(skin_cls)
+    setInfluenceWeights(skin_cls, dagPath, components, list_dic)
+    setBlendWeights(skin_cls, dagPath, components, list_dic)
     for attr in ['skinningMethod', 'normalizeWeights']:
-        cmds.setAttr('%s.%s' % (skinCls, attr), listDic[attr])
+        cmds.setAttr('%s.%s' % (skin_cls, attr), list_dic[attr])
 
 
-def getGeometryComponents(skinCls):
-    fnSet = OpenMaya.MFnSet(skinCls.__apimfn__().deformerSet())
+def getGeometryComponents(skin_cls):
+    fnSet = OpenMaya.MFnSet(skin_cls.__apimfn__().deformerSet())
     members = OpenMaya.MSelectionList()
     fnSet.getMembers(members, False)
     dagPath = OpenMaya.MDagPath()
@@ -3353,14 +3353,14 @@ def getGeometryComponents(skinCls):
     return (dagPath, components)
 
 
-def setInfluenceWeights(skinCls, dagPath, components, listDic):
+def setInfluenceWeights(skin_cls, dag_path, components, list_dic):
     import pymel.all as pm
     unusedImports = []
-    weights = getCurrentWeights(skinCls, dagPath, components)
+    weights = getCurrentWeights(skin_cls, dag_path, components)
     influencePaths = OpenMaya.MDagPathArray()
-    numInfluences = skinCls.__apimfn__().influenceObjects(influencePaths)
+    numInfluences = skin_cls.__apimfn__().influenceObjects(influencePaths)
     numComponentsPerInfluence = weights.length() / numInfluences
-    for importedInfluence, importedWeights in listDic['weights'].items():
+    for importedInfluence, importedWeights in list_dic['weights'].items():
         for ii in range(influencePaths.length()):
             influenceName = influencePaths[ii].partialPathName()
             nnspace = pm.PyNode(influenceName).stripNamespace()
@@ -3377,53 +3377,53 @@ def setInfluenceWeights(skinCls, dagPath, components, listDic):
     for ii in range(numInfluences):
         influenceIndices.set(ii, ii)
 
-    skinCls.__apimfn__().setWeights(dagPath, components, influenceIndices, weights, False)
+    skin_cls.__apimfn__().setWeights(dag_path, components, influenceIndices, weights, False)
 
 
-def setBlendWeights(skinCls, dagPath, components, listDic):
-    blendWeights = OpenMaya.MDoubleArray(len(listDic['blendWeights']))
-    for i, w in enumerate(listDic['blendWeights']):
+def setBlendWeights(skin_cls, dag_path, components, list_dic):
+    blendWeights = OpenMaya.MDoubleArray(len(list_dic['blendWeights']))
+    for i, w in enumerate(list_dic['blendWeights']):
         blendWeights.set(w, i)
 
-    skinCls.__apimfn__().setBlendWeights(dagPath, components, blendWeights)
+    skin_cls.__apimfn__().setBlendWeights(dag_path, components, blendWeights)
 
 
-def collectlist(skinCls, listDic):
-    dagPath, components = getGeometryComponents(skinCls)
-    collectInfluenceWeights(skinCls, dagPath, components, listDic)
-    collectBlendWeights(skinCls, dagPath, components, listDic)
+def collectlist(skin_cls, list_dic):
+    dagPath, components = getGeometryComponents(skin_cls)
+    collectInfluenceWeights(skin_cls, dagPath, components, list_dic)
+    collectBlendWeights(skin_cls, dagPath, components, list_dic)
     for attr in ['skinningMethod', 'normalizeWeights']:
-        listDic[attr] = cmds.getAttr('%s.%s' % (skinCls, attr))
+        list_dic[attr] = cmds.getAttr('%s.%s' % (skin_cls, attr))
 
-    listDic['skinClsName'] = skinCls.name()
+    list_dic['skinClsName'] = skin_cls.name()
 
 
-def collectInfluenceWeights(skinCls, dagPath, components, listDic):
+def collectInfluenceWeights(skin_cls, dag_path, components, list_dic):
     import pymel.all as pm
-    weights = getCurrentWeights(skinCls, dagPath, components)
+    weights = getCurrentWeights(skin_cls, dag_path, components)
     influencePaths = OpenMaya.MDagPathArray()
-    numInfluences = skinCls.__apimfn__().influenceObjects(influencePaths)
+    numInfluences = skin_cls.__apimfn__().influenceObjects(influencePaths)
     numComponentsPerInfluence = weights.length() / numInfluences
     for ii in range(influencePaths.length()):
         influenceName = influencePaths[ii].partialPathName()
         influenceWithoutNamespace = pm.PyNode(influenceName).stripNamespace()
         inf_w = [ weights[(jj * numInfluences + ii)] for jj in range(numComponentsPerInfluence)
                 ]
-        listDic['weights'][influenceWithoutNamespace] = inf_w
+        list_dic['weights'][influenceWithoutNamespace] = inf_w
 
 
-def collectBlendWeights(skinCls, dagPath, components, listDic):
+def collectBlendWeights(skin_cls, dag_path, components, list_dic):
     weights = OpenMaya.MDoubleArray()
-    skinCls.__apimfn__().getBlendWeights(dagPath, components, weights)
-    listDic['blendWeights'] = [ weights[i] for i in range(weights.length()) ]
+    skin_cls.__apimfn__().getBlendWeights(dag_path, components, weights)
+    list_dic['blendWeights'] = [ weights[i] for i in range(weights.length()) ]
 
 
-def getCurrentWeights(skinCls, dagPath, components):
+def getCurrentWeights(skin_cls, dag_path, components):
     weights = OpenMaya.MDoubleArray()
     util = OpenMaya.MScriptUtil()
     util.createFromInt(0)
     pUInt = util.asUintPtr()
-    skinCls.__apimfn__().getWeights(dagPath, components, weights, pUInt)
+    skin_cls.__apimfn__().getWeights(dag_path, components, weights, pUInt)
     return weights
 
 

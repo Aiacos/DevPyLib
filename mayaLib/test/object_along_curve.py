@@ -88,11 +88,11 @@ class CurvesFromEdge(object):
 
 
 class JointChainCurve(object):
-    def __init__(self, pointsNumber=5):
+    def __init__(self, points_number=5):
         #nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
         #nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
 
-        self.spacing = 1.0 / (pointsNumber - 1)
+        self.spacing = 1.0 / (points_number - 1)
 
 
 
@@ -138,20 +138,20 @@ def deleteConnection(plug):
             cmds.delete(plug, icn=True)
 
 
-def pointMode(curve, pointsNumber, nameBuilder_locator, spacing):
-    for p in range(1, pointsNumber):
+def pointMode(curve, points_number, name_builder_locator, spacing):
+    for p in range(1, points_number):
         if p == 1:
-            cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=nameBuilder_locator + str(p))
+            cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=name_builder_locator + str(p))
             # joint
-        cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=spacing * p, p=True), n=nameBuilder_locator + str(p))
+        cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=spacing * p, p=True), n=name_builder_locator + str(p))
         # joint
 
 
-def pathMode(path, pointsNumber, spacing):
+def pathMode(path, points_number, spacing):
     nameBuilder_locator = path + "_loc"
     path + "_jnt"
     locatorList = []
-    for p in range(1, pointsNumber):
+    for p in range(1, points_number):
         if p == 1:
             locator = cmds.spaceLocator(n=nameBuilder_locator + str(p))
             motionPath = cmds.pathAnimation(locator[0], c=path, f=True)

@@ -8,7 +8,15 @@ import pymel.core as pm
 
 from mayaLib.rigLib.base import ik_chain, limb, neck, spine
 from mayaLib.rigLib.base.module import Base
-from mayaLib.rigLib.utils import ctrl_shape, ikfk_switch, joint, proxy_geo, skin, stretchy_ik_chain, util
+from mayaLib.rigLib.utils import (
+    ctrl_shape,
+    ikfk_switch,
+    joint,
+    proxy_geo,
+    skin,
+    stretchy_ik_chain,
+    util,
+)
 
 __all__ = ['BaseRig', 'HumanoidRig']
 

@@ -6,8 +6,8 @@ import importlib
 import os
 import sys
 
-from maya import mel
 import pymel.core as pm
+from maya import mel
 
 from mayaLib.rigLib.utils import joint as joint_utils
 

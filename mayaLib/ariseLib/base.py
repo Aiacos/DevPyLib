@@ -5,9 +5,9 @@ rigging framework.
 """
 
 import pymel.core as pm
+
+from mayaLib.rigLib.utils import human_ik, joint
 from mayaLib.rigLib.utils.common import set_driven_key
-from mayaLib.rigLib.utils import human_ik
-from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils.util import list_objects_under_group
 
 

@@ -8,10 +8,8 @@ from pathlib import Path
 
 import pymel.core as pm
 from maya import mel
-
 from ngSkinTools2 import api as ngst_api
-from ngSkinTools2.api import init_layers
-from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
+from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode, init_layers
 
 from mayaLib.rigLib.utils.util import list_objects_under_group
 

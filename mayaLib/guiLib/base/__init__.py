@@ -4,6 +4,4 @@ Provides foundational classes for menu creation, shelf tools,
 and base UI widgets.
 """
 
-from . import base_ui
-from . import menu
-from . import shelf
+from . import base_ui, menu, shelf

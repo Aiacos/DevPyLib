@@ -9,9 +9,7 @@ __author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import skin
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import common, skin, util
 
 
 def invert_selection(shape, faces):

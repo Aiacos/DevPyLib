@@ -16,6 +16,7 @@ Returns:
 """
 import pymel.core as pm
 
+
 def mesh_direct_connection(source, destination):
     """
     Connects the outMesh attribute of the source mesh directly to the inMesh attribute

@@ -85,11 +85,11 @@ def path_mode(path, follow=False, sphere_size=0.1, offset_active=False, loc_size
 
 
 if __name__ == "__main__":
-    locList = []
+    loc_list = []
     for cv in curve:
         # print(cv)
-        locList.extend(path_mode(cv))
-    cmds.group(locList, n='locator_grp')
+        loc_list.extend(path_mode(cv))
+    cmds.group(loc_list, n='locator_grp')
 
     ## --ToDo
 

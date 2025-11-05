@@ -8,7 +8,10 @@ container, emitter, and shading settings.
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid
-from mayaLib.fluidLib.base.ramp_utils import setup_manual_opacity_ramp, setup_repart_opacity_ramp
+from mayaLib.fluidLib.base.ramp_utils import (
+    setup_manual_opacity_ramp,
+    setup_repart_opacity_ramp,
+)
 from mayaLib.fluidLib.utility import density_color
 
 

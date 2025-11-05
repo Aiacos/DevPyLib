@@ -12,10 +12,10 @@ import pymel.core as pm
 if pm.about(version=True) == '2022':
     import zBuilder.builders.ziva as zva
 
-from mayaLib.rigLib.utils import util as util
 from mayaLib.rigLib.utils import deform
-from mayaLib.rigLib.Ziva import ziva_fiber_tools as fiber
+from mayaLib.rigLib.utils import util as util
 from mayaLib.rigLib.Ziva import ziva_attachments_tools as attachment
+from mayaLib.rigLib.Ziva import ziva_fiber_tools as fiber
 from mayaLib.rigLib.Ziva import ziva_tools as tool
 
 
@@ -375,4 +375,4 @@ class ZivaSkin(ZivaBase):
 
 
 if __name__ == "__main__":
-    zBase = ZivaBase()
+    z_base = ZivaBase()

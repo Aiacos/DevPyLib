@@ -9,8 +9,7 @@ texture file hierarchies with naming conventions.
 import pymel.core as pm
 
 from mayaLib.shaderLib import shader
-from mayaLib.shaderLib.utils import file
-from mayaLib.shaderLib.utils import texture_ext_path
+from mayaLib.shaderLib.utils import file, texture_ext_path
 
 
 class ShadersManager():

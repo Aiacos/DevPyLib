@@ -124,10 +124,10 @@ def print_text():
 
 
 if __name__ == "__main__":
-    menuPanel = Menu('test')
-    menuPanel.add_menuitem('testClickCmd', cmd=print_text)
-    p = menuPanel.add_submenu('testSubMenu')
-    menuPanel.add_menuitem('testSubItem', parent=p, cmd=print_text)
+    menu_panel = Menu('test')
+    menu_panel.add_menuitem('testClickCmd', cmd=print_text)
+    p = menu_panel.add_submenu('testSubMenu')
+    menu_panel.add_menuitem('testSubItem', parent=p, cmd=print_text)
     # try:
     #     lib_menu.delete()
     #     print('deleted')

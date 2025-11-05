@@ -23,10 +23,10 @@ def detect_host_app() -> str:
     return None
 
 
-def main(core, filepath, versionUp, comment, publish, details):
+def main(core, filepath, version_up, comment, publish, details):
     print(core.projectName)
     print(filepath)
-    print(versionUp)
+    print(version_up)
     print(comment)
     print(publish)
     print(details)

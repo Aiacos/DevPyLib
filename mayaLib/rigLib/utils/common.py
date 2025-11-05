@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from maya import mel
 import pymel.core as pm
+from maya import mel
 
 
 def center_pivot(obj, target_pivot=None):

@@ -8,8 +8,7 @@ container, emitter, and shading settings.
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid
-from mayaLib.fluidLib.utility import density_color
-from mayaLib.fluidLib.utility import math_function
+from mayaLib.fluidLib.utility import density_color, math_function
 
 
 class Fire(BaseFluid):

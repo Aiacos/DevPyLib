@@ -8,8 +8,7 @@ from typing import Any, Sequence
 import pymel.core as pm
 
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.utils import control
-from mayaLib.rigLib.utils import parameter_resolution
+from mayaLib.rigLib.utils import control, parameter_resolution
 
 __all__ = ['Spine', 'create_locator_reference_positions']
 

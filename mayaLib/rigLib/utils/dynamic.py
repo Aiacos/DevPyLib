@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from maya import mel
 import pymel.core as pm
+from maya import mel
 
 from mayaLib.rigLib.utils import deform, util
 

@@ -5,8 +5,8 @@ configures the render options to use anti-aliasing, holdout mode, and depth of
 field. It also enables NURBS curves in the object type filter.
 
 """
-import pymel.core as pm
 import maya.mel as mel
+import pymel.core as pm
 
 
 def set_render_engine(engine='mayaHardware2'):

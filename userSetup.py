@@ -1,13 +1,13 @@
 import importlib
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 import maya.cmds as cmds
 
 # Optional git support
 try:
-    from git import Repo, GitCommandError
+    from git import GitCommandError, Repo
 
     GIT_AVAILABLE = True
 except ImportError:

@@ -27,7 +27,7 @@ class UsdExportMetersSettings:
             "preMayaUSDExport", self.preMayaUSDExport, plugin=self
         )
 
-    def preMayaUSDExport(self, origin, options, outputPath):
+    def preMayaUSDExport(self, origin, options, output_path):
         """
         Callback that is called before USD export.
 
@@ -37,7 +37,7 @@ class UsdExportMetersSettings:
         Args:
             origin (str): The origin of the export.
             options (str): The export settings as a string.
-            outputPath (str): The output path of the USD export.
+            output_path (str): The output path of the USD export.
 
         Returns:
             dict: The modified export settings.

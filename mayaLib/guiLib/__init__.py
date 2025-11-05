@@ -4,6 +4,4 @@ Provides an introspection-based UI generation system that automatically
 creates Qt interfaces from Python function signatures.
 """
 
-from . import base
-from . import main_menu
-from . import utils
+from . import base, main_menu, utils

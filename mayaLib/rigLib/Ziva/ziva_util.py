@@ -6,7 +6,7 @@ nodes and attributes.
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import deform, common
+from mayaLib.rigLib.utils import common, deform
 
 
 def mirror_geo(geo_list):

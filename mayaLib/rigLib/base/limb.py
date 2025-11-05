@@ -9,19 +9,20 @@ from typing import Any, Sequence
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import foot_roll
-
 from mayaLib.rigLib.base import module
-from mayaLib.rigLib.utils import attributes
-from mayaLib.rigLib.utils import common
-from mayaLib.rigLib.utils import control
-from mayaLib.rigLib.utils import joint
-from mayaLib.rigLib.utils import name
-from mayaLib.rigLib.utils import parameter_resolution
-from mayaLib.rigLib.utils import pole_vector  # type: ignore
-from mayaLib.rigLib.utils import spaces
-from mayaLib.rigLib.utils import scapula
-from mayaLib.rigLib.utils import util
+from mayaLib.rigLib.utils import (
+    attributes,
+    common,
+    control,
+    foot_roll,
+    joint,
+    name,
+    parameter_resolution,
+    pole_vector,  # type: ignore
+    scapula,
+    spaces,
+    util,
+)
 
 __all__ = [
     'Limb',
