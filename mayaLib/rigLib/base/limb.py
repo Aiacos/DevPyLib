@@ -613,17 +613,23 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         do_fk = parameter_resolution.resolve_optional(do_fk, legacy_kwargs, ('doFK',), True)
         do_ik = parameter_resolution.resolve_optional(do_ik, legacy_kwargs, ('doIK',), True)
         part = cast(str, parameter_resolution.resolve_optional(part, legacy_kwargs, ('part',), 'Hand'))
-        use_metacarpal_joint = parameter_resolution.resolve_optional(
-            use_metacarpal_joint,
-            legacy_kwargs,
-            ('useMetacarpalJoint',),
-            False,
+        use_metacarpal_joint = cast(
+            bool,
+            parameter_resolution.resolve_optional(
+                use_metacarpal_joint,
+                legacy_kwargs,
+                ('useMetacarpalJoint',),
+                False,
+            ),
         )
-        do_smart_foot_roll = parameter_resolution.resolve_optional(
-            do_smart_foot_roll,
-            legacy_kwargs,
-            ('doSmartFootRool',),
-            True,
+        do_smart_foot_roll = cast(
+            bool,
+            parameter_resolution.resolve_optional(
+                do_smart_foot_roll,
+                legacy_kwargs,
+                ('doSmartFootRool',),
+                True,
+            ),
         )
         rig_scale = cast(float, parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0))
         base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
