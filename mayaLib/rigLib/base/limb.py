@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 import pymel.core as pm
 
@@ -612,7 +612,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         )
         do_fk = parameter_resolution.resolve_optional(do_fk, legacy_kwargs, ('doFK',), True)
         do_ik = parameter_resolution.resolve_optional(do_ik, legacy_kwargs, ('doIK',), True)
-        part = parameter_resolution.resolve_optional(part, legacy_kwargs, ('part',), 'Hand')
+        part = cast(str, parameter_resolution.resolve_optional(part, legacy_kwargs, ('part',), 'Hand'))
         use_metacarpal_joint = parameter_resolution.resolve_optional(
             use_metacarpal_joint,
             legacy_kwargs,
