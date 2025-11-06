@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import List, Sequence
+from collections.abc import Sequence
 
 import pymel.core as pm
 
@@ -144,7 +144,7 @@ def install_ikfk(ik_nodes: Sequence) -> None:
     class_definition = inspect.getsource(IKFKSwitch)
     util_definition = inspect.getsource(util.get_driver_driven_from_constraint)
 
-    commands: List[str] = [
+    commands: list[str] = [
         'import pymel.core as pm',
         util_definition,
         class_definition.replace('util.', ''),

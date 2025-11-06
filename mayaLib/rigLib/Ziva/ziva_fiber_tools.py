@@ -11,7 +11,7 @@ from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def add_ziva_fiber(obj):
-    """Add Ziva fiber to the given object
+    """Add Ziva fiber to the given object.
 
     Args:
         obj (str): Object name
@@ -25,7 +25,7 @@ def add_ziva_fiber(obj):
 
 
 def create_loa_curve(obj):
-    """Create a curve for Line of Action
+    """Create a curve for Line of Action.
 
     Args:
         obj (str): Object name
@@ -45,7 +45,7 @@ def create_loa_curve(obj):
 
 
 def rivet_curve(curve, skeleton):
-    """Rivet the curve to the given skeleton
+    """Rivet the curve to the given skeleton.
 
     Args:
         curve (str): Curve name
@@ -55,7 +55,7 @@ def rivet_curve(curve, skeleton):
         A list of zRivet nodes
     """
     rivet_list = []
-    for cv, n in zip(curve.cv[:], list(range(0, len(pm.ls(curve.cv[:])) + 1))):
+    for cv, n in zip(curve.cv[:], list(range(0, len(pm.ls(curve.cv[:])) + 1)), strict=False):
         pm.select(cv)
         pm.select(skeleton, add=True)
         z_rivet = pm.ls(mel.eval('zRivetToBone;'))[-1]
@@ -70,7 +70,7 @@ def rivet_curve(curve, skeleton):
 
 
 def add_loa(curve, obj):
-    """Add Line of Action to the given object
+    """Add Line of Action to the given object.
 
     Args:
         curve (str): Curve name
@@ -87,7 +87,7 @@ def add_loa(curve, obj):
 
 
 def create_line_of_action(obj, skeleton):
-    """Create Line of Action for the given object
+    """Create Line of Action for the given object.
 
     Args:
         obj (str): Object name

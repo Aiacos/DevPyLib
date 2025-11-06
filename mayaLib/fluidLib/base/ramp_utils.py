@@ -13,7 +13,7 @@ import pymel.core as pm
 
 from mayaLib.fluidLib.utility import math_function
 
-__all__ = ['setup_repart_opacity_ramp', 'setup_manual_opacity_ramp']
+__all__ = ["setup_repart_opacity_ramp", "setup_manual_opacity_ramp"]
 
 
 def setup_repart_opacity_ramp(
@@ -91,4 +91,4 @@ def setup_manual_opacity_ramp(
 
 
 if __name__ == "__main__":
-    raise SystemExit('This module must be imported within Maya.')
+    raise SystemExit("This module must be imported within Maya.")

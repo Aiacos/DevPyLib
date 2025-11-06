@@ -16,6 +16,7 @@ except (ImportError, ModuleNotFoundError):
     from PySide2 import QtGui as QtG
     from shiboken2 import wrapInstance
 
+import contextlib
 import json
 import logging
 
@@ -31,21 +32,17 @@ try:
 except (ImportError, ModuleNotFoundError):
     import _pickle as pickle
 
-try:
+with contextlib.suppress(Exception):
     from past.builtins import basestring
-except Exception:
-    pass
 
 # Python 2/3 compatibility
-if sys.version_info.major >= 3:
-    long = int
+long = int
 
 FILE_EXT = '.data'
 PACK_EXT = '.list'
 
 def maya_main_window():
-    """Return the Maya main window widget as a Python object
-        """
+    """Return the Maya main window widget as a Python object."""
     main_window_ptr = omui.MQtUtil.mainWindow()
     pythonVersion = sys.version_info.major
     try:
@@ -142,7 +139,7 @@ class HeadGeoWidget(QtWidgets.QWidget):
         Args:
             parent: Parent Qt widget.
         """
-        super(HeadGeoWidget, self).__init__(parent)
+        super().__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(False)
@@ -535,7 +532,7 @@ class SettingsWidget(QtWidgets.QWidget):
     """Widget for facial rig settings and configuration."""
 
     def __init__(self, parent=None):
-        super(SettingsWidget, self).__init__(parent)
+        super().__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(True)
@@ -704,7 +701,7 @@ class SkinWidget(QtWidgets.QWidget):
     """Widget for skin cluster setup and management."""
 
     def __init__(self, parent=None):
-        super(SkinWidget, self).__init__(parent)
+        super().__init__(parent)
         self.progressColor = 'background-color:rgb(76,50,50);color : white;'
         self.prExportSkin = QtWidgets.QPushButton('Export Skin')
         self.prImpSkinAll = QtWidgets.QPushButton('Import Skin')
@@ -786,7 +783,7 @@ class CustomTabWidget(QtWidgets.QWidget):
     """Custom tab widget for organizing facial rig UI panels."""
 
     def __init__(self):
-        super(CustomTabWidget, self).__init__()
+        super().__init__()
         self.create_widgets()
         self.create_layout()
         self.create_connections()
@@ -857,7 +854,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 cls.ui_instance.show(dockable=True)
 
     def __init__(self, parent=maya_main_window()):
-        super(PerseusUI, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.version = str(cmds.about(v=1))
         self.newExclusion = []
@@ -877,7 +874,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         Args:
             e: Show event.
         """
-        super(PerseusUI, self).showEvent(e)
+        super().showEvent(e)
         if self.geometry:
             self.restoreGeometry(self.geometry)
 
@@ -888,7 +885,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             e: Close event.
         """
         if isinstance(self, PerseusUI):
-            super(PerseusUI, self).closeEvent(e)
+            super().closeEvent(e)
             self.geometry = self.saveGeometry()
 
     def create_widgets(self):
@@ -1637,10 +1634,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             status = False
         if chkTongue == 0:
             QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'tongue edges'")
-            try:
+            with contextlib.suppress(Exception):
                 cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
-            except Exception:
-                pass
 
             status = False
         if chkBackFace == 0:
@@ -2422,10 +2417,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             if cmds.objExists(skinMesh + '_prs_trg') == 1:
                 cmds.delete(skinMesh + '_prs_trg')
             cmds.duplicate(skinMesh, rr=1, n=skinMesh + '_prs_trg')
-            try:
+            with contextlib.suppress(Exception):
                 cmds.parent(skinMesh + '_prs_trg', w=1)
-            except Exception:
-                pass
 
             cmds.setAttr(skinMesh + '_prs_trg.visibility', 0)
             cmds.select(skinMesh + '_prs_trg', r=1)
@@ -2461,7 +2454,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.mel.reflectionSetMode('none')
         fDialogLd = str(pm.fileDialog(dm='*.json'))
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
-        with open(fDialogLd, 'r') as (fp):
+        with open(fDialogLd) as (fp):
             data = json.load(fp)
         self.perseus_dic = data
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
@@ -2624,7 +2617,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.mel.reflectionSetMode('none')
         fDialogLd = json_path
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
-        with open(fDialogLd, 'r') as (fp):
+        with open(fDialogLd) as (fp):
             data = json.load(fp)
         self.perseus_dic = data
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
@@ -2684,8 +2677,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pickerFile = fDialog[0]
                 newPath = pathPerseusBiped
                 newPath = newPath + pickerName + '.mgpkr'
-                fin = open(newPath, 'rt')
-                fout = open(pickerFile, 'wt')
+                fin = open(newPath)
+                fout = open(pickerFile, 'w')
                 pathPerseusBiped.replace('\\', '/')
                 for line in fin:
                     newLine = line.replace('name_', name + '_')
@@ -2731,10 +2724,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pm.setAttr(name + '_facial_shapeCtrl_grp.visibility', 0)
                 cmds.select(name + '_facial_shapeCtrl_grp', hi=1)
                 cmds.DeleteHistory()
-                try:
+                with contextlib.suppress(Exception):
                     cmds.disconnectAttr(name + '_jaw_ctrl.scale', name + '_jaw_fk_ctrl_buffer.inverseScale')
-                except Exception:
-                    pass
 
                 cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
                 cmds.delete(name + '_facial_shapeCtrl_grp')
@@ -2760,10 +2751,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pm.setAttr('facial_shapeCtrl_grp.visibility', 0)
                 cmds.select('facial_shapeCtrl_grp', hi=1)
                 cmds.DeleteHistory()
-                try:
+                with contextlib.suppress(Exception):
                     cmds.disconnectAttr('jaw_ctrl.scale', 'jaw_fk_ctrl_buffer.inverseScale')
-                except Exception:
-                    pass
 
                 cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
                 cmds.delete('facial_shapeCtrl_grp')
@@ -2804,10 +2793,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pm.setAttr(name + '_facial_shapeCtrl_grp.visibility', 0)
                 cmds.select(name + '_facial_shapeCtrl_grp', hi=1)
                 cmds.DeleteHistory()
-                try:
+                with contextlib.suppress(Exception):
                     cmds.disconnectAttr(name + '_jaw_ctrl.scale', name + '_jaw_fk_ctrl_buffer.inverseScale')
-                except Exception:
-                    pass
 
                 cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
                 cmds.delete(name + '_facial_shapeCtrl_grp')
@@ -2833,10 +2820,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pm.setAttr('facial_shapeCtrl_grp.visibility', 0)
                 cmds.select('facial_shapeCtrl_grp', hi=1)
                 cmds.DeleteHistory()
-                try:
+                with contextlib.suppress(Exception):
                     cmds.disconnectAttr('jaw_ctrl.scale', 'jaw_fk_ctrl_buffer.inverseScale')
-                except Exception:
-                    pass
 
                 cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
                 cmds.delete('facial_shapeCtrl_grp')
@@ -3058,11 +3043,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def getSkinCluster(self, obj):
         """Get the skincluster of a given object
-                Arguments:
-                        obj (dagNode): The object to get skincluster
-                Returns:
-                        pyNode: The skin cluster pynode object
-                """
+        Arguments:
+                obj (dagNode): The object to get skincluster
+        Returns:
+                pyNode: The skin cluster pynode object.
+        """
         import pymel.all as pm
         skinCluster = None
         if isinstance(obj, basestring):
@@ -3082,7 +3067,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                         pass
 
         except Exception:
-            pm.displayWarning('%s: is not supported.' % obj.name())
+            pm.displayWarning(f'{obj.name()}: is not supported.')
 
         return skinCluster
 
@@ -3132,14 +3117,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         global destinationVertexLs
         global sourceVertexLs
         selectionList = pm.ls(sl=1, flatten=1)
-        if selectionList:
-            if pm.nodeType(selectionList[0]) == 'mesh':
-                mel.eval('PolySelectConvert 3;')
-                selectionList = pm.ls(sl=1, flatten=1)
-                if sd_type == 'destination':
-                    destinationVertexLs = selectionList
-                if sd_type == 'source':
-                    sourceVertexLs = selectionList
+        if selectionList and pm.nodeType(selectionList[0]) == 'mesh':
+            mel.eval('PolySelectConvert 3;')
+            selectionList = pm.ls(sl=1, flatten=1)
+            if sd_type == 'destination':
+                destinationVertexLs = selectionList
+            if sd_type == 'source':
+                sourceVertexLs = selectionList
 
     def copySkinGlobal(self):
         """Copyskinglobal operation."""
@@ -3250,7 +3234,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         aimctl.addAttr('space', at='enum', en=(':').join([ it[1] for it in parentsDict ]), k=1)
         parCnst = pm.parentConstraint(mo=1, *([ it[0] for it in parentsDict ] + [cns]))
         i = 0
-        for ctl, spcName in parentsDict:
+        for ctl, _spcName in parentsDict:
             cnd = pm.createNode('condition')
             cnd.secondTerm.set(i)
             aimctl.space >> cnd.firstTerm
@@ -3346,7 +3330,7 @@ def prSkinExp(pack_path=None, objs=None, *args):
             return
     packDic = {'objectsList': [], 'rootPath': []}
     startDir = pm.workspace(q=True, rootDirectory=True)
-    pack_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
+    pack_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter=f'data list (*{PACK_EXT})')
     if not pack_path:
         return
     pack_path = pack_path[0]
@@ -3383,7 +3367,7 @@ def exportSkin(file_path=None, objs=None, *args):
     packDic = {'objs': [], 'objDDic': [], 'bypassObj': []}
     if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        file_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
+        file_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter=f'data data (*{FILE_EXT})')
         file_path = file_path[0]
     if not file_path:
         return False
@@ -3417,11 +3401,11 @@ def exportSkin(file_path=None, objs=None, *args):
 
 def getSkinCluster(obj):
     """Get the skincluster of a given object
-        Arguments:
-                obj (dagNode): The object to get skincluster
-        Returns:
-                pyNode: The skin cluster pynode object
-        """
+    Arguments:
+            obj (dagNode): The object to get skincluster
+    Returns:
+            pyNode: The skin cluster pynode object.
+    """
     skinCluster = None
     if isinstance(obj, basestring):
         obj = pm.PyNode(obj)
@@ -3440,7 +3424,7 @@ def getSkinCluster(obj):
                     pass
 
     except Exception:
-        pm.displayWarning('%s: is not supported.' % obj.name())
+        pm.displayWarning(f'{obj.name()}: is not supported.')
 
     return skinCluster
 
@@ -3449,7 +3433,7 @@ def prImpSkinAll(file_path=None, *args):
     """Primpskinall operation."""
     if not file_path:
         startDir = cmds.workspace(q=True, rootDirectory=True)
-        file_path = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
+        file_path = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter=f'data list (*{PACK_EXT})')
     if not file_path:
         return
     if not isinstance(file_path, basestring):
@@ -3464,7 +3448,7 @@ def prImpSkin(file_path=None, *args):
     """Primpskin operation."""
     if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        file_path = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
+        file_path = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter=f'data data (*{FILE_EXT})')
     if not file_path:
         return
     if not isinstance(file_path, basestring):
@@ -3495,8 +3479,8 @@ def prImpSkin(file_path=None, *args):
                     skinCluster = pm.skinCluster(joints, objNode, tsb=True, nw=2, n=obj_data['skinClsName'])
                 except Exception:
                     notFound = obj_data['weights'].keys()
-                    sceneJoints = set([ pm.PyNode(x).name() for x in pm.ls(type='joint')
-                                      ])
+                    sceneJoints = { pm.PyNode(x).name() for x in pm.ls(type='joint')
+                                      }
                     for j in notFound:
                         if j in sceneJoints:
                             notFound.remove(j)
@@ -3506,7 +3490,7 @@ def prImpSkin(file_path=None, *args):
 
             if skinCluster:
                 setlist(skinCluster, obj_data)
-                print('%s skin data loaded.' % objName)
+                print(f'{objName} skin data loaded.')
         except Exception:
             pm.displayWarning('Object: ' + objName + ' Skiped. Can NOT be found in the scene')
 
@@ -3517,7 +3501,7 @@ def setlist(skin_cls, list_dic):
     setInfluenceWeights(skin_cls, dagPath, components, list_dic)
     setBlendWeights(skin_cls, dagPath, components, list_dic)
     for attr in ['skinningMethod', 'normalizeWeights']:
-        cmds.setAttr('%s.%s' % (skin_cls, attr), list_dic[attr])
+        cmds.setAttr(f'{skin_cls}.{attr}', list_dic[attr])
 
 
 def getGeometryComponents(skin_cls):
@@ -3574,7 +3558,7 @@ def collectlist(skin_cls, list_dic):
     collectInfluenceWeights(skin_cls, dagPath, components, list_dic)
     collectBlendWeights(skin_cls, dagPath, components, list_dic)
     for attr in ['skinningMethod', 'normalizeWeights']:
-        list_dic[attr] = cmds.getAttr('%s.%s' % (skin_cls, attr))
+        list_dic[attr] = cmds.getAttr(f'{skin_cls}.{attr}')
 
     list_dic['skinClsName'] = skin_cls.name()
 
@@ -3613,11 +3597,11 @@ def getCurrentWeights(skin_cls, dag_path, components):
 
 def encode_data_to_attr(node, attr_name, data):
     """Dump data into a string attriubte
-        Args:
-                node (pm.nt.DagNode): node to get data
-                attr_name (str):  name of attribute
-                data (python object): python data object
-        """
+    Args:
+            node (pm.nt.DagNode): node to get data
+            attr_name (str):  name of attribute
+            data (python object): python data object.
+    """
     if not node.hasAttr(attr_name):
         node.addAttr(attr_name, dataType='string')
     pickled_data = pickle.dumps(data)
@@ -3628,25 +3612,25 @@ def encode_data_to_attr(node, attr_name, data):
 
 def decode_data_from_attr(node, attr_name):
     """Return data from string attriute
-        Args:
-                node (pm.nt.DagNode): node to get data
-                attr_name (str):  name of attribute
-        Returns:
-                list or dict
-        """
+    Args:
+            node (pm.nt.DagNode): node to get data
+            attr_name (str):  name of attribute
+    Returns:
+            list or dict.
+    """
     if not node.hasAttr(attr_name):
-        raise pm.MayaAttributeError((f'Attribute does not exist:{attr_name}'))
+        raise pm.MayaAttributeError(f'Attribute does not exist:{attr_name}')
     data = str(node.attr(attr_name).get())
     return pickle.loads(data)
 
 
 def detach_bind_joints():
     """Detach bind joints from rig.
-        Adds a custom compound attribute (connected_nodes) to what the node was connected to
-        """
+    Adds a custom compound attribute (connected_nodes) to what the node was connected to.
+    """
     SKIN_JNT_GRP = '*facialRig_skinJnt_grp'
     if not pm.objExists(SKIN_JNT_GRP):
-        raise pm.MayaObjectError((f'Missing node: {SKIN_JNT_GRP}'))
+        raise pm.MayaObjectError(f'Missing node: {SKIN_JNT_GRP}')
     pm.select(SKIN_JNT_GRP, replace=True)
     bind_joints = pm.selected()
     for joint in bind_joints:
@@ -3677,7 +3661,7 @@ def detach_bind_joints():
 
 
 def attach_bind_joints():
-    """ Attach bind joints to rig nodes """
+    """Attach bind joints to rig nodes."""
     connection_attr_name = 'connection_data'
     all_joints = pm.ls(type=pm.nt.Joint)
     bind_joints = [ joint for joint in all_joints if joint.hasAttr(connection_attr_name) ]
@@ -3704,25 +3688,26 @@ def attach_bind_joints():
 
 def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2, left_prefix='left', right_prefix='right', center_prefix='center', suffix=''):
     """Given a list of pm.nt.Transforms and a search name, rename objects based on the
-        X axis world position in order starting from lowest(0) to highest position(nth)
-        The center tolerance is used to test if an object is close enough to the center origin
-        to be named 'center'
-        Args:
-                transforms (list of pm.nt.Transforms): list of transforms to search and rename
-                search_name (str): name to parse for and use and the main object name
-                center_tolerance (float): amount to use for determining how close the object is to the origin in X world space
-                left_prefix (str): left prefix name for the object
-                right_prefix (str): right prefix name for the object
-                center_prefix (str): center prefix name for the object
-                suffix (str): optional suffix name
+    X axis world position in order starting from lowest(0) to highest position(nth)
+    The center tolerance is used to test if an object is close enough to the center origin
+    to be named 'center'
+    Args:
+            transforms (list of pm.nt.Transforms): list of transforms to search and rename
+            search_name (str): name to parse for and use and the main object name
+            center_tolerance (float): amount to use for determining how close the object is to the origin in X world space
+            left_prefix (str): left prefix name for the object
+            right_prefix (str): right prefix name for the object
+            center_prefix (str): center prefix name for the object
+            suffix (str): optional suffix name.
 
-        Usage:
-        all_joints = pm.ls(type=pm.nt.Joint)
-        search_for = 'downLip'
-        renamed_joints = rename_transforms_by_position(all_joints, search_for, suffix='joint')
-        Returns:
-                list of renamed pm.nt.Transforms
-        """
+    Usage:
+    all_joints = pm.ls(type=pm.nt.Joint)
+    search_for = 'downLip'
+    renamed_joints = rename_transforms_by_position(all_joints, search_for, suffix='joint')
+
+    Returns:
+            list of renamed pm.nt.Transforms
+    """
     transform_list = [ transform for transform in transforms if search_name in transform.name() ]
     position_dict = {}
     for transform in transform_list:
@@ -3746,25 +3731,25 @@ def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2,
                 left_array.append((transform, pos))
 
     renamed_transforms = []
-    for i, (transform, position) in enumerate(reversed(left_array)):
+    for i, (transform, _position) in enumerate(reversed(left_array)):
         if suffix:
-            transform.rename((f'{left_prefix}_{search_name}_{i}_{suffix}'))
+            transform.rename(f'{left_prefix}_{search_name}_{i}_{suffix}')
         else:
-            transform.rename((f'{left_prefix}_{search_name}_{i}'))
+            transform.rename(f'{left_prefix}_{search_name}_{i}')
         renamed_transforms.append(transform)
 
-    for i, (transform, position) in enumerate(right_array):
+    for i, (transform, _position) in enumerate(right_array):
         if suffix:
-            transform.rename((f'{right_prefix}_{search_name}_{i}_{suffix}'))
+            transform.rename(f'{right_prefix}_{search_name}_{i}_{suffix}')
         else:
-            transform.rename((f'{right_prefix}_{search_name}_{i}'))
+            transform.rename(f'{right_prefix}_{search_name}_{i}')
         renamed_transforms.append(transform)
 
-    for i, (transform, position) in enumerate(center_array):
+    for i, (transform, _position) in enumerate(center_array):
         if suffix:
-            transform.rename((f'{center_prefix}_{search_name}_{i}_{suffix}'))
+            transform.rename(f'{center_prefix}_{search_name}_{i}_{suffix}')
         else:
-            transform.rename((f'{center_prefix}_{search_name}_{i}'))
+            transform.rename(f'{center_prefix}_{search_name}_{i}')
         renamed_transforms.append(transform)
 
     return renamed_transforms

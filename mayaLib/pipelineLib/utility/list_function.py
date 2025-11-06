@@ -18,14 +18,12 @@ import pkgutil
 import mayaLib as mLib
 
 
-class StructureManager():
-    """Manage Lib Structure
-    """
+class StructureManager:
+    """Manage Lib Structure."""
     # root_package = ''
 
     def __init__(self, lib):
-        """Initialize the class with the root package
-        """
+        """Initialize the class with the root package."""
         self.root_package = lib
         self.struct_lib = {}
 
@@ -64,10 +62,7 @@ class StructureManager():
             split = item.split('.')
             tmp_dict = {}
             for key in reversed(split):
-                if key == split[-1]:
-                    tmp_dict = {key: item}
-                else:
-                    tmp_dict = self.incapsulate_dict(tmp_dict, key)
+                tmp_dict = {key: item} if key == split[-1] else self.incapsulate_dict(tmp_dict, key)
 
             # print tmp_dict
             self.dict_merge(self.struct_lib, tmp_dict)
@@ -90,7 +85,7 @@ class StructureManager():
         dct (dict): The dictionary to be merged into.
         merge_dct (dict): The dictionary to merge from.
         """
-        for k, v in merge_dct.items():
+        for k, _v in merge_dct.items():
             if (k in dct and isinstance(dct[k], dict)
                     and isinstance(merge_dct[k], collection.Mapping)):
                 self.dict_merge(dct[k], merge_dct[k])
@@ -98,25 +93,21 @@ class StructureManager():
                 dct[k] = merge_dct[k]
 
     def incapsulate_dict(self, dictionary, key):
-        """ Incapsulate the dictionary into a new one with the given key
-        """
+        """Incapsulate the dictionary into a new one with the given key."""
         return {key: dictionary}
 
     def get_struct_lib(self):
-        """ Return the structure dictionary
-        """
+        """Return the structure dictionary."""
         return self.struct_lib
 
     def import_and_exec(self, module_string, function):
-        """ Import the module and execute the given function
-        """
+        """Import the module and execute the given function."""
         module = __import__(module_string, fromlist=[''])
         func = getattr(module, function)
         return func
 
     def list_all_package(self):
-        """ Return a list of all packages in the root package
-        """
+        """Return a list of all packages in the root package."""
         package_list = []
         for p in pkgutil.walk_packages(self.root_package.__path__):
             if 'utility' not in p[1]:
@@ -138,8 +129,7 @@ class StructureManager():
         return package_list
 
     def list_sub_packages(self, package_str):
-        """ Return a list of all sub packages in the given package
-        """
+        """Return a list of all sub packages in the given package."""
         package_list = []
         package = __import__(package_str, fromlist=[''])
         for p in pkgutil.iter_modules(package.__path__):
@@ -148,8 +138,7 @@ class StructureManager():
         return package_list
 
     def list_modules(self, package):
-        """ Return a list of all modules in the given package
-        """
+        """Return a list of all modules in the given package."""
         module_list = []
         package_name = self.root_package.__name__ + '.' + package
         modules_list = self.explore_package(package_name)
@@ -159,8 +148,7 @@ class StructureManager():
         return module_list
 
     def list_all_module(self):
-        """ Return a list of all modules in the root package
-        """
+        """Return a list of all modules in the root package."""
         module_list = []
         for package in self.package_list:
             # print('PACKAGE:: ', str(package))
@@ -197,8 +185,7 @@ class StructureManager():
             return ''
 
     def get_all_method(self, module_str):
-        """ Return a list of all methods in the given module
-        """
+        """Return a list of all methods in the given module."""
         module = __import__(module_str, fromlist=[''])
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
         return method_list
@@ -227,8 +214,7 @@ class StructureManager():
             return ''
 
     def explore_package(self, module_name):
-        """Explore the given package and return a list of all sub packages
-        """
+        """Explore the given package and return a list of all sub packages."""
         package_list = []
         if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
             loader = pkgutil.get_loader(module_name)
@@ -244,8 +230,7 @@ class StructureManager():
         return package_list
 
     def nested_dict_iter(self, dictionary):
-        """Iterate the nested dictionary and print the values
-        """
+        """Iterate the nested dictionary and print the values."""
         for k, v in dictionary.items():
             if isinstance(v, dict):
                 self.nested_dict_iter(v)

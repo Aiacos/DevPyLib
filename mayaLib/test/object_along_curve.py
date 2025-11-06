@@ -8,7 +8,7 @@ import maya.cmds as cmds
 import pymel.core as pm
 
 
-class CurvesFromEdge(object):
+class CurvesFromEdge:
     """Create curves from mesh edge loops.
 
     Converts mesh edge loops to NURBS curves with optional rebuild.
@@ -158,7 +158,7 @@ class CurvesFromEdge(object):
         return self.deformer_node
 
 
-class JointChainCurve(object):
+class JointChainCurve:
     """Create joint chains along curves.
 
     Manages spacing and placement of joints along curve paths.
@@ -189,7 +189,7 @@ def extract_feather_curves(geo, edge_idx_list):
         list: List of created curves.
     """
     cv_list = []
-    for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list))):
+    for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list)), strict=False):
         pm.polySelect(geo, edgeLoop=loop_idx)
         # min_edge = min(tmp_loop_idx)
         # max_edge = max(tmp_loop_idx)

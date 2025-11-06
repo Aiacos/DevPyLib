@@ -211,10 +211,7 @@ def build_referece_peyload(bifrost_shape, layer_name='Reference_layer', is_paylo
     else:
         # Create compound
         name = 'Reference_Payload'
-        if is_payload == "0":
-            name = 'Reference'
-        else:
-            name = 'Payload'
+        name = 'Reference' if is_payload == "0" else 'Payload'
 
         compound = bifrost.bf_create_compound(bifrost_shape, compound_node_list=[],
                                               compound_name=name + '_Compound', parent='/')
@@ -323,7 +320,6 @@ def build_preview_compound(bifrost_shape, working_layer_name='WORKING_MODELING',
 
     The compound output is a USD stage.
     """
-
     compound = bifrost.bf_create_compound(bifrost_shape, compound_node_list=[], compound_name='Preview_Compound',
                                           parent='/')
 

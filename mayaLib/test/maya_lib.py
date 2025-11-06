@@ -54,7 +54,7 @@ def initializePlugin(plugin):
         )
     except RuntimeError:
         sys.stderr.write(
-            "Failed to register command: %s\n" % MayaLibPlugin.k_plugin_cmd_name
+            f"Failed to register command: {MayaLibPlugin.k_plugin_cmd_name}\n"
         )
         raise
 
@@ -71,6 +71,6 @@ def uninitializePlugin(plugin):
         pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
     except RuntimeError:
         sys.stderr.write(
-            "Failed to unregister command: %s\n" % MayaLibPlugin.k_plugin_cmd_name
+            f"Failed to unregister command: {MayaLibPlugin.k_plugin_cmd_name}\n"
         )
         raise

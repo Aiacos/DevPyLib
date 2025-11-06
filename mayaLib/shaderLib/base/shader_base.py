@@ -27,7 +27,7 @@ def build_lambert(shader_type='lambert', shader_name='tmp-shader', color=(0.5, 0
     # a shading group
     shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
-    pm.connectAttr('%s.outColor' % shader, '%s.surfaceShader' % shading_group)
+    pm.connectAttr(f'{shader}.outColor', f'{shading_group}.surfaceShader')
 
     shader.color.set(color)
     shader.transparency.set(transparency)
@@ -51,7 +51,7 @@ def build_surfaceshader(shader_type='surfaceShader', shader_name='tmp-shader', c
     # a shading group
     shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
-    pm.connectAttr('%s.outColor' % shader, '%s.surfaceShader' % shading_group)
+    pm.connectAttr(f'{shader}.outColor', f'{shading_group}.surfaceShader')
 
     shader.outColor.set(color)
 
@@ -79,21 +79,21 @@ def connect_shader_to_shading_node(shader, shading_engine):
     pm.connectAttr(shader.outColor, shading_engine.surfaceShader, f=True)
 
 
-class ShaderBase(object):
+class ShaderBase:
     """Base class for creating shaders with texture connections."""
 
-    base_color_name_list = str('diffuse diff albedo base col color basecolor d').split(' ')
-    subsurface_color_name_list = str('sss subsurface').split(' ')
-    metallic_name_list = str('metallic metalness metal mtl m').split(' ')
-    specular_name_list = str('specularity specular spec spc').split(' ')
-    roughness_name_list = str('roughness rough rgh r').split(' ')
-    gloss_name_list = str('gloss glossy glossiness g').split(' ')
-    normal_name_list = str('normal nor nrm nrml norm').split(' ')
-    bump_name_list = str('bump bmp').split(' ')
-    displacement_name_list = str('displacement displace disp dsp height heightmap').split(' ')
-    trasmission_name_list = str('opacity').split(' ')
-    alpha_name_list = str('alpha').split(' ')
-    emission_name_list = str('emission').split(' ')
+    base_color_name_list = ['diffuse', 'diff', 'albedo', 'base', 'col', 'color', 'basecolor', 'd']
+    subsurface_color_name_list = ['sss', 'subsurface']
+    metallic_name_list = ['metallic', 'metalness', 'metal', 'mtl', 'm']
+    specular_name_list = ['specularity', 'specular', 'spec', 'spc']
+    roughness_name_list = ['roughness', 'rough', 'rgh', 'r']
+    gloss_name_list = ['gloss', 'glossy', 'glossiness', 'g']
+    normal_name_list = ['normal', 'nor', 'nrm', 'nrml', 'norm']
+    bump_name_list = ['bump', 'bmp']
+    displacement_name_list = ['displacement', 'displace', 'disp', 'dsp', 'height', 'heightmap']
+    trasmission_name_list = ['opacity']
+    alpha_name_list = ['alpha']
+    emission_name_list = ['emission']
 
     diffuse = 'baseColor'
     subsurface = 'subsurfaceColor'
@@ -186,7 +186,7 @@ class ShaderBase(object):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
-        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name), f=True)
+        pm.connectAttr(file_node.outColor, f'{self.shader}.{slot_name}', f=True)
 
         #if alpha_slot:
             #pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
@@ -203,7 +203,7 @@ class ShaderBase(object):
         self.connect_placement(self.place_node, file_node)
 
         file_node.alphaIsLuminance.set(True)
-        pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, slot_name), f=True)
+        pm.connectAttr(file_node.outAlpha, f'{self.shader}.{slot_name}', f=True)
 
     def connect_normal(self, texture, slot_name, colorspace=False):
         """Connects a normal map texture to a shader slot.
@@ -226,7 +226,7 @@ class ShaderBase(object):
         pm.connectAttr(file_node.outAlpha, self.bump_node.bumpValue, f=True)
 
         # connect bump_node to shader
-        pm.connectAttr(self.bump_node.outNormal, '%s.%s' % (self.shader, slot_name), f=True)
+        pm.connectAttr(self.bump_node.outNormal, f'{self.shader}.{slot_name}', f=True)
 
     def connect_displace(self, texture, slot_name, colorspace=False):
         """Connects a displacement texture.
@@ -250,24 +250,24 @@ class ShaderBase(object):
             place_node (pm.nt.Place2dTexture): The place node.
             file_node (pm.nt.File): The file node.
         """
-        pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node, f=True)
-        pm.connectAttr('%s.translateFrame' % place_node, '%s.translateFrame' % file_node, f=True)
-        pm.connectAttr('%s.rotateFrame' % place_node, '%s.rotateFrame' % file_node, f=True)
-        pm.connectAttr('%s.mirrorU' % place_node, '%s.mirrorU' % file_node, f=True)
-        pm.connectAttr('%s.mirrorV' % place_node, '%s.mirrorV' % file_node, f=True)
-        pm.connectAttr('%s.stagger' % place_node, '%s.stagger' % file_node, f=True)
-        pm.connectAttr('%s.wrapU' % place_node, '%s.wrapU' % file_node, f=True)
-        pm.connectAttr('%s.wrapV' % place_node, '%s.wrapV' % file_node, f=True)
-        pm.connectAttr('%s.repeatUV' % place_node, '%s.repeatUV' % file_node, f=True)
-        pm.connectAttr('%s.offset' % place_node, '%s.offset' % file_node, f=True)
-        pm.connectAttr('%s.rotateUV' % place_node, '%s.rotateUV' % file_node, f=True)
-        pm.connectAttr('%s.noiseUV' % place_node, '%s.noiseUV' % file_node, f=True)
-        pm.connectAttr('%s.vertexUvOne' % place_node, '%s.vertexUvOne' % file_node, f=True)
-        pm.connectAttr('%s.vertexUvTwo' % place_node, '%s.vertexUvTwo' % file_node, f=True)
-        pm.connectAttr('%s.vertexUvThree' % place_node, '%s.vertexUvThree' % file_node, f=True)
-        pm.connectAttr('%s.vertexCameraOne' % place_node, '%s.vertexCameraOne' % file_node, f=True)
-        pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node, f=True)
-        pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node, f=True)
+        pm.connectAttr(f'{place_node}.coverage', f'{file_node}.coverage', f=True)
+        pm.connectAttr(f'{place_node}.translateFrame', f'{file_node}.translateFrame', f=True)
+        pm.connectAttr(f'{place_node}.rotateFrame', f'{file_node}.rotateFrame', f=True)
+        pm.connectAttr(f'{place_node}.mirrorU', f'{file_node}.mirrorU', f=True)
+        pm.connectAttr(f'{place_node}.mirrorV', f'{file_node}.mirrorV', f=True)
+        pm.connectAttr(f'{place_node}.stagger', f'{file_node}.stagger', f=True)
+        pm.connectAttr(f'{place_node}.wrapU', f'{file_node}.wrapU', f=True)
+        pm.connectAttr(f'{place_node}.wrapV', f'{file_node}.wrapV', f=True)
+        pm.connectAttr(f'{place_node}.repeatUV', f'{file_node}.repeatUV', f=True)
+        pm.connectAttr(f'{place_node}.offset', f'{file_node}.offset', f=True)
+        pm.connectAttr(f'{place_node}.rotateUV', f'{file_node}.rotateUV', f=True)
+        pm.connectAttr(f'{place_node}.noiseUV', f'{file_node}.noiseUV', f=True)
+        pm.connectAttr(f'{place_node}.vertexUvOne', f'{file_node}.vertexUvOne', f=True)
+        pm.connectAttr(f'{place_node}.vertexUvTwo', f'{file_node}.vertexUvTwo', f=True)
+        pm.connectAttr(f'{place_node}.vertexUvThree', f'{file_node}.vertexUvThree', f=True)
+        pm.connectAttr(f'{place_node}.vertexCameraOne', f'{file_node}.vertexCameraOne', f=True)
+        pm.connectAttr(f'{place_node}.outUV', f'{file_node}.uv', f=True)
+        pm.connectAttr(f'{place_node}.outUvFilterSize', f'{file_node}.uvFilterSize', f=True)
 
     def create_file_node(self, path, name, color=True):
         """Creates and returns a file node for a texture.
@@ -384,7 +384,7 @@ class UsdPreviewSurface(ShaderBase):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
-        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(file_node.outColor, f'{self.shader}.{slot_name}')
 
 
 if __name__ == "__main__":

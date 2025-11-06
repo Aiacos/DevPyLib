@@ -63,15 +63,15 @@ def connect_gamma(selection):
         selection (str): The selected file node.
     """
     # Find where it is connected
-    connection = cmds.listConnections('%s.outColor' % selection, p=True, d=True)
+    connection = cmds.listConnections(f'{selection}.outColor', p=True, d=True)
     # Create the gamma node
     gamma = gamma_node()
     # Connect the selected file node to the gamma node
-    cmds.connectAttr('%s.outColor' % selection, '%s.value' % gamma)
+    cmds.connectAttr(f'{selection}.outColor', f'{gamma}.value')
     # Disconnect the file node from the shader
-    cmds.disconnectAttr('%s.outColor' % selection, connection[0])
+    cmds.disconnectAttr(f'{selection}.outColor', connection[0])
     # Connect the gamma node to the shader
-    cmds.connectAttr('%s.value' % gamma, connection[0])
+    cmds.connectAttr(f'{gamma}.value', connection[0])
 
 
 def add_gamma_correct():

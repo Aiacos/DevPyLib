@@ -31,7 +31,7 @@ def invert_selection(shape, faces):
     return pm.ls(sl=True)
 
 
-class ProxyGeo():
+class ProxyGeo:
     """Per-joint proxy geometry generator for fast viewport display.
 
     Automatically creates optimized proxy geometry from a skinned mesh by duplicating

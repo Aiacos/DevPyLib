@@ -597,6 +597,7 @@ class HumanIK:
             template (str): The name of the template used to determine the method
                 for setting the T pose. Options are 'arise' or any other value
                 to use the grid alignment method.
+
         Returns:
             None
         """

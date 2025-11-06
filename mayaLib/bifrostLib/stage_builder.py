@@ -25,7 +25,7 @@ def get_all_deformed_and_constrained(group):
     deformed_list = []
     undeformed_list = []
     for mesh in mesh_list:
-        history = [s for s in cmds.listHistory(mesh)]
+        history = list(cmds.listHistory(mesh))
 
         if len(history) > 1:
             deformed_list.append(mesh)
@@ -35,9 +35,8 @@ def get_all_deformed_and_constrained(group):
     return deformed_list, undeformed_list
 
 
-class USDCharacterBuild(object):
-    """Build Bifrost nodes to manage usd
-    """
+class USDCharacterBuild:
+    """Build Bifrost nodes to manage usd."""
 
     def __init__(
         self,
@@ -59,7 +58,6 @@ class USDCharacterBuild(object):
             connect_output (bool):
             debug (bool):
         """
-
         self.file_ext = file_ext
         self.single_usd = single_usd
         self.root_node = self.get_name_dict(cmds.ls(root_node, long=True)[-1])
@@ -128,7 +126,7 @@ class USDCharacterBuild(object):
     def get_name_dict(self, full_path):
         """Return Long Name and Short Name of objects in a dict
         Args:
-            long_name (string): long name
+            long_name (string): long name.
 
         Returns:
             (dict)
@@ -147,7 +145,7 @@ class USDCharacterBuild(object):
     def create_bifrost_graph(self, name="usd"):
         """Create bifrost Graph
         Args:
-            name (string): Name of the Graph
+            name (string): Name of the Graph.
 
         Returns:
             (string): bifrost shape node
@@ -162,21 +160,21 @@ class USDCharacterBuild(object):
     def get_maya_usd_stage_shape(self):
         """Get Maya USD Stage Shape
         Returns:
-            (string): USD Stage shape node
+            (string): USD Stage shape node.
         """
         return self.maya_usd_stage
 
     def get_maya_usd_stage(self):
         """Get Maya USD Stage Transform
         Returns:
-            (string): USD Stage node
+            (string): USD Stage node.
         """
         return cmds.listRelatives(self.maya_usd_stage, p=True)[-1]
 
     def get_bifrost_transform(self):
         """Get Maya bifrost transform
         Returns:
-            (string): Maya bifrost transform
+            (string): Maya bifrost transform.
 
         """
         return self.bifrost_transform
@@ -184,9 +182,8 @@ class USDCharacterBuild(object):
     def get_bifrost_shape(self):
         """Get Maya bifrost transform
         Returns:
-            (string): Maya bifrost shape
+            (string): Maya bifrost shape.
         """
-
         return self.bifrost_shape
 
     def connect_output(self):
@@ -236,7 +233,7 @@ class USDCharacterBuild(object):
     def set_start_frame(self, frame):
         """Set Start Frame in the bifrost input
         Args:
-            frame (float): start frame
+            frame (float): start frame.
 
         Returns:
 
@@ -246,7 +243,7 @@ class USDCharacterBuild(object):
     def set_end_frame(self, frame):
         """Set End Frame in the bifrost input
         Args:
-            frame (float): end frame
+            frame (float): end frame.
 
         Returns:
 
@@ -480,7 +477,7 @@ class USDCharacterBuild(object):
         Returns:
             (string): bifrost Add to Stage node name
             (string): bifrost Time node name
-            (string): bifrost Save Stage node name
+            (string): bifrost Save Stage node name.
 
         """
         # Add Input Port
@@ -567,7 +564,7 @@ class USDCharacterBuild(object):
         """Create bifrost prim from Maya object
         Args:
             obj (string): Maya object name
-            prim_type (string): type of the prim
+            prim_type (string): type of the prim.
 
         Returns:
             (string): bifrost node name of the prim
@@ -608,7 +605,7 @@ class USDCharacterBuild(object):
     def add_undeformed_mesh_transform(self, mesh_name):
         """Add Mesh shape to bifrost and relative mesh prim definition
         Args:
-            mesh_name (string): Maya mesh name
+            mesh_name (string): Maya mesh name.
 
         Returns:
 
@@ -675,7 +672,7 @@ class USDCharacterBuild(object):
     def add_undeformed_mesh(self, mesh_name):
         """Add Mesh shape to bifrost and relative mesh prim definition
         Args:
-            mesh_name (string): Maya mesh name
+            mesh_name (string): Maya mesh name.
 
         Returns:
 
@@ -702,7 +699,7 @@ class USDCharacterBuild(object):
         """Add xfrom attribute to a Mesh or Prim defintion
         Args:
             obj (string): maya object to connect
-            obj_node (string): prim to connect attribute
+            obj_node (string): prim to connect attribute.
 
         Returns:
 
@@ -781,7 +778,7 @@ class USDCharacterBuild(object):
     def add_mesh(self, mesh_name, add_to_stage_node):
         """Add Mesh shape to bifrost and relative mesh prim definition
         Args:
-            mesh_name (string): Maya mesh name
+            mesh_name (string): Maya mesh name.
 
         Returns:
 
@@ -829,13 +826,12 @@ class USDCharacterBuild(object):
         """Recursive build and connect Prims
         Args:
             obj_data (dict): current Maya object, contains 'long_name' and 'short_name'
-            node (string): current Bifrost prim node
+            node (string): current Bifrost prim node.
 
         Returns:
             None
 
         """
-
         # Check if maya object exists
         if cmds.objExists(obj_data["full_path"]):
             # get the object parent
@@ -1000,7 +996,7 @@ class USDCharacterBuild(object):
             attr_name (string): attribute name
             node_name (string): node name
             prim_path (string): path of the prim to block
-            parent (string): parent node to connect
+            parent (string): parent node to connect.
 
         Returns:
             (string): bifrost attribute node
@@ -1033,7 +1029,7 @@ class USDCharacterBuild(object):
     def create_block_loop(self, add_to_stage_node, set_stage_time_code_node):
         """Create the iterator to block same attribute on multiple prim
         Returns:
-            (string): iterator node
+            (string): iterator node.
 
         """
         # Create nodes

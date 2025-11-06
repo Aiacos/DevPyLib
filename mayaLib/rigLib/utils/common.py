@@ -69,7 +69,7 @@ def set_driven_key(driver, driver_value_list, driven, driven_value_list, cv_type
         driven_value_list: Sequence of values to key on the driven attribute.
         cv_type: Tangent type for the keyframes.
     """
-    for driver_v, driven_v in zip(driver_value_list, driven_value_list):
+    for driver_v, driven_v in zip(driver_value_list, driven_value_list, strict=False):
         pm.setDrivenKeyframe(
             driven,
             currentDriver=driver,

@@ -15,7 +15,7 @@ import pymel.core as pm
 from mayaLib.shaderLib.utils import config, file
 
 
-class TextureFolder(object):
+class TextureFolder:
     """Class to manage texture folders and their contents."""
 
     def __init__(self, folder=None, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
@@ -108,7 +108,7 @@ def get_texture_from_node(file):
     """
     return pathlib.Path(file)
 
-class TextureFileNode():
+class TextureFileNode:
     """Class to manage Maya File nodes."""
 
     def __init__(self, path, filename, single_place_node=None):
@@ -135,24 +135,24 @@ class TextureFileNode():
             place_node: Place2D texture node.
             file_node: File node.
         """
-        pm.connectAttr('%s.coverage' % place_node, '%s.coverage' % file_node)
-        pm.connectAttr('%s.translateFrame' % place_node, '%s.translateFrame' % file_node)
-        pm.connectAttr('%s.rotateFrame' % place_node, '%s.rotateFrame' % file_node)
-        pm.connectAttr('%s.mirrorU' % place_node, '%s.mirrorU' % file_node)
-        pm.connectAttr('%s.mirrorV' % place_node, '%s.mirrorV' % file_node)
-        pm.connectAttr('%s.stagger' % place_node, '%s.stagger' % file_node)
-        pm.connectAttr('%s.wrapU' % place_node, '%s.wrapU' % file_node)
-        pm.connectAttr('%s.wrapV' % place_node, '%s.wrapV' % file_node)
-        pm.connectAttr('%s.repeatUV' % place_node, '%s.repeatUV' % file_node)
-        pm.connectAttr('%s.offset' % place_node, '%s.offset' % file_node)
-        pm.connectAttr('%s.rotateUV' % place_node, '%s.rotateUV' % file_node)
-        pm.connectAttr('%s.noiseUV' % place_node, '%s.noiseUV' % file_node)
-        pm.connectAttr('%s.vertexUvOne' % place_node, '%s.vertexUvOne' % file_node)
-        pm.connectAttr('%s.vertexUvTwo' % place_node, '%s.vertexUvTwo' % file_node)
-        pm.connectAttr('%s.vertexUvThree' % place_node, '%s.vertexUvThree' % file_node)
-        pm.connectAttr('%s.vertexCameraOne' % place_node, '%s.vertexCameraOne' % file_node)
-        pm.connectAttr('%s.outUV' % place_node, '%s.uv' % file_node)
-        pm.connectAttr('%s.outUvFilterSize' % place_node, '%s.uvFilterSize' % file_node)
+        pm.connectAttr(f'{place_node}.coverage', f'{file_node}.coverage')
+        pm.connectAttr(f'{place_node}.translateFrame', f'{file_node}.translateFrame')
+        pm.connectAttr(f'{place_node}.rotateFrame', f'{file_node}.rotateFrame')
+        pm.connectAttr(f'{place_node}.mirrorU', f'{file_node}.mirrorU')
+        pm.connectAttr(f'{place_node}.mirrorV', f'{file_node}.mirrorV')
+        pm.connectAttr(f'{place_node}.stagger', f'{file_node}.stagger')
+        pm.connectAttr(f'{place_node}.wrapU', f'{file_node}.wrapU')
+        pm.connectAttr(f'{place_node}.wrapV', f'{file_node}.wrapV')
+        pm.connectAttr(f'{place_node}.repeatUV', f'{file_node}.repeatUV')
+        pm.connectAttr(f'{place_node}.offset', f'{file_node}.offset')
+        pm.connectAttr(f'{place_node}.rotateUV', f'{file_node}.rotateUV')
+        pm.connectAttr(f'{place_node}.noiseUV', f'{file_node}.noiseUV')
+        pm.connectAttr(f'{place_node}.vertexUvOne', f'{file_node}.vertexUvOne')
+        pm.connectAttr(f'{place_node}.vertexUvTwo', f'{file_node}.vertexUvTwo')
+        pm.connectAttr(f'{place_node}.vertexUvThree', f'{file_node}.vertexUvThree')
+        pm.connectAttr(f'{place_node}.vertexCameraOne', f'{file_node}.vertexCameraOne')
+        pm.connectAttr(f'{place_node}.outUV', f'{file_node}.uv')
+        pm.connectAttr(f'{place_node}.outUvFilterSize', f'{file_node}.uvFilterSize')
 
     def connect_file_node(self, path, name, single_place_node, gamma_correct=True, alpha_is_luminance=True):
         """Create and connect a file node.
@@ -204,7 +204,7 @@ class TextureFileNode():
 
         return file_node
 
-class TexturePxrTexture():
+class TexturePxrTexture:
     """Class to manage Renderman PxrTexture nodes."""
 
     def __init__(self, path, filename):

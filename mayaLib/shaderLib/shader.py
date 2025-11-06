@@ -20,7 +20,7 @@ from mayaLib.shaderLib.base.renderman import PxrDisneyBSDF
 from mayaLib.shaderLib.base.shader_base import ShaderBase, UsdPreviewSurface
 
 
-class TextureShader():
+class TextureShader:
     """Automatic shader creation from textures with renderer detection.
 
     Automatically creates shaders with connected textures based on the active renderer
@@ -50,7 +50,6 @@ class TextureShader():
             textureset_dict (dict): Dictionary of textureset and its associated textures.
             single_place_node (bool): Flag to use a single place node. Default is True.
         """
-
         # See active Renderer
         # renderManRIS, arnold
         self.renderer = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
@@ -116,7 +115,7 @@ class TextureShader():
         """
         return self.shader
 
-class BuildAllShaders(object):
+class BuildAllShaders:
     """Batch shader builder for texture directories.
 
     Automatically discovers and creates TextureShader objects for all texture sets
@@ -142,10 +141,10 @@ class BuildAllShaders(object):
         texture_manager = texture.TextureFolder()
         texture_dict = texture_manager.build_texture_catalog()
 
-        for key, value in texture_dict.items():
+        for _key, _value in texture_dict.items():
             TextureShader()
 
-class ConvertShaders(object):
+class ConvertShaders:
     """Convert current shader to another renderer.
 
     Args:
@@ -153,7 +152,7 @@ class ConvertShaders(object):
             'usd', '3delight', and 'renderman'.
     """
     def __init__(self, to_shader_type):
-        """Initialize ConvertShaders class
+        """Initialize ConvertShaders class.
 
         Args:
             to_shader_type (str): Type of shader to create. Options are 'standard',
@@ -217,8 +216,7 @@ class ConvertShaders(object):
             # ShadingEngines are collections, so you can check against their length
             if len(shading_engine):
                 # You can call listConnections directly on the attribute you're looking for.
-                for material in shading_engine.surfaceShader.listConnections():
-                    yield material
+                yield from shading_engine.surfaceShader.listConnections()
 
     def get_main_texture(self, shader):
         """Retrieves the main texture path and list of texture filenames connected to a shader.
@@ -235,7 +233,6 @@ class ConvertShaders(object):
             The function checks for file nodes and bump nodes connected to the shader
             and retrieves their file texture names.
         """
-
         file_node_list = pm.listConnections(shader, source=True, type='file')
         bump_node_list = pm.listConnections(shader, source=True, type='bump2d')
         if bump_node_list:
@@ -345,9 +342,8 @@ class ConvertShaders(object):
 
 
 
-class ShaderFromJson(object):
-    """Create file Reading JSON File
-    """
+class ShaderFromJson:
+    """Create file Reading JSON File."""
 
     def __init__(self, json_filepath, to_shader_type):
         """Initialize the ShaderFromJson class.

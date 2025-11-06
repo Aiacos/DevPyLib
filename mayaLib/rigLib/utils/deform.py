@@ -17,8 +17,7 @@ from maya import mel
 
 
 def remove_shape_deformed():
-    """Remove the suffix "Deformed" from all deformed geometry shape nodes.
-    """
+    """Remove the suffix "Deformed" from all deformed geometry shape nodes."""
     # Get all deformed geometry shape nodes
     shape_deformed_node_list = pm.ls("*ShapeDeformed", "*:*ShapeDeformed")
 
@@ -73,7 +72,7 @@ def paint_deformer_weights(channel, vtx_list, value, smooth_iteration=1):
     mel.eval("artAttrCtx -e -clear `currentCtx`;")
 
     # Smooth the weights
-    for i in range(0, smooth_iteration):
+    for _i in range(0, smooth_iteration):
         mel.eval("artAttrPaintOperation artAttrCtx Smooth;")
         mel.eval("artAttrCtx -e -clear `currentCtx`;")
 
@@ -81,7 +80,7 @@ def paint_deformer_weights(channel, vtx_list, value, smooth_iteration=1):
     pm.select(cl=True)
 
 
-class PaintDeformer(object):
+class PaintDeformer:
     """Interactive deformer weight painting tool.
 
     Provides a high-level interface to Maya's artAttr paint tools for editing deformer
@@ -109,7 +108,6 @@ class PaintDeformer(object):
             geo (PyNode or str): The geometry to apply the painting tool on.
             channel (str): The attribute channel to paint weights on.
         """
-
         # Select the geometry to work with
         pm.select(geo)
 
@@ -245,7 +243,6 @@ def add_meshes_to_wrap(obj_list, wrap_target):
     Returns:
         None
     """
-
     for obj in obj_list:
         pm.select(wrap_target, r=True)
         pm.select(obj, add=True)
@@ -306,7 +303,7 @@ def blend_shape_deformer(
     # Set the default weights
     w = (0, float(default_value[0]))
     if isinstance(blendshape_list, list):
-        for i, df in zip(list(range(0, len(blendshape_list))), default_value):
+        for i, df in zip(list(range(0, len(blendshape_list))), default_value, strict=False):
             w = (i, float(df))
 
     # Create the blendshape deformer
@@ -486,7 +483,6 @@ def tension_map(obj):
     Returns:
         The created Tension Map node.
     """
-
     # Check if the tensionMap plugin is loaded and active
     plugin_name = "tensionMap"
     if not pm.pluginInfo(plugin_name, q=True, loaded=True):
@@ -494,7 +490,7 @@ def tension_map(obj):
             # Attempt to load the plugin
             pm.loadPlugin("plugin/tensionMap.py")
             print(f"Plugin '{plugin_name}' loaded successfully.")
-        except (RuntimeError, IOError) as e:
+        except (OSError, RuntimeError) as e:
             print(f"Failed to load plugin '{plugin_name}': {e}")
             return None
     else:
@@ -555,8 +551,7 @@ def load_deformer_weights(
     project_path=Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1])),
     skin_weights_dir="weights/deformer",
 ):
-    """load deformer weights for character geometry objects
-    """
+    """Load deformer weights for character geometry objects."""
     # check folder
     directory = project_path / skin_weights_dir
     if not directory.exists():
@@ -606,7 +601,7 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
             # Attempt to load the plugin
             pm.loadPlugin(plugin_name)
             print(f"Plugin '{plugin_name}' loaded successfully.")
-        except (RuntimeError, IOError) as e:
+        except (OSError, RuntimeError) as e:
             print(f"Failed to load plugin '{plugin_name}': {e}")
             return None
     else:

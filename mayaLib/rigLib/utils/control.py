@@ -43,7 +43,6 @@ class Control:
             do_modify: Whether to create a modify group.
             do_dynamic_pivot: Whether to add a dynamic pivot locator.
         """
-
         # name handle
         if '*' in prefix:
             prefix = nc.name_check(prefix + '_CTRL').split('_')[0]
@@ -119,14 +118,12 @@ class Control:
             ctrl_shape.ovc.set(colour)
 
         # translate control
-        if translate_to is not None and translate_to != '':
-            if pm.objExists(translate_to):
-                pm.delete(pm.pointConstraint(translate_to, ctrl_offset))
+        if translate_to is not None and translate_to != '' and pm.objExists(translate_to):
+            pm.delete(pm.pointConstraint(translate_to, ctrl_offset))
 
         # rotate control
-        if rotate_to is not None and rotate_to != '':
-            if pm.objExists(rotate_to):
-                pm.delete(pm.orientConstraint(rotate_to, ctrl_offset))
+        if rotate_to is not None and rotate_to != '' and pm.objExists(rotate_to):
+            pm.delete(pm.orientConstraint(rotate_to, ctrl_offset))
 
         # lock control channels
         locked = []

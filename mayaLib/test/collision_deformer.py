@@ -33,7 +33,6 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
             matrix: World matrix of the mesh.
             index: Geometry index in the data block.
         """
-
         # get ENVELOPE
         envelope = OpenMayaMPx.cvar.MPxGeometryFilter_envelope
         envelope_handle = block.inputValue(envelope)

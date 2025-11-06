@@ -1,5 +1,5 @@
 """=====================================================================
-    Tool for saving and loading skinWeights in Maya
+    Tool for saving and loading skinWeights in Maya.
 
     (c) 2013 - 2016 by Thomas Bittner
     thomasbittner@hotmail.de
@@ -214,7 +214,7 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
     soft_weights = []
     weights_index = 1
 
-    with open(input_file, "r", encoding="utf-8") as input_stream:
+    with open(input_file, encoding="utf-8") as input_stream:
         while True:
             raw_line = input_stream.readline()
             if not raw_line:
@@ -326,7 +326,7 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
     all_locks = [False] * len(all_joints)
     if not ignore_joint_locks:
         for i in range(len(all_joints)):
-            all_locks[i] = cmds.getAttr("%s.liw" % all_joints[i])
+            all_locks[i] = cmds.getAttr(f"{all_joints[i]}.liw")
 
     weight_doubles = OpenMaya.MDoubleArray(0)
 
@@ -523,7 +523,7 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
             vert_id = vert_ids[i]
             soft_weight = ""
             if not ignore_soft_selection:
-                soft_weight = "%f:" % soft_weights[i]
+                soft_weight = f"{soft_weights[i]:f}:"
 
             weights_string = " ".join(
                 [
@@ -567,10 +567,10 @@ def b_save_skin_values(input_file):
             iterate.getDagPath(node, component)
             if not node.hasFn(OpenMaya.MFn.kTransform):
                 print(
-                    (
+
                         OpenMaya.MFnDagNode(node).name()
                         + " is not a Transform node (need to select transform node of polyMesh)"
-                    )
+
                 )
             else:
                 object_name = OpenMaya.MFnDagNode(node).name()
@@ -857,7 +857,7 @@ def b_load_skin_values(load_on_selection, input_file):
         print("You need to select a polygon object")
         return
 
-    with open(input_file, "r", encoding="utf-8") as input_stream:
+    with open(input_file, encoding="utf-8") as input_stream:
 
         file_position = 0
         while True:

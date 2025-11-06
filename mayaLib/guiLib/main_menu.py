@@ -47,7 +47,7 @@ class SearchLineEdit(QtWidgets.QLineEdit):
             icon_file (str): Path to the icon for the clear button.
             parent (QWidget, optional): Parent widget. Defaults to None.
         """
-        super(SearchLineEdit, self).__init__(parent)
+        super().__init__(parent)
 
         # Setup clear button
         self.button = QtWidgets.QToolButton(self)
@@ -108,7 +108,7 @@ class MenuLibWidget(QtWidgets.QWidget):
             lib_path (str): Path to the library.
             parent (QWidget, optional): Parent widget. Defaults to None.
         """
-        super(MenuLibWidget, self).__init__(parent)
+        super().__init__(parent)
 
         lib_path = pathlib.Path(lib_path)
 
@@ -374,7 +374,7 @@ class MainMenu(QtWidgets.QWidget):
             menu_name (str, optional): Name of the menu. Defaults to 'MayaLib'.
             parent (QWidget, optional): Parent widget. Defaults to None.
         """
-        super(MainMenu, self).__init__(parent)
+        super().__init__(parent)
 
         if auto_update_on_load:
             self.update_lib()

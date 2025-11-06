@@ -7,11 +7,11 @@
 *** Scripted in Maya 2020
 *** Tested in Maya 2020 and 2022
 ***
-****************************************************************************"""
+****************************************************************************.
+"""
 
 import random
 from dataclasses import dataclass, field
-from typing import List, Tuple
 
 import maya.cmds as mc
 import maya.mel as mel
@@ -33,37 +33,37 @@ class QuadPatcherState:
     sel_obj: str = ""
 
     # Bridge nodes
-    side_a_bridge_node: Tuple = ()
-    side_b_bridge_node: Tuple = ()
-    side_c_bridge_node: Tuple = ()
-    close_bridge_node: Tuple = ()
-    close_side_a_bridge_node: Tuple = ()
-    close_side_b_bridge_node: Tuple = ()
-    close_side_c_bridge_node: Tuple = ()
-    inset_node: Tuple = ()
-    fm_transfer_attributes_node: Tuple = ()
+    side_a_bridge_node: tuple = ()
+    side_b_bridge_node: tuple = ()
+    side_c_bridge_node: tuple = ()
+    close_bridge_node: tuple = ()
+    close_side_a_bridge_node: tuple = ()
+    close_side_b_bridge_node: tuple = ()
+    close_side_c_bridge_node: tuple = ()
+    inset_node: tuple = ()
+    fm_transfer_attributes_node: tuple = ()
 
     # Edge data
-    ordered_edges: List = field(default_factory=list)
-    ordered_edge_components: List = field(default_factory=list)
-    ordered_edges_extended: List = field(default_factory=list)
-    ordered_edges_components_extended: List = field(default_factory=list)
-    ordered_whole_border: List = field(default_factory=list)
-    ordered_whole_border_components: List = field(default_factory=list)
-    ordered_whole_border_components_ext: List = field(default_factory=list)
-    whole_border: List = field(default_factory=list)
+    ordered_edges: list = field(default_factory=list)
+    ordered_edge_components: list = field(default_factory=list)
+    ordered_edges_extended: list = field(default_factory=list)
+    ordered_edges_components_extended: list = field(default_factory=list)
+    ordered_whole_border: list = field(default_factory=list)
+    ordered_whole_border_components: list = field(default_factory=list)
+    ordered_whole_border_components_ext: list = field(default_factory=list)
+    whole_border: list = field(default_factory=list)
 
-    side_a_edges: List = field(default_factory=list)
-    side_a_edge_components: List = field(default_factory=list)
-    side_b1_edges: List = field(default_factory=list)
-    side_c1_edges: List = field(default_factory=list)
-    sel_edges: List = field(default_factory=list)
-    sel_edges_orig: List = field(default_factory=list)
+    side_a_edges: list = field(default_factory=list)
+    side_a_edge_components: list = field(default_factory=list)
+    side_b1_edges: list = field(default_factory=list)
+    side_c1_edges: list = field(default_factory=list)
+    sel_edges: list = field(default_factory=list)
+    sel_edges_orig: list = field(default_factory=list)
 
     # Vertex and face data
-    dup_base_verts: List = field(default_factory=list)
-    new_created_verts: List = field(default_factory=list)
-    dup_faces_to_hide: List = field(default_factory=list)
+    dup_base_verts: list = field(default_factory=list)
+    new_created_verts: list = field(default_factory=list)
+    dup_faces_to_hide: list = field(default_factory=list)
 
     # Sets
     dup_edges_set: str | None = None
@@ -72,10 +72,10 @@ class QuadPatcherState:
     face_mode_edge_components_orig_set: str | None = None
 
     # Deformer nodes
-    relax_nodes: List = field(default_factory=list)
-    smooth_nodes: List = field(default_factory=list)
-    wrap_base_mesh: List = field(default_factory=list)
-    live_obj: List = field(default_factory=list)
+    relax_nodes: list = field(default_factory=list)
+    smooth_nodes: list = field(default_factory=list)
+    wrap_base_mesh: list = field(default_factory=list)
+    live_obj: list = field(default_factory=list)
 
     # Numeric parameters
     side_a_len: int = 0
@@ -852,7 +852,7 @@ def initiate(edges):
     checked_edge = [int(m_it_edge.index())]
     current_edge = m_it_edge.index()
     ordered_list = [m_it_edge.index()]
-    for count in range(m_it_edge.count()):
+    for _count in range(m_it_edge.count()):
         while not m_it_edge.isDone():
             # Check if the edge is connected to the current edge
             if m_it_edge.connectedToEdge(current_edge):

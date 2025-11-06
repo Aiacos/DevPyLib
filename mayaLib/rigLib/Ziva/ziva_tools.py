@@ -1,5 +1,4 @@
-"""Utilities for Ziva dynamics
-"""
+"""Utilities for Ziva dynamics."""
 
 import maya.mel as mel
 import pymel.core as pm
@@ -105,8 +104,7 @@ def ziva_check_intersection(geo1, geo2):
 
 # Rename
 def ziva_rename_all():
-    """Rename all Ziva nodes in the scene.
-    """
+    """Rename all Ziva nodes in the scene."""
     zva_cmds.rename_ziva_nodes()
 
 

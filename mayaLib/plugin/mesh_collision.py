@@ -1,4 +1,4 @@
-"""Maya collision deformer plugin with bulge effect.
+r"""Maya collision deformer plugin with bulge effect.
 
 This deformer plugin pushes mesh vertices away from a collider mesh with support
 for indirect bulge deformation. Vertices inside the collider are pushed to its
@@ -302,9 +302,7 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                     break
 
             collision = 0
-            if hit_count == 2 and sign_change + 1 == 1 and sign_change != -1000:
-                collision = 1
-            elif hit_count > 2 and hit_count / (sign_change + 1) != 2 and sign_change != -1000:
+            if hit_count == 2 and sign_change + 1 == 1 and sign_change != -1000 or hit_count > 2 and hit_count / (sign_change + 1) != 2 and sign_change != -1000:
                 collision = 1
 
             # Process collision if detected
@@ -481,13 +479,13 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         b1 = OpenMaya.MFloatArray()
         c1 = OpenMaya.MIntArray()
 
-        a1.append(float(0.0))
-        a1.append(float(0.2))
-        a1.append(float(1.0))
+        a1.append(0.0)
+        a1.append(0.2)
+        a1.append(1.0)
 
-        b1.append(float(0.0))
-        b1.append(float(1.0))
-        b1.append(float(0.0))
+        b1.append(0.0)
+        b1.append(1.0)
+        b1.append(0.0)
 
         c1.append(OpenMaya.MRampAttribute.kSpline)
         c1.append(OpenMaya.MRampAttribute.kSpline)
@@ -613,7 +611,7 @@ def node_initializer():
         CollisionDeformer.attributeAffects(CollisionDeformer.sculptmode, output_geom)
         CollisionDeformer.attributeAffects(CollisionDeformer.bulgeshape, output_geom)
     except RuntimeError:
-        sys.stderr.write("Failed to create attributes of %s node\n" % K_PLUGIN_NODE_TYPE_NAME)
+        sys.stderr.write(f"Failed to create attributes of {K_PLUGIN_NODE_TYPE_NAME} node\n")
 
 
 # initialize the script plug-in
@@ -631,7 +629,7 @@ def initialize_plugin(mobject):
         mplugin.registerNode(K_PLUGIN_NODE_TYPE_NAME, COLLISION_DEFORMER_ID, node_creator, node_initializer,
                              OpenMayaMPx.MPxNode.kDeformerNode)
     except RuntimeError:
-        sys.stderr.write("Failed to register node: %s\n" % K_PLUGIN_NODE_TYPE_NAME)
+        sys.stderr.write(f"Failed to register node: {K_PLUGIN_NODE_TYPE_NAME}\n")
 
 
 # uninitialize the script plug-in
@@ -648,7 +646,7 @@ def uninitialize_plugin(mobject):
     try:
         mplugin.deregisterNode(COLLISION_DEFORMER_ID)
     except RuntimeError:
-        sys.stderr.write("Failed to unregister node: %s\n" % K_PLUGIN_NODE_TYPE_NAME)
+        sys.stderr.write(f"Failed to unregister node: {K_PLUGIN_NODE_TYPE_NAME}\n")
 
 
 mel = '''

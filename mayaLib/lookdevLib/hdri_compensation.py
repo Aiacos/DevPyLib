@@ -9,8 +9,8 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 
-class Compensation():
-    """Class for Hdri Compensations
+class Compensation:
+    """Class for Hdri Compensations.
 
     Attributes:
         hdri_node (str): Hdri node name
@@ -23,7 +23,7 @@ class Compensation():
     """
 
     def __init__(self, hdri_node, plate_r, plate_g, plate_b, render_r, render_g, render_b):
-        """Constructor for Compensation class
+        """Constructor for Compensation class.
 
         Args:
             hdri_node (str): Hdri node name
@@ -47,7 +47,7 @@ class Compensation():
             print('invalid node')
 
     def compensation_formula(self, plate_r, plate_g, plate_b, render_r, render_g, render_b):
-        """Method to calculate the compensation formula
+        """Method to calculate the compensation formula.
 
         Args:
             plate_r (float): Plate red value
@@ -67,14 +67,13 @@ class Compensation():
         return r, g, b
 
     def create_standard_color_correct(self):
-        """Method to create standard color correct node
-        """
+        """Method to create standard color correct node."""
         # get texture fileNode
         file_node = pm.listConnections(self.hdri_node.color, p=False, s=True, type='file')[0]
         self.color_correct_node = file_node
 
     def set_standard_gain(self, r=1, g=1, b=1):
-        """Method to set standard color correct node gain
+        """Method to set standard color correct node gain.
 
         Args:
             r (float, optional): Red value. Defaults to 1.
@@ -84,7 +83,7 @@ class Compensation():
         self.color_correct_node.colorGain.set(r, g, b)
 
     def set_pxr_gain(self, r=1, g=1, b=1):
-        """Method to set Pxr gain
+        """Method to set Pxr gain.
 
         Args:
             r (float, optional): Red value. Defaults to 1.

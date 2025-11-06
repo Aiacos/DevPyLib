@@ -29,7 +29,7 @@ right_hand_middle_joint_list_default = ['R_Fingers_finger_1_0_FS_jnt', 'R_Finger
 right_hand_ring_joint_list_default = ['R_Fingers_finger_2_0_FS_jnt', 'R_Fingers_finger_2_1_FS_jnt', 'R_Fingers_finger_2_2_FS_jnt', 'R_Fingers_finger_2_3_FS_jnt']
 right_hand_pinky_joint_list_default = ['R_Fingers_finger_3_0_FS_jnt', 'R_Fingers_finger_3_1_FS_jnt', 'R_Fingers_finger_3_2_FS_jnt', 'R_Fingers_finger_3_3_FS_jnt']
 
-class UnrealEngineSkeleton(object):
+class UnrealEngineSkeleton:
     """Skeleton converter for Unreal Engine HumanIK naming convention.
 
     Converts custom rig joint hierarchies to Unreal Engine's standard HumanIK skeleton
@@ -131,7 +131,6 @@ class UnrealEngineSkeleton(object):
             >>> converter = UnrealEngineSkeleton()
             >>> converter.create_ue_skeleton()
         """
-
         # Root
         pm.rename(reference_joint, self.human_ik_joint_dict['Reference'])
 
@@ -140,52 +139,52 @@ class UnrealEngineSkeleton(object):
 
         # Spine
         del spine_joint_list[-2]
-        for jnt, name in zip(spine_joint_list, self.human_ik_joint_dict['Spine']): # more joint in Arise rig
+        for jnt, name in zip(spine_joint_list, self.human_ik_joint_dict['Spine'], strict=False): # more joint in Arise rig
             pm.rename(jnt, name)
 
         # Neck
         del neck_joint_list[1]
         del neck_joint_list[-1]
         del neck_joint_list[-2]
-        for jnt, name in zip(neck_joint_list, self.human_ik_joint_dict['Neck']): # more joint in Arise rig
+        for jnt, name in zip(neck_joint_list, self.human_ik_joint_dict['Neck'], strict=False): # more joint in Arise rig
             pm.rename(jnt, name)
 
         # Head
         pm.rename(head_joint, self.human_ik_joint_dict['Head'])
 
         # Leg
-        for jnt, name in zip(left_leg_joint_list, (self.human_ik_joint_dict['LeftUpLeg'], self.human_ik_joint_dict['LeftLeg'], self.human_ik_joint_dict['LeftFoot'], self.human_ik_joint_dict['LeftToeBase'])):
+        for jnt, name in zip(left_leg_joint_list, (self.human_ik_joint_dict['LeftUpLeg'], self.human_ik_joint_dict['LeftLeg'], self.human_ik_joint_dict['LeftFoot'], self.human_ik_joint_dict['LeftToeBase']), strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_leg_joint_list, (self.human_ik_joint_dict['RightUpLeg'], self.human_ik_joint_dict['RightLeg'], self.human_ik_joint_dict['RightFoot'], self.human_ik_joint_dict['RightToeBase'])):
+        for jnt, name in zip(right_leg_joint_list, (self.human_ik_joint_dict['RightUpLeg'], self.human_ik_joint_dict['RightLeg'], self.human_ik_joint_dict['RightFoot'], self.human_ik_joint_dict['RightToeBase']), strict=False):
             pm.rename(jnt, name)
 
         # Arm
-        for jnt, name in zip(left_arm_joint_list, (self.human_ik_joint_dict['LeftShoulder'], self.human_ik_joint_dict['LeftArm'], self.human_ik_joint_dict['LeftForeArm'], self.human_ik_joint_dict['LeftHand'])):
+        for jnt, name in zip(left_arm_joint_list, (self.human_ik_joint_dict['LeftShoulder'], self.human_ik_joint_dict['LeftArm'], self.human_ik_joint_dict['LeftForeArm'], self.human_ik_joint_dict['LeftHand']), strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_arm_joint_list, (self.human_ik_joint_dict['RightShoulder'], self.human_ik_joint_dict['RightArm'], self.human_ik_joint_dict['RightForeArm'], self.human_ik_joint_dict['RightHand'])):
+        for jnt, name in zip(right_arm_joint_list, (self.human_ik_joint_dict['RightShoulder'], self.human_ik_joint_dict['RightArm'], self.human_ik_joint_dict['RightForeArm'], self.human_ik_joint_dict['RightHand']), strict=False):
             pm.rename(jnt, name)
 
         # Finger
-        for jnt, name in zip(left_hand_thumb_joint_list, self.human_ik_joint_dict['LeftHandThumb']):
+        for jnt, name in zip(left_hand_thumb_joint_list, self.human_ik_joint_dict['LeftHandThumb'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(left_hand_index_joint_list, self.human_ik_joint_dict['LeftHandIndex']):
+        for jnt, name in zip(left_hand_index_joint_list, self.human_ik_joint_dict['LeftHandIndex'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(left_hand_middle_joint_list, self.human_ik_joint_dict['LeftHandMiddle']):
+        for jnt, name in zip(left_hand_middle_joint_list, self.human_ik_joint_dict['LeftHandMiddle'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(left_hand_ring_joint_list, self.human_ik_joint_dict['LeftHandRing']):
+        for jnt, name in zip(left_hand_ring_joint_list, self.human_ik_joint_dict['LeftHandRing'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(left_hand_pinky_joint_list, self.human_ik_joint_dict['LeftHandPinky']):
+        for jnt, name in zip(left_hand_pinky_joint_list, self.human_ik_joint_dict['LeftHandPinky'], strict=False):
             pm.rename(jnt, name)
 
-        for jnt, name in zip(right_hand_thumb_joint_list, self.human_ik_joint_dict['RightHandThumb']):
+        for jnt, name in zip(right_hand_thumb_joint_list, self.human_ik_joint_dict['RightHandThumb'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_hand_index_joint_list, self.human_ik_joint_dict['RightHandIndex']):
+        for jnt, name in zip(right_hand_index_joint_list, self.human_ik_joint_dict['RightHandIndex'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_hand_middle_joint_list, self.human_ik_joint_dict['RightHandMiddle']):
+        for jnt, name in zip(right_hand_middle_joint_list, self.human_ik_joint_dict['RightHandMiddle'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_hand_ring_joint_list, self.human_ik_joint_dict['RightHandRing']):
+        for jnt, name in zip(right_hand_ring_joint_list, self.human_ik_joint_dict['RightHandRing'], strict=False):
             pm.rename(jnt, name)
-        for jnt, name in zip(right_hand_pinky_joint_list, self.human_ik_joint_dict['RightHandPinky']):
+        for jnt, name in zip(right_hand_pinky_joint_list, self.human_ik_joint_dict['RightHandPinky'], strict=False):
             pm.rename(jnt, name)
 
     # def test(self):

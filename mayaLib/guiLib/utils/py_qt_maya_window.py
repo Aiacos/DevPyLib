@@ -66,7 +66,7 @@ class PyQtMayaWindow(QtWidgets.QMainWindow):
             None
         """
         # Initialize the superclass (QMainWindow)
-        super(PyQtMayaWindow, self).__init__(parent or get_maya_main_window())
+        super().__init__(parent or get_maya_main_window())
 
         # Set the window title
         self.setWindowTitle("PyQt Window")

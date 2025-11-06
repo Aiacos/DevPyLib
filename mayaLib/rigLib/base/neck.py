@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence, cast
+from collections.abc import Sequence
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -172,7 +173,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         }
 
 
-setattr(Neck, 'getModuleDict', Neck.get_module_dict)
+Neck.getModuleDict = Neck.get_module_dict
 
 if __name__ == "__main__":
     raise SystemExit('Invoke within Maya to construct neck rigs.')

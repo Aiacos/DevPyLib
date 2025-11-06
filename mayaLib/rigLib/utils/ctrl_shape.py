@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import functools
 import json
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Iterable, Sequence
 
 import pymel.core as pm
 from maya import OpenMaya

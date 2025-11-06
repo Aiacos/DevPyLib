@@ -91,7 +91,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         pm.connectAttr(distance_shape.distance, multiply_divide.input1X, f=True)
 
         total_distance = 0.0
-        for start, end in zip(joint_nodes[:-1], joint_nodes[1:]):
+        for start, end in zip(joint_nodes[:-1], joint_nodes[1:], strict=False):
             total_distance += util.get_distance(start, end)
         multiply_divide.input2X.set(total_distance if total_distance else 1.0)
 

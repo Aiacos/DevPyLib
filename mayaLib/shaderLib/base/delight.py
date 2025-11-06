@@ -1,4 +1,4 @@
-"""Create 3Delight Principled shader
+"""Create 3Delight Principled shader.
 
 Attributes:
     diffuse (str): Color attribute name
@@ -27,7 +27,7 @@ from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
 class Principled3dl(ShaderBase):
-    """Create 3Delight Principled shader"""
+    """Create 3Delight Principled shader."""
 
     diffuse = 'color'
     subsurface = None
@@ -43,7 +43,7 @@ class Principled3dl(ShaderBase):
     normal = 'disp_normal_bump_value'
 
     def __init__(self, shader_name, folder, shader_textures, shader_type='dlPrincipled', standard=True, shading_engine=None):
-        """Create 3Delight Principled shader
+        """Create 3Delight Principled shader.
 
         Args:
             shader_name (str): Geo or Texture set name
@@ -70,7 +70,7 @@ class Principled3dl(ShaderBase):
             self.connect_textures_3dl(shader_textures)
 
     def connect_textures_3dl(self, textures):
-        """Connect textures to 3Delight Principled shader
+        """Connect textures to 3Delight Principled shader.
 
         Args:
             textures (list): Texture list (List of String/Path)
@@ -97,7 +97,7 @@ class Principled3dl(ShaderBase):
                 self.connect_displace_3dl(self.shader_name, tex)
 
     def create_file_node_3dl(self, path, name, color=True):
-        """Create 3Delight texture node
+        """Create 3Delight texture node.
 
         Args:
             path (str): Texture folder path
@@ -126,29 +126,29 @@ class Principled3dl(ShaderBase):
         return plug
 
     def connect_color_3dl(self, texture, slot_name):
-        """Connect color texture to 3Delight Principled shader
+        """Connect color texture to 3Delight Principled shader.
 
         Args:
             texture (str): Texture name
             slot_name (str): Shader slot name
         """
         texture_node = self.create_file_node_3dl(self.folder, texture, color=True)
-        pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(texture_node, f'{self.shader}.{slot_name}')
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_noncolor_3dl(self, texture, slot_name):
-        """Connect non-color texture to 3Delight Principled shader
+        """Connect non-color texture to 3Delight Principled shader.
 
         Args:
             texture (str): Texture name
             slot_name (str): Shader slot name
         """
         texture_node = self.create_file_node_3dl(self.folder, texture, color=False)
-        pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(texture_node, f'{self.shader}.{slot_name}')
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_normal_3dl(self, texture, slot_name=normal, directx_normal=True):
-        """Connect normal texture to 3Delight Principled shader
+        """Connect normal texture to 3Delight Principled shader.
 
         Args:
             texture (str): Texture name
@@ -156,7 +156,7 @@ class Principled3dl(ShaderBase):
             directx_normal (bool): Use DirectX normal (Default: True)
         """
         texture_node = self.create_file_node_3dl(self.folder, texture, color=True)
-        pm.connectAttr(texture_node, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(texture_node, f'{self.shader}.{slot_name}')
         texture_node.node().textureFile_meta_colorspace.set('linear')
 
         if directx_normal:
@@ -167,7 +167,7 @@ class Principled3dl(ShaderBase):
         pm.connectAttr(self.place_node.outUV, texture_node.node().uvCoord, f=True)
 
     def connect_normal(self, texture, slot_name, colorspace=False, directx_normal=True):
-        """Connect normal texture to 3Delight Principled shader
+        """Connect normal texture to 3Delight Principled shader.
 
         Args:
             texture (str): Texture name
@@ -183,10 +183,10 @@ class Principled3dl(ShaderBase):
         else:
             self.shader.disp_normal_bump_type.set(2)
 
-        pm.connectAttr(file_node.outColor, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(file_node.outColor, f'{self.shader}.{slot_name}')
 
     def connect_textures(self, textures):
-        """Connect textures to 3Delight Principled shader
+        """Connect textures to 3Delight Principled shader.
 
         Args:
             textures (list): Texture list (List of String/Path)

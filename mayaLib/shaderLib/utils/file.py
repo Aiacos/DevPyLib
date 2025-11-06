@@ -6,12 +6,13 @@ and texture file organization.
 
 __author__ = 'Lorenzo Argentieri'
 
+import contextlib
 import os
 
 import pymel.core as pm
 
 
-class TextureFile(object):  # ToDo: move in util?
+class TextureFile:  # ToDo: move in util?
     """Class to handle texture files."""
 
     def __init__(self, path, filename):
@@ -42,7 +43,7 @@ class TextureFile(object):  # ToDo: move in util?
         # self.texture_list.append()
 
     def get_channels(self):
-        """Return a list of channel name that the texture has
+        """Return a list of channel name that the texture has.
 
         The channel name is the last part of the filename, before the extension.
         For example, if the filename is "myTexture_diffuse.1001.exr", the channel
@@ -57,8 +58,8 @@ class TextureFile(object):  # ToDo: move in util?
             return self.mesh, self.channel, self.texture_set, self.ext
 
 
-class TextureFileManager(object):
-    """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set"""
+class TextureFileManager:
+    """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set."""
 
     def __init__(self, dirname=pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/', ext='exr'):
         """Initialize the TextureFileManager object.
@@ -130,10 +131,8 @@ class TextureFileManager(object):
         for geo_key in list(geo_dict.keys()):
             for textureset_key in list(material_dict.keys()):
                 if d[geo_key][textureset_key]['Diffuse'] == {}:
-                    try:
+                    with contextlib.suppress(KeyError):
                         d[geo_key].pop(textureset_key)
-                    except KeyError:
-                        pass
         return d
 
     def get_path(self):
@@ -144,4 +143,4 @@ class TextureFileManager(object):
 if __name__ == "__main__":
     path = 'testPath'
     test_dict = TextureFileManager()  # PATH
-    print((test_dict.texture_dict))
+    print(test_dict.texture_dict)

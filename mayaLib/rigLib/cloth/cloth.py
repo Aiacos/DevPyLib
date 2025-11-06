@@ -10,7 +10,7 @@ import pymel.core as pm
 from mayaLib.rigLib.utils import dynamic
 
 
-class Cloth(object):
+class Cloth:
     """Cloth simulation setup class.
 
     Attributes:
@@ -129,7 +129,7 @@ class Cloth(object):
         # mel.eval('polySelectContraint -dis;')
 
         # Grow the selection by a specified amount
-        for i in range(grow_selection):
+        for _i in range(grow_selection):
             mel.eval("select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;")
 
         # Invert the selection

@@ -13,7 +13,7 @@ The functions support:
 
 from __future__ import annotations
 
-from typing import Any, Tuple
+from typing import Any
 
 __all__ = ['resolve_required', 'resolve_optional']
 
@@ -21,7 +21,7 @@ __all__ = ['resolve_required', 'resolve_optional']
 def resolve_required(
     value: Any,
     legacy_kwargs: dict[str, Any],
-    legacy_keys: Tuple[str, ...],
+    legacy_keys: tuple[str, ...],
     label: str,
 ) -> Any:
     """Resolve a required parameter supporting legacy keyword arguments.
@@ -66,7 +66,7 @@ def resolve_required(
 def resolve_optional(
     value: Any,
     legacy_kwargs: dict[str, Any],
-    legacy_keys: Tuple[str, ...],
+    legacy_keys: tuple[str, ...],
     default: Any,
 ) -> Any:
     """Resolve an optional parameter supporting legacy keyword arguments.

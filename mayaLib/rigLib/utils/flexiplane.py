@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from string import ascii_letters
-from typing import Iterable
 
 import pymel.core as pm
 

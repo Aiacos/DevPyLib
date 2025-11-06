@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence, cast
+from collections.abc import Sequence
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -129,10 +130,10 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             chain_controls.append(ctrl)
 
         if fk_parenting:
-            for control_a, control_b in zip(chain_controls[1:], chain_controls[:-1]):
+            for control_a, control_b in zip(chain_controls[1:], chain_controls[:-1], strict=False):
                 pm.parent(control_a.Off, control_b.C)
 
-        for cluster, ctrl in zip(clusters, chain_controls):
+        for cluster, ctrl in zip(clusters, chain_controls, strict=False):
             pm.parent(cluster, ctrl.C)
 
         pm.parentConstraint(self.base_attach_group, chain_controls[0].Off, mo=True)

@@ -11,7 +11,7 @@ import pymel.core as pm
 from mayaLib.rigLib.utils import name
 
 
-class Scapula():
+class Scapula:
     """Scapula (shoulder blade) IK rig setup utility.
 
     Automates the creation of a scapula IK system that connects spine, shoulder, and
@@ -29,7 +29,7 @@ class Scapula():
         """Create scapula IK
         :param spine_jnt: str
         :param shoulder_jnt: str
-        :param scapula_shoulder_jnt: str
+        :param scapula_shoulder_jnt: str.
         """
         # get side and name
         side = name.get_side(scapula_shoulder_jnt)

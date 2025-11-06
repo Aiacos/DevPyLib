@@ -16,8 +16,7 @@ from mayaLib.fluidLib.utility import density_color
 
 
 class WispySmoke(BaseFluid):
-    """Wispy Smoke Preset
-    """
+    """Wispy Smoke Preset."""
 
     def __init__(self, fluid_name='', base_res=32, emit_obj=None):
         """Initializes the WispySmoke class with fluid properties.
@@ -101,8 +100,7 @@ class WispySmoke(BaseFluid):
 
 
 class ThickSmoke(BaseFluid):
-    """Thick Smoke Preset
-    """
+    """Thick Smoke Preset."""
 
     def __init__(self, fluid_name='', base_res=32, emit_obj=None):
         """Initializes the ThickSmoke class with fluid properties.

@@ -122,7 +122,6 @@ class InstallLibrary:
             libName (str): Name of the library.
             libDir (pathlib.Path): Path to the library installation.
         """
-
         self.lib_url = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
         self.home_user = pathlib.Path.home()
 
@@ -172,7 +171,6 @@ class InstallLibrary:
         Returns:
             bool: True if successful, False if not.
         """
-
         try:
             print("Cloning: ", git_url, " in folder: ", self.lib_dir)
             git.Repo.clone_from(git_url, self.lib_dir)
@@ -209,7 +207,6 @@ class InstallLibrary:
             bool: True if the entries were successfully added, False if the entries already exist or
                   if there was any error during the process.
         """
-
         # Cross-platform Maya.env path detection
         maya_version = str(pm.about(version=True))
         current_platform = platform.system()
@@ -231,7 +228,7 @@ class InstallLibrary:
 
         try:
             if os.path.exists(maya_env_path):
-                with open(maya_env_path, 'r', encoding='utf-8') as f:
+                with open(maya_env_path, encoding='utf-8') as f:
                     lines = f.readlines()
                     if maya_app_dir in lines:
                         print("string " + maya_app_dir + " already present in Maya.env")
@@ -242,7 +239,7 @@ class InstallLibrary:
             else:
                 print("Maya.env file not found")
                 return False
-        except (IOError, OSError) as e:
+        except OSError as e:
             print(f"Error while reading Maya.env: {e}")
             return False
 
@@ -255,7 +252,7 @@ class InstallLibrary:
             else:
                 print("Maya.env file not found")
                 return False
-        except (IOError, OSError) as e:
+        except OSError as e:
             print(f"Error while writing to Maya.env: {e}")
             return False
 
@@ -270,8 +267,7 @@ class InstallLibrary:
             self.lib_dir (str): The development path if dev_path is provided.
             self.install_command (str): The installation command constructed based on the library directory, name, and port.
         """
-
-        self.dev_mode = True if dev_path != '' else False
+        self.dev_mode = dev_path != ''
 
         if dev_path:
             self.lib_dir = dev_path
@@ -322,7 +318,6 @@ class InstallLibrary:
         Returns:
             None
         """
-
         self.uninstall()
         if not self.dev_mode:
             self.download()
@@ -347,10 +342,9 @@ class InstallLibrary:
         user_setup_path = self.maya_script_path
         file_name = 'userSetup.py'
         file_path = pathlib.Path(user_setup_path) / file_name
-        if user_setup_path.is_dir():
-            if file_path.exists():
-                script = file_path.read_text(encoding='utf-8')
-                file_path.write_text(script.replace(self.install_command, ''), encoding='utf-8')
+        if user_setup_path.is_dir() and file_path.exists():
+            script = file_path.read_text(encoding='utf-8')
+            file_path.write_text(script.replace(self.install_command, ''), encoding='utf-8')
 
         self.delete()
 
@@ -390,7 +384,6 @@ class InstallLibrary:
         Returns:
             None
         """
-
         download_dir = pathlib.Path(self.maya_script_path)
         zip_path = download_dir / zip_filename
         extracted_dir = download_dir / 'DevPyLib-master'
@@ -407,7 +400,7 @@ class InstallLibrary:
         try:
             urllib.request.urlretrieve(self.lib_url, str(zip_path), self.reporthook)
             print(f"Downloaded to: {zip_path}")
-        except (urllib.error.URLError, IOError) as e:
+        except (OSError, urllib.error.URLError) as e:
             print(f"Error downloading file: {e}")
             return
 
@@ -416,7 +409,7 @@ class InstallLibrary:
             with zipfile.ZipFile(str(zip_path), 'r') as zip_ref:
                 zip_ref.extractall(str(download_dir))
             print(f"Extracted to: {download_dir}")
-        except (zipfile.BadZipFile, IOError) as e:
+        except (OSError, zipfile.BadZipFile) as e:
             print(f"Error extracting zip file: {e}")
             return
 
@@ -438,7 +431,6 @@ class InstallLibrary:
         Returns:
             None
         """
-
         delete_dir = pathlib.Path(self.maya_script_path) / 'DevPyLib-master'
 
         if delete_dir.exists():

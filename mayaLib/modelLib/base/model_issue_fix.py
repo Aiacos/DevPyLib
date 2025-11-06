@@ -1,4 +1,4 @@
-"""modelIssueFix.py
+"""modelIssueFix.py.
 ================
 
 This module provides a class `ModelFix` that can be used to fix various issues
@@ -13,7 +13,7 @@ to get the list of components that have the issue.
 
 The module also provides some functions to fix the issues.
 
-Example
+Example:
 -------
 
 .. code-block:: python
@@ -250,7 +250,7 @@ def remove_invalid_components(geo, query=True):
             'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
 
 
-class ModelFix():
+class ModelFix:
     """Class to fix common modeling issues in Maya.
 
     Attributes:
@@ -430,6 +430,6 @@ class ModelFix():
 if __name__ == "__main__":
     geo_list = list_objects_under_group(pm.ls(sl=True)[0])
     for geo in geo_list:
-        print((geo.name()))
+        print(geo.name())
         model_fix = ModelFix(geo)
         model_fix.auto_fix()

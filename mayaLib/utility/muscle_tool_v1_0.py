@@ -492,9 +492,8 @@ def remove_constraint(arg=None):
     all_n_components = mc.ls(type='nComponent')
     for this in sel:
         for each in all_n_components:
-            if mc.objExists(each):
-                if this in mc.listHistory(each):
-                    mc.delete(each)
+            if mc.objExists(each) and this in mc.listHistory(each):
+                mc.delete(each)
 
 def rest_length_scale_box(arg=None):
     """Update rest length scale value based on checkbox state.

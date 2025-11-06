@@ -48,7 +48,7 @@ class FootRoll:
             )[0]
             self.ball_ik_handles.append(ball_ik)
 
-        for toe_joint, ball_joint in zip(toe_end_joint_list, ball_joint_list):
+        for toe_joint, ball_joint in zip(toe_end_joint_list, ball_joint_list, strict=False):
             prefix = name.remove_suffix(toe_joint)
             toe_ik = pm.ikHandle(
                 n=f'{prefix}Fng_IKH', sj=ball_joint, ee=toe_joint

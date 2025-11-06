@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Tuple, cast
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -14,7 +14,7 @@ __all__ = ['Base', 'Module']
 def _resolve_optional(
     value: Any,
     legacy_kwargs: dict[str, Any],
-    legacy_keys: Tuple[str, ...],
+    legacy_keys: tuple[str, ...],
     default: Any,
 ) -> Any:
     """Resolve an optional parameter supporting legacy keyword arguments."""
@@ -29,7 +29,7 @@ def _resolve_optional(
 def _resolve_required(
     value: Any,
     legacy_kwargs: dict[str, Any],
-    legacy_keys: Tuple[str, ...],
+    legacy_keys: tuple[str, ...],
     label: str,
 ) -> Any:
     """Resolve a required parameter supporting legacy keyword arguments."""
@@ -178,7 +178,7 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         default_visibility = [1, 0]
 
         for attr_name, obj, default in zip(
-            main_visibility_attrs, main_objects, default_visibility
+            main_visibility_attrs, main_objects, default_visibility, strict=False
         ):
             pm.addAttr(
                 self.global_control.get_control(),
@@ -196,7 +196,7 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
                 f'{obj}.v',
             )
 
-        for attr_name, obj in zip(main_display_attrs, main_objects):
+        for attr_name, obj in zip(main_display_attrs, main_objects, strict=False):
             pm.addAttr(
                 self.global_control.get_control(),
                 ln=attr_name,

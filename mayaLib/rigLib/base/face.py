@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable, cast
+from collections.abc import Iterable
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -163,7 +164,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         )
 
         follicle_list = []
-        for locator, cluster in zip(full_locator_list, full_cluster_list):
+        for locator, cluster in zip(full_locator_list, full_cluster_list, strict=False):
             ctrl = control.Control(
                 prefix=str(locator.name()).replace('_LOC', ''),
                 translate_to=locator,

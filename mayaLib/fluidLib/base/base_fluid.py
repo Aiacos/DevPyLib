@@ -13,7 +13,7 @@ import mayaLib.fluidLib.base.base_container
 import mayaLib.fluidLib.base.base_emitter
 
 
-class BaseFluid(object):
+class BaseFluid:
     """Class for creating and managing a fluid container and emitter.
 
     Attributes:
@@ -92,8 +92,7 @@ class BaseFluid(object):
         self.fluid_shape.selfShadowing.set(1)
 
     def setup_emitter(self):
-        """Sets up the fluid emitter node.
-        """
+        """Sets up the fluid emitter node."""
         pass
 
     def old_creator(self, fluid_name):

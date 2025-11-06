@@ -71,10 +71,7 @@ def add_attachment(source, dest, value, fixed=True):
     pm.select(source)
     pm.select(dest, add=True)
 
-    if fixed:
-        current_z_attachment = ziva_fixed_attachment()
-    else:
-        current_z_attachment = ziva_sliding_attachment(6)
+    current_z_attachment = ziva_fixed_attachment() if fixed else ziva_sliding_attachment(6)
 
     paint_proximity(current_z_attachment, 0.0001, value)
 

@@ -12,7 +12,7 @@ from mayaLib.shaderLib import shader
 from mayaLib.shaderLib.utils import file, texture_ext_path
 
 
-class ShadersManager():
+class ShadersManager:
     """Automatic shader manager for workspace textures.
 
     Scans a texture directory for organized texture sets, creates appropriate shaders
@@ -42,7 +42,6 @@ class ShadersManager():
         Assigns shaders to the corresponding geometry if autoAssignShader is True.
         Also handles texture file format conversion based on the active renderer.
         """
-
         # See active Renderer
         self.render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)

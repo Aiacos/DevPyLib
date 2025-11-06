@@ -424,14 +424,14 @@ class ZivaSkin(ZivaBase):
                     fixed=True,
                 )
 
-            for fascia_geo, fat_geo in zip(self.fascia_list, self.fat_list):
+            for fascia_geo, fat_geo in zip(self.fascia_list, self.fat_list, strict=False):
                 attachment.add_attachment(
                     fascia_geo, fat_geo, value=attachment_radius, fixed=True
                 )
 
         # Wrap geo
         wrap_geo_list = []
-        for fat_geo, skin_geo in zip(self.fat_list, self.skin_list):
+        for fat_geo, skin_geo in zip(self.fat_list, self.skin_list, strict=False):
             wrap_geo = pm.duplicate(
                 skin_geo, n=str(skin_geo.name()).replace("_geo", "wrap_msh")
             )[-1]
@@ -444,7 +444,7 @@ class ZivaSkin(ZivaBase):
 
         self.wrap_grp = pm.group(wrap_geo_list, n="wrap_grp")
 
-        super(ZivaSkin, self).__init__(
+        super().__init__(
             character,
             rig_type="skin",
             solver_scale=solver_scale,

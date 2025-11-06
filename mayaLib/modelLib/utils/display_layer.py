@@ -31,4 +31,4 @@ if __name__ == "__main__":
     # Iterate over all display layers, set their color to 3, and print the objects they contain.
     for layer in list_all_display_layer():
         print(('Layer: ', layer.color.set(3)))
-        print((get_objects_in_display_layer(layer)))
+        print(get_objects_in_display_layer(layer))

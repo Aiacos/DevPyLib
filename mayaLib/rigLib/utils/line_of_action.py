@@ -16,7 +16,7 @@ def vector_diff(v1, v2):
     Returns:
         float: The difference vector between the two vectors.
     """
-    return [a - b for a, b in zip(v1, v2)]
+    return [a - b for a, b in zip(v1, v2, strict=False)]
 
 
 def vector_length(v):
@@ -643,7 +643,6 @@ def create_all_lines_of_action(
         loa_grp: Name of the group for the line of action curves.
         cv_list: List of names for the line of action curves.
     """
-
     geos = list(geos) if geos else []
     if not geos:
         muscle_groups = pm.ls("muscle_grp")

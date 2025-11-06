@@ -1,4 +1,4 @@
-"""Create PxrDisneyBSDF shader
+"""Create PxrDisneyBSDF shader.
 
 This class creates a PxrDisneyBSDF shader, assigns the shader to the object
 and connects the textures to the shader.
@@ -11,7 +11,7 @@ from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
 class PxrDisneyBSDF(ShaderBase):
-    """Create PxrDisneyBSDF shader
+    """Create PxrDisneyBSDF shader.
 
     This class creates a PxrDisneyBSDF shader, assigns the shader to the object
     and connects the textures to the shader.
@@ -42,7 +42,7 @@ class PxrDisneyBSDF(ShaderBase):
     normal = 'bumpNormal'
 
     def __init__(self, shader_name, folder, shader_textures, shader_type='PxrDisneyBsdf', standard=True, shading_engine=None):
-        """Initialize the class
+        """Initialize the class.
 
         Args:
             shader_name (str): Name of the shader
@@ -68,7 +68,7 @@ class PxrDisneyBSDF(ShaderBase):
             self.connect_textures_renderman(shader_textures)
 
     def connect_textures_renderman(self, textures):
-        """Connect textures to the shader
+        """Connect textures to the shader.
 
         Args:
             textures (list): List of textures
@@ -95,7 +95,7 @@ class PxrDisneyBSDF(ShaderBase):
                 self.connect_displace_renderman(self.shader_name, tex)
 
     def create_file_node_renderman(self, path, name, linearize=True):
-        """Create a file node
+        """Create a file node.
 
         Args:
             path (str): Path of the texture
@@ -116,27 +116,27 @@ class PxrDisneyBSDF(ShaderBase):
         return pxrtexture_node
 
     def connect_color_renderman(self, texture, slot_name):
-        """Connect a color texture to the shader
+        """Connect a color texture to the shader.
 
         Args:
             texture (str): Name of the texture
             slot_name (str): Name of the attribute
         """
         pxrtexture_node = self.create_file_node(self.folder, texture, linearize=True)
-        pm.connectAttr(pxrtexture_node.resultRGB, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(pxrtexture_node.resultRGB, f'{self.shader}.{slot_name}')
 
     def connect_noncolor_renderman(self, texture, slot_name):
-        """Connect a non color texture to the shader
+        """Connect a non color texture to the shader.
 
         Args:
             texture (str): Name of the texture
             slot_name (str): Name of the attribute
         """
         pxrtexture_node = self.create_file_node(self.folder, texture, linearize=False)
-        pm.connectAttr(pxrtexture_node.resultA, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(pxrtexture_node.resultA, f'{self.shader}.{slot_name}')
 
     def connect_normal_renderman(self, texture, slot_name=normal, directx_normal=True):
-        """Connect a normal texture to the shader
+        """Connect a normal texture to the shader.
 
         Args:
             texture (str): Name of the texture
@@ -153,10 +153,10 @@ class PxrDisneyBSDF(ShaderBase):
 
         pm.connectAttr(pxrtexture_node.resultRGB, self.pxrnormalmap_node.inputRGB)
 
-        pm.connectAttr(self.pxrnormalmap_node.resultN, '%s.%s' % (self.shader, slot_name))
+        pm.connectAttr(self.pxrnormalmap_node.resultN, f'{self.shader}.{slot_name}')
 
     def connect_displace_renderman(self, shader_name, texture):
-        """Connect a displacement texture to the shader
+        """Connect a displacement texture to the shader.
 
         Args:
             shader_name (str): Name of the shader
@@ -176,7 +176,7 @@ class PxrDisneyBSDF(ShaderBase):
         return pxr_displace
 
     def connect_textures(self, textures):
-        """Connect a list of textures to the shader
+        """Connect a list of textures to the shader.
 
         Args:
             textures (list): List of texture paths

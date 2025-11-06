@@ -15,7 +15,6 @@ def ak_rope():
 
     Script by Andrey Kanin, Version 12.0, Date: 21.05.2013.
     """
-
     win = "ROPE"
     if pm.window(win, exists=1):
         pm.deleteUI(win)
@@ -205,10 +204,10 @@ def rp_create_control(s, i):
         list: Control transform and group names.
     """
     ct = []
-    cct = pm.circle(ch=0, nr=(1, 0, 0), r=1, d=3, n=(s[0] + "_" + str((i + 1)) + "_CT"))
+    cct = pm.circle(ch=0, nr=(1, 0, 0), r=1, d=3, n=(s[0] + "_" + str(i + 1) + "_CT"))
     ct[0] = cct[0]
     print(ct)
-    ct[1] = str(pm.group(ct[0], n=("ctGrp_" + s[0] + "_" + str((i + 1)))))
+    ct[1] = str(pm.group(ct[0], n=("ctGrp_" + s[0] + "_" + str(i + 1))))
     pm.setAttr((ct[0] + "Shape.ove"),
                1)
     pm.setAttr((ct[0] + "Shape.ovc"),
@@ -285,7 +284,7 @@ def rp_cr():
     for i in range(0, nj):
         t = (pm.xform((ds + ".cv[" + str(i) + "]"),
                       q=1, ws=1, t=1))
-        sj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=1, n=(s[0] + "_tw_" + str((i + 1)))))
+        sj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=1, n=(s[0] + "_tw_" + str(i + 1))))
         pm.setAttr((sj[i] + ".ro"),
                    3)
 
@@ -310,7 +309,7 @@ def rp_cr():
         for i in range(0, (len(cv))):
             t = (pm.xform(cv[i], q=1, ws=1, t=1))
             pm.select(cl=1)
-            cj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=2, n=(s[0] + "_ctj_" + str((i + 1)))))
+            cj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=2, n=(s[0] + "_ctj_" + str(i + 1))))
             pm.setAttr((cj[i] + ".ro"),
                        3)
 
@@ -336,7 +335,7 @@ def rp_cr():
         for i in range(0, ncj):
             t = (pm.xform(sj[(i * pcj)], q=1, ws=1, t=1))
             pm.select(cl=1)
-            cj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=2, n=(s[0] + "_ctj_" + str((i + 1)))))
+            cj[i] = str(pm.joint(p=((t.x), (t.y), (t.z)), rad=2, n=(s[0] + "_ctj_" + str(i + 1))))
             pm.setAttr((cj[i] + ".ro"),
                        3)
             pm.parentConstraint(sj[(i * pcj)], cj[i], w=1)
@@ -384,7 +383,7 @@ def rp_cr():
 
             scg = []
             for i in range(0, p):
-                scg[i] = str(pm.group(em=1, n=("scGrp_" + s[0] + "_" + str((i + 1)))))
+                scg[i] = str(pm.group(em=1, n=("scGrp_" + s[0] + "_" + str(i + 1))))
                 scgpc = pm.parentConstraint(c[i + (2 * i)], scg[i], w=1)
                 pm.delete(scgpc[0])
                 pm.makeIdentity(scg[i], a=1, t=1)
@@ -466,7 +465,7 @@ def rp_cr():
     pm.ToggleLocalRotationAxes()
     pm.select(s[0])
     pm.mel.rp_Twist()
-    print((" :) > rope riging curve > " + s[0] + "\n"))
+    print(" :) > rope riging curve > " + s[0] + "\n")
 
 
 def rp_mixTwist():
@@ -571,9 +570,9 @@ def rp_grip():
         cj = pm.ls((s[0] + "_tw_*"),
                    typ="joint")
         for y in range(0, (len(cj))):
-            if pm.objExists("ctgrp_" + s[0] + "_grip" + str((y + 1))) == 0:
-                ct = pm.circle(ch=0, nr=(1, 0, 0), r=0.8, d=3, n=("CT_" + s[0] + "_grip" + str((y + 1))))
-                ctg = str(pm.group(ct[0], n=("ctgrp_" + s[0] + "_grip" + str((y + 1)))))
+            if pm.objExists("ctgrp_" + s[0] + "_grip" + str(y + 1)) == 0:
+                ct = pm.circle(ch=0, nr=(1, 0, 0), r=0.8, d=3, n=("CT_" + s[0] + "_grip" + str(y + 1)))
+                ctg = str(pm.group(ct[0], n=("ctgrp_" + s[0] + "_grip" + str(y + 1))))
                 pm.parent(ctg,
                           (s[0] + "_rig"))
                 pm.setAttr((ct[0] + ".tx"),

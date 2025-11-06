@@ -10,7 +10,7 @@ import maya.mel as mel
 import pymel.core as pm
 
 
-class AutoUV():
+class AutoUV:
     """Automatic UV unwrapping and optimization tool.
 
     Streamlines the complete UV workflow by automating projection, seam creation,
@@ -100,7 +100,7 @@ class AutoUV():
         u_min = 0
         v_max = 1
         v_min = 0
-        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True)):
+        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True), strict=False):
             u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
 
             if i > 0:
@@ -136,7 +136,7 @@ class AutoUV():
         uvs = pm.polyListComponentConversion(shell, tuv=True)
         uv_tile_range = []
 
-        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True)):
+        for _i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True), strict=False):
             u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
 
             u_max = int(u) + 1

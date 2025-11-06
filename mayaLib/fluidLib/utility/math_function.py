@@ -41,10 +41,7 @@ def laplace_distribution(x, beta=0.5, mu=0.5):
     Returns:
         float: The output value.
     """
-    if x >= mu:
-        tmp = x - mu
-    else:
-        tmp = mu - x
+    tmp = x - mu if x >= mu else mu - x
 
     core = -1 * (tmp / beta)
     y = (math.e * core) / (2 * beta)

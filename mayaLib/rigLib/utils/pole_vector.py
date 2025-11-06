@@ -9,7 +9,7 @@ __author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 
-class PoleVector():
+class PoleVector:
     """Automatic pole vector locator creation and positioning for IK chains.
 
     Automatically creates and positions a pole vector locator for IK handles based on
@@ -42,11 +42,10 @@ class PoleVector():
             self.pole_vector, self.pole_vector_grp = self.connect_pole_vector(ik_handle)
 
     def create_pv(self, ik_handle):
-        '''Create a Locator in a correct plane to usa as Pole Vector
+        """Create a Locator in a correct plane to usa as Pole Vector
         :param ik_handle: select an ik_handle
-        :return: grupped locator
-        '''
-
+        :return: grupped locator.
+        """
         ik_handle_name = ik_handle.name()
         sel_joints = ik_handle.getJointList()
         pm.select(sel_joints[-1])
@@ -72,11 +71,10 @@ class PoleVector():
         return pole_vector_group
 
     def get_joint_distance(self, ik_handle):
-        '''Return the length of ik_handle
+        """Return the length of ik_handle
         :param ik_handle: select an ik_handle
-        :return: Return the length of ik_handle
-        '''
-
+        :return: Return the length of ik_handle.
+        """
         # Put all three joints in a variable based on a selected ik_handle
         sel_joints = ik_handle.getJointList()
         pm.select(sel_joints[-1])

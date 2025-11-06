@@ -10,7 +10,7 @@ import maya
 import pymel.core as pm
 
 
-class Menu():
+class Menu:
     """Maya menu creation and management utility.
 
     Provides a high-level interface for creating Maya menus and menu items with
@@ -30,7 +30,7 @@ class Menu():
     g_main_window = maya.mel.eval('$tmpVar=$gMainWindow')
 
     def __init__(self, menu_name='test', parent=g_main_window):
-        """Construct a Menu Object
+        """Construct a Menu Object.
 
         Args:
             menu_name (str): The name of the menu to be created
@@ -41,7 +41,7 @@ class Menu():
         self.item = {}
 
     def __del__(self):
-        """Delete the menu when the class is deleted
+        """Delete the menu when the class is deleted.
 
         This method is called when the class is deleted. It removes the menu
         from Maya's menu bar.
@@ -76,7 +76,7 @@ class Menu():
         return ret_parent.rpartition('|')[-1]
 
     def add_menu_check_box(self, item_name, cmd, parent=None):
-        """Bind function to menuItem
+        """Bind function to menuItem.
 
         Args:
             item_name (str): Label for menuItem
@@ -96,7 +96,7 @@ class Menu():
         return ret_parent.rpartition('|')[-1]
 
     def add_submenu(self, submenu_name, parent=None):
-        """Add sub menu container
+        """Add sub menu container.
 
         Args:
             submenu_name (str): Label for Sub_menuItem

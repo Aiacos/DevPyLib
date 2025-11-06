@@ -12,8 +12,7 @@ from mayaLib.fluidLib.utility import density_color, math_function
 
 
 class Fire(BaseFluid):
-    """Fire Preset
-    """
+    """Fire Preset."""
 
     def __init__(self, fluid_name='', base_res=32, emit_obj=None):
         """Constructor for the Fire class.

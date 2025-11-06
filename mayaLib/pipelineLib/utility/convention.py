@@ -6,8 +6,8 @@ naming conventions.
 
 __author__ = 'Lorenzo Argentieri'
 
-class Convention():
-    """Class to manage naming conventions of Maya assets
+class Convention:
+    """Class to manage naming conventions of Maya assets.
 
     Attributes:
         separator (str): separator used in names
@@ -36,7 +36,7 @@ class Convention():
                  joint='JNT',
                  ik_handle='IKH',
                  control='CTRL'):
-        """Init Convention
+        """Init Convention.
 
         Args:
             uppercase (bool): if True, all tags will be upper case
@@ -94,7 +94,7 @@ class Convention():
                                'control': control}
 
     def to_lower(self, s):
-        """Convert a string to lower case
+        """Convert a string to lower case.
 
         Args:
             s (str): string to convert
@@ -105,7 +105,7 @@ class Convention():
         return s.lower()
 
     def to_upper(self, s):
-        """Convert a string to upper case
+        """Convert a string to upper case.
 
         Args:
             s (str): string to convert
@@ -116,11 +116,11 @@ class Convention():
         return s.upper()
 
     def convert_all_to_default(self):
-        """Convert all tags to default convention"""
+        """Convert all tags to default convention."""
         pass
 
     def convert_all_to_scene(self):
-        """Convert all tags to scene convention"""
+        """Convert all tags to scene convention."""
         pass
 
 

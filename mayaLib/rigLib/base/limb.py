@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence, cast
+from collections.abc import Sequence
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -354,7 +355,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
 
     for ik_handle, toe_ctrl in zip(
         foot_roll_instance.get_ik_finger_list(),
-        toe_ik_controls,
+        toe_ik_controls, strict=False,
     ):
         pm.parentConstraint(toe_ctrl.get_control(), ik_handle)
 
@@ -1128,16 +1129,16 @@ class Arm(Limb):
 
 
 # Backwards compatibility aliases
-setattr(Limb, 'getMainLimbIK', Limb.get_main_limb_ik)
-setattr(Limb, 'getMainIKControl', Limb.get_main_ik_control)
-setattr(Limb, 'getModuleDict', Limb.get_module_dict)
-setattr(Limb, 'switchIKFK', Limb.switch_ik_fk)
-setattr(Limb, 'makeSimpleScapula', Limb.make_simple_scapula)
-setattr(Limb, 'makeClavicle', Limb.make_clavicle)
-setattr(Limb, 'makeDynamicScapula', Limb.make_dynamic_scapula)
-setattr(Limb, 'makeFK', Limb.make_fk)
-setattr(Limb, 'makePoleVector', Limb.make_pole_vector)
-setattr(Limb, 'makeIK', Limb.make_ik)
+Limb.getMainLimbIK = Limb.get_main_limb_ik
+Limb.getMainIKControl = Limb.get_main_ik_control
+Limb.getModuleDict = Limb.get_module_dict
+Limb.switchIKFK = Limb.switch_ik_fk
+Limb.makeSimpleScapula = Limb.make_simple_scapula
+Limb.makeClavicle = Limb.make_clavicle
+Limb.makeDynamicScapula = Limb.make_dynamic_scapula
+Limb.makeFK = Limb.make_fk
+Limb.makePoleVector = Limb.make_pole_vector
+Limb.makeIK = Limb.make_ik
 
 
 if __name__ == "__main__":

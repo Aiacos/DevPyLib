@@ -28,7 +28,7 @@ def add_sweep(cv_list, size=0.05):
     source_list = pm.listConnections(sweep_deformer.inCurveArray)
     destination_list = pm.listConnections(sweep_deformer.outMeshArray)
 
-    for source, destination in zip(source_list, destination_list):
+    for source, destination in zip(source_list, destination_list, strict=False):
         pm.rename(destination, str(source.name()) + '_sweep_geo')
 
     pm.group(destination_list, n='ctrl_curve_geo_grp')
@@ -121,7 +121,7 @@ def add_ctrl_shader(ctrl_list, brush_width=0.1, sweep=False, sample_density=24, 
                     rgb = ('R', 'G', 'B')
                     color = []
                     for channel in rgb:
-                        color_channel = pm.getAttr(str(cv.getShape().name()) + ".overrideColor%s" % channel)
+                        color_channel = pm.getAttr(str(cv.getShape().name()) + f".overrideColor{channel}")
                         color.append(color_channel)
                     rgb_color = color#pm.colorIndex(cv.getShape().overrideColor.get(), q=True)
 

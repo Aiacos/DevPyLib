@@ -30,9 +30,8 @@ def invert_selection(shape, faces):
     return pm.ls(sl=True)
 
 
-class PxrStyleCtrl():
-    """Create Geometry control like PIXAR
-    """
+class PxrStyleCtrl:
+    """Create Geometry control like PIXAR."""
 
     def __init__(self, obj, delete_old_shape_grp=True):
         """Create Pixar-style geometry-based rig controls from skinned mesh.
@@ -177,7 +176,7 @@ class PxrStyleCtrl():
         index = 0
         for vtxs in vert_list:
             vtxs = pm.PyNode(vtxs)
-            for vert in vtxs:
+            for _vert in vtxs:
                 if values[index] > threshold:
                     shape_vertex = new_shape.vtx[index]
                     delete_vert_list.append(shape_vertex)

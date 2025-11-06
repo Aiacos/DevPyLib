@@ -51,16 +51,7 @@ class UsdExportMetersSettings:
         current_unit = cmds.currentUnit(query=True, linear=True)
 
         # Set the 'unit' option based on the current Maya unit setting
-        if current_unit == "cm":
-            unit_param = "none"
-
-            # cmds.currentUnit(linear="m")
-            # cmds.optionVar(category="Settings", stringValue=("workingUnitLinear", "m"))
-
-        elif current_unit == "m":
-            unit_param = "none"
-        else:
-            unit_param = "mayaPrefs"
+        unit_param = "none" if current_unit == "cm" or current_unit == "m" else "mayaPrefs"
 
         # Split the export settings into a list of options
         parts = options.split(";")

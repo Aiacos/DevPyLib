@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence, cast
+from collections.abc import Sequence
+from typing import Any, cast
 
 import pymel.core as pm
 
@@ -252,12 +253,8 @@ class Spine:
         return create_locator_reference_positions(spine_joints, prefix=self.prefix)
 
 
-setattr(Spine, 'getModuleDict', Spine.get_module_dict)
-setattr(
-    Spine,
-    'makeControlLocatorReferencePosition',
-    Spine.make_control_locator_reference_position,
-)
+Spine.getModuleDict = Spine.get_module_dict
+Spine.makeControlLocatorReferencePosition = Spine.make_control_locator_reference_position
 
 if __name__ == "__main__":
     raise SystemExit('Invoke within Maya to construct spine rigs.')

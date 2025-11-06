@@ -82,7 +82,6 @@ class TensionMap( om2.MPxNode ):
             value (list): RGB color value as [r, g, b].
             interpolation (int): Interpolation type (1 for linear).
         """
-
         ramp_plug = om2.MPlug( parent_node, ramp_obj )
         element_plug = ramp_plug.elementByLogicalIndex(index)
         position_plug = element_plug.child(0)
@@ -247,7 +246,7 @@ def ae_template_string(node_name):
         str: MEL procedure code for the Attribute Editor template.
     """
     templ_str = ''
-    templ_str += 'global proc AE%sTemplate(string $nodeName)\n' % node_name
+    templ_str += f'global proc AE{node_name}Template(string $nodeName)\n'
     templ_str += '{\n'
     templ_str += 'editorTemplate -beginScrollLayout;\n'
     templ_str += '    editorTemplate -beginLayout "Color Remaping" -collapse 0;\n'

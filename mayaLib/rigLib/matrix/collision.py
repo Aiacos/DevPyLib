@@ -7,7 +7,7 @@ between controls and meshes using matrix operations for deformation.
 import pymel.core as pm
 
 
-class Collider(object):
+class Collider:
     """Matrix-based collision system for character rigging.
 
     Creates a collision rig using matrix operations to deform a target mesh based on

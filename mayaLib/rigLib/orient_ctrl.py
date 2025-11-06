@@ -73,7 +73,7 @@ def main_orient_ctrl():
     """
     sel1, sel2 = pm.ls(sl=True)
 
-    print((sel2.nodeType()))
+    print(sel2.nodeType())
 
     if sel2.nodeType() == 'joint':
         print('parent')

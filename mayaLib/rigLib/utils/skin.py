@@ -28,7 +28,6 @@ def get_skincluster_object():
     Returns:
         list: A list of PyNode objects that have skin clusters.
     """
-
     object_list = []
     skin_cluster_list = pm.ls(type="skinCluster")
     for skin_cluster in skin_cluster_list:
@@ -48,7 +47,6 @@ def select_skin_cluster_object():
     Returns:
         list: A list of PyNode objects that have skin clusters.
     """
-
     object_list = get_skincluster_object()
 
     pm.select(object_list)
@@ -71,7 +69,7 @@ def disable_inherits_transform_on_skin_clusters():
 
 
 def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
-    """Copy skin weight to mirrored mesh
+    """Copy skin weight to mirrored mesh.
 
     Args:
         selection (list, optional): A list of two PyNode objects. Defaults to pm.ls(sl=True).
@@ -161,7 +159,6 @@ def find_related_skin_cluster(geo):
     Returns:
         PyNode or None: The found skinCluster node, or None if no skinCluster is found.
     """
-
     skincluster = mel.eval("findRelatedSkinCluster " + geo)
     if skincluster == "" or len(pm.ls(skincluster, type="skinCluster")) == 0:
         skincluster = pm.ls(pm.listHistory(geo), type="skinCluster")
@@ -175,12 +172,11 @@ def mirror_skincluster_to_opposite_object(source_obj, destination_object):
     """Mirror Skincluster to the opposite Object
     Args:
         source_obj (string): Source Geo
-        destination_object (string):  Destination Geo
+        destination_object (string):  Destination Geo.
 
     Returns:
 
     """
-
     geo_skincluster = find_related_skin_cluster(source_obj)
     r_geo_skincluster = find_related_skin_cluster(destination_object)
 
@@ -194,12 +190,11 @@ def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
     Args:
         source_list (string[]): Objects list
         left_side (string): Left pattern
-        r_side (string): Right Pattern
+        r_side (string): Right Pattern.
 
     Returns:
 
     """
-
     for geo in pm.ls(source_list):
         r_geo = pm.ls(str(geo.name()).replace("L_", "R_"))[-1]
 
@@ -212,17 +207,16 @@ def save_skin_weights(
     sw_ext=".swt",
     do_directory=True,
 ):
-    """save weights for character geometry objects
+    """Save weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
         project_path (string): file path
         sw_ext (string): file extension
-        do_directory (bool): create directory
+        do_directory (bool): create directory.
 
     Returns:
 
     """
-
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
     if not directory.exists():
@@ -252,11 +246,11 @@ def load_skin_weights(
     project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
     sw_ext=".swt",
 ):
-    """load weights for character geometry objects
+    """Load weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
         project_path (string): file path
-        sw_ext (string): file extension
+        sw_ext (string): file extension.
 
     Returns:
 

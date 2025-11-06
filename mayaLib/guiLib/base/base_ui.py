@@ -53,7 +53,7 @@ class FunctionUI(QtWidgets.QWidget):
             func (function or class): The function or class to inspect and build the UI for.
             parent (QWidget, optional): The parent widget. Defaults to None.
         """
-        super(FunctionUI, self).__init__(parent)
+        super().__init__(parent)
 
         self.function = func
         # Retrieve the function signature using inspect
@@ -232,10 +232,7 @@ class FunctionUI(QtWidgets.QWidget):
 
             # Check if the parameter is a boolean
             if isinstance(param, QtWidgets.QCheckBox):
-                if param.isChecked():
-                    q_check_box_value = True
-                else:
-                    q_check_box_value = False
+                q_check_box_value = bool(param.isChecked())
                 value = q_check_box_value
                 param_list.append(value)
 

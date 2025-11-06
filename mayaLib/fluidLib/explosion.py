@@ -13,8 +13,7 @@ from mayaLib.fluidLib.utility import density_color
 
 
 class Explosion(BaseFluid):
-    """Explosion Preset
-    """
+    """Explosion Preset."""
 
     def __init__(self, fluid_name="", base_res=32, emit_obj=None):
         """Constructor for the Explosion class.
@@ -72,8 +71,7 @@ class Explosion(BaseFluid):
         self.fluid_emitter.detailTurbulence.set(1)
 
     def set_density(self):
-        """Set the density properties for the explosion.
-        """
+        """Set the density properties for the explosion."""
         self.fluid_container.densityScale.set(0.75)
         self.fluid_container.densityBuoyancy.set(2.5)
         self.fluid_container.densityDissipation.set(1.5)
@@ -82,8 +80,7 @@ class Explosion(BaseFluid):
         self.fluid_container.densityGradientForce.set(35)
 
     def set_velocity(self):
-        """Set the velocity properties for the explosion.
-        """
+        """Set the velocity properties for the explosion."""
         # self.fluid_container.velocitySwirl.set(6) # al frame 1
         pm.setKeyframe(self.fluid_container, attribute='velocitySwirl', time=1, value=6)
         # self.fluid_container.velocitySwirl.set(2.5) # al frame 50
@@ -91,8 +88,7 @@ class Explosion(BaseFluid):
         self.fluid_container.velocityNoise.set(1)
 
     def set_turbulence(self):
-        """Set the turbulence properties for the explosion.
-        """
+        """Set the turbulence properties for the explosion."""
         # self.fluid_container.turbulenceStrength.set(3.5) # al frame 1
         pm.setKeyframe(self.fluid_container, attribute='turbulenceStrength', time=1, value=3.5)
         # self.fluid_container.turbulenceStrength.set(0.1) # al frame 6
@@ -101,8 +97,7 @@ class Explosion(BaseFluid):
         self.fluid_container.turbulenceSpeed.set(0.5)
 
     def set_temperature(self):
-        """Set the temperature properties for the explosion.
-        """
+        """Set the temperature properties for the explosion."""
         self.fluid_container.temperatureScale.set(2.5)
 
         # self.fluid_container.buoyancy.set(1) # frame 1
@@ -125,8 +120,7 @@ class Explosion(BaseFluid):
         self.fluid_container.temperatureTension.set(1)
 
     def set_fuel(self):
-        """Set the fuel properties for the explosion.
-        """
+        """Set the fuel properties for the explosion."""
         self.fluid_container.fuelScale.set(1)
         self.fluid_container.reactionSpeed.set(0.1)
         self.fluid_container.airFuelRatio.set(8)
@@ -136,8 +130,7 @@ class Explosion(BaseFluid):
         self.fluid_container.lightReleased.set(1)
 
     def set_shading(self):
-        """Set the shading properties for the explosion.
-        """
+        """Set the shading properties for the explosion."""
         self.fluid_container.transparency.set(0.5, 0.5, 0.5, type="double3")
         self.fluid_container.glowIntensity.set(0.075)
 
