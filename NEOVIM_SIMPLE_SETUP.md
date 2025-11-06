@@ -17,21 +17,38 @@
 
 **Passo 1**: Abilita `exrc` in Neovim (una sola volta)
 
-**Per AstroNvim** (aggiungi a `~/.config/nvim/lua/user/options.lua`):
+**Per AstroNvim Template v5** (modifica `~/.config/nvim/lua/plugins/astrocore.lua`):
+
+1. Rimuovi la riga: `if true then return {} end`
+2. Aggiungi `exrc = true` nella sezione `options.opt`:
 
 ```lua
 return {
-  opt = {
-    exrc = true,  -- Abilita config locali (.nvim.lua)
-    -- NON usare secure = true (deprecato e non funziona per git repos)
+  "AstroNvim/astrocore",
+  opts = {
+    options = {
+      opt = {
+        relativenumber = true,
+        number = true,
+        spell = false,
+        signcolumn = "yes",
+        wrap = false,
+        exrc = true,  -- <-- AGGIUNGI QUESTA RIGA
+      },
+    },
   },
 }
 ```
 
+**Alternativa**: Usa `~/.config/nvim/lua/polish.lua`
+
+1. Rimuovi la riga: `if true then return end`
+2. Aggiungi: `vim.opt.exrc = true`
+
 **Per Neovim standard** (aggiungi a `~/.config/nvim/init.lua`):
 
 ```lua
-vim.o.exrc = true  -- Abilita config locali
+vim.opt.exrc = true  -- Abilita config locali
 -- NON usare secure = true (deprecato)
 ```
 
@@ -323,8 +340,8 @@ Riavvia Neovim → funziona automaticamente per DevPyLib!
 
 ```bash
 # 1. Aggiungi a config Neovim (una sola volta):
-#    - AstroNvim: ~/.config/nvim/lua/user/options.lua → exrc = true
-#    - Neovim: ~/.config/nvim/init.lua → vim.o.exrc = true
+#    - AstroNvim: ~/.config/nvim/lua/plugins/astrocore.lua → exrc = true (in opts.options.opt)
+#    - Neovim: ~/.config/nvim/init.lua → vim.opt.exrc = true
 
 # 2. Apri file:
 nvim mayaLib/rigLib/base/module.py

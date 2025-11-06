@@ -9,15 +9,15 @@
 --   - basedpyright LSP server
 --   - exrc enabled in your config
 --
--- SETUP FOR ASTRONVIM:
---   Add to ~/.config/nvim/lua/user/options.lua:
---
---     return {
---       opt = {
+-- SETUP FOR ASTRONVIM (Template v5):
+--   Option 1: Edit ~/.config/nvim/lua/plugins/astrocore.lua
+--     - Remove: if true then return {} end
+--     - Add to opts.options.opt:
 --         exrc = true,  -- Enable .nvim.lua local config files
---         -- DO NOT use secure = true (deprecated, doesn't work for git repos)
---       },
---     }
+--
+--   Option 2: Edit ~/.config/nvim/lua/polish.lua
+--     - Remove: if true then return end
+--     - Add: vim.opt.exrc = true
 --
 -- SECURITY:
 --   Neovim 0.9.0+ will prompt you to trust this file before executing it.

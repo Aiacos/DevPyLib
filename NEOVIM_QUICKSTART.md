@@ -12,18 +12,31 @@
 
 **Step 1**: Abilita config locali in Neovim (una sola volta)
 
-**AstroNvim** (aggiungi a `~/.config/nvim/lua/user/options.lua`):
+**AstroNvim Template v5** (modifica `~/.config/nvim/lua/plugins/astrocore.lua`):
 ```lua
 return {
-  opt = {
-    exrc = true,  -- Abilita .nvim.lua
+  "AstroNvim/astrocore",
+  opts = {
+    options = {
+      opt = {
+        -- ... altre opzioni ...
+        exrc = true,  -- <-- AGGIUNGI QUESTA RIGA
+      },
+    },
   },
 }
 ```
+*Rimuovi anche la riga: `if true then return {} end`*
+
+**Alternativa (AstroNvim)**: Usa `~/.config/nvim/lua/polish.lua`
+```lua
+vim.opt.exrc = true
+```
+*Rimuovi anche la riga: `if true then return end`*
 
 **Neovim standard** (aggiungi a `~/.config/nvim/init.lua`):
 ```lua
-vim.o.exrc = true  -- NON usare secure = true (deprecato)
+vim.opt.exrc = true  -- NON usare secure = true (deprecato)
 ```
 
 **Step 2**: Apri un file Python in questo progetto
