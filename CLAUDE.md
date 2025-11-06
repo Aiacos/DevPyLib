@@ -243,3 +243,64 @@ shutil.rmtree(directory_path)
 ```
 
 See `CROSS_PLATFORM_MIGRATION.md` for detailed migration notes.
+
+## Development History
+
+### Refactoring Session (2025-01-06)
+
+Comprehensive code quality improvements and refactoring on the `refactoring` branch:
+
+#### Phase 1: Initial Fixes
+- **Commit 04fc518**: Fixed Neovim `.nvim.lua` warnings (undefined global vim)
+  - Added `---@diagnostic disable: undefined-global` directive
+
+#### Phase 2: Deep File Analysis
+- **Commit 32bae8b**: Fixed `bvh_importer.py` (21 ruff + 4 basedpyright errors)
+  - Removed `(object)` inheritance (UP004)
+  - Converted % formatting to f-strings (8 instances)
+  - Fixed docstrings (D200, D415, D105)
+  - Changed `f.next()` → `next(f)` (Python 3)
+  - Added None checks for type safety
+  - Split long lines (E501)
+
+- **Commit b7b1928**: Fixed `ariseLib/base.py` docstring issues
+  - Added missing parameter documentation (D417)
+  - Fixed D202 violations
+
+#### Phase 3: Mass Auto-Fix (83 files)
+- **Commit ecc44e3**: Applied `ruff check --fix --unsafe-fixes`
+  - 769 violations automatically fixed
+  - UP004 (object inheritance): 15 fixes
+  - UP006 (PEP 585 annotations): 35 fixes
+  - UP034 (extraneous parentheses): 27 fixes
+  - D202 (blank after docstring): 54 fixes
+  - D208 (over-indentation): 42 fixes
+  - B010 (setattr constant): 13 fixes
+
+#### Phase 4: Comprehensive Formatting (98 files)
+- **Commit 80ce562**: Applied `ruff format` for Black-compatible formatting
+  - 98 files reformatted
+  - 5954 insertions(+), 4361 deletions(-)
+  - E501 line length: 566 → 107 (459 fixes)
+  - D415 punctuation: 144 → 7 (137 fixes)
+  - UP031 f-strings: 120 → 10 (110 additional fixes)
+
+#### Phase 5: Final Docstring Cleanup
+- **Commit 75e62e4**: Fixed empty docstring sections (D414)
+  - Fixed 13 functions across 3 files
+  - `bifrost_api.py`: Added Returns for bf_rename_node
+  - `stage_builder.py`: Fixed 7 functions
+  - `skin.py`: Fixed 4 functions
+
+#### Overall Impact
+- **Total automated fixes**: 1,236+ violations (59% reduction)
+- **Files modified**: 98 files reformatted, 83+ files auto-fixed
+- **Violations reduced**: From 2,100+ to 864 remaining
+- **Code quality**: Achieved Black-compatible formatting, modern Python idioms
+- **Remaining**: 864 violations requiring manual review or architectural decisions
+
+#### Tools & Configuration
+- **Linter**: Ruff 0.8.4 with pyproject.toml configuration
+- **Line length**: 100 characters
+- **Docstring style**: Google format
+- **Python version**: 3.9+ (Maya 2024+)
