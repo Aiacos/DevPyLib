@@ -1,3 +1,9 @@
+"""Prism Pipeline DCC application detection utilities.
+
+Provides functions to detect which host DCC application (Maya, Houdini, etc.)
+the code is currently running inside, for Prism Pipeline integration.
+"""
+
 import importlib.util as importlib_util
 import sys
 

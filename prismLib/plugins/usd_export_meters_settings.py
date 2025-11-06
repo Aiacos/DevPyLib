@@ -1,4 +1,8 @@
-# UsdExportMetersSettings.py
+"""Prism Pipeline USD export meters settings plugin.
+
+This plugin customizes USD export settings in Prism to handle unit conversions
+between Maya's working units and USD's metersPerUnit setting.
+"""
 
 name = "UsdExportMetersSettings"
 classname = "UsdExportMetersSettings"

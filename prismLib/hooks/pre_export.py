@@ -1,11 +1,16 @@
-# This script will be executed before the execution of an export state in the Prism State Manager.
-# You can use this file to define project specific actions, like cleaning up your scene or preparing objects for export.
+"""Prism Pipeline pre-export hook script.
 
-# Example:
-# print "Prism is going to export objects now."
+This script is executed before the execution of an export state in the Prism State Manager.
+Use this file to define project-specific actions, like cleaning up your scene or preparing
+objects for export.
 
-# If the main function exists in this script, it will be called.
-# The "kwargs" argument is a dictionary with usefull information about Prism and the current export.
+Example:
+    print("Prism is going to export objects now.")
+
+Note:
+    If the main function exists in this script, it will be called automatically.
+    The kwargs argument is a dictionary with useful information about Prism and the current export.
+"""
 
 import importlib.util as importlib_util
 
