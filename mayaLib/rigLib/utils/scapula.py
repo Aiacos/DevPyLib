@@ -4,7 +4,7 @@ Provides the Scapula class for creating automated scapula (shoulder blade)
 IK setups with proper constraints between spine, shoulder, and scapula joints.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -25,6 +25,7 @@ class Scapula:
         >>> scapula = Scapula('spine_jnt', 'shoulder_jnt', 'scapula_shoulder_jnt')
         >>> scapula_grp = scapula.get_scapula_grp()
     """
+
     def __init__(self, spine_jnt, shoulder_jnt, scapula_shoulder_jnt):
         """Create scapula IK
         :param spine_jnt: str
@@ -35,21 +36,21 @@ class Scapula:
         side = name.get_side(scapula_shoulder_jnt)
 
         # get childern of shoulder
-        scapula_jnt = pm.listRelatives(scapula_shoulder_jnt, type='joint')[0]
+        scapula_jnt = pm.listRelatives(scapula_shoulder_jnt, type="joint")[0]
 
         # create ik
-        ikhandle = pm.ikHandle(n=side + 'scapula_IKH', sj=scapula_shoulder_jnt, ee=scapula_jnt)
+        ikhandle = pm.ikHandle(n=side + "scapula_IKH", sj=scapula_shoulder_jnt, ee=scapula_jnt)
         effector = pm.listConnections(ikhandle[0].endEffector, source=True)
 
         # group ik
-        grp_name = name.remove_suffix(side + 'scapula_GRP')
+        grp_name = name.remove_suffix(side + "scapula_GRP")
         self.scapula_grp = pm.group(ikhandle, n=grp_name)
 
         # parent constraint group
         pm.parentConstraint(spine_jnt, self.scapula_grp, mo=True)
 
         # parent constraint only transform
-        pm.parentConstraint(shoulder_jnt, scapula_shoulder_jnt, skipRotate=['x', 'y', 'z'], mo=True)
+        pm.parentConstraint(shoulder_jnt, scapula_shoulder_jnt, skipRotate=["x", "y", "z"], mo=True)
 
         # parent effector
         pm.parent(effector, scapula_shoulder_jnt)

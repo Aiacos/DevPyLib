@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ['resolve_required', 'resolve_optional']
+__all__ = ["resolve_required", "resolve_optional"]
 
 
 def resolve_required(
@@ -60,7 +60,7 @@ def resolve_required(
     for key in legacy_keys:
         if key in legacy_kwargs:
             return legacy_kwargs.pop(key)
-    raise ValueError(f'{label} is required.')
+    raise ValueError(f"{label} is required.")
 
 
 def resolve_optional(
@@ -108,4 +108,5 @@ def resolve_optional(
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

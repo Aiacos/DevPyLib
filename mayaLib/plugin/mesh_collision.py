@@ -79,6 +79,7 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         This is a Maya Python API 2.0 deformer plugin. Must be loaded via
         the Plug-in Manager or programmatically via pm.loadPlugin().
     """
+
     # class variables
     mm_accel_params = OpenMaya.MMeshIsectAccelParams()
     intersector = OpenMaya.MMeshIntersector()
@@ -171,17 +172,25 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         collider_bb_size_handle = data_block.inputValue(self.colliderBBoxSize)
         collider_bb_size_value = collider_bb_size_handle.asDouble3()
         collider_bb_vector = OpenMaya.MVector(
-            collider_bb_size_value[0],
-            collider_bb_size_value[1],
-            collider_bb_size_value[2]
+            collider_bb_size_value[0], collider_bb_size_value[1], collider_bb_size_value[2]
         )
         collider_bb_size = collider_bb_vector.length()
         threshold_value = collider_bb_size * 2
 
-        return (collider_fn, collider_object, collider_points, collider_matrix_value,
-                threshold_value, pcounts, pconnect, polycount)
+        return (
+            collider_fn,
+            collider_object,
+            collider_points,
+            collider_matrix_value,
+            threshold_value,
+            pcounts,
+            pconnect,
+            polycount,
+        )
 
-    def _apply_collider_offset(self, collider_fn, collider_points, offset_value, pcounts, pconnect, polycount):
+    def _apply_collider_offset(
+        self, collider_fn, collider_points, offset_value, pcounts, pconnect, polycount
+    ):
         """Apply offset to collider mesh by moving vertices along their normals.
 
         Args:
@@ -204,21 +213,33 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
             new_collider_point = OpenMaya.MFloatPoint(
                 collider_points[i].x + collider_point_normal.x * offset_value,
                 collider_points[i].y + collider_point_normal.y * offset_value,
-                collider_points[i].z + collider_point_normal.z * offset_value
+                collider_points[i].z + collider_point_normal.z * offset_value,
             )
             new_collider_points.append(new_collider_point)
 
         try:
-            collider_fn.createInPlace(collider_points.length(), polycount, new_collider_points, pcounts, pconnect)
+            collider_fn.createInPlace(
+                collider_points.length(), polycount, new_collider_points, pcounts, pconnect
+            )
         except RuntimeError:
             # Can't create offset copy
             pass
 
         return base_collider_points
 
-    def _process_direct_collision(self, in_mesh_fn, collider_fn, collider_object, collider_matrix_value,
-                                   threshold_value, backface_value, in_points, data_block, multi_index,
-                                   envelope_value):
+    def _process_direct_collision(
+        self,
+        in_mesh_fn,
+        collider_fn,
+        collider_object,
+        collider_matrix_value,
+        threshold_value,
+        backface_value,
+        in_points,
+        data_block,
+        multi_index,
+        envelope_value,
+    ):
         """Process direct collision detection and deformation.
 
         Args:
@@ -260,7 +281,9 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
             in_mesh_fn.getVertexNormal(k, point_normal, OpenMaya.MSpace.kWorld)
 
             # Define intersection ray from the mesh vertex
-            ray_source = OpenMaya.MFloatPoint(self.new_points[k].x, self.new_points[k].y, self.new_points[k].z)
+            ray_source = OpenMaya.MFloatPoint(
+                self.new_points[k].x, self.new_points[k].y, self.new_points[k].z
+            )
             ray_direction = OpenMaya.MFloatVector(point_normal)
             point = OpenMaya.MPoint(self.new_points[k])
 
@@ -282,9 +305,22 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
             try:
                 got_hit = collider_fn.allIntersections(
-                    ray_source, ray_direction, face_ids, tri_ids, ids_sorted, space,
-                    max_param, test_both_dirs, accel_params, sort_hits, hit_points_1,
-                    hit_ray_params, hit_faces, hit_triangles, hit_bary_1s, hit_bary_2s
+                    ray_source,
+                    ray_direction,
+                    face_ids,
+                    tri_ids,
+                    ids_sorted,
+                    space,
+                    max_param,
+                    test_both_dirs,
+                    accel_params,
+                    sort_hits,
+                    hit_points_1,
+                    hit_ray_params,
+                    hit_faces,
+                    hit_triangles,
+                    hit_bary_1s,
+                    hit_bary_2s,
                 )
             except RuntimeError:
                 break
@@ -302,7 +338,14 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                     break
 
             collision = 0
-            if hit_count == 2 and sign_change + 1 == 1 and sign_change != -1000 or hit_count > 2 and hit_count / (sign_change + 1) != 2 and sign_change != -1000:
+            if (
+                hit_count == 2
+                and sign_change + 1 == 1
+                and sign_change != -1000
+                or hit_count > 2
+                and hit_count / (sign_change + 1) != 2
+                and sign_change != -1000
+            ):
                 collision = 1
 
             # Process collision if detected
@@ -337,9 +380,18 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
         return check_collision, max_deformation, deformed_points_indices
 
-    def _process_indirect_collision(self, in_mesh_fn, collider_matrix_value, bulge_extend_value,
-                                     bulge_value, max_deformation, data_block, multi_index,
-                                     envelope_value, this_node):
+    def _process_indirect_collision(
+        self,
+        in_mesh_fn,
+        collider_matrix_value,
+        bulge_extend_value,
+        bulge_value,
+        max_deformation,
+        data_block,
+        multi_index,
+        envelope_value,
+        this_node,
+    ):
         """Process indirect collision (bulge) deformation.
 
         Args:
@@ -379,7 +431,14 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
             bulge_amount = OpenMaya.MScriptUtil().getFloat(bulgeshape_value)
 
             # Apply bulge deformation
-            bulge_scale = bulge_extend_value * (bulge_value / 5) * envelope_value * bulge_amount * max_deformation * weight
+            bulge_scale = (
+                bulge_extend_value
+                * (bulge_value / 5)
+                * envelope_value
+                * bulge_amount
+                * max_deformation
+                * weight
+            )
             self.new_points[i].x += in_mesh_normal.x * bulge_scale
             self.new_points[i].y += in_mesh_normal.y * bulge_scale
             self.new_points[i].z += in_mesh_normal.z * bulge_scale
@@ -414,7 +473,9 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         backface_value = backface_handle.asShort()
 
         # Get input mesh data
-        multi_index, in_mesh_fn, in_points, h_input_geom, sculpt_value = self._get_input_mesh_data(data_block, plug)
+        multi_index, in_mesh_fn, in_points, h_input_geom, sculpt_value = self._get_input_mesh_data(
+            data_block, plug
+        )
 
         # Set output geometry
         h_output = data_block.outputValue(plug)
@@ -424,8 +485,16 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
         # Get collider data
         collider_data = self._get_collider_data(data_block)
-        (collider_fn, collider_object, collider_points, collider_matrix_value,
-         threshold_value, pcounts, pconnect, polycount) = collider_data
+        (
+            collider_fn,
+            collider_object,
+            collider_points,
+            collider_matrix_value,
+            threshold_value,
+            pcounts,
+            pconnect,
+            polycount,
+        ) = collider_data
 
         # Early exit if no valid collider or envelope is zero
         if collider_fn is None or envelope_value == 0:
@@ -440,16 +509,30 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
         # Process direct collision detection and deformation
         check_collision, max_deformation, deformed_points_indices = self._process_direct_collision(
-            in_mesh_fn, collider_fn, collider_object, collider_matrix_value,
-            threshold_value, backface_value, in_points, data_block, multi_index, envelope_value
+            in_mesh_fn,
+            collider_fn,
+            collider_object,
+            collider_matrix_value,
+            threshold_value,
+            backface_value,
+            in_points,
+            data_block,
+            multi_index,
+            envelope_value,
         )
 
         # Process indirect collision (bulge) if any direct collision occurred
         if check_collision != 0:
             self._process_indirect_collision(
-                in_mesh_fn, collider_matrix_value, bulge_extend_value,
-                bulge_value, max_deformation, data_block, multi_index,
-                envelope_value, this_node
+                in_mesh_fn,
+                collider_matrix_value,
+                bulge_extend_value,
+                bulge_value,
+                max_deformation,
+                data_block,
+                multi_index,
+                envelope_value,
+                this_node,
             )
 
         # Update output mesh with deformed points
@@ -459,7 +542,9 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         # Restore collider to original position if offset was applied
         if offset_value != 0 and base_collider_points is not None:
             try:
-                collider_fn.createInPlace(collider_points.length(), polycount, base_collider_points, pcounts, pconnect)
+                collider_fn.createInPlace(
+                    collider_points.length(), polycount, base_collider_points, pcounts, pconnect
+                )
             except RuntimeError:
                 # Can't reset offset copy
                 pass
@@ -504,11 +589,27 @@ def float_m_matrix_to_m_matrix(fm):
         MMatrix: Standard precision matrix.
     """
     mat = OpenMaya.MMatrix()
-    OpenMaya.MScriptUtil.createMatrixFromList([
-        fm(0, 0), fm(0, 1), fm(0, 2), fm(0, 3),
-        fm(1, 0), fm(1, 1), fm(1, 2), fm(1, 3),
-        fm(2, 0), fm(2, 1), fm(2, 2), fm(2, 3),
-        fm(3, 0), fm(3, 1), fm(3, 2), fm(3, 3)], mat)
+    OpenMaya.MScriptUtil.createMatrixFromList(
+        [
+            fm(0, 0),
+            fm(0, 1),
+            fm(0, 2),
+            fm(0, 3),
+            fm(1, 0),
+            fm(1, 1),
+            fm(1, 2),
+            fm(1, 3),
+            fm(2, 0),
+            fm(2, 1),
+            fm(2, 2),
+            fm(2, 3),
+            fm(3, 0),
+            fm(3, 1),
+            fm(3, 2),
+            fm(3, 3),
+        ],
+        mat,
+    )
     return mat
 
 
@@ -535,7 +636,9 @@ def node_initializer():
 
     n_attr = OpenMaya.MFnNumericAttribute()
 
-    CollisionDeformer.bulgeextend = n_attr.create("bulgeextend", "bex", OpenMaya.MFnNumericData.kDouble, 0.0)
+    CollisionDeformer.bulgeextend = n_attr.create(
+        "bulgeextend", "bex", OpenMaya.MFnNumericData.kDouble, 0.0
+    )
     n_attr.setKeyable(True)
     n_attr.setStorable(True)
     n_attr.setSoftMin(0)
@@ -553,9 +656,15 @@ def node_initializer():
     n_attr.setSoftMin(0)
     n_attr.setSoftMax(1)
 
-    CollisionDeformer.colliderBBoxX = n_attr.create("colliderBBoxX", "cbbX", OpenMaya.MFnNumericData.kDouble, 0.0)
-    CollisionDeformer.colliderBBoxY = n_attr.create("colliderBBoxY", "cbbY", OpenMaya.MFnNumericData.kDouble, 0.0)
-    CollisionDeformer.colliderBBoxZ = n_attr.create("colliderBBoxZ", "cbbZ", OpenMaya.MFnNumericData.kDouble, 0.0)
+    CollisionDeformer.colliderBBoxX = n_attr.create(
+        "colliderBBoxX", "cbbX", OpenMaya.MFnNumericData.kDouble, 0.0
+    )
+    CollisionDeformer.colliderBBoxY = n_attr.create(
+        "colliderBBoxY", "cbbY", OpenMaya.MFnNumericData.kDouble, 0.0
+    )
+    CollisionDeformer.colliderBBoxZ = n_attr.create(
+        "colliderBBoxZ", "cbbZ", OpenMaya.MFnNumericData.kDouble, 0.0
+    )
 
     c_attr = OpenMaya.MFnCompoundAttribute()
     CollisionDeformer.colliderBBoxSize = c_attr.create("colliderBBoxSize", "cbb")
@@ -566,7 +675,9 @@ def node_initializer():
 
     m_attr = OpenMaya.MFnMatrixAttribute()
 
-    CollisionDeformer.colliderMatrix = m_attr.create("colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat)
+    CollisionDeformer.colliderMatrix = m_attr.create(
+        "colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat
+    )
     m_attr.setHidden(True)
 
     r_attr = OpenMaya.MRampAttribute()
@@ -626,8 +737,13 @@ def initialize_plugin(mobject):
     """
     mplugin = OpenMayaMPx.MFnPlugin(mobject, "Lorenzo Argentieri", "0.1")
     try:
-        mplugin.registerNode(K_PLUGIN_NODE_TYPE_NAME, COLLISION_DEFORMER_ID, node_creator, node_initializer,
-                             OpenMayaMPx.MPxNode.kDeformerNode)
+        mplugin.registerNode(
+            K_PLUGIN_NODE_TYPE_NAME,
+            COLLISION_DEFORMER_ID,
+            node_creator,
+            node_initializer,
+            OpenMayaMPx.MPxNode.kDeformerNode,
+        )
     except RuntimeError:
         sys.stderr.write(f"Failed to register node: {K_PLUGIN_NODE_TYPE_NAME}\n")
 
@@ -649,7 +765,7 @@ def uninitialize_plugin(mobject):
         sys.stderr.write(f"Failed to unregister node: {K_PLUGIN_NODE_TYPE_NAME}\n")
 
 
-mel = '''
+mel = """
 global proc collisionDeformer()
 {
     string $sel[] = `ls -sl -tr`;
@@ -708,7 +824,7 @@ global proc collisionDeformer()
 
         editorTemplate -endScrollLayout;
     }
-'''
+"""
 meval(mel)
 
 # Maya plugin entry points (must use exact names)

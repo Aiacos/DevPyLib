@@ -9,10 +9,10 @@ from mayaLib.rigLib.utils import common, name, util
 
 def create_follicle(geo, u_param, v_param, prefix):
     """Create a follicle at the given UV coordinates."""
-    follicle_shape = pm.createNode('follicle', n=f'{prefix}_FLCShape')
+    follicle_shape = pm.createNode("follicle", n=f"{prefix}_FLCShape")
     geo_shape = geo.getShape()
     follicle = follicle_shape.getParent()
-    follicle.rename(f'{prefix}_FLC')
+    follicle.rename(f"{prefix}_FLC")
 
     pm.connectAttr(geo_shape.outMesh, follicle_shape.inputMesh)
     pm.connectAttr(geo_shape.worldMatrix, follicle_shape.inputWorldMatrix)
@@ -65,7 +65,7 @@ def make_control_follow_skin(geo, ctrl, driven_obj):
 
     util.matrix_constrain(follicle, follow_grp, rotate=False)
 
-    mult_divide = pm.createNode('multiplyDivide', n=f"{prefix}CompensateNode")
+    mult_divide = pm.createNode("multiplyDivide", n=f"{prefix}CompensateNode")
     pm.connectAttr(ctrl.translate, mult_divide.input1)
     pm.connectAttr(mult_divide.output, compensate_grp.translate)
     mult_divide.input2X.set(-1)
@@ -79,4 +79,4 @@ def make_control_follow_skin(geo, ctrl, driven_obj):
 
 
 if __name__ == "__main__":
-    raise SystemExit('Invoke within Maya to use follow control utilities.')
+    raise SystemExit("Invoke within Maya to use follow control utilities.")

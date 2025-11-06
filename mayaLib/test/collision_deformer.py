@@ -39,13 +39,11 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
         envelope_val = envelope_handle.asFloat()
 
         if envelope_val != 0:
-
             # get COLLIDER MESH (as worldMesh)
             collider_handle = block.inputValue(self.collider)
             in_collider_mesh = collider_handle.asMesh()
 
             if not in_collider_mesh.isNull():
-
                 # get collider fn mesh
                 in_collider_fn = OpenMaya.MFnMesh(in_collider_mesh)
 
@@ -66,10 +64,20 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
                 # build new bounding box based on given values
                 bbox = OpenMaya.MBoundingBox()
-                bbox.expand(OpenMaya.MPoint(collider_bounding_box_min_val[0], collider_bounding_box_min_val[1],
-                                            collider_bounding_box_min_val[2]))
-                bbox.expand(OpenMaya.MPoint(collider_bounding_box_max_val[0], collider_bounding_box_max_val[1],
-                                            collider_bounding_box_max_val[2]))
+                bbox.expand(
+                    OpenMaya.MPoint(
+                        collider_bounding_box_min_val[0],
+                        collider_bounding_box_min_val[1],
+                        collider_bounding_box_min_val[2],
+                    )
+                )
+                bbox.expand(
+                    OpenMaya.MPoint(
+                        collider_bounding_box_max_val[0],
+                        collider_bounding_box_max_val[1],
+                        collider_bounding_box_max_val[2],
+                    )
+                )
 
                 # set up point on mesh and intersector for returning closest point and accel_params if required
                 OpenMaya.MPointOnMesh()
@@ -90,8 +98,9 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                 hit_bary1 = None
                 hit_bary2 = None
                 tolerance = 0.0001
-                float_vec = OpenMaya.MFloatVector(0, 1,
-                                                 0)  # set up arbitrary vector n.b this is fine for what we want here but anything more complex may require vector obtained from vertex
+                float_vec = OpenMaya.MFloatVector(
+                    0, 1, 0
+                )  # set up arbitrary vector n.b this is fine for what we want here but anything more complex may require vector obtained from vertex
 
                 # deal with main mesh
                 in_mesh_fn = OpenMaya.MFnMesh(in_mesh)
@@ -113,14 +122,32 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                         float_point = OpenMaya.MFloatPoint(point)
                         hit_points = OpenMaya.MFloatPointArray()
 
-                        in_collider_fn.allIntersections(float_point, float_vec, face_ids, tri_ids, ids_sorted, space, max_param,
-                                                      test_both_dirs, accel_params, sort_hits, hit_points, hit_ray_params,
-                                                      hit_faces, hit_triangles, hit_bary1, hit_bary2, tolerance)
+                        in_collider_fn.allIntersections(
+                            float_point,
+                            float_vec,
+                            face_ids,
+                            tri_ids,
+                            ids_sorted,
+                            space,
+                            max_param,
+                            test_both_dirs,
+                            accel_params,
+                            sort_hits,
+                            hit_points,
+                            hit_ray_params,
+                            hit_faces,
+                            hit_triangles,
+                            hit_bary1,
+                            hit_bary2,
+                            tolerance,
+                        )
 
                         if hit_points.length() % 2 == 1:
                             # work out closest point
                             closest_point = OpenMaya.MPoint()
-                            in_collider_fn.getClosestPoint(point, closest_point, OpenMaya.MSpace.kWorld, None)
+                            in_collider_fn.getClosestPoint(
+                                point, closest_point, OpenMaya.MSpace.kWorld, None
+                            )
 
                             # calculate delta and add to array
                             delta = point - closest_point
@@ -171,14 +198,22 @@ def initialize():
     CollisionDeformer.collider = g_attr.create("colliderTarget", "col")
     g_attr.addDataAccept(OpenMaya.MFnData.kMesh)
 
-    CollisionDeformer.colliderBoundingBoxMin = n_attr.createPoint("colliderBoundingBoxMin", "cbbmin")
+    CollisionDeformer.colliderBoundingBoxMin = n_attr.createPoint(
+        "colliderBoundingBoxMin", "cbbmin"
+    )
 
-    CollisionDeformer.colliderBoundingBoxMax = n_attr.createPoint("colliderBoundingBoxMax", "cbbmax")
+    CollisionDeformer.colliderBoundingBoxMax = n_attr.createPoint(
+        "colliderBoundingBoxMax", "cbbmax"
+    )
 
-    CollisionDeformer.colliderMatrix = m_attr.create("colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat)
+    CollisionDeformer.colliderMatrix = m_attr.create(
+        "colliderMatrix", "collMatr", OpenMaya.MFnNumericData.kFloat
+    )
     m_attr.setHidden(True)
 
-    CollisionDeformer.multiplier = n_attr.create("multiplier", "mult", OpenMaya.MFnNumericData.kFloat, 1)
+    CollisionDeformer.multiplier = n_attr.create(
+        "multiplier", "mult", OpenMaya.MFnNumericData.kFloat, 1
+    )
 
     CollisionDeformer.addAttribute(CollisionDeformer.collider)
     CollisionDeformer.addAttribute(CollisionDeformer.colliderMatrix)
@@ -201,12 +236,17 @@ def initializePlugin(obj):
     Args:
         obj: Maya plugin object.
     """
-    plugin = OpenMayaMPx.MFnPlugin(obj, 'Grover', '1.0', 'Any')
+    plugin = OpenMayaMPx.MFnPlugin(obj, "Grover", "1.0", "Any")
     try:
-        plugin.registerNode('collisionDeformer', CollisionDeformer.k_plugin_node_id, creator, initialize,
-                            OpenMayaMPx.MPxNode.kDeformerNode)
+        plugin.registerNode(
+            "collisionDeformer",
+            CollisionDeformer.k_plugin_node_id,
+            creator,
+            initialize,
+            OpenMayaMPx.MPxNode.kDeformerNode,
+        )
     except RuntimeError:
-        raise RuntimeError('Failed to register node')
+        raise RuntimeError("Failed to register node")
 
 
 def uninitializePlugin(obj):
@@ -219,23 +259,29 @@ def uninitializePlugin(obj):
     try:
         plugin.deregisterNode(CollisionDeformer.k_plugin_node_id)
     except RuntimeError:
-        raise RuntimeError('Failed to deregister node')
+        raise RuntimeError("Failed to deregister node")
 
 
 if __name__ == "__main__":
     # simply create two polygon spheres. Move the second away from the first, select the first and run the code below.
     import maya.cmds as cmds
 
-    cmds.delete(cmds.ls(type='collisionDeformer'))
+    cmds.delete(cmds.ls(type="collisionDeformer"))
     cmds.flushUndo()
-    cmds.unloadPlugin('collisionDeformer.py')
-    cmds.loadPlugin('collisionDeformer.py')
-    cmds.deformer(type='collisionDeformer')
-    cmds.connectAttr('pSphere2.worldMesh', 'collisionDeformer1.colliderTarget')
-    cmds.connectAttr('pSphere2.matrix', 'collisionDeformer1.colliderMatrix')
-    cmds.connectAttr('pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeX',
-                     'collisionDeformer1.colliderBoundingBox.colliderBoundingBoxX')
-    cmds.connectAttr('pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeY',
-                     'collisionDeformer1.colliderBoundingBox.colliderBoundingBoxY')
-    cmds.connectAttr('pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeZ',
-                     'collisionDeformer1.colliderBoundingBox.colliderBoundingBoxZ')
+    cmds.unloadPlugin("collisionDeformer.py")
+    cmds.loadPlugin("collisionDeformer.py")
+    cmds.deformer(type="collisionDeformer")
+    cmds.connectAttr("pSphere2.worldMesh", "collisionDeformer1.colliderTarget")
+    cmds.connectAttr("pSphere2.matrix", "collisionDeformer1.colliderMatrix")
+    cmds.connectAttr(
+        "pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeX",
+        "collisionDeformer1.colliderBoundingBox.colliderBoundingBoxX",
+    )
+    cmds.connectAttr(
+        "pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeY",
+        "collisionDeformer1.colliderBoundingBox.colliderBoundingBoxY",
+    )
+    cmds.connectAttr(
+        "pSphere2.boundingBox.boundingBoxSize.boundingBoxSizeZ",
+        "collisionDeformer1.colliderBoundingBox.colliderBoundingBoxZ",
+    )

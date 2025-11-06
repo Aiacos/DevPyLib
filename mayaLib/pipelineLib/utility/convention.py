@@ -4,7 +4,8 @@ Provides functions for enforcing and validating studio asset
 naming conventions.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
+
 
 class Convention:
     """Class to manage naming conventions of Maya assets.
@@ -24,18 +25,21 @@ class Convention:
         conventionDict (dict): dictionary containing all the tags
     """
 
-    def __init__(self, uppercase=True,
-                 separator='_',
-                 left='l',
-                 right='r',
-                 grp='GRP',
-                 loc='LOC',
-                 geo='GEO',
-                 proxy_geo='PRX',
-                 cv='CRV',
-                 joint='JNT',
-                 ik_handle='IKH',
-                 control='CTRL'):
+    def __init__(
+        self,
+        uppercase=True,
+        separator="_",
+        left="l",
+        right="r",
+        grp="GRP",
+        loc="LOC",
+        geo="GEO",
+        proxy_geo="PRX",
+        cv="CRV",
+        joint="JNT",
+        ik_handle="IKH",
+        control="CTRL",
+    ):
         """Init Convention.
 
         Args:
@@ -81,17 +85,19 @@ class Convention:
         # control
         self.control = control
 
-        self.convention_dict = {'separator': separator,
-                               'left': left,
-                               'right': right,
-                               'group': grp,
-                               'locator': loc,
-                               'geometry': geo,
-                               'proxyGeo': proxy_geo,
-                               'curve': cv,
-                               'joint': joint,
-                               'ikHandle': ik_handle,
-                               'control': control}
+        self.convention_dict = {
+            "separator": separator,
+            "left": left,
+            "right": right,
+            "group": grp,
+            "locator": loc,
+            "geometry": geo,
+            "proxyGeo": proxy_geo,
+            "curve": cv,
+            "joint": joint,
+            "ikHandle": ik_handle,
+            "control": control,
+        }
 
     def to_lower(self, s):
         """Convert a string to lower case.

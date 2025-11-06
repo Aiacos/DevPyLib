@@ -19,9 +19,9 @@ def findRelatedSkinCluster(geo):
     :param geo: str
     :return: str.
     """
-    skincluster = mel.eval('findRelatedSkinCluster ' + geo)
-    if skincluster == '' or len(pm.ls(skincluster, type='skinCluster')) == 0:
-        skincluster = pm.ls(pm.listHistory(geo), type='skinCluster')
+    skincluster = mel.eval("findRelatedSkinCluster " + geo)
+    if skincluster == "" or len(pm.ls(skincluster, type="skinCluster")) == 0:
+        skincluster = pm.ls(pm.listHistory(geo), type="skinCluster")
         if len(skincluster) == 0:
             return None
 
@@ -38,7 +38,7 @@ def ng_batch_export(geo_list, path):
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
-        file_name = str(geo.name()) + '.json'
+        file_name = str(geo.name()) + ".json"
         output_file_name = full_path / file_name
 
         skincluster = findRelatedSkinCluster(geo)
@@ -58,7 +58,7 @@ def ng_batch_import(geo_list, path):
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
-        file_name = str(geo.name()) + '.json'
+        file_name = str(geo.name()) + ".json"
         input_file_name = full_path / file_name
 
         skincluster = findRelatedSkinCluster(geo)
@@ -80,7 +80,7 @@ def ng_batch_import(geo_list, path):
 
 
 if __name__ == "__main__":
-    export_dir = 'C:/Users/lorenzo.argentieri/Desktop/SamTeen_ng'
-    geo_list = list_objects_under_group('x_geo_mdl_grp')
+    export_dir = "C:/Users/lorenzo.argentieri/Desktop/SamTeen_ng"
+    geo_list = list_objects_under_group("x_geo_mdl_grp")
     # ng_batch_export(geo_list, export_dir)
     ng_batch_import(geo_list, export_dir)

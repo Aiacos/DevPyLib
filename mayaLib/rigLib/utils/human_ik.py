@@ -550,9 +550,7 @@ class HumanIK:
         try:
             arise_utils = importlib.import_module("arise.utils.ctrls_utils")
         except ImportError:
-            pm.warning(
-                "Arise zero pose utilities not available; skipping T pose alignment."
-            )
+            pm.warning("Arise zero pose utilities not available; skipping T pose alignment.")
             return
 
         arise_utils.apply_zero_pose_all(silent=True)
@@ -1099,9 +1097,7 @@ class HumanIK:
         """
         self.set_character_object(joint, joint_id)
 
-    def add_left_hand_thumb(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandThumb"]
-    ):
+    def add_left_hand_thumb(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandThumb"]):
         """Add the left hand thumb joints to the character.
 
         Args:
@@ -1114,9 +1110,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_left_hand_index(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandIndex"]
-    ):
+    def add_left_hand_index(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandIndex"]):
         """Add the left hand index joints to the character.
 
         Args:
@@ -1129,9 +1123,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_left_hand_middle(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandMiddle"]
-    ):
+    def add_left_hand_middle(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandMiddle"]):
         """Add the left hand middle joints to the character.
 
         Args:
@@ -1144,9 +1136,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_left_hand_ring(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandRing"]
-    ):
+    def add_left_hand_ring(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandRing"]):
         """Add the left hand ring joints to the character.
 
         Args:
@@ -1159,9 +1149,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_left_hand_pinky(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandPinky"]
-    ):
+    def add_left_hand_pinky(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["LeftHandPinky"]):
         """Add the left hand pinky joints to the character.
 
         Args:
@@ -1174,9 +1162,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_right_hand_thumb(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandThumb"]
-    ):
+    def add_right_hand_thumb(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandThumb"]):
         """Add the right hand thumb joints to the character.
 
         Args:
@@ -1189,9 +1175,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_right_hand_index(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandIndex"]
-    ):
+    def add_right_hand_index(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandIndex"]):
         """Add the right hand index joints to the character.
 
         Args:
@@ -1222,9 +1206,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_right_hand_ring(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandRing"]
-    ):
+    def add_right_hand_ring(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandRing"]):
         """Add the right hand ring joints to the character.
 
         Args:
@@ -1238,9 +1220,7 @@ class HumanIK:
         for i, joint in enumerate(joint_list):
             self.set_character_object(joint, joint_id_list[i])
 
-    def add_right_hand_pinky(
-        self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandPinky"]
-    ):
+    def add_right_hand_pinky(self, joint_list, joint_id_list=HUMAN_IK_JOINT_MAP["RightHandPinky"]):
         """Add the right hand pinky joints to the character.
 
         Args:
@@ -1542,9 +1522,7 @@ class HumanIK:
         """
         self.add_ctrl(ctrl, ctrl_id)
 
-    def add_left_hand_thumb_ctrl(
-        self, ctrl_list, ctrl_id_list=HUMAN_IK_CTRL_MAP["LeftHandThumb"]
-    ):
+    def add_left_hand_thumb_ctrl(self, ctrl_list, ctrl_id_list=HUMAN_IK_CTRL_MAP["LeftHandThumb"]):
         """Adds left hand thumb controls to the rig.
 
         Args:

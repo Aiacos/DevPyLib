@@ -4,7 +4,7 @@ Provides functions for renaming and orienting rig controls based on
 joint positions and orientations using constraints.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -20,7 +20,7 @@ def rename_ctrl(joint, control):
         pm.nt.Transform: The renamed control object.
     """
     joint_name = joint
-    control_name = joint_name.replace('_jnt', '_ctrl')
+    control_name = joint_name.replace("_jnt", "_ctrl")
     print(control_name)
     return control.rename(control_name)
 
@@ -36,7 +36,7 @@ def orient_ctrl_constrain(control, joint):
         pm.nt.Transform: The oriented control object.
     """
     control_name = rename_ctrl(joint, control)
-    control_group = pm.group(control, n=control_name + '_grp')
+    control_group = pm.group(control, n=control_name + "_grp")
     control_group.rotateZ.set(90)
     pm.makeIdentity(control_group, apply=True)
     parent_constraint = pm.parentConstraint(joint, control_group)
@@ -56,7 +56,7 @@ def orient_ctrl_parent(control, joint):
     control_name = rename_ctrl(joint, control)
     joint_pivot = joint.getTranslation(worldSpace=True)
     # set PivotPoint to Joint location
-    control_group = pm.group(control, n=control_name + '_grp')
+    control_group = pm.group(control, n=control_name + "_grp")
     control.setPivots(joint_pivot, worldSpace=True)
     control_group.setPivots(joint_pivot, worldSpace=True)
     pm.parent(control_group, joint)
@@ -75,11 +75,11 @@ def main_orient_ctrl():
 
     print(sel2.nodeType())
 
-    if sel2.nodeType() == 'joint':
-        print('parent')
+    if sel2.nodeType() == "joint":
+        print("parent")
         orient_ctrl_parent(sel1, sel2)
     else:
-        print('costrain')
+        print("costrain")
         orient_ctrl_constrain(sel2, sel1)
 
 

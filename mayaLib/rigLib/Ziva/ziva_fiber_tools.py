@@ -20,7 +20,7 @@ def add_ziva_fiber(obj):
         The zFiber node
     """
     pm.select(obj)
-    z_fiber = pm.ls(mel.eval('ziva -f;'))[0]
+    z_fiber = pm.ls(mel.eval("ziva -f;"))[0]
     return z_fiber
 
 
@@ -35,9 +35,9 @@ def create_loa_curve(obj):
     """
     obj = pm.ls(obj)[-1]
     pm.select(obj)
-    curve = pm.ls(mel.eval('zLineOfActionUtil;'))[0].getParent()
+    curve = pm.ls(mel.eval("zLineOfActionUtil;"))[0].getParent()
 
-    cv_name = str(obj.name()) + '_CV'
+    cv_name = str(obj.name()) + "_CV"
     pm.rename(curve, cv_name)
     curve = pm.ls(cv_name)[-1]
 
@@ -58,9 +58,9 @@ def rivet_curve(curve, skeleton):
     for cv, n in zip(curve.cv[:], list(range(0, len(pm.ls(curve.cv[:])) + 1)), strict=False):
         pm.select(cv)
         pm.select(skeleton, add=True)
-        z_rivet = pm.ls(mel.eval('zRivetToBone;'))[-1]
+        z_rivet = pm.ls(mel.eval("zRivetToBone;"))[-1]
 
-        rivet_name = str(curve.name()).replace('_CV', '') + '_' + str(n) + '_rivet'
+        rivet_name = str(curve.name()).replace("_CV", "") + "_" + str(n) + "_rivet"
         pm.rename(z_rivet, rivet_name)
         z_rivet = pm.ls(rivet_name)[-1]
 
@@ -82,7 +82,7 @@ def add_loa(curve, obj):
     pm.select(curve)
     pm.select(obj, add=True)
 
-    z_line_of_action = pm.ls(mel.eval('ziva -loa;'))[-1]
+    z_line_of_action = pm.ls(mel.eval("ziva -loa;"))[-1]
     return z_line_of_action
 
 
@@ -104,6 +104,6 @@ def create_line_of_action(obj, skeleton):
     return curve, rivets
 
 
-if __name__ == '__main__':
-    for geo in list_objects_under_group('muscles_grp'):
-        create_line_of_action(geo, 'C_charBison_skeleton_GEO')
+if __name__ == "__main__":
+    for geo in list_objects_under_group("muscles_grp"):
+        create_line_of_action(geo, "C_charBison_skeleton_GEO")

@@ -1,44 +1,44 @@
 """Utility functions to get all Maya objects of a given type."""
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
 
 def get_all_groups():
     """Return all groups in the scene."""
-    geo_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(type='mesh')]
-    grp_list = [o for o in pm.listRelatives(type='transform') if o not in geo_list]
+    geo_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(type="mesh")]
+    grp_list = [o for o in pm.listRelatives(type="transform") if o not in geo_list]
     return grp_list
 
 
 def get_all_locators():
     """Return all locators in the scene."""
-    loc_list = [locator.getParent() for locator in pm.ls(type='locator')]
+    loc_list = [locator.getParent() for locator in pm.ls(type="locator")]
     return loc_list
 
 
 def get_all_mesh():
     """Return all mesh objects in the scene."""
-    mesh_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(type='mesh')]
+    mesh_list = [pm.listRelatives(o, p=1)[0] for o in pm.listRelatives(type="mesh")]
     return mesh_list
 
 
 def get_all_curves():
     """Return all nurbsCurves in the scene."""
-    curve_list = [cv.getParent() for cv in pm.ls(type='nurbsCurve')]
+    curve_list = [cv.getParent() for cv in pm.ls(type="nurbsCurve")]
     return curve_list
 
 
 def get_all_joints():
     """Return all joints in the scene."""
-    jnt_list = pm.ls(type='joint')
+    jnt_list = pm.ls(type="joint")
     return jnt_list
 
 
 def get_all_ik_handles():
     """Return all ikHandles in the scene."""
-    ikh_list = pm.ls(type='ikHandle')
+    ikh_list = pm.ls(type="ikHandle")
     return ikh_list
 
 

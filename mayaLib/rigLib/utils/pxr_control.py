@@ -5,7 +5,7 @@ Provides the PxrStyleCtrl class which creates geometry-based rig controls
 to controls based on joint influence weights.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -24,7 +24,7 @@ def invert_selection(shape, faces):
     Returns:
         list: Selected face components (inverse of input faces)
     """
-    pm.select(shape + '.f[*]')
+    pm.select(shape + ".f[*]")
     pm.select(faces, deselect=True)
     # mel.eval('InvertSelection;')
     return pm.ls(sl=True)
@@ -52,7 +52,7 @@ class PxrStyleCtrl:
             >>> pxr = PxrStyleCtrl('character_body_GEO')
         """
         # Create backup Group
-        self.shape_grp = pm.group(n='oldShape_GRP', em=True)
+        self.shape_grp = pm.group(n="oldShape_GRP", em=True)
         self.shape_grp.visibility.set(0)
 
         # Get Shape and skin from Object
@@ -60,12 +60,12 @@ class PxrStyleCtrl:
         if skin_cluster:
             self.skin = skin_cluster
         else:
-            print('Missing SkinCluster')
+            print("Missing SkinCluster")
 
         # Get joint influence of the skin
         influnces = self.skin.getInfluence(q=True)  # influences is joint
         for joint in influnces:
-            constraint = pm.listRelatives(joint, children=True, type='constraint')
+            constraint = pm.listRelatives(joint, children=True, type="constraint")
             if constraint:
                 ctrl, jnt = util.get_driver_driven_from_constraint(constraint[0])
                 # duplicate mesh for a control
@@ -92,7 +92,7 @@ class PxrStyleCtrl:
         if delete_old_shape_grp:
             pm.delete(self.shape_grp)
 
-        print('DONE!')
+        print("DONE!")
 
     def duplicate_source_mesh(self, obj, ctrl):
         """:param obj:
@@ -147,9 +147,9 @@ class PxrStyleCtrl:
         """
         verts = []
         for x in range(pm.polyEvaluate(new_shape, v=1)):
-            v = pm.skinPercent(self.skin, '%s.vtx[%d]' % (new_shape, x), transform=joint, q=1)
+            v = pm.skinPercent(self.skin, "%s.vtx[%d]" % (new_shape, x), transform=joint, q=1)
             if v > threshold:
-                verts.append('%s.vtx[%d]' % (new_shape, x))
+                verts.append("%s.vtx[%d]" % (new_shape, x))
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)

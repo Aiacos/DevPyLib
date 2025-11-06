@@ -4,7 +4,7 @@ Provides the Fire class for creating fire simulations with appropriate
 container, emitter, and shading settings.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid
@@ -14,7 +14,7 @@ from mayaLib.fluidLib.utility import density_color, math_function
 class Fire(BaseFluid):
     """Fire Preset."""
 
-    def __init__(self, fluid_name='', base_res=32, emit_obj=None):
+    def __init__(self, fluid_name="", base_res=32, emit_obj=None):
         """Constructor for the Fire class.
 
         Args:
@@ -89,11 +89,15 @@ class Fire(BaseFluid):
         self.fluid_container.incandescence[0].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[1].incandescence_Position.set(0.75)
-        self.fluid_container.incandescence[1].incandescence_Color.set(0.896, 0.201495, 0, type="double3")
+        self.fluid_container.incandescence[1].incandescence_Color.set(
+            0.896, 0.201495, 0, type="double3"
+        )
         self.fluid_container.incandescence[1].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[2].incandescence_Position.set(1)
-        self.fluid_container.incandescence[2].incandescence_Color.set(2.5, 1.666667, 0.5, type="double3")
+        self.fluid_container.incandescence[2].incandescence_Color.set(
+            2.5, 1.666667, 0.5, type="double3"
+        )
         self.fluid_container.incandescence[2].incandescence_Interp.set(3)
 
         self.fluid_container.incandescenceInputBias.set(0.8)
@@ -122,5 +126,5 @@ class Fire(BaseFluid):
             self.fluid_container.opacity[int(i * sampling)].opacity_Interp.set(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fire = Fire()

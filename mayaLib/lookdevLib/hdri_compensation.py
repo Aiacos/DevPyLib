@@ -4,7 +4,7 @@ Provides tools for adjusting HDRI intensity and exposure
 for consistent lighting across Arnold and RenderMan.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -38,13 +38,13 @@ class Compensation:
 
         r, g, b = self.compensation_formula(plate_r, plate_g, plate_b, render_r, render_g, render_b)
 
-        if pm.objectType(self.hdri_node, isType='aiSkyDomeLight'):
+        if pm.objectType(self.hdri_node, isType="aiSkyDomeLight"):
             self.create_standard_color_correct()
             self.set_standard_gain(r, g, b)
-        elif pm.objectType(self.hdri_node, isType='PxrDomeLight'):
+        elif pm.objectType(self.hdri_node, isType="PxrDomeLight"):
             self.set_pxr_gain(r, g, b)
         else:
-            print('invalid node')
+            print("invalid node")
 
     def compensation_formula(self, plate_r, plate_g, plate_b, render_r, render_g, render_b):
         """Method to calculate the compensation formula.
@@ -69,7 +69,7 @@ class Compensation:
     def create_standard_color_correct(self):
         """Method to create standard color correct node."""
         # get texture fileNode
-        file_node = pm.listConnections(self.hdri_node.color, p=False, s=True, type='file')[0]
+        file_node = pm.listConnections(self.hdri_node.color, p=False, s=True, type="file")[0]
         self.color_correct_node = file_node
 
     def set_standard_gain(self, r=1, g=1, b=1):
@@ -94,12 +94,12 @@ class Compensation:
 
 
 if __name__ == "__main__":
-    sel = pm.ls('PxrDomeLightShape1', 'aiSkyDomeLightShape1')
+    sel = pm.ls("PxrDomeLightShape1", "aiSkyDomeLightShape1")
 
     for s in sel:
         # print(type(s))
-        print(pm.objectType(s, isType='aiSkyDomeLight'))
+        print(pm.objectType(s, isType="aiSkyDomeLight"))
         # Result: True #
 
-    sel2 = pm.ls(type='PxrDomeLight')
+    sel2 = pm.ls(type="PxrDomeLight")
     print(sel2)

@@ -4,7 +4,7 @@ Demonstrates creating a simple Maya plugin command for
 the DevPyLib library.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import sys
 
@@ -24,7 +24,7 @@ def maya_useNewAPI():
 class MayaLibPlugin(om.MPxCommand):
     """MayaLib plugin command for loading the DevPyLib main menu."""
 
-    k_plugin_cmd_name = 'MayaLib'
+    k_plugin_cmd_name = "MayaLib"
 
     def __init__(self):
         """Initialize the MayaLib plugin command."""
@@ -47,15 +47,11 @@ def initializePlugin(plugin):
     Args:
         plugin: Maya plugin object to initialize.
     """
-    pluginFn = om.MFnPlugin(plugin, 'Lorenzo Argentieri', '1.0')
+    pluginFn = om.MFnPlugin(plugin, "Lorenzo Argentieri", "1.0")
     try:
-        pluginFn.registerCommand(
-            MayaLibPlugin.k_plugin_cmd_name, MayaLibPlugin.cmdCreator
-        )
+        pluginFn.registerCommand(MayaLibPlugin.k_plugin_cmd_name, MayaLibPlugin.cmdCreator)
     except RuntimeError:
-        sys.stderr.write(
-            f"Failed to register command: {MayaLibPlugin.k_plugin_cmd_name}\n"
-        )
+        sys.stderr.write(f"Failed to register command: {MayaLibPlugin.k_plugin_cmd_name}\n")
         raise
 
 
@@ -70,7 +66,5 @@ def uninitializePlugin(plugin):
     try:
         pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
     except RuntimeError:
-        sys.stderr.write(
-            f"Failed to unregister command: {MayaLibPlugin.k_plugin_cmd_name}\n"
-        )
+        sys.stderr.write(f"Failed to unregister command: {MayaLibPlugin.k_plugin_cmd_name}\n")
         raise

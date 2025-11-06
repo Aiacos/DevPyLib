@@ -26,6 +26,7 @@ def _ensure_enum_attribute(node, attr_name: str, labels: list[str]) -> pm.genera
         enum_attr = node.attr(attr_name)
     return enum_attr
 
+
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def create_space_switch(
     drivers,

@@ -23,21 +23,21 @@ class CurvesFromEdge:
             rebuild: Whether to rebuild the resulting curve.
         """
         self.geo = pm.ls(geo)[-1]
-        self.name = str(geo.name()).replace('_geo', '') + '_cv_0'
+        self.name = str(geo.name()).replace("_geo", "") + "_cv_0"
 
         if isinstance(edge, pm.MeshEdge):
             edge_list = self._poly_select_edge_loop(edge)
         elif isinstance(edge, list):
-            print('List: ', edge)
+            print("List: ", edge)
             if isinstance(edge[-1], pm.MeshEdge):
                 edge_list = pm.ls(edge)
             elif isinstance(edge[-1], int):
                 min_idx, max_idx = self._get_min_max_edge(edge)
                 edge_list = self._poly_select_edge_loop_path(min_idx, max_idx)
             else:
-                print('Not Valid Edge')
+                print("Not Valid Edge")
         else:
-            print('Not Valid Edge')
+            print("Not Valid Edge")
         """
         if edge_idx and not edge_loop:
             tmp_loop_idx = pm.polySelect(geo, edgeLoop=edge_idx)
@@ -105,7 +105,7 @@ class CurvesFromEdge:
             PyNode: Reverse curve deformer node.
         """
         deformer_node = pm.reverseCurve(cv, ch=True, rpo=True)
-        pm.rename(deformer_node, self.name + '_reverseCurve')
+        pm.rename(deformer_node, self.name + "_reverseCurve")
 
         return deformer_node
 
@@ -118,9 +118,10 @@ class CurvesFromEdge:
         Returns:
             PyNode: Rebuild curve deformer node.
         """
-        deformer_node = \
-        pm.rebuildCurve(cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001)[-1]
-        pm.rename(deformer_node, self.name + '_rebuildCurve')
+        deformer_node = pm.rebuildCurve(
+            cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001
+        )[-1]
+        pm.rename(deformer_node, self.name + "_rebuildCurve")
 
         return deformer_node
 
@@ -135,9 +136,11 @@ class CurvesFromEdge:
         """
         edge_list = pm.ls(edge_list)
         pm.select(edge_list)
-        cv, deformer = pm.ls(pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1, n=self.name))
+        cv, deformer = pm.ls(
+            pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1, n=self.name)
+        )
         self.name = str(cv.name())
-        pm.rename(deformer, self.name + '_polyEdgeToCurve')
+        pm.rename(deformer, self.name + "_polyEdgeToCurve")
 
         return cv, deformer
 
@@ -170,12 +173,10 @@ class JointChainCurve:
         Args:
             points_number: Number of points along the curve.
         """
-        #nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
-        #nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
+        # nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
+        # nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
 
         self.spacing = 1.0 / (points_number - 1)
-
-
 
 
 def extract_feather_curves(geo, edge_idx_list):
@@ -200,10 +201,13 @@ def extract_feather_curves(geo, edge_idx_list):
         if i % 2:
             pm.reverseCurve(cv, ch=True, rpo=True)
 
-        pm.rebuildCurve(cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001)
+        pm.rebuildCurve(
+            cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001
+        )
         cv_list.append(cv)
 
     return cv_list
+
 
 ## Var ##
 
@@ -211,8 +215,8 @@ def extract_feather_curves(geo, edge_idx_list):
 curve = cmds.ls(sl=True)
 
 
-
 ## Main --wip
+
 
 def deleteConnection(plug):
     """Delete connection to an attribute plug.
@@ -244,9 +248,13 @@ def pointMode(curve, points_number, name_builder_locator, spacing):
     """
     for p in range(1, points_number):
         if p == 1:
-            cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=name_builder_locator + str(p))
+            cmds.spaceLocator(
+                p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=name_builder_locator + str(p)
+            )
             # joint
-        cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=spacing * p, p=True), n=name_builder_locator + str(p))
+        cmds.spaceLocator(
+            p=cmds.pointOnCurve(curve, pr=spacing * p, p=True), n=name_builder_locator + str(p)
+        )
         # joint
 
 
@@ -268,14 +276,14 @@ def pathMode(path, points_number, spacing):
         if p == 1:
             locator = cmds.spaceLocator(n=nameBuilder_locator + str(p))
             motionPath = cmds.pathAnimation(locator[0], c=path, f=True)
-            deleteConnection(motionPath + '.u')
-            cmds.setAttr(motionPath + '.uValue', 0)
+            deleteConnection(motionPath + ".u")
+            cmds.setAttr(motionPath + ".uValue", 0)
             locatorList.append(locator[0])
             # joint
         locator = cmds.spaceLocator(n=nameBuilder_locator + str(p))
         motionPath = cmds.pathAnimation(locator[0], c=path, f=True)
-        deleteConnection(motionPath + '.u')
-        cmds.setAttr(motionPath + '.uValue', spacing * p)
+        deleteConnection(motionPath + ".u")
+        cmds.setAttr(motionPath + ".uValue", spacing * p)
         locatorList.append(locator[0])
         # joint
         # -gruppa i locator

@@ -21,7 +21,7 @@ def z_poly_combine(geos):
         The resulting combined geometry object.
     """
     pm.select(pm.ls(geos))
-    z_poly_combine_node, z_poly_combine_mesh = pm.ls(mel.eval('zPolyCombine;'))
+    z_poly_combine_node, z_poly_combine_mesh = pm.ls(mel.eval("zPolyCombine;"))
 
     return z_poly_combine_mesh
 
@@ -46,11 +46,19 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
     for geo in pm.ls(transfer_geos):
         name = str(geo.name())
         transfer_list.append(name)
-    transfer_string = ' '.join(transfer_list)
+    transfer_string = " ".join(transfer_list)
 
-    z_armonic_warp = pm.ls(mel.eval('zHarmonicWarp ' + source_string + ' ' +
-                                 destination_string + ' ' + transfer_string +
-                                 ';'))[0]
+    z_armonic_warp = pm.ls(
+        mel.eval(
+            "zHarmonicWarp "
+            + source_string
+            + " "
+            + destination_string
+            + " "
+            + transfer_string
+            + ";"
+        )
+    )[0]
     z_armonic_warp.maxResolution.set(512)
     z_armonic_warp.tetSize.set(tet_size)
 
@@ -77,9 +85,13 @@ def bone_warp(source, destination, transfer_geos, tet_size=1):
     for geo in pm.ls(transfer_geos):
         name = str(geo.name())
         transfer_list.append(name)
-    transfer_string = ' '.join(transfer_list)
+    transfer_string = " ".join(transfer_list)
 
-    z_bone_warp = pm.ls(mel.eval('zBoneWarp ' + source_string + ' ' + destination_string + ' ' + transfer_string + ';'))[0]
+    z_bone_warp = pm.ls(
+        mel.eval(
+            "zBoneWarp " + source_string + " " + destination_string + " " + transfer_string + ";"
+        )
+    )[0]
     z_bone_warp.maxResolution.set(512)
     z_bone_warp.tetSize.set(tet_size)
 
@@ -97,7 +109,7 @@ def ziva_check_intersection(geo1, geo2):
         A list of objects that intersect between the two geometry objects.
     """
     pm.select(geo1, geo2)
-    mel.eval('ZivaSelectIntersections;')
+    mel.eval("ZivaSelectIntersections;")
 
     return pm.ls(sl=True, o=True)
 
@@ -109,7 +121,7 @@ def ziva_rename_all():
 
 
 # Mirror
-def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
+def ziva_mirror(from_side="L_", to_side="R_", suffix="_GEO"):
     """Mirror a Ziva setup from one side of the body to the other.
 
     Args:
@@ -117,7 +129,7 @@ def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
         to_side (str): The side of the body to copy to.
         suffix (str): The suffix to add to the end of the node names.
     """
-    pm.select(pm.ls(from_side + '*' + suffix))
+    pm.select(pm.ls(from_side + "*" + suffix))
     z_obj = zva.Ziva()
 
     if pm.ls(sl=True):
@@ -125,10 +137,10 @@ def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
     else:
         z_obj.retrieve_from_scene()
 
-    z_obj.string_replace('^' + from_side, to_side)
+    z_obj.string_replace("^" + from_side, to_side)
     z_obj.build()
 
 
 if __name__ == "__main__":
     ziva_rename_all()
-    ziva_mirror('R_', 'L_')
+    ziva_mirror("R_", "L_")

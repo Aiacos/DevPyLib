@@ -268,9 +268,7 @@ def load_skin_weights(
         fullpath_wt_file = directory / wt_file
         if fullpath_wt_file.exists():
             print("file to read: ", fullpath_wt_file)
-            b_skin_saver.bLoadSkinValues(
-                loadOnSelection=False, inputFile=fullpath_wt_file
-            )
+            b_skin_saver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpath_wt_file)
 
 
 def ng_batch_export(geo_list, path):

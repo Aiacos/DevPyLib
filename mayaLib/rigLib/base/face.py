@@ -1,4 +1,3 @@
-
 """Face rig construction helpers."""
 
 from __future__ import annotations
@@ -17,14 +16,14 @@ from mayaLib.rigLib.utils import (
     skin,
 )
 
-__all__ = ['Face']
+__all__ = ["Face"]
 
 
 def _as_single_node(target: Any, label: str) -> pm.PyNode:
     """Return the first matching PyNode for ``target`` or raise ``ValueError``."""
     nodes = pm.ls(target)
     if not nodes:
-        raise ValueError(f'{label} must reference an existing Maya node.')
+        raise ValueError(f"{label} must reference an existing Maya node.")
     return nodes[0]
 
 
@@ -48,56 +47,60 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         cv_list = parameter_resolution.resolve_required(
             cv_list,
             legacy_kwargs,
-            ('cvList',),
-            'cv_list',
+            ("cvList",),
+            "cv_list",
         )
         skin_geo = parameter_resolution.resolve_required(
             skin_geo,
             legacy_kwargs,
-            ('skinGeo',),
-            'skin_geo',
+            ("skinGeo",),
+            "skin_geo",
         )
-        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'face'))
+        prefix = cast(
+            str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ("prefix",), "face")
+        )
         head_joint = parameter_resolution.resolve_optional(
             head_joint,
             legacy_kwargs,
-            ('headJnt',),
-            'head_JNT',
+            ("headJnt",),
+            "head_JNT",
         )
         points_number = int(
-            parameter_resolution.resolve_optional(points_number, legacy_kwargs, ('pointsNumber',), 5)
+            parameter_resolution.resolve_optional(
+                points_number, legacy_kwargs, ("pointsNumber",), 5
+            )
         )
-        scale = float(parameter_resolution.resolve_optional(scale, legacy_kwargs, ('scale',), 0.1))
-        base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
+        scale = float(parameter_resolution.resolve_optional(scale, legacy_kwargs, ("scale",), 0.1))
+        base_rig = parameter_resolution.resolve_optional(
+            base_rig, legacy_kwargs, ("baseRig",), None
+        )
 
         if legacy_kwargs:
-            raise ValueError(
-                f'Unexpected arguments for Face: {tuple(legacy_kwargs.keys())}'
-            )
+            raise ValueError(f"Unexpected arguments for Face: {tuple(legacy_kwargs.keys())}")
 
         curve_nodes = pm.ls(cv_list)
         if not curve_nodes:
-            raise ValueError('cv_list must contain valid curve names.')
-        skin_geo_node = _as_single_node(skin_geo, 'skin_geo')
-        head_joint_node = _as_single_node(head_joint, 'head_joint')
+            raise ValueError("cv_list must contain valid curve names.")
+        skin_geo_node = _as_single_node(skin_geo, "skin_geo")
+        head_joint_node = _as_single_node(head_joint, "head_joint")
         self.skin_geo = skin_geo_node
         self.head_joint = head_joint_node
 
         if points_number < 2:
-            raise ValueError('points_number must be at least 2.')
+            raise ValueError("points_number must be at least 2.")
 
         self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
 
         self.points_number = points_number
         self.spacing = 1.0 / (points_number - 1)
 
-        face_geo = pm.duplicate(skin_geo_node, n=f'{prefix}_GEO')[0]
+        face_geo = pm.duplicate(skin_geo_node, n=f"{prefix}_GEO")[0]
         self.face_geo = face_geo
         pm.parent(face_geo, self.rig_module.parts_no_trans_group)
         deform.blend_shape_deformer(
             skin_geo_node,
             [face_geo],
-            node_name='face_BS',
+            node_name="face_BS",
             front_of_chain=True,
         )
 
@@ -105,7 +108,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         duplicated_joints = pm.listRelatives(head_face_joint, c=True, ad=True)
         duplicated_joints.append(head_face_joint)
         for joint in duplicated_joints:
-            pm.rename(joint, str(joint.name()).replace('_JNT1', 'Face_JNT'))
+            pm.rename(joint, str(joint.name()).replace("_JNT1", "Face_JNT"))
         pm.parent(duplicated_joints[-1], self.rig_module.joints_group)
 
         pm.skinCluster(face_geo, head_face_joint)
@@ -113,7 +116,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         pm.skinCluster(face_geo, edit=True, ai=curve_nodes, ug=True)
         face_skin_cluster.useComponents.set(1)
 
-        pm.parent(pm.ls('*_CRVBase'), self.rig_module.parts_no_trans_group)
+        pm.parent(pm.ls("*_CRVBase"), self.rig_module.parts_no_trans_group)
 
         full_locator_list: list[pm.PyNode] = []
         full_cluster_list: list[pm.PyNode] = []
@@ -150,7 +153,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             locators = self.setup_curve(curve, points_number)
             full_locator_list.extend(locators)
 
-            curve_cvs = pm.ls(f'{curve}.cv[*]', fl=True)
+            curve_cvs = pm.ls(f"{curve}.cv[*]", fl=True)
             clusters = []
             for index, cv in enumerate(curve_cvs, start=1):
                 cluster = pm.cluster(cv, n=f"{curve.name()}Cluster{index}")[1]
@@ -159,17 +162,17 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
 
         pm.group(
             full_cluster_list,
-            n='faceCluster_GRP',
+            n="faceCluster_GRP",
             p=self.rig_module.parts_no_trans_group,
         )
 
         follicle_list = []
         for locator, cluster in zip(full_locator_list, full_cluster_list, strict=False):
             ctrl = control.Control(
-                prefix=str(locator.name()).replace('_LOC', ''),
+                prefix=str(locator.name()).replace("_LOC", ""),
                 translate_to=locator,
                 parent=self.rig_module.controls_group,
-                shape='sphere',
+                shape="sphere",
                 do_modify=True,
                 scale=scale,
             )
@@ -182,7 +185,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
 
         pm.group(
             follicle_list,
-            n='faceFollicle_GRP',
+            n="faceFollicle_GRP",
             p=self.rig_module.parts_no_trans_group,
         )
 
@@ -199,11 +202,11 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
     ) -> list[pm.PyNode]:
         """Create evenly spaced locators and joints along ``curve``."""
         del sphere_size  # Legacy parameter retained for API compatibility.
-        curve_name = str(curve.name()).replace('_CRV', '')
+        curve_name = str(curve.name()).replace("_CRV", "")
         locators: list[pm.PyNode] = []
 
         for index in range(points_number):
-            locator = pm.spaceLocator(n=f'{curve_name}{index + 1}_LOC')
+            locator = pm.spaceLocator(n=f"{curve_name}{index + 1}_LOC")
             locator.localScaleX.set(locator_size)
             locator.localScaleY.set(locator_size)
             locator.localScaleZ.set(locator_size)
@@ -215,13 +218,13 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
 
             if offset_active:
                 joint_offset = pm.joint(
-                    n=f'{curve_name}Offset{index + 1}_JNT',
+                    n=f"{curve_name}Offset{index + 1}_JNT",
                     r=joint_radius,
                 )
                 joint_offset.radius.set(joint_radius)
                 pm.delete(pm.pointConstraint(locator, joint_offset))
 
-            joint = pm.joint(n=f'{curve_name}{index + 1}_JNT', r=joint_radius)
+            joint = pm.joint(n=f"{curve_name}{index + 1}_JNT", r=joint_radius)
             joint.radius.set(joint_radius)
             if not offset_active:
                 pm.delete(pm.pointConstraint(locator, joint))
@@ -229,7 +232,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             # Optional visualization sphere omitted; original commented block retained.
         pm.group(
             locators,
-            n=f'{curve_name}Loc_GRP',
+            n=f"{curve_name}Loc_GRP",
             p=self.rig_module.parts_no_trans_group,
         )
         return locators
@@ -247,11 +250,11 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
     def get_module_dict(self) -> dict[str, Any]:
         """Return rig module bookkeeping data."""
         return {
-            'module': self.rig_module,
-            'module_obj': self.rig_module,
-            'rig_module': self.rig_module,
+            "module": self.rig_module,
+            "module_obj": self.rig_module,
+            "rig_module": self.rig_module,
         }
 
 
 if __name__ == "__main__":
-    raise SystemExit('Invoke within Maya to construct facial rigs.')
+    raise SystemExit("Invoke within Maya to construct facial rigs.")

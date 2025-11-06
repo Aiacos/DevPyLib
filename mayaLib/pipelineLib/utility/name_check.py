@@ -13,7 +13,7 @@ scene with the given name, and then appends the length of this list plus one to
 the original name to generate a new name.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -30,6 +30,11 @@ def name_check(name):
     name_list = pm.ls(name)
     name_count = len(name_list)
 
-    new_name_r_part = str(name).rpartition('_')
-    new_name = new_name_r_part[0].replace('*', '') + str(name_count + 1) + new_name_r_part[1] + new_name_r_part[2]
+    new_name_r_part = str(name).rpartition("_")
+    new_name = (
+        new_name_r_part[0].replace("*", "")
+        + str(name_count + 1)
+        + new_name_r_part[1]
+        + new_name_r_part[2]
+    )
     return new_name

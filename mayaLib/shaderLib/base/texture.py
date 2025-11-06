@@ -4,7 +4,7 @@ Provides utilities for creating and connecting Maya texture nodes including
 file textures, place2dTexture, and PxrTexture nodes for different renderers.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import glob
 import os
@@ -18,7 +18,13 @@ from mayaLib.shaderLib.utils import config, file
 class TextureFolder:
     """Class to manage texture folders and their contents."""
 
-    def __init__(self, folder=None, workspace=pm.workspace(q=True, dir=True, rd=True), sourceimages='sourceimages', scenes='scenes'):
+    def __init__(
+        self,
+        folder=None,
+        workspace=pm.workspace(q=True, dir=True, rd=True),
+        sourceimages="sourceimages",
+        scenes="scenes",
+    ):
         """Initialize the TextureFolder object.
 
         Args:
@@ -30,7 +36,9 @@ class TextureFolder:
         self.home = pathlib.Path.home()
         self.scenes_folder = self.home / workspace / scenes
 
-        self.texture_folder = pathlib.Path(folder) if folder else self.home / workspace / sourceimages
+        self.texture_folder = (
+            pathlib.Path(folder) if folder else self.home / workspace / sourceimages
+        )
 
         self.img_list = self.build_img_list()
 
@@ -50,7 +58,7 @@ class TextureFolder:
         """
         return self.img_list
 
-    def build_img_list(self, search_extension='png'):
+    def build_img_list(self, search_extension="png"):
         """Build a list of all images in the folder with the given extension.
 
         Args:
@@ -61,7 +69,7 @@ class TextureFolder:
         """
         img_list = []
         os.chdir(self.get_texture_folder())
-        for filename in glob.glob('*.' + search_extension):
+        for filename in glob.glob("*." + search_extension):
             img_list.append(filename)
 
         return img_list
@@ -76,7 +84,7 @@ class TextureFolder:
             str: Base name of the texture.
         """
         texture = str(texture_stem)
-        return '_'.join(texture.split('_')[:-1])
+        return "_".join(texture.split("_")[:-1])
 
     def build_texture_catalog(self):
         """Build a catalog of textures organized by base name.
@@ -97,6 +105,7 @@ class TextureFolder:
             texture_dict[texture_base_name] = txt_tmp_list
         return texture_dict
 
+
 def get_texture_from_node(file):
     """Get texture file path as a pathlib object.
 
@@ -107,6 +116,7 @@ def get_texture_from_node(file):
         pathlib.Path: Base color texture path.
     """
     return pathlib.Path(file)
+
 
 class TextureFileNode:
     """Class to manage Maya File nodes."""
@@ -123,10 +133,19 @@ class TextureFileNode:
 
         self.place_node = single_place_node if single_place_node else False
 
-        file_name_filenode = (self.texture_recognition.mesh + '_' + self.texture_recognition.channel + '.' +
-                              self.texture_recognition.texture_set + '.' + self.texture_recognition.ext)
+        file_name_filenode = (
+            self.texture_recognition.mesh
+            + "_"
+            + self.texture_recognition.channel
+            + "."
+            + self.texture_recognition.texture_set
+            + "."
+            + self.texture_recognition.ext
+        )
 
-        self.filenode = self.connect_file_node(path=path, name=file_name_filenode, single_place_node=single_place_node)
+        self.filenode = self.connect_file_node(
+            path=path, name=file_name_filenode, single_place_node=single_place_node
+        )
 
     def connect_placement(self, place_node, file_node):
         """Connect place node to file node.
@@ -135,26 +154,28 @@ class TextureFileNode:
             place_node: Place2D texture node.
             file_node: File node.
         """
-        pm.connectAttr(f'{place_node}.coverage', f'{file_node}.coverage')
-        pm.connectAttr(f'{place_node}.translateFrame', f'{file_node}.translateFrame')
-        pm.connectAttr(f'{place_node}.rotateFrame', f'{file_node}.rotateFrame')
-        pm.connectAttr(f'{place_node}.mirrorU', f'{file_node}.mirrorU')
-        pm.connectAttr(f'{place_node}.mirrorV', f'{file_node}.mirrorV')
-        pm.connectAttr(f'{place_node}.stagger', f'{file_node}.stagger')
-        pm.connectAttr(f'{place_node}.wrapU', f'{file_node}.wrapU')
-        pm.connectAttr(f'{place_node}.wrapV', f'{file_node}.wrapV')
-        pm.connectAttr(f'{place_node}.repeatUV', f'{file_node}.repeatUV')
-        pm.connectAttr(f'{place_node}.offset', f'{file_node}.offset')
-        pm.connectAttr(f'{place_node}.rotateUV', f'{file_node}.rotateUV')
-        pm.connectAttr(f'{place_node}.noiseUV', f'{file_node}.noiseUV')
-        pm.connectAttr(f'{place_node}.vertexUvOne', f'{file_node}.vertexUvOne')
-        pm.connectAttr(f'{place_node}.vertexUvTwo', f'{file_node}.vertexUvTwo')
-        pm.connectAttr(f'{place_node}.vertexUvThree', f'{file_node}.vertexUvThree')
-        pm.connectAttr(f'{place_node}.vertexCameraOne', f'{file_node}.vertexCameraOne')
-        pm.connectAttr(f'{place_node}.outUV', f'{file_node}.uv')
-        pm.connectAttr(f'{place_node}.outUvFilterSize', f'{file_node}.uvFilterSize')
+        pm.connectAttr(f"{place_node}.coverage", f"{file_node}.coverage")
+        pm.connectAttr(f"{place_node}.translateFrame", f"{file_node}.translateFrame")
+        pm.connectAttr(f"{place_node}.rotateFrame", f"{file_node}.rotateFrame")
+        pm.connectAttr(f"{place_node}.mirrorU", f"{file_node}.mirrorU")
+        pm.connectAttr(f"{place_node}.mirrorV", f"{file_node}.mirrorV")
+        pm.connectAttr(f"{place_node}.stagger", f"{file_node}.stagger")
+        pm.connectAttr(f"{place_node}.wrapU", f"{file_node}.wrapU")
+        pm.connectAttr(f"{place_node}.wrapV", f"{file_node}.wrapV")
+        pm.connectAttr(f"{place_node}.repeatUV", f"{file_node}.repeatUV")
+        pm.connectAttr(f"{place_node}.offset", f"{file_node}.offset")
+        pm.connectAttr(f"{place_node}.rotateUV", f"{file_node}.rotateUV")
+        pm.connectAttr(f"{place_node}.noiseUV", f"{file_node}.noiseUV")
+        pm.connectAttr(f"{place_node}.vertexUvOne", f"{file_node}.vertexUvOne")
+        pm.connectAttr(f"{place_node}.vertexUvTwo", f"{file_node}.vertexUvTwo")
+        pm.connectAttr(f"{place_node}.vertexUvThree", f"{file_node}.vertexUvThree")
+        pm.connectAttr(f"{place_node}.vertexCameraOne", f"{file_node}.vertexCameraOne")
+        pm.connectAttr(f"{place_node}.outUV", f"{file_node}.uv")
+        pm.connectAttr(f"{place_node}.outUvFilterSize", f"{file_node}.uvFilterSize")
 
-    def connect_file_node(self, path, name, single_place_node, gamma_correct=True, alpha_is_luminance=True):
+    def connect_file_node(
+        self, path, name, single_place_node, gamma_correct=True, alpha_is_luminance=True
+    ):
         """Create and connect a file node.
 
         Args:
@@ -167,42 +188,49 @@ class TextureFileNode:
         Returns:
             node: File node object.
         """
-        tex_name, texture_set, ext = name.split('.')
+        tex_name, texture_set, ext = name.split(".")
 
         # creation node
-        file_node = pm.shadingNode("file", name=tex_name + '_tex', asTexture=True, isColorManaged=True)
-        file_node.fileTextureName.set(path + '/' + name)
+        file_node = pm.shadingNode(
+            "file", name=tex_name + "_tex", asTexture=True, isColorManaged=True
+        )
+        file_node.fileTextureName.set(path + "/" + name)
 
         # uvTilingMode -- UDIM -> 3
         if texture_set.isdigit():
             file_node.uvTilingMode.set(3)
 
         # alphaIsLuminance
-        if (self.texture_recognition.channel == config.BACKLIGHT
-                or self.texture_recognition.channel == config.SPECULAR_WEIGHT
-                or self.texture_recognition.channel == config.SPECULAR_ROUGHNESS
-                or self.texture_recognition.channel == config.FRESNEL
-                or self.texture_recognition.channel == config.NORMAL
-                or self.texture_recognition.channel == config.HEIGHT):
+        if (
+            self.texture_recognition.channel == config.BACKLIGHT
+            or self.texture_recognition.channel == config.SPECULAR_WEIGHT
+            or self.texture_recognition.channel == config.SPECULAR_ROUGHNESS
+            or self.texture_recognition.channel == config.FRESNEL
+            or self.texture_recognition.channel == config.NORMAL
+            or self.texture_recognition.channel == config.HEIGHT
+        ):
             file_node.alphaIsLuminance.set(True)
         else:
             file_node.alphaIsLuminance.set(False)
 
         # Color Space
-        if (self.texture_recognition.channel == config.DIFFUSE
-                or self.texture_recognition.channel == config.SPECULAR_COLOR):
-            file_node.colorSpace.set('sRGB')
+        if (
+            self.texture_recognition.channel == config.DIFFUSE
+            or self.texture_recognition.channel == config.SPECULAR_COLOR
+        ):
+            file_node.colorSpace.set("sRGB")
         else:
-            file_node.colorSpace.set('Raw')
+            file_node.colorSpace.set("Raw")
 
         # place node connect
         if single_place_node is None:
-            multi_place_node = pm.shadingNode('place2dTexture', asUtility=True)
+            multi_place_node = pm.shadingNode("place2dTexture", asUtility=True)
             self.connect_placement(multi_place_node, file_node)
         else:
             self.connect_placement(self.place_node, file_node)
 
         return file_node
+
 
 class TexturePxrTexture:
     """Class to manage Renderman PxrTexture nodes."""
@@ -216,8 +244,15 @@ class TexturePxrTexture:
         """
         self.texture_recognition = file.TextureFile(path=path, filename=filename)
 
-        file_name_filenode = (self.texture_recognition.mesh + '_' + self.texture_recognition.channel + '.' +
-                              self.texture_recognition.texture_set + '.' + self.texture_recognition.ext)
+        file_name_filenode = (
+            self.texture_recognition.mesh
+            + "_"
+            + self.texture_recognition.channel
+            + "."
+            + self.texture_recognition.texture_set
+            + "."
+            + self.texture_recognition.ext
+        )
 
         self.filenode = self.connect_file_node(path=path, name=file_name_filenode)
 
@@ -233,22 +268,24 @@ class TexturePxrTexture:
         Returns:
             node: PxrTexture node object.
         """
-        tex_name, texture_set, ext = name.split('.')
+        tex_name, texture_set, ext = name.split(".")
 
         # creation node
-        pxrtexture_node = pm.shadingNode("PxrTexture", name=tex_name + '_tex', asTexture=True)
-        pxrtexture_node.filename.set(path + '/' + name)
+        pxrtexture_node = pm.shadingNode("PxrTexture", name=tex_name + "_tex", asTexture=True)
+        pxrtexture_node.filename.set(path + "/" + name)
 
         # uvTilingMode -- UDIM -> 3
         if texture_set.isdigit():
-            pxrtexture_node.filename.set(path + '/' + tex_name + '.' + '_MAPID_' + '.' + ext)
+            pxrtexture_node.filename.set(path + "/" + tex_name + "." + "_MAPID_" + "." + ext)
             pxrtexture_node.atlasStyle.set(1)
         else:
-            pxrtexture_node.filename.set(path + '/' + name)
+            pxrtexture_node.filename.set(path + "/" + name)
 
         # Color Space
-        if (self.texture_recognition.channel == config.DIFFUSE
-                or self.texture_recognition.channel == config.SPECULAR_COLOR):
+        if (
+            self.texture_recognition.channel == config.DIFFUSE
+            or self.texture_recognition.channel == config.SPECULAR_COLOR
+        ):
             pxrtexture_node.linearize.set(True)
         else:
             pxrtexture_node.linearize.set(False)

@@ -6,29 +6,27 @@ import pymel.core as pm
 from maya import mel
 
 __all__ = [
-    'get_driver_driven_from_constraint',
-    'get_driver_object',
-    'get_driven_attributes',
-    'get_driven_objects',
-    'list_objects_under_group',
-    'move_shape',
-    'get_distance',
-    'get_distance_from_coords',
-    'lock_and_hide_all',
-    'unlock_and_unhide_all',
-    'no_render',
-    'invert_selection',
-    'get_planar_radius_bbox',
-    'matrix_constrain',
-    'cleanup_unknown_nodes',
+    "get_driver_driven_from_constraint",
+    "get_driver_object",
+    "get_driven_attributes",
+    "get_driven_objects",
+    "list_objects_under_group",
+    "move_shape",
+    "get_distance",
+    "get_distance_from_coords",
+    "lock_and_hide_all",
+    "unlock_and_unhide_all",
+    "no_render",
+    "invert_selection",
+    "get_planar_radius_bbox",
+    "matrix_constrain",
+    "cleanup_unknown_nodes",
 ]
 
 
 def get_driver_driven_from_constraint(constraint):
     """Return the driver and driven objects attached to ``constraint``."""
-    drivers = pm.listConnections(
-        f'{constraint}.target[0].targetParentMatrix', destination=False
-    )
+    drivers = pm.listConnections(f"{constraint}.target[0].targetParentMatrix", destination=False)
     driven = pm.listConnections(constraint, source=False)[0]
     return drivers, driven
 
@@ -85,14 +83,14 @@ def get_driven_objects(attribute, skip_conversion_nodes: bool = True):
 
 def list_objects_under_group(
     group,
-    node_type: str = 'mesh',
+    node_type: str = "mesh",
     full_path: bool = True,
 ) -> list:
     """Return objects of ``node_type`` found under a group."""
-    if node_type == 'transform':
+    if node_type == "transform":
         mesh_nodes = {
             pm.listRelatives(node, p=True, fullPath=full_path)[0]
-            for node in pm.listRelatives(group, ad=True, type='mesh', fullPath=full_path)
+            for node in pm.listRelatives(group, ad=True, type="mesh", fullPath=full_path)
         }
         objects = [
             node
@@ -122,8 +120,8 @@ def get_distance(obj_a, obj_b) -> float:
     constraint_a = pm.pointConstraint(obj_a, locator_a)
     constraint_b = pm.pointConstraint(obj_b, locator_b)
 
-    ax, ay, az = locator_a.getTranslation(space='world')
-    bx, by, bz = locator_b.getTranslation(space='world')
+    ax, ay, az = locator_a.getTranslation(space="world")
+    bx, by, bz = locator_b.getTranslation(space="world")
     distance = ((ax - bx) ** 2 + (ay - by) ** 2 + (az - bz) ** 2) ** 0.5
 
     pm.delete(constraint_a, constraint_b, locator_a, locator_b)
@@ -140,14 +138,14 @@ def get_distance_from_coords(min_corner, max_corner) -> float:
 def lock_and_hide_all(nodes) -> None:
     """Lock and hide transform channels on the given nodes."""
     for node in pm.ls(nodes):
-        for attr in ('tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz'):
+        for attr in ("tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"):
             getattr(node, attr).set(lock=True, keyable=False, channelBox=False)
 
 
 def unlock_and_unhide_all(nodes) -> None:
     """Unlock and expose transform channels on the given nodes."""
     for node in pm.ls(nodes):
-        for attr in ('tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz'):
+        for attr in ("tx", "ty", "tz", "rx", "ry", "rz", "sx", "sy", "sz"):
             getattr(node, attr).set(lock=False, keyable=True, channelBox=True)
 
 
@@ -165,7 +163,7 @@ def no_render(nodes) -> None:
 
 def invert_selection():
     """Invert the current Maya selection and return the new list."""
-    mel.eval('InvertSelection;')
+    mel.eval("InvertSelection;")
     return pm.ls(sl=True)
 
 
@@ -177,10 +175,10 @@ def get_planar_radius_bbox(transform, radius_factor: float = 2.0) -> dict[str, f
     xmax, ymax, zmax = bbox[1]
 
     radius = {
-        'planarX': get_distance_from_coords([0, ymin, zmin], [0, ymin, zmax]) / radius_factor,
-        'planarY': get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax]) / radius_factor,
-        'planarZ': get_distance_from_coords([xmin, ymin, 0], [xmax, ymin, 0]) / radius_factor,
-        '3D': get_distance_from_coords([xmin, ymin, zmin], [xmax, ymax, zmax]) / radius_factor,
+        "planarX": get_distance_from_coords([0, ymin, zmin], [0, ymin, zmax]) / radius_factor,
+        "planarY": get_distance_from_coords([xmin, 0, zmin], [xmax, 0, zmax]) / radius_factor,
+        "planarZ": get_distance_from_coords([xmin, ymin, 0], [xmax, ymin, 0]) / radius_factor,
+        "3D": get_distance_from_coords([xmin, ymin, zmin], [xmax, ymax, zmax]) / radius_factor,
     }
     return radius
 
@@ -198,8 +196,8 @@ def matrix_constrain(  # pylint: disable=too-many-arguments,too-many-positional-
     driven = pm.ls(driven)[0]
     parent = pm.ls(parent)[0] if parent else driven.getParent()
 
-    mult_matrix = pm.shadingNode('multMatrix', asUtility=True)
-    decompose = pm.shadingNode('decomposeMatrix', asUtility=True)
+    mult_matrix = pm.shadingNode("multMatrix", asUtility=True)
+    decompose = pm.shadingNode("decomposeMatrix", asUtility=True)
 
     pm.connectAttr(mult_matrix.matrixSum, decompose.inputMatrix)
     pm.connectAttr(driver.worldMatrix[0], mult_matrix.matrixIn[0])
@@ -222,7 +220,7 @@ def cleanup_unknown_nodes() -> None:
         except RuntimeError:
             continue
 
-    for node_type in ('unknown', 'unknownDag', 'unknownTransform'):
+    for node_type in ("unknown", "unknownDag", "unknownTransform"):
         for node in pm.ls(type=node_type):
             if node and not node.isReferenced():
                 with pm.ignoreErrors():

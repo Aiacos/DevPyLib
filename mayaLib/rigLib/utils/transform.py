@@ -25,7 +25,7 @@ def make_offset_group(node, prefix: str | None = None):
         The newly created offset group as a PyNode.
     """
     node = pm.PyNode(node)
-    prefix = (prefix or _default_prefix(node)) + 'Offset'
+    prefix = (prefix or _default_prefix(node)) + "Offset"
 
     offset_group = pm.group(n=f"{prefix}_GRP", em=True)
     parent = pm.listRelatives(node, parent=True)
@@ -41,7 +41,7 @@ def make_offset_group(node, prefix: str | None = None):
 def make_modify_group(node, prefix: str | None = None):
     """Create a modify group directly above a transform node."""
     node = pm.PyNode(node)
-    prefix = (prefix or _default_prefix(node)) + 'Modify'
+    prefix = (prefix or _default_prefix(node)) + "Modify"
 
     modify_group = pm.group(n=f"{prefix}_GRP", em=True)
     parent = pm.listRelatives(node, parent=True)

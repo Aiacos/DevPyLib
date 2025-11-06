@@ -13,8 +13,9 @@ def list_all_display_layer():
     Returns:
         list: A list of display layer objects.
     """
-    layer_list = pm.ls(type='displayLayer')[1:]
+    layer_list = pm.ls(type="displayLayer")[1:]
     return layer_list
+
 
 def get_objects_in_display_layer(layer):
     """Retrieves objects contained within a specific display layer.
@@ -27,8 +28,9 @@ def get_objects_in_display_layer(layer):
     """
     return pm.ls(pm.editDisplayLayerMembers(layer, query=True))
 
+
 if __name__ == "__main__":
     # Iterate over all display layers, set their color to 3, and print the objects they contain.
     for layer in list_all_display_layer():
-        print(('Layer: ', layer.color.set(3)))
+        print(("Layer: ", layer.color.set(3)))
         print(get_objects_in_display_layer(layer))

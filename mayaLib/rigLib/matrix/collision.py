@@ -25,6 +25,7 @@ class Collider:
         >>> collider = Collider('arm', ctrl='arm_CTRL', target_mesh='arm_mesh')
         >>> # Automatically sets up matrix-based collision detection and deformation
     """
+
     def __init__(
         self,
         module_name,
@@ -75,16 +76,12 @@ class Collider:
             "decomposeMatrix", name=module_name + "_decomposeMatrix_collisionPoint"
         )
 
-        vector_product_z = pm.createNode(
-            "vectorProduct", name=module_name + "_vectorProductZ"
-        )
+        vector_product_z = pm.createNode("vectorProduct", name=module_name + "_vectorProductZ")
         pm.setAttr(vector_product_z.operation, 2)
         pm.setAttr(vector_product_z.input1X, 1)
         pm.setAttr(vector_product_z.input1Y, 0)
 
-        vector_product_x = pm.createNode(
-            "vectorProduct", name=module_name + "_vectorProductX"
-        )
+        vector_product_x = pm.createNode("vectorProduct", name=module_name + "_vectorProductX")
         pm.setAttr(vector_product_x.operation, 2)
 
         four_by_four_matrix = pm.createNode(
@@ -122,9 +119,7 @@ class Collider:
         pm.setAttr(remap_value_fade_snap.outputMin, 0)
         pm.setAttr(remap_value_fade_snap.outputMax, 1)
 
-        condition_fade_snap = pm.createNode(
-            "condition", name=module_name + "_condition_FadeSnap"
-        )
+        condition_fade_snap = pm.createNode("condition", name=module_name + "_condition_FadeSnap")
         pm.setAttr(condition_fade_snap.operation, 2)
         pm.setAttr(condition_fade_snap.secondTerm, -0.1)
 
@@ -217,18 +212,14 @@ class Collider:
             condition_fade_snap.colorIfFalseR,
             f=True,
         )
-        pm.connectAttr(
-            remap_value_fade_snap.outColorR, condition_fade_snap.colorIfTrueR, f=True
-        )
+        pm.connectAttr(remap_value_fade_snap.outColorR, condition_fade_snap.colorIfTrueR, f=True)
         pm.connectAttr(
             plus_minus_average_matrix_distance_from_curve.output3Dy,
             condition_fade_snap.firstTerm,
             f=True,
         )
 
-        pm.connectAttr(
-            self.ctrl.worldMatrix[0], decompose_matrix_ctrl.inputMatrix, f=True
-        )
+        pm.connectAttr(self.ctrl.worldMatrix[0], decompose_matrix_ctrl.inputMatrix, f=True)
 
         pm.connectAttr(
             plus_minus_average_matrix_distance_from_curve.output3D,
@@ -243,12 +234,8 @@ class Collider:
 
         pm.connectAttr(condition_fade_snap.outColorR, pair_blend.weight, f=True)
         pm.connectAttr(decompose_matrix_ctrl.outputRotate, pair_blend.inRotate1, f=True)
-        pm.connectAttr(
-            decompose_matrix_four_by_four.outputRotate, pair_blend.inRotate2, f=True
-        )
-        pm.connectAttr(
-            decompose_matrix_ctrl.outputTranslate, pair_blend.inTranslate1, f=True
-        )
+        pm.connectAttr(decompose_matrix_four_by_four.outputRotate, pair_blend.inRotate2, f=True)
+        pm.connectAttr(decompose_matrix_ctrl.outputTranslate, pair_blend.inTranslate1, f=True)
         pm.connectAttr(
             plus_minus_average_matrix_offset_from_ctrl.output3D,
             pair_blend.inTranslate2,

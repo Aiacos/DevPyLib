@@ -25,8 +25,16 @@ class AutoUV:
         >>> # Processes UV unwrapping on the selected geometry
     """
 
-    def __init__(self, geo_list=pm.ls(sl=True), map_res=1024, texel_density=16, auto_seam_angle=0,
-                 auto_project=True, auto_seam=True, auto_cut_uv=True):
+    def __init__(
+        self,
+        geo_list=pm.ls(sl=True),
+        map_res=1024,
+        texel_density=16,
+        auto_seam_angle=0,
+        auto_project=True,
+        auto_seam=True,
+        auto_cut_uv=True,
+    ):
         """Initializes the AutoUV process for the given list of geometries.
 
         This method performs several UV operations on each geometry in the provided list.
@@ -45,7 +53,7 @@ class AutoUV:
         area = 0
         geo_list = pm.ls(geo_list)
         for geo in geo_list:
-            print(('Current Geo: ', geo.name()))
+            print(("Current Geo: ", geo.name()))
 
             # fix no-Manifold UV
             self.fix_non_manifold_uv(geo)
@@ -54,7 +62,7 @@ class AutoUV:
             if auto_project:
                 pm.select(geo)
                 mel.eval('texNormalProjection 1 1 "" ;')
-                #pm.polyAutoProjection(geo.f[:], lm=0, pb=0, ibd=1, cm=0, l=0, sc=0, o=0, p=6, ps=0.2, ws=0)
+                # pm.polyAutoProjection(geo.f[:], lm=0, pb=0, ibd=1, cm=0, l=0, sc=0, o=0, p=6, ps=0.2, ws=0)
 
             # Auto Seam 1
             if auto_seam:
@@ -78,12 +86,12 @@ class AutoUV:
 
             area = area + pm.polyEvaluate(geo, uvArea=True)
 
-        print(('Total Area: ', area, ' -- RoundUp: ', math.ceil(area)))
+        print(("Total Area: ", area, " -- RoundUp: ", math.ceil(area)))
         # Layout with TexelDensity
         self.final_layout_uv(geo_list, area)
         # pm.select(geo_list)
 
-        print('Auto UV Complete!')
+        print("Auto UV Complete!")
 
     def check_uv_in_boundaries(self, shell):
         """Checks whether all UVs in the given shell are within the boundaries of the UV tile.
@@ -169,7 +177,7 @@ class AutoUV:
 
             faces = pm.polyListComponentConversion(pm.ls(tmp_buffer), tuv=True)
             pm.select(faces)
-            mel.eval('CreateUVShellAlongBorder;')
+            mel.eval("CreateUVShellAlongBorder;")
             # pm.polyMapCut(faces, ch=True)
 
     def recursive_cut_uv(self, geo):
@@ -197,7 +205,9 @@ class AutoUV:
         shell_number = pm.polyEvaluate(geo, uvShell=True)
         shell_list = []
         for i in range(shell_number):
-            shell_faces = pm.polyListComponentConversion(pm.polyEvaluate(geo, uvsInShell=i), toFace=True)
+            shell_faces = pm.polyListComponentConversion(
+                pm.polyEvaluate(geo, uvsInShell=i), toFace=True
+            )
             shell_list.append(shell_faces)
 
         return shell_list
@@ -210,7 +220,9 @@ class AutoUV:
             texel_density (float): The desired texel density. Defaults to 10.24.
             map_res (int): The resolution of the texture map. Defaults to 1024.
         """
-        tex_set_texel_density = 'texSetTexelDensity ' + str(texel_density) + ' ' + str(map_res) + ';'
+        tex_set_texel_density = (
+            "texSetTexelDensity " + str(texel_density) + " " + str(map_res) + ";"
+        )
         pm.select(geo.f[:])
         mel.eval(tex_set_texel_density)
 
@@ -229,10 +241,36 @@ class AutoUV:
             map_res (int, optional): The resolution for the texture map. Defaults to 1024.
             iteration (int, optional): The number of mutations to apply. Defaults to 1.
         """
-        pm.u3dLayout(geo_list, res=map_res, mutations=iteration, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
-                     tileMargin=0.001953125, layoutScaleMode=1, u=u_count, v=v_count, rst=90, rmn=0, rmx=360)
-        pm.u3dLayout(geo_list, res=map_res, mutations=iteration, rot=2, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
-                     tileMargin=0.001953125, layoutScaleMode=1, u=u_count, v=v_count, rst=90, rmn=0, rmx=360)
+        pm.u3dLayout(
+            geo_list,
+            res=map_res,
+            mutations=iteration,
+            rot=2,
+            box=[0, 1, 0, 1],
+            shellSpacing=0.0009765625,
+            tileMargin=0.001953125,
+            layoutScaleMode=1,
+            u=u_count,
+            v=v_count,
+            rst=90,
+            rmn=0,
+            rmx=360,
+        )
+        pm.u3dLayout(
+            geo_list,
+            res=map_res,
+            mutations=iteration,
+            rot=2,
+            box=[0, 1, 0, 1],
+            shellSpacing=0.0009765625,
+            tileMargin=0.001953125,
+            layoutScaleMode=1,
+            u=u_count,
+            v=v_count,
+            rst=90,
+            rmn=0,
+            rmx=360,
+        )
 
     def uv_layout_fast(self, geo):
         """Perform a fast UV layout on the given geometry.
@@ -246,13 +284,22 @@ class AutoUV:
         Args:
             geo (str): The name of the geometry to layout UVs for.
         """
-        pm.u3dLayout(geo, res=256, mutations=1, rot=2, scl=0, box=[0, 1, 0, 1], shellSpacing=0.0009765625,
-                     tileMargin=0.0009765625, layoutScaleMode=1)
+        pm.u3dLayout(
+            geo,
+            res=256,
+            mutations=1,
+            rot=2,
+            scl=0,
+            box=[0, 1, 0, 1],
+            shellSpacing=0.0009765625,
+            tileMargin=0.0009765625,
+            layoutScaleMode=1,
+        )
 
         shell_list = self.get_uv_shell(geo)
         pm.select(shell_list)
-        mel.eval('texStackShells {};')
-        mel.eval('texSnapShells bottomLeft;')
+        mel.eval("texStackShells {};")
+        mel.eval("texSnapShells bottomLeft;")
         mel.eval('texAlignShells minV {} "";')
         mel.eval('texAlignShells minU {} "";')
 
@@ -275,7 +322,7 @@ class AutoUV:
         u_count = tile_value if tile_value % 2 else tile_value + 1
         v_count = tile_value + 1
 
-        print(('UV: ', math.ceil(u_count), math.ceil(v_count)))
+        print(("UV: ", math.ceil(u_count), math.ceil(v_count)))
         self.uv_layout_no_scale(geo_list, math.ceil(u_count), math.ceil(v_count))
 
         bad_shell_list = []
@@ -284,7 +331,7 @@ class AutoUV:
                 if not self.check_uv_in_boundaries(shell):
                     bad_shell_list.append(shell)
         if len(bad_shell_list) > 0:
-            print('Bad Shells')
+            print("Bad Shells")
             self.uv_layout_no_scale(bad_shell_list, 1, 1)
             pm.polyEditUV(bad_shell_list, u=0, v=v_count)
 
@@ -316,12 +363,25 @@ class AutoUV:
             geo (str): The name of the geometry to unfold and optimize the UVs of.
             normalize_shell (bool, optional): If True, the UV shells are normalized after unfolding. Defaults to False.
         """
-        pm.u3dUnfold(geo, mapsize=1024, iterations=2, pack=0, borderintersection=True, triangleflip=True, roomspace=0)
+        pm.u3dUnfold(
+            geo,
+            mapsize=1024,
+            iterations=2,
+            pack=0,
+            borderintersection=True,
+            triangleflip=True,
+            roomspace=0,
+        )
         if normalize_shell:
             shell_list = self.get_uv_shell(geo)
             for shell in shell_list:
-                pm.polyNormalizeUV(shell, normalizeType=1, preserveAspectRatio=False, centerOnTile=True,
-                                   normalizeDirection=0)
+                pm.polyNormalizeUV(
+                    shell,
+                    normalizeType=1,
+                    preserveAspectRatio=False,
+                    centerOnTile=True,
+                    normalizeDirection=0,
+                )
 
     def fix_non_manifold_uv(self, geo):
         """Fix non-manifold UVs for the given geometry.
@@ -335,10 +395,12 @@ class AutoUV:
         """
         pm.select(geo)
         mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
+        )
         pm.select(geo)
         mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };')
+            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
+        )
 
 
 def transfer_uv(source, destination):
@@ -360,8 +422,18 @@ def transfer_uv(source, destination):
     pm.select(source)
     pm.select(destination, add=True)
 
-    pm.transferAttributes(transferPositions=0, transferNormals=0, transferUVs=2, transferColors=2, sampleSpace=0,
-                          searchMethod=3, flipUVs=0, colorBorders=1, sourceUvSpace="map1", targetUvSpace="map1")
+    pm.transferAttributes(
+        transferPositions=0,
+        transferNormals=0,
+        transferUVs=2,
+        transferColors=2,
+        sampleSpace=0,
+        searchMethod=3,
+        flipUVs=0,
+        colorBorders=1,
+        sourceUvSpace="map1",
+        targetUvSpace="map1",
+    )
 
 
 def unwrella_unwrap_all(geo_list, keep_seam=True):
@@ -380,10 +452,13 @@ def unwrella_unwrap_all(geo_list, keep_seam=True):
         pm.select(geo)
 
         if keep_seam:
-            mel.eval('unwrella -mc "map1" -t 0 -st 0.150000 -pad 2.000000 -w 1024 -h 1024 -ug 0 -ga 90.000000 -ur 0 -ra 90.000000 -ks 1 -tx 1 -ty 1 -p 1 -pr 1 -ro 1 -fr 0 -re 1 -c "" -ca 45.000000 -ce 0.000000 -co 0;')
+            mel.eval(
+                'unwrella -mc "map1" -t 0 -st 0.150000 -pad 2.000000 -w 1024 -h 1024 -ug 0 -ga 90.000000 -ur 0 -ra 90.000000 -ks 1 -tx 1 -ty 1 -p 1 -pr 1 -ro 1 -fr 0 -re 1 -c "" -ca 45.000000 -ce 0.000000 -co 0;'
+            )
         else:
-            mel.eval('unwrella -mc "map1" -t 0 -st 0.150000 -pad 2.000000 -w 1024 -h 1024 -ug 0 -ga 90.000000 -ur 0 -ra 90.000000 -ks 0 -tx 1 -ty 1 -p 1 -pr 1 -ro 1 -fr 0 -re 1 -c "" -ca 45.000000 -ce 0.000000 -co 0;')
-
+            mel.eval(
+                'unwrella -mc "map1" -t 0 -st 0.150000 -pad 2.000000 -w 1024 -h 1024 -ug 0 -ga 90.000000 -ur 0 -ra 90.000000 -ks 0 -tx 1 -ty 1 -p 1 -pr 1 -ro 1 -fr 0 -re 1 -c "" -ca 45.000000 -ce 0.000000 -co 0;'
+            )
 
 
 if __name__ == "__main__":

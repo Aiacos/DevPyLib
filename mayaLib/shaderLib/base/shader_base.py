@@ -5,12 +5,17 @@ with common material property methods. Includes ShaderBase and
 UsdPreviewSurface classes.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
 
-def build_lambert(shader_type='lambert', shader_name='tmp-shader', color=(0.5, 0.5, 0.5), transparency=(0.0, 0.0, 0.0)):
+def build_lambert(
+    shader_type="lambert",
+    shader_name="tmp-shader",
+    color=(0.5, 0.5, 0.5),
+    transparency=(0.0, 0.0, 0.0),
+):
     """Creates a Lambert shader with specified attributes.
 
     Args:
@@ -27,7 +32,7 @@ def build_lambert(shader_type='lambert', shader_name='tmp-shader', color=(0.5, 0
     # a shading group
     shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
-    pm.connectAttr(f'{shader}.outColor', f'{shading_group}.surfaceShader')
+    pm.connectAttr(f"{shader}.outColor", f"{shading_group}.surfaceShader")
 
     shader.color.set(color)
     shader.transparency.set(transparency)
@@ -35,7 +40,9 @@ def build_lambert(shader_type='lambert', shader_name='tmp-shader', color=(0.5, 0
     return shader
 
 
-def build_surfaceshader(shader_type='surfaceShader', shader_name='tmp-shader', color=(0.5, 0.5, 0.5)):
+def build_surfaceshader(
+    shader_type="surfaceShader", shader_name="tmp-shader", color=(0.5, 0.5, 0.5)
+):
     """Builds a basic surface shader.
 
     Args:
@@ -51,7 +58,7 @@ def build_surfaceshader(shader_type='surfaceShader', shader_name='tmp-shader', c
     # a shading group
     shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader_name)
     # connect shader to sg surface shader
-    pm.connectAttr(f'{shader}.outColor', f'{shading_group}.surfaceShader')
+    pm.connectAttr(f"{shader}.outColor", f"{shading_group}.surfaceShader")
 
     shader.outColor.set(color)
 
@@ -82,30 +89,38 @@ def connect_shader_to_shading_node(shader, shading_engine):
 class ShaderBase:
     """Base class for creating shaders with texture connections."""
 
-    base_color_name_list = ['diffuse', 'diff', 'albedo', 'base', 'col', 'color', 'basecolor', 'd']
-    subsurface_color_name_list = ['sss', 'subsurface']
-    metallic_name_list = ['metallic', 'metalness', 'metal', 'mtl', 'm']
-    specular_name_list = ['specularity', 'specular', 'spec', 'spc']
-    roughness_name_list = ['roughness', 'rough', 'rgh', 'r']
-    gloss_name_list = ['gloss', 'glossy', 'glossiness', 'g']
-    normal_name_list = ['normal', 'nor', 'nrm', 'nrml', 'norm']
-    bump_name_list = ['bump', 'bmp']
-    displacement_name_list = ['displacement', 'displace', 'disp', 'dsp', 'height', 'heightmap']
-    trasmission_name_list = ['opacity']
-    alpha_name_list = ['alpha']
-    emission_name_list = ['emission']
+    base_color_name_list = ["diffuse", "diff", "albedo", "base", "col", "color", "basecolor", "d"]
+    subsurface_color_name_list = ["sss", "subsurface"]
+    metallic_name_list = ["metallic", "metalness", "metal", "mtl", "m"]
+    specular_name_list = ["specularity", "specular", "spec", "spc"]
+    roughness_name_list = ["roughness", "rough", "rgh", "r"]
+    gloss_name_list = ["gloss", "glossy", "glossiness", "g"]
+    normal_name_list = ["normal", "nor", "nrm", "nrml", "norm"]
+    bump_name_list = ["bump", "bmp"]
+    displacement_name_list = ["displacement", "displace", "disp", "dsp", "height", "heightmap"]
+    trasmission_name_list = ["opacity"]
+    alpha_name_list = ["alpha"]
+    emission_name_list = ["emission"]
 
-    diffuse = 'baseColor'
-    subsurface = 'subsurfaceColor'
-    metallic = 'metalness'
+    diffuse = "baseColor"
+    subsurface = "subsurfaceColor"
+    metallic = "metalness"
     specular = None
-    roughness = 'specularRoughness'
-    trasmission = 'trasmission'
-    emission = 'emission'
-    alpha = 'opacity'
-    normal = 'normalCamera'
+    roughness = "specularRoughness"
+    trasmission = "trasmission"
+    emission = "emission"
+    alpha = "opacity"
+    normal = "normalCamera"
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='standardSurface', single_place_node=True, shading_engine=None):
+    def __init__(
+        self,
+        shader_name,
+        folder,
+        shader_textures,
+        shader_type="standardSurface",
+        single_place_node=True,
+        shading_engine=None,
+    ):
         """Initializes the shader base class.
 
         Args:
@@ -125,7 +140,9 @@ class ShaderBase:
 
         # create a shading group
         if not shading_engine:
-            self.shading_group = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=self.shader_name)
+            self.shading_group = pm.sets(
+                renderable=True, noSurfaceShader=True, empty=True, name=self.shader_name
+            )
         else:
             self.shading_group = shading_engine
 
@@ -155,10 +172,10 @@ class ShaderBase:
             textures (list): List of texture file paths.
         """
         for tex in textures:
-            channel = str(tex.split('.')[0]).split(' ')[-1].split('_')[-1]
+            channel = str(tex.split(".")[0]).split(" ")[-1].split("_")[-1]
 
             if channel.lower() in self.base_color_name_list:
-                self.connect_color(tex, self.diffuse, alpha_slot='')
+                self.connect_color(tex, self.diffuse, alpha_slot="")
             if channel.lower() in self.metallic_name_list:
                 self.connect_noncolor(tex, self.metallic)
             if channel.lower() in self.specular_name_list:
@@ -167,7 +184,7 @@ class ShaderBase:
                 self.connect_noncolor(tex, self.roughness)
             if channel.lower() in self.gloss_name_list:
                 self.connect_noncolor(tex, self.roughness)
-            if channel.replace('-OGL', '').lower() in self.normal_name_list:
+            if channel.replace("-OGL", "").lower() in self.normal_name_list:
                 self.connect_normal(tex)
             if channel.lower() in self.trasmission_name_list:
                 self.connect_noncolor(tex, self.trasmission)
@@ -186,10 +203,10 @@ class ShaderBase:
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
-        pm.connectAttr(file_node.outColor, f'{self.shader}.{slot_name}', f=True)
+        pm.connectAttr(file_node.outColor, f"{self.shader}.{slot_name}", f=True)
 
-        #if alpha_slot:
-            #pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
+        # if alpha_slot:
+        # pm.connectAttr(file_node.outAlpha, '%s.%s' % (self.shader, alpha_slot), f=True)
 
     def connect_noncolor(self, texture, slot_name, colorspace=False):
         """Connects a non-color texture to a shader slot.
@@ -203,7 +220,7 @@ class ShaderBase:
         self.connect_placement(self.place_node, file_node)
 
         file_node.alphaIsLuminance.set(True)
-        pm.connectAttr(file_node.outAlpha, f'{self.shader}.{slot_name}', f=True)
+        pm.connectAttr(file_node.outAlpha, f"{self.shader}.{slot_name}", f=True)
 
     def connect_normal(self, texture, slot_name, colorspace=False):
         """Connects a normal map texture to a shader slot.
@@ -219,14 +236,14 @@ class ShaderBase:
         # create bump_node
         self.bump_node = pm.shadingNode("bump2d", asUtility=True)
         self.bump_node.bumpInterp.set(1)
-        #self.bump_node.aiFlipR.set(0)
-        #self.bump_node.aiFlipG.set(0)
+        # self.bump_node.aiFlipR.set(0)
+        # self.bump_node.aiFlipG.set(0)
 
         # connect file_node to bump_node
         pm.connectAttr(file_node.outAlpha, self.bump_node.bumpValue, f=True)
 
         # connect bump_node to shader
-        pm.connectAttr(self.bump_node.outNormal, f'{self.shader}.{slot_name}', f=True)
+        pm.connectAttr(self.bump_node.outNormal, f"{self.shader}.{slot_name}", f=True)
 
     def connect_displace(self, texture, slot_name, colorspace=False):
         """Connects a displacement texture.
@@ -241,7 +258,7 @@ class ShaderBase:
 
     def create_place_node(self):
         """Creates and returns a place2dTexture node."""
-        return pm.shadingNode('place2dTexture', asUtility=True)
+        return pm.shadingNode("place2dTexture", asUtility=True)
 
     def connect_placement(self, place_node, file_node):
         """Connects a place node to a file node.
@@ -250,24 +267,24 @@ class ShaderBase:
             place_node (pm.nt.Place2dTexture): The place node.
             file_node (pm.nt.File): The file node.
         """
-        pm.connectAttr(f'{place_node}.coverage', f'{file_node}.coverage', f=True)
-        pm.connectAttr(f'{place_node}.translateFrame', f'{file_node}.translateFrame', f=True)
-        pm.connectAttr(f'{place_node}.rotateFrame', f'{file_node}.rotateFrame', f=True)
-        pm.connectAttr(f'{place_node}.mirrorU', f'{file_node}.mirrorU', f=True)
-        pm.connectAttr(f'{place_node}.mirrorV', f'{file_node}.mirrorV', f=True)
-        pm.connectAttr(f'{place_node}.stagger', f'{file_node}.stagger', f=True)
-        pm.connectAttr(f'{place_node}.wrapU', f'{file_node}.wrapU', f=True)
-        pm.connectAttr(f'{place_node}.wrapV', f'{file_node}.wrapV', f=True)
-        pm.connectAttr(f'{place_node}.repeatUV', f'{file_node}.repeatUV', f=True)
-        pm.connectAttr(f'{place_node}.offset', f'{file_node}.offset', f=True)
-        pm.connectAttr(f'{place_node}.rotateUV', f'{file_node}.rotateUV', f=True)
-        pm.connectAttr(f'{place_node}.noiseUV', f'{file_node}.noiseUV', f=True)
-        pm.connectAttr(f'{place_node}.vertexUvOne', f'{file_node}.vertexUvOne', f=True)
-        pm.connectAttr(f'{place_node}.vertexUvTwo', f'{file_node}.vertexUvTwo', f=True)
-        pm.connectAttr(f'{place_node}.vertexUvThree', f'{file_node}.vertexUvThree', f=True)
-        pm.connectAttr(f'{place_node}.vertexCameraOne', f'{file_node}.vertexCameraOne', f=True)
-        pm.connectAttr(f'{place_node}.outUV', f'{file_node}.uv', f=True)
-        pm.connectAttr(f'{place_node}.outUvFilterSize', f'{file_node}.uvFilterSize', f=True)
+        pm.connectAttr(f"{place_node}.coverage", f"{file_node}.coverage", f=True)
+        pm.connectAttr(f"{place_node}.translateFrame", f"{file_node}.translateFrame", f=True)
+        pm.connectAttr(f"{place_node}.rotateFrame", f"{file_node}.rotateFrame", f=True)
+        pm.connectAttr(f"{place_node}.mirrorU", f"{file_node}.mirrorU", f=True)
+        pm.connectAttr(f"{place_node}.mirrorV", f"{file_node}.mirrorV", f=True)
+        pm.connectAttr(f"{place_node}.stagger", f"{file_node}.stagger", f=True)
+        pm.connectAttr(f"{place_node}.wrapU", f"{file_node}.wrapU", f=True)
+        pm.connectAttr(f"{place_node}.wrapV", f"{file_node}.wrapV", f=True)
+        pm.connectAttr(f"{place_node}.repeatUV", f"{file_node}.repeatUV", f=True)
+        pm.connectAttr(f"{place_node}.offset", f"{file_node}.offset", f=True)
+        pm.connectAttr(f"{place_node}.rotateUV", f"{file_node}.rotateUV", f=True)
+        pm.connectAttr(f"{place_node}.noiseUV", f"{file_node}.noiseUV", f=True)
+        pm.connectAttr(f"{place_node}.vertexUvOne", f"{file_node}.vertexUvOne", f=True)
+        pm.connectAttr(f"{place_node}.vertexUvTwo", f"{file_node}.vertexUvTwo", f=True)
+        pm.connectAttr(f"{place_node}.vertexUvThree", f"{file_node}.vertexUvThree", f=True)
+        pm.connectAttr(f"{place_node}.vertexCameraOne", f"{file_node}.vertexCameraOne", f=True)
+        pm.connectAttr(f"{place_node}.outUV", f"{file_node}.uv", f=True)
+        pm.connectAttr(f"{place_node}.outUvFilterSize", f"{file_node}.uvFilterSize", f=True)
 
     def create_file_node(self, path, name, color=True):
         """Creates and returns a file node for a texture.
@@ -280,18 +297,20 @@ class ShaderBase:
         Returns:
             pm.nt.File: The created file node.
         """
-        tex_name, ext = name.split('.')
+        tex_name, ext = name.split(".")
 
-        file_node = pm.shadingNode("file", name=tex_name + '_tex', asTexture=True, isColorManaged=True)
-        file_node.fileTextureName.set(path + '/' + name)
+        file_node = pm.shadingNode(
+            "file", name=tex_name + "_tex", asTexture=True, isColorManaged=True
+        )
+        file_node.fileTextureName.set(path + "/" + name)
 
         if color:
-            file_node.colorSpace.set('sRGB')
+            file_node.colorSpace.set("sRGB")
         else:
-            file_node.colorSpace.set('Raw')
+            file_node.colorSpace.set("Raw")
             file_node.alphaIsLuminance.set(1)
 
-        if '.10' in name:
+        if ".10" in name:
             file_node.uvTilingMode.set(3)
 
         self.connect_placement(self.place_node, file_node)
@@ -302,17 +321,25 @@ class ShaderBase:
 class UsdPreviewSurface(ShaderBase):
     """Class for creating a usdPreviewSurface shader."""
 
-    diffuse = 'diffuseColor'
-    subsurface = 'subsurfaceColor'
-    metallic = 'metallic'
+    diffuse = "diffuseColor"
+    subsurface = "subsurfaceColor"
+    metallic = "metallic"
     specular = None
-    roughness = 'roughness'
-    trasmission = 'trasmission'
-    emission = 'emission'
-    alpha = 'opacity'
-    normal = 'normal'
+    roughness = "roughness"
+    trasmission = "trasmission"
+    emission = "emission"
+    alpha = "opacity"
+    normal = "normal"
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='usdPreviewSurface', standard=True, shading_engine=None):
+    def __init__(
+        self,
+        shader_name,
+        folder,
+        shader_textures,
+        shader_type="usdPreviewSurface",
+        standard=True,
+        shading_engine=None,
+    ):
         # init base class
         """Initializes an usdPreviewSurface shader.
 
@@ -324,18 +351,24 @@ class UsdPreviewSurface(ShaderBase):
             standard (bool): Flag to determine texture connection method. Default is True.
             shading_engine: Shading engine to use. Default is None.
         """
-        ShaderBase.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        ShaderBase.__init__(
+            self,
+            shader_name,
+            folder,
+            shader_textures,
+            shader_type=shader_type,
+            shading_engine=shading_engine,
+        )
         self.shader = ShaderBase.get_shader(self)
 
         # init faceColor
         self.shader.diffuseColor.set((0.2, 0.5, 0.8))
 
         # place node
-        self.place_node = pm.shadingNode('place2dTexture', asUtility=True)
+        self.place_node = pm.shadingNode("place2dTexture", asUtility=True)
 
         # connect texture
         self.connect_textures(shader_textures)
-
 
     def connect_textures(self, textures):
         """Connects a list of textures to the shader.
@@ -353,9 +386,9 @@ class UsdPreviewSurface(ShaderBase):
         The displacement textures are connected to the displacement attribute.
         """
         for tex in textures:
-            channel = str(tex.split('.')[0]).split('_')[-1]
+            channel = str(tex.split(".")[0]).split("_")[-1]
 
-            #print('Texture: ', tex, ' -- Channel: ', channel)
+            # print('Texture: ', tex, ' -- Channel: ', channel)
             if channel.lower() in self.base_color_name_list:
                 self.connect_color(tex, self.diffuse, alpha_slot=self.alpha)
             if channel.lower() in self.metallic_name_list:
@@ -366,7 +399,7 @@ class UsdPreviewSurface(ShaderBase):
                 self.connect_noncolor(tex, self.roughness)
             if channel.lower() in self.gloss_name_list:
                 self.connect_noncolor(tex, self.roughness)
-            if channel.replace('-OGL', '').lower() in self.normal_name_list:
+            if channel.replace("-OGL", "").lower() in self.normal_name_list:
                 self.connect_normal(tex, self.normal)
             if channel.lower() in self.trasmission_name_list:
                 self.connect_noncolor(tex, self.trasmission)
@@ -384,9 +417,8 @@ class UsdPreviewSurface(ShaderBase):
         file_node = self.create_file_node(self.folder, texture, color=colorspace)
         self.connect_placement(self.place_node, file_node)
 
-        pm.connectAttr(file_node.outColor, f'{self.shader}.{slot_name}')
+        pm.connectAttr(file_node.outColor, f"{self.shader}.{slot_name}")
 
 
 if __name__ == "__main__":
     pass
-

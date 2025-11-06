@@ -46,6 +46,7 @@ class FunctionUI(QtWidgets.QWidget):
         >>> ui = FunctionUI(my_function)
         >>> ui.show()
     """
+
     def __init__(self, func, parent=None):
         """Initializes the FunctionUI widget.
 

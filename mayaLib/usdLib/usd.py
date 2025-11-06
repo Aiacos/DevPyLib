@@ -100,9 +100,7 @@ def set_usd_attributes_to_group(group_name):
     }
 
     # Retrieve configuration for the given group name, default if not found
-    type_name, kind, purpose, hidden = cfg.get(
-        group_name, ("Xform", "component", "default", False)
-    )
+    type_name, kind, purpose, hidden = cfg.get(group_name, ("Xform", "component", "default", False))
 
     # Set USD attributes to each object in the group
     for obj in pm.ls(group_name):

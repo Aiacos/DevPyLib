@@ -4,11 +4,11 @@ Provides tools for discovering available functions and classes in modules
 for dynamic UI generation via the StructureManager class.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
-if pm.about(version=True) == '2022':
+if pm.about(version=True) == "2022":
     import collections as collection
 else:
     import collections.abc as collection
@@ -20,6 +20,7 @@ import mayaLib as mLib
 
 class StructureManager:
     """Manage Lib Structure."""
+
     # root_package = ''
 
     def __init__(self, lib):
@@ -51,15 +52,15 @@ class StructureManager:
             # Add Class to path
             self.class_list = self.get_all_class(item)
             for c in self.class_list:
-                self.final_class_list.append(item + '.' + c[0])
+                self.final_class_list.append(item + "." + c[0])
             # Add Function to path
             self.function_list = self.get_all_function(item)
             for f in self.function_list:
-                self.final_class_list.append(item + '.' + f[0])
+                self.final_class_list.append(item + "." + f[0])
 
         # Testing
         for item in self.final_class_list:
-            split = item.split('.')
+            split = item.split(".")
             tmp_dict = {}
             for key in reversed(split):
                 tmp_dict = {key: item} if key == split[-1] else self.incapsulate_dict(tmp_dict, key)
@@ -86,8 +87,11 @@ class StructureManager:
         merge_dct (dict): The dictionary to merge from.
         """
         for k, _v in merge_dct.items():
-            if (k in dct and isinstance(dct[k], dict)
-                    and isinstance(merge_dct[k], collection.Mapping)):
+            if (
+                k in dct
+                and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], collection.Mapping)
+            ):
                 self.dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]
@@ -102,7 +106,7 @@ class StructureManager:
 
     def import_and_exec(self, module_string, function):
         """Import the module and execute the given function."""
-        module = __import__(module_string, fromlist=[''])
+        module = __import__(module_string, fromlist=[""])
         func = getattr(module, function)
         return func
 
@@ -110,7 +114,7 @@ class StructureManager:
         """Return a list of all packages in the root package."""
         package_list = []
         for p in pkgutil.walk_packages(self.root_package.__path__):
-            if 'utility' not in p[1]:
+            if "utility" not in p[1]:
                 package_list.append(p[1])
 
         return package_list
@@ -124,23 +128,23 @@ class StructureManager:
         Returns:
             list: Package member objects from root_package
         """
-        package_list = [o[1] for o in inspect.getmembers(self.root_package) if '__' not in o[0]]
+        package_list = [o[1] for o in inspect.getmembers(self.root_package) if "__" not in o[0]]
         # print(package_list)
         return package_list
 
     def list_sub_packages(self, package_str):
         """Return a list of all sub packages in the given package."""
         package_list = []
-        package = __import__(package_str, fromlist=[''])
+        package = __import__(package_str, fromlist=[""])
         for p in pkgutil.iter_modules(package.__path__):
-            package_list.append(package_str + '.' + p[1])
+            package_list.append(package_str + "." + p[1])
 
         return package_list
 
     def list_modules(self, package):
         """Return a list of all modules in the given package."""
         module_list = []
-        package_name = self.root_package.__name__ + '.' + package
+        package_name = self.root_package.__name__ + "." + package
         modules_list = self.explore_package(package_name)
         if len(modules_list) != 0:
             module_list.append(modules_list)
@@ -152,9 +156,11 @@ class StructureManager:
         module_list = []
         for package in self.package_list:
             # print('PACKAGE:: ', str(package))
-            if ('utility' not in str(package)) and ('licenseRegister' not in str(package)):
-                package_name = self.root_package.__name__ + '.' + str(package)
-                if not ((package_name == 'mayaLib.install') or (package_name == 'mayaLib.installCmd')):
+            if ("utility" not in str(package)) and ("licenseRegister" not in str(package)):
+                package_name = self.root_package.__name__ + "." + str(package)
+                if not (
+                    (package_name == "mayaLib.install") or (package_name == "mayaLib.installCmd")
+                ):
                     modules_list = self.list_sub_packages(package_name)
                     if len(modules_list) != 0:
                         module_list.append(modules_list)
@@ -176,17 +182,20 @@ class StructureManager:
             'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
             an empty string.
         """
-        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
-                'paintable_maps' not in module_str):
-            module = __import__(module_str, fromlist=[''])
+        if (
+            ("licenseRegister" not in module_str)
+            and ("fix_loa_connection" not in module_str)
+            and ("paintable_maps" not in module_str)
+        ):
+            module = __import__(module_str, fromlist=[""])
             class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
             return class_list
         else:
-            return ''
+            return ""
 
     def get_all_method(self, module_str):
         """Return a list of all methods in the given module."""
-        module = __import__(module_str, fromlist=[''])
+        module = __import__(module_str, fromlist=[""])
         method_list = [o for o in inspect.getmembers(module) if inspect.ismethod(o[1])]
         return method_list
 
@@ -205,23 +214,26 @@ class StructureManager:
             'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
             an empty string.
         """
-        if ('licenseRegister' not in module_str) and ('fix_loa_connection' not in module_str) and (
-                'paintable_maps' not in module_str):
-            module = __import__(module_str, fromlist=[''])
+        if (
+            ("licenseRegister" not in module_str)
+            and ("fix_loa_connection" not in module_str)
+            and ("paintable_maps" not in module_str)
+        ):
+            module = __import__(module_str, fromlist=[""])
             functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
             return functions_list
         else:
-            return ''
+            return ""
 
     def explore_package(self, module_name):
         """Explore the given package and return a list of all sub packages."""
         package_list = []
-        if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
+        if ("licenseRegister" not in module_name) and ("fix_loa_connection" not in module_name):
             loader = pkgutil.get_loader(module_name)
 
             if loader is not None:
                 for sub_module in pkgutil.iter_modules([module_name]):
-                    print('SubMod: ', sub_module)
+                    print("SubMod: ", sub_module)
                     _, sub_module_name, _ = sub_module
                     qname = module_name + "." + sub_module_name
                     package_list.append(qname)
@@ -244,11 +256,11 @@ class StructureManager:
                 function_dict = {}
 
                 for c in class_list:
-                    class_dict = {c[0]: v + '.' + c[0]}
+                    class_dict = {c[0]: v + "." + c[0]}
                 for f in function_list:
-                    function_dict = {f[0]: v + '.' + f[0]}
+                    function_dict = {f[0]: v + "." + f[0]}
 
-                callable_dict = {'class': class_dict, 'function': function_dict}
+                callable_dict = {"class": class_dict, "function": function_dict}
                 dictionary[k] = callable_dict
 
 

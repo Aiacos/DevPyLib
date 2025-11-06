@@ -38,8 +38,9 @@ with contextlib.suppress(Exception):
 # Python 2/3 compatibility
 long = int
 
-FILE_EXT = '.data'
-PACK_EXT = '.list'
+FILE_EXT = ".data"
+PACK_EXT = ".list"
+
 
 def maya_main_window():
     """Return the Maya main window widget as a Python object."""
@@ -53,6 +54,7 @@ def maya_main_window():
 
     except Exception:
         from Qt import QtCompat
+
         return QtCompat.wrapInstance(int(main_window_ptr), QtWidgets.QWidget)
 
 
@@ -62,32 +64,117 @@ def findMainName():
     Returns:
         str: Encoded license information string.
     """
-    prCheckTest1 = 'pm.mel.moveJointsMode(0)'
-    prCheckTest2 = 'cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)'
-    prCheckTest3 = 'cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)'
-    prCheckTest4 = 'name_LIPs_All_Jnt'
-    prCheckTest5 = 'setStyleSheet'
-    prCheckTest6 = 'QtWidgets.QPushButton'
-    prCheckTest7 = 'self.edgeColor'
-    prCheckTest8 = 'background-color'
-    prCheckTest9 = 'self.LEyeLidMainBoxButton'
-    prCheckTest10 = 'self.REyeLidMainBoxButton'
-    wordA = prCheckTest4[7] + prCheckTest1[4] + prCheckTest3[53] + prCheckTest4[8] + prCheckTest4[3] + prCheckTest2[29] + prCheckTest1[16]
-    wordB = prCheckTest10[5] + prCheckTest1[13] + prCheckTest6[5] + prCheckTest7[7] + prCheckTest6[3] + prCheckTest10[15] + prCheckTest6[5]
+    prCheckTest1 = "pm.mel.moveJointsMode(0)"
+    prCheckTest2 = "cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)"
+    prCheckTest3 = "cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)"
+    prCheckTest4 = "name_LIPs_All_Jnt"
+    prCheckTest5 = "setStyleSheet"
+    prCheckTest6 = "QtWidgets.QPushButton"
+    prCheckTest7 = "self.edgeColor"
+    prCheckTest8 = "background-color"
+    prCheckTest9 = "self.LEyeLidMainBoxButton"
+    prCheckTest10 = "self.REyeLidMainBoxButton"
+    wordA = (
+        prCheckTest4[7]
+        + prCheckTest1[4]
+        + prCheckTest3[53]
+        + prCheckTest4[8]
+        + prCheckTest4[3]
+        + prCheckTest2[29]
+        + prCheckTest1[16]
+    )
+    wordB = (
+        prCheckTest10[5]
+        + prCheckTest1[13]
+        + prCheckTest6[5]
+        + prCheckTest7[7]
+        + prCheckTest6[3]
+        + prCheckTest10[15]
+        + prCheckTest6[5]
+    )
     wordC = str(3)
     wordD = prCheckTest3[8] + prCheckTest3[9] + prCheckTest1[0] + prCheckTest5[5]
     wordE = prCheckTest8[5] + prCheckTest6[3] + prCheckTest8[4] + prCheckTest5[9] + prCheckTest5[2]
     wordF = str(2017)
-    wordG = prCheckTest6[2] + prCheckTest7[13] + wordE[1] + prCheckTest6[1] + prCheckTest6[1] + prCheckTest1[4] + prCheckTest4[0]
+    wordG = (
+        prCheckTest6[2]
+        + prCheckTest7[13]
+        + wordE[1]
+        + prCheckTest6[1]
+        + prCheckTest6[1]
+        + prCheckTest1[4]
+        + prCheckTest4[0]
+    )
     wordH = prCheckTest8[0] + prCheckTest5[5]
-    wordI = prCheckTest9[12] + prCheckTest3[9] + prCheckTest3[48] + prCheckTest8[1] + prCheckTest3[1] + prCheckTest2[1] + prCheckTest8[1] + prCheckTest6[4]
-    wordJ = prCheckTest4[14] + prCheckTest4[1] + prCheckTest7[3] + prCheckTest8[1] + prCheckTest8[5] + prCheckTest9[10] + prCheckTest8[1] + prCheckTest4[0]
+    wordI = (
+        prCheckTest9[12]
+        + prCheckTest3[9]
+        + prCheckTest3[48]
+        + prCheckTest8[1]
+        + prCheckTest3[1]
+        + prCheckTest2[1]
+        + prCheckTest8[1]
+        + prCheckTest6[4]
+    )
+    wordJ = (
+        prCheckTest4[14]
+        + prCheckTest4[1]
+        + prCheckTest7[3]
+        + prCheckTest8[1]
+        + prCheckTest8[5]
+        + prCheckTest9[10]
+        + prCheckTest8[1]
+        + prCheckTest4[0]
+    )
     wordK = prCheckTest2[19] + prCheckTest3[19] + prCheckTest2[19] + prCheckTest7[4]
-    wordL = prCheckTest1[0] + prCheckTest1[4] + prCheckTest3[53] + prCheckTest4[8] + prCheckTest4[3] + prCheckTest2[29] + prCheckTest1[16]
-    wordM = prCheckTest3[53] + prCheckTest1[13] + prCheckTest6[5] + prCheckTest7[7] + prCheckTest6[3] + prCheckTest10[15] + prCheckTest6[5]
+    wordL = (
+        prCheckTest1[0]
+        + prCheckTest1[4]
+        + prCheckTest3[53]
+        + prCheckTest4[8]
+        + prCheckTest4[3]
+        + prCheckTest2[29]
+        + prCheckTest1[16]
+    )
+    wordM = (
+        prCheckTest3[53]
+        + prCheckTest1[13]
+        + prCheckTest6[5]
+        + prCheckTest7[7]
+        + prCheckTest6[3]
+        + prCheckTest10[15]
+        + prCheckTest6[5]
+    )
     wordN = prCheckTest9[4] + prCheckTest3[0] + prCheckTest3[9] + prCheckTest2[7]
     wordSpace = prCheckTest2[28]
-    checkButtonTest = wordSpace + wordA + wordSpace + wordB + wordSpace + wordC + wordSpace + wordD + wordE + wordSpace + wordF + wordSpace + wordG + wordSpace + wordH + wordSpace + wordI + wordSpace + wordJ + wordSpace + wordSpace + wordK + wordL + wordM + wordN + wordSpace
+    checkButtonTest = (
+        wordSpace
+        + wordA
+        + wordSpace
+        + wordB
+        + wordSpace
+        + wordC
+        + wordSpace
+        + wordD
+        + wordE
+        + wordSpace
+        + wordF
+        + wordSpace
+        + wordG
+        + wordSpace
+        + wordH
+        + wordSpace
+        + wordI
+        + wordSpace
+        + wordJ
+        + wordSpace
+        + wordSpace
+        + wordK
+        + wordL
+        + wordM
+        + wordN
+        + wordSpace
+    )
     return checkButtonTest
 
 
@@ -97,33 +184,93 @@ def findMainNameB():
     Returns:
         str: Encoded short license information string.
     """
-    prCheckTest1 = 'pm.mel.moveJointsMode(0)'
-    prCheckTest2 = 'cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)'
-    prCheckTest3 = 'cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)'
-    prCheckTest4 = 'name_LIPs_All_Jnt'
-    prCheckTest5 = 'setStyleSheet'
-    prCheckTest6 = 'QtWidgets.QPushButton'
-    prCheckTest7 = 'self.edgeColor'
-    prCheckTest8 = 'background-color'
-    prCheckTest9 = 'self.LEyeLidMainBoxButton'
-    prCheckTest10 = 'self.REyeLidMainBoxButton'
-    wordA = prCheckTest4[7] + prCheckTest1[4] + prCheckTest3[53] + prCheckTest4[8] + prCheckTest4[3] + prCheckTest2[29] + prCheckTest1[16]
-    wordB = prCheckTest10[5] + prCheckTest1[13] + prCheckTest6[5] + prCheckTest7[7] + prCheckTest6[3] + prCheckTest10[15] + prCheckTest6[5]
+    prCheckTest1 = "pm.mel.moveJointsMode(0)"
+    prCheckTest2 = "cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)"
+    prCheckTest3 = "cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)"
+    prCheckTest4 = "name_LIPs_All_Jnt"
+    prCheckTest5 = "setStyleSheet"
+    prCheckTest6 = "QtWidgets.QPushButton"
+    prCheckTest7 = "self.edgeColor"
+    prCheckTest8 = "background-color"
+    prCheckTest9 = "self.LEyeLidMainBoxButton"
+    prCheckTest10 = "self.REyeLidMainBoxButton"
+    wordA = (
+        prCheckTest4[7]
+        + prCheckTest1[4]
+        + prCheckTest3[53]
+        + prCheckTest4[8]
+        + prCheckTest4[3]
+        + prCheckTest2[29]
+        + prCheckTest1[16]
+    )
+    wordB = (
+        prCheckTest10[5]
+        + prCheckTest1[13]
+        + prCheckTest6[5]
+        + prCheckTest7[7]
+        + prCheckTest6[3]
+        + prCheckTest10[15]
+        + prCheckTest6[5]
+    )
     wordC = str(3)
     prCheckTest3[8] + prCheckTest3[9] + prCheckTest1[0] + prCheckTest5[5]
     wordE = prCheckTest8[5] + prCheckTest6[3] + prCheckTest8[4] + prCheckTest5[9] + prCheckTest5[2]
     str(2017)
-    prCheckTest6[2] + prCheckTest7[13] + wordE[1] + prCheckTest6[1] + prCheckTest6[1] + prCheckTest1[4] + prCheckTest4[0]
+    (
+        prCheckTest6[2]
+        + prCheckTest7[13]
+        + wordE[1]
+        + prCheckTest6[1]
+        + prCheckTest6[1]
+        + prCheckTest1[4]
+        + prCheckTest4[0]
+    )
     prCheckTest8[0] + prCheckTest5[5]
-    prCheckTest9[12] + prCheckTest3[9] + prCheckTest3[48] + prCheckTest8[1] + prCheckTest3[1] + prCheckTest2[1] + prCheckTest8[1] + prCheckTest6[4]
-    prCheckTest4[14] + prCheckTest4[1] + prCheckTest7[3] + prCheckTest8[1] + prCheckTest8[5] + prCheckTest9[10] + prCheckTest8[1] + prCheckTest4[0]
+    (
+        prCheckTest9[12]
+        + prCheckTest3[9]
+        + prCheckTest3[48]
+        + prCheckTest8[1]
+        + prCheckTest3[1]
+        + prCheckTest2[1]
+        + prCheckTest8[1]
+        + prCheckTest6[4]
+    )
+    (
+        prCheckTest4[14]
+        + prCheckTest4[1]
+        + prCheckTest7[3]
+        + prCheckTest8[1]
+        + prCheckTest8[5]
+        + prCheckTest9[10]
+        + prCheckTest8[1]
+        + prCheckTest4[0]
+    )
     prCheckTest2[19] + prCheckTest3[19] + prCheckTest2[19] + prCheckTest7[4]
-    prCheckTest1[0] + prCheckTest1[4] + prCheckTest3[53] + prCheckTest4[8] + prCheckTest4[3] + prCheckTest2[29] + prCheckTest1[16]
-    prCheckTest3[53] + prCheckTest1[13] + prCheckTest6[5] + prCheckTest7[7] + prCheckTest6[3] + prCheckTest10[15] + prCheckTest6[5]
+    (
+        prCheckTest1[0]
+        + prCheckTest1[4]
+        + prCheckTest3[53]
+        + prCheckTest4[8]
+        + prCheckTest4[3]
+        + prCheckTest2[29]
+        + prCheckTest1[16]
+    )
+    (
+        prCheckTest3[53]
+        + prCheckTest1[13]
+        + prCheckTest6[5]
+        + prCheckTest7[7]
+        + prCheckTest6[3]
+        + prCheckTest10[15]
+        + prCheckTest6[5]
+    )
     prCheckTest9[4] + prCheckTest3[0] + prCheckTest3[9] + prCheckTest2[7]
     wordSpace = prCheckTest2[28]
     wordO = prCheckTest10[12] + prCheckTest10[13] + prCheckTest9[7] + prCheckTest4[1]
-    checkButtonTest = wordSpace + wordA + wordSpace + wordB + wordSpace + wordC + wordSpace + wordO + wordSpace
+    checkButtonTest = (
+        wordSpace + wordA + wordSpace + wordB + wordSpace + wordC + wordSpace + wordO + wordSpace
+    )
     return checkButtonTest
 
 
@@ -143,213 +290,213 @@ class HeadGeoWidget(QtWidgets.QWidget):
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(False)
-        self.edgeColor = 'background-color:rgb(255,102,51);color : black;'
-        self.slColor = 'background-color:rgb(0,254,102);color : black;'
-        self.edgeIndColor = 'background-color:rgb(0,179,255);color : black;'
-        self.darkColorA = 'background-color:rgb(70,70,70);color : white;'
-        self.darkColorB = 'background-color:rgb(50,50,50);color : white;'
-        self.darkColorC = 'background-color:rgb(30,30,30);color : white;'
-        self.defaultColor = 'background-color:rgb(90,90,90);color : white;'
-        self.progressColor = 'background-color:rgb(76,50,50);color : white;'
-        self.defineColor = 'color : white;'
-        self.defineColor2 = 'color : black;'
+        self.edgeColor = "background-color:rgb(255,102,51);color : black;"
+        self.slColor = "background-color:rgb(0,254,102);color : black;"
+        self.edgeIndColor = "background-color:rgb(0,179,255);color : black;"
+        self.darkColorA = "background-color:rgb(70,70,70);color : white;"
+        self.darkColorB = "background-color:rgb(50,50,50);color : white;"
+        self.darkColorC = "background-color:rgb(30,30,30);color : white;"
+        self.defaultColor = "background-color:rgb(90,90,90);color : white;"
+        self.progressColor = "background-color:rgb(76,50,50);color : white;"
+        self.defineColor = "color : white;"
+        self.defineColor2 = "color : black;"
         self.edgeLoopToggle = False
-        self.nameLabelField = QtWidgets.QLabel('Name : ')
-        self.nameField = QtWidgets.QLineEdit('name')
+        self.nameLabelField = QtWidgets.QLabel("Name : ")
+        self.nameField = QtWidgets.QLineEdit("name")
         self.nameField.setFixedSize(100, 25)
         self.mainNameRig = findMainName()
         self.perseusLabelField = QtWidgets.QLabel(self.mainNameRig)
         self.perseusLabelField.setStyleSheet(self.progressColor)
-        self.chkPrefix = QtWidgets.QCheckBox('Remove Prefix')
-        self.skinJntSuffixLabel = QtWidgets.QLabel('Skin Joints Suffix : ')
-        self.skinJntSuffix = QtWidgets.QLineEdit('skin')
-        self.HeadGeoSelBut = QtWidgets.QPushButton('SL')
+        self.chkPrefix = QtWidgets.QCheckBox("Remove Prefix")
+        self.skinJntSuffixLabel = QtWidgets.QLabel("Skin Joints Suffix : ")
+        self.skinJntSuffix = QtWidgets.QLineEdit("skin")
+        self.HeadGeoSelBut = QtWidgets.QPushButton("SL")
         self.HeadGeoSelBut.setFixedSize(30, 25)
         self.HeadGeoSelBut.setStyleSheet(self.slColor)
         self.HeadGeoSelBut.setFont(self.font)
-        self.geoBox = QtWidgets.QPushButton('*     Head Geo     ')
+        self.geoBox = QtWidgets.QPushButton("*     Head Geo     ")
         self.geoBox.setStyleSheet(self.edgeColor)
         self.geoField = QtWidgets.QLineEdit()
         self.geoField.setFixedSize(100, 25)
-        self.LEyeGeoSelBut = QtWidgets.QPushButton('SL')
+        self.LEyeGeoSelBut = QtWidgets.QPushButton("SL")
         self.LEyeGeoSelBut.setFixedSize(30, 25)
         self.LEyeGeoSelBut.setStyleSheet(self.slColor)
         self.LEyeGeoSelBut.setFont(self.font)
-        self.LEyeGeo = QtWidgets.QPushButton('*    L Eye Geo     ')
+        self.LEyeGeo = QtWidgets.QPushButton("*    L Eye Geo     ")
         self.LEyeGeo.setStyleSheet(self.edgeColor)
-        self.LEyeBox = QtWidgets.QLineEdit('')
+        self.LEyeBox = QtWidgets.QLineEdit("")
         self.LEyeBox.setFixedSize(100, 25)
-        self.REyeGeoSelBut = QtWidgets.QPushButton('SL')
+        self.REyeGeoSelBut = QtWidgets.QPushButton("SL")
         self.REyeGeoSelBut.setFixedSize(30, 25)
         self.REyeGeoSelBut.setStyleSheet(self.slColor)
         self.REyeGeoSelBut.setFont(self.font)
-        self.REyeGeo = QtWidgets.QPushButton('*    R Eye Geo     ')
+        self.REyeGeo = QtWidgets.QPushButton("*    R Eye Geo     ")
         self.REyeGeo.setStyleSheet(self.edgeColor)
-        self.REyeBox = QtWidgets.QLineEdit('')
+        self.REyeBox = QtWidgets.QLineEdit("")
         self.REyeBox.setFixedSize(100, 25)
-        self.TopTeethGeoSelBut = QtWidgets.QPushButton('SL')
+        self.TopTeethGeoSelBut = QtWidgets.QPushButton("SL")
         self.TopTeethGeoSelBut.setFixedSize(30, 25)
         self.TopTeethGeoSelBut.setStyleSheet(self.slColor)
         self.TopTeethGeoSelBut.setFont(self.font)
-        self.TopTeethGeo = QtWidgets.QPushButton('*  Up Teeth Geo  ')
+        self.TopTeethGeo = QtWidgets.QPushButton("*  Up Teeth Geo  ")
         self.TopTeethGeo.setStyleSheet(self.edgeColor)
-        self.UpTeethBox = QtWidgets.QLineEdit('')
+        self.UpTeethBox = QtWidgets.QLineEdit("")
         self.UpTeethBox.setFixedSize(100, 25)
-        self.DownTeethGeoSelBut = QtWidgets.QPushButton('SL')
+        self.DownTeethGeoSelBut = QtWidgets.QPushButton("SL")
         self.DownTeethGeoSelBut.setFixedSize(30, 25)
         self.DownTeethGeoSelBut.setStyleSheet(self.slColor)
         self.DownTeethGeoSelBut.setFont(self.font)
-        self.DownTeethGeo = QtWidgets.QPushButton('*Down Teeth Geo')
+        self.DownTeethGeo = QtWidgets.QPushButton("*Down Teeth Geo")
         self.DownTeethGeo.setStyleSheet(self.edgeColor)
-        self.DownTeethBox = QtWidgets.QLineEdit('')
+        self.DownTeethBox = QtWidgets.QLineEdit("")
         self.DownTeethBox.setFixedSize(100, 25)
-        self.TongueGeoSelBut = QtWidgets.QPushButton('SL')
+        self.TongueGeoSelBut = QtWidgets.QPushButton("SL")
         self.TongueGeoSelBut.setFixedSize(30, 25)
         self.TongueGeoSelBut.setStyleSheet(self.slColor)
         self.TongueGeoSelBut.setFont(self.font)
-        self.TongueGeo = QtWidgets.QPushButton('*   Tongue Geo    ')
+        self.TongueGeo = QtWidgets.QPushButton("*   Tongue Geo    ")
         self.TongueGeo.setStyleSheet(self.edgeColor)
-        self.TongueBox = QtWidgets.QLineEdit('')
+        self.TongueBox = QtWidgets.QLineEdit("")
         self.TongueBox.setFixedSize(100, 25)
-        self.ExtraGeoSelBut = QtWidgets.QPushButton('SL')
+        self.ExtraGeoSelBut = QtWidgets.QPushButton("SL")
         self.ExtraGeoSelBut.setFixedSize(30, 25)
         self.ExtraGeoSelBut.setStyleSheet(self.slColor)
         self.ExtraGeoSelBut.setFont(self.font)
-        self.ExtraGeo = QtWidgets.QPushButton('    Extra Geo    ')
+        self.ExtraGeo = QtWidgets.QPushButton("    Extra Geo    ")
         self.ExtraGeo.setStyleSheet(self.edgeColor)
-        self.chkExtra = QtWidgets.QCheckBox('')
+        self.chkExtra = QtWidgets.QCheckBox("")
         self.chkExtra.setVisible(False)
-        self.ExtraBox = QtWidgets.QLineEdit('')
+        self.ExtraBox = QtWidgets.QLineEdit("")
         self.ExtraBox.setFixedSize(100, 25)
-        self.ComponentBut = QtWidgets.QPushButton('*   Component Mode   ')
-        self.selConstraintEdgeLoop = QtWidgets.QPushButton('Edge Loop Off')
+        self.ComponentBut = QtWidgets.QPushButton("*   Component Mode   ")
+        self.selConstraintEdgeLoop = QtWidgets.QPushButton("Edge Loop Off")
         self.selConstraintEdgeLoop.setFixedSize(120, 25)
         self.selConstraintEdgeLoop.setStyleSheet(self.defaultColor)
-        self.LEyeLidMainBoxButton = QtWidgets.QPushButton('*LEyeLidMain')
+        self.LEyeLidMainBoxButton = QtWidgets.QPushButton("*LEyeLidMain")
         self.LEyeLidMainBoxButton.setStyleSheet(self.edgeColor)
-        self.LTopDownEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LTopDownEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LTopDownEyeEdgeSelBut.setFixedSize(30, 25)
         self.LTopDownEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.REyeLidMainBoxButton = QtWidgets.QPushButton('*REyeLidMain')
+        self.REyeLidMainBoxButton = QtWidgets.QPushButton("*REyeLidMain")
         self.REyeLidMainBoxButton.setStyleSheet(self.edgeColor)
-        self.chkREyeLid = QtWidgets.QCheckBox('')
-        self.RTopDownEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.chkREyeLid = QtWidgets.QCheckBox("")
+        self.RTopDownEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RTopDownEyeEdgeSelBut.setFixedSize(30, 25)
         self.RTopDownEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.chkLEyeLid = QtWidgets.QCheckBox('')
-        self.LEyeLidTopBoxButton = QtWidgets.QPushButton('Up')
+        self.chkLEyeLid = QtWidgets.QCheckBox("")
+        self.LEyeLidTopBoxButton = QtWidgets.QPushButton("Up")
         self.LEyeLidTopBoxButton.setStyleSheet(self.edgeIndColor)
-        self.LEyeLidDownBoxButton = QtWidgets.QPushButton('Down')
+        self.LEyeLidDownBoxButton = QtWidgets.QPushButton("Down")
         self.LEyeLidDownBoxButton.setStyleSheet(self.edgeIndColor)
-        self.LTopEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LTopEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LTopEyeEdgeSelBut.setFixedSize(30, 25)
         self.LTopEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.LDownEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LDownEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LDownEyeEdgeSelBut.setFixedSize(30, 25)
         self.LDownEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.REyeLidTopBoxButton = QtWidgets.QPushButton('Up')
+        self.REyeLidTopBoxButton = QtWidgets.QPushButton("Up")
         self.REyeLidTopBoxButton.setStyleSheet(self.edgeIndColor)
-        self.REyeLidDownBoxButton = QtWidgets.QPushButton('Down')
+        self.REyeLidDownBoxButton = QtWidgets.QPushButton("Down")
         self.REyeLidDownBoxButton.setStyleSheet(self.edgeIndColor)
-        self.RTopEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.RTopEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RTopEyeEdgeSelBut.setFixedSize(30, 25)
         self.RTopEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.RDownEyeEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.RDownEyeEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RDownEyeEdgeSelBut.setFixedSize(30, 25)
         self.RDownEyeEdgeSelBut.setStyleSheet(self.slColor)
-        self.REyeLidOuterBoxButton = QtWidgets.QPushButton('*REyeLidOuter')
+        self.REyeLidOuterBoxButton = QtWidgets.QPushButton("*REyeLidOuter")
         self.REyeLidOuterBoxButton.setStyleSheet(self.edgeColor)
-        self.chkREyeOuterLid = QtWidgets.QCheckBox('')
-        self.RTopDownEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.chkREyeOuterLid = QtWidgets.QCheckBox("")
+        self.RTopDownEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RTopDownEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.RTopDownEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.chkLEyeOuterLid = QtWidgets.QCheckBox('')
-        self.REyeLidOuterTopBoxButton = QtWidgets.QPushButton('Up')
+        self.chkLEyeOuterLid = QtWidgets.QCheckBox("")
+        self.REyeLidOuterTopBoxButton = QtWidgets.QPushButton("Up")
         self.REyeLidOuterTopBoxButton.setStyleSheet(self.edgeIndColor)
-        self.REyeLidOuterDownBoxButton = QtWidgets.QPushButton('Down')
+        self.REyeLidOuterDownBoxButton = QtWidgets.QPushButton("Down")
         self.REyeLidOuterDownBoxButton.setStyleSheet(self.edgeIndColor)
-        self.RTopEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.RTopEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RTopEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.RTopEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.RDownEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.RDownEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.RDownEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.RDownEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.LEyeLidOuterBoxButton = QtWidgets.QPushButton('*LEyeLidOuter')
+        self.LEyeLidOuterBoxButton = QtWidgets.QPushButton("*LEyeLidOuter")
         self.LEyeLidOuterBoxButton.setStyleSheet(self.edgeColor)
-        self.LTopDownEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LTopDownEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LTopDownEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.LTopDownEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.LEyeLidOuterTopBoxButton = QtWidgets.QPushButton('Up')
+        self.LEyeLidOuterTopBoxButton = QtWidgets.QPushButton("Up")
         self.LEyeLidOuterTopBoxButton.setStyleSheet(self.edgeIndColor)
-        self.LEyeLidOuterDownBoxButton = QtWidgets.QPushButton('Down')
+        self.LEyeLidOuterDownBoxButton = QtWidgets.QPushButton("Down")
         self.LEyeLidOuterDownBoxButton.setStyleSheet(self.edgeIndColor)
-        self.LTopEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LTopEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LTopEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.LTopEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.LDownEyeOuterEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.LDownEyeOuterEdgeSelBut = QtWidgets.QPushButton("SL")
         self.LDownEyeOuterEdgeSelBut.setFixedSize(30, 25)
         self.LDownEyeOuterEdgeSelBut.setStyleSheet(self.slColor)
-        self.NoseBoxButton = QtWidgets.QPushButton('* Nose Edges ')
+        self.NoseBoxButton = QtWidgets.QPushButton("* Nose Edges ")
         self.NoseBoxButton.setStyleSheet(self.edgeColor)
-        self.NoseEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.NoseEdgeSelBut = QtWidgets.QPushButton("SL")
         self.NoseEdgeSelBut.setFixedSize(30, 25)
         self.NoseEdgeSelBut.setStyleSheet(self.slColor)
-        self.NoseUnderVertexBoxButton = QtWidgets.QPushButton('*NoseUnderVtx')
+        self.NoseUnderVertexBoxButton = QtWidgets.QPushButton("*NoseUnderVtx")
         self.NoseUnderVertexBoxButton.setStyleSheet(self.edgeColor)
-        self.chkNoseEdge = QtWidgets.QCheckBox('')
-        self.NoseUnderVertexSelBut = QtWidgets.QPushButton('SL')
+        self.chkNoseEdge = QtWidgets.QCheckBox("")
+        self.NoseUnderVertexSelBut = QtWidgets.QPushButton("SL")
         self.NoseUnderVertexSelBut.setFixedSize(30, 25)
         self.NoseUnderVertexSelBut.setStyleSheet(self.slColor)
-        self.chkNoseUnderVertex = QtWidgets.QCheckBox('')
-        self.LipBoxButton = QtWidgets.QPushButton('*   Lip Edge   ')
+        self.chkNoseUnderVertex = QtWidgets.QCheckBox("")
+        self.LipBoxButton = QtWidgets.QPushButton("*   Lip Edge   ")
         self.LipBoxButton.setStyleSheet(self.edgeColor)
-        self.chkLip = QtWidgets.QCheckBox('')
-        self.TopDownLipEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.chkLip = QtWidgets.QCheckBox("")
+        self.TopDownLipEdgeSelBut = QtWidgets.QPushButton("SL")
         self.TopDownLipEdgeSelBut.setFixedSize(30, 25)
         self.TopDownLipEdgeSelBut.setStyleSheet(self.slColor)
-        self.LipUpBoxButton = QtWidgets.QPushButton('Up')
+        self.LipUpBoxButton = QtWidgets.QPushButton("Up")
         self.LipUpBoxButton.setStyleSheet(self.edgeIndColor)
-        self.LipDownBoxButton = QtWidgets.QPushButton('Down')
+        self.LipDownBoxButton = QtWidgets.QPushButton("Down")
         self.LipDownBoxButton.setStyleSheet(self.edgeIndColor)
-        self.TopLipEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.TopLipEdgeSelBut = QtWidgets.QPushButton("SL")
         self.TopLipEdgeSelBut.setFixedSize(30, 25)
         self.TopLipEdgeSelBut.setStyleSheet(self.slColor)
-        self.DownLipEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.DownLipEdgeSelBut = QtWidgets.QPushButton("SL")
         self.DownLipEdgeSelBut.setFixedSize(30, 25)
         self.DownLipEdgeSelBut.setStyleSheet(self.slColor)
-        self.TongueBoxButton = QtWidgets.QPushButton('*Tongue Edge ')
+        self.TongueBoxButton = QtWidgets.QPushButton("*Tongue Edge ")
         self.TongueBoxButton.setStyleSheet(self.edgeColor)
-        self.chkTonque = QtWidgets.QCheckBox('')
-        self.TongueEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.chkTonque = QtWidgets.QCheckBox("")
+        self.TongueEdgeSelBut = QtWidgets.QPushButton("SL")
         self.TongueEdgeSelBut.setFixedSize(30, 25)
         self.TongueEdgeSelBut.setStyleSheet(self.slColor)
-        self.TongueUpEdgeBoxButton = QtWidgets.QPushButton('Up')
+        self.TongueUpEdgeBoxButton = QtWidgets.QPushButton("Up")
         self.TongueUpEdgeBoxButton.setStyleSheet(self.edgeIndColor)
-        self.TongueDownEdgeBoxButton = QtWidgets.QPushButton('Down')
+        self.TongueDownEdgeBoxButton = QtWidgets.QPushButton("Down")
         self.TongueDownEdgeBoxButton.setStyleSheet(self.edgeIndColor)
-        self.TopTongueEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.TopTongueEdgeSelBut = QtWidgets.QPushButton("SL")
         self.TopTongueEdgeSelBut.setFixedSize(30, 25)
         self.TopTongueEdgeSelBut.setStyleSheet(self.slColor)
-        self.DownTongueEdgeSelBut = QtWidgets.QPushButton('SL')
+        self.DownTongueEdgeSelBut = QtWidgets.QPushButton("SL")
         self.DownTongueEdgeSelBut.setFixedSize(30, 25)
         self.DownTongueEdgeSelBut.setStyleSheet(self.slColor)
         self.DownTongueEdgeSelBut.setFont(self.font)
-        self.BackHeadNeckBoxButton = QtWidgets.QPushButton('*BackHead_Neck')
+        self.BackHeadNeckBoxButton = QtWidgets.QPushButton("*BackHead_Neck")
         self.BackHeadNeckBoxButton.setStyleSheet(self.edgeColor)
-        self.chkBackFace = QtWidgets.QCheckBox('')
-        self.BackHeadNeckFaceSelButton = QtWidgets.QPushButton('SL')
+        self.chkBackFace = QtWidgets.QCheckBox("")
+        self.BackHeadNeckFaceSelButton = QtWidgets.QPushButton("SL")
         self.BackHeadNeckFaceSelButton.setFixedSize(30, 25)
         self.BackHeadNeckFaceSelButton.setStyleSheet(self.slColor)
-        self.ForeheadBoxButton = QtWidgets.QPushButton('* EyeLid_Mask  ')
+        self.ForeheadBoxButton = QtWidgets.QPushButton("* EyeLid_Mask  ")
         self.ForeheadBoxButton.setStyleSheet(self.edgeColor)
-        self.checkForeheadFace = QtWidgets.QCheckBox('')
-        self.ForeheadFaceSelButton = QtWidgets.QPushButton('SL')
+        self.checkForeheadFace = QtWidgets.QCheckBox("")
+        self.ForeheadFaceSelButton = QtWidgets.QPushButton("SL")
         self.ForeheadFaceSelButton.setFixedSize(30, 25)
         self.ForeheadFaceSelButton.setStyleSheet(self.slColor)
-        self.SquashStretchBoxButton = QtWidgets.QPushButton('*Squash_Stretch')
+        self.SquashStretchBoxButton = QtWidgets.QPushButton("*Squash_Stretch")
         self.SquashStretchBoxButton.setStyleSheet(self.edgeColor)
-        self.checkSquashStretchFace = QtWidgets.QCheckBox('')
-        self.SquashStretchFaceSelButton = QtWidgets.QPushButton('SL')
+        self.checkSquashStretchFace = QtWidgets.QCheckBox("")
+        self.SquashStretchFaceSelButton = QtWidgets.QPushButton("SL")
         self.SquashStretchFaceSelButton.setFixedSize(30, 25)
         self.SquashStretchFaceSelButton.setStyleSheet(self.slColor)
         self.modelLayout = QtWidgets.QGridLayout(self)
@@ -377,7 +524,7 @@ class HeadGeoWidget(QtWidgets.QWidget):
         self.modelLayout.addWidget(self.ExtraGeoSelBut, 1, 6)
         self.modelLayout.addWidget(self.ExtraBox, 2, 7)
         self.modelLayout.addWidget(self.chkExtra, 4, 6)
-        self.modelLayoutGrp = QtWidgets.QGroupBox('Set Head Models')
+        self.modelLayoutGrp = QtWidgets.QGroupBox("Set Head Models")
         self.modelLayoutGrp.setLayout(self.modelLayout)
         self.componentLayout = QtWidgets.QGridLayout()
         self.componentLayout.setRowStretch(0, 0)
@@ -440,20 +587,20 @@ class HeadGeoWidget(QtWidgets.QWidget):
         self.componentLayout.addWidget(self.SquashStretchBoxButton, 8, 7)
         self.componentLayout.addWidget(self.SquashStretchFaceSelButton, 8, 6)
         self.componentLayout.addWidget(self.checkSquashStretchFace, 8, 8)
-        self.componentLayoutGrp = QtWidgets.QGroupBox('Set Components')
+        self.componentLayoutGrp = QtWidgets.QGroupBox("Set Components")
         self.componentLayoutGrp.setLayout(self.componentLayout)
         self.componentLayoutGrp.setCheckable(True)
         self.componentLayoutGrp.setChecked(False)
-        self.LPupilBoxButton = QtWidgets.QPushButton('*LPupil')
+        self.LPupilBoxButton = QtWidgets.QPushButton("*LPupil")
         self.LPupilBoxButton.setStyleSheet(self.edgeColor)
-        self.chkLPupil = QtWidgets.QCheckBox('')
-        self.LPupilSelButton = QtWidgets.QPushButton('SL')
+        self.chkLPupil = QtWidgets.QCheckBox("")
+        self.LPupilSelButton = QtWidgets.QPushButton("SL")
         self.LPupilSelButton.setFixedSize(30, 25)
         self.LPupilSelButton.setStyleSheet(self.slColor)
-        self.RPupilBoxButton = QtWidgets.QPushButton('*RPupil')
+        self.RPupilBoxButton = QtWidgets.QPushButton("*RPupil")
         self.RPupilBoxButton.setStyleSheet(self.edgeColor)
-        self.chkRPupil = QtWidgets.QCheckBox('')
-        self.RPupilSelButton = QtWidgets.QPushButton('SL')
+        self.chkRPupil = QtWidgets.QCheckBox("")
+        self.RPupilSelButton = QtWidgets.QPushButton("SL")
         self.RPupilSelButton.setFixedSize(30, 25)
         self.RPupilSelButton.setStyleSheet(self.slColor)
         self.componentLayout.addWidget(self.LPupilBoxButton, 6, 4)
@@ -462,32 +609,32 @@ class HeadGeoWidget(QtWidgets.QWidget):
         self.componentLayout.addWidget(self.RPupilBoxButton, 6, 1)
         self.componentLayout.addWidget(self.chkRPupil, 6, 2)
         self.componentLayout.addWidget(self.RPupilSelButton, 6, 0)
-        self.LIrisBoxButton = QtWidgets.QPushButton('*LIris')
+        self.LIrisBoxButton = QtWidgets.QPushButton("*LIris")
         self.LIrisBoxButton.setStyleSheet(self.edgeColor)
-        self.chkLIris = QtWidgets.QCheckBox('')
-        self.LIrisSelButton = QtWidgets.QPushButton('SL')
+        self.chkLIris = QtWidgets.QCheckBox("")
+        self.LIrisSelButton = QtWidgets.QPushButton("SL")
         self.LIrisSelButton.setFixedSize(30, 25)
         self.LIrisSelButton.setStyleSheet(self.slColor)
         self.componentLayout.addWidget(self.LIrisBoxButton, 7, 4)
         self.componentLayout.addWidget(self.chkLIris, 7, 5)
         self.componentLayout.addWidget(self.LIrisSelButton, 7, 3)
-        self.RIrisBoxButton = QtWidgets.QPushButton('*RIris')
+        self.RIrisBoxButton = QtWidgets.QPushButton("*RIris")
         self.RIrisBoxButton.setStyleSheet(self.edgeColor)
-        self.chkRIris = QtWidgets.QCheckBox('')
-        self.RIrisSelButton = QtWidgets.QPushButton('SL')
+        self.chkRIris = QtWidgets.QCheckBox("")
+        self.RIrisSelButton = QtWidgets.QPushButton("SL")
         self.RIrisSelButton.setFixedSize(30, 25)
         self.RIrisSelButton.setStyleSheet(self.slColor)
         self.componentLayout.addWidget(self.RIrisBoxButton, 7, 1)
         self.componentLayout.addWidget(self.chkRIris, 7, 2)
         self.componentLayout.addWidget(self.RIrisSelButton, 7, 0)
-        self.AdjustmentBoxButton = QtWidgets.QPushButton('Create Jaw Curve *')
-        self.AdjustmentBBoxButton = QtWidgets.QPushButton('Create Facial Curve Guide *')
-        self.ProjectBoxButton = QtWidgets.QPushButton('Project Curves On face model *')
+        self.AdjustmentBoxButton = QtWidgets.QPushButton("Create Jaw Curve *")
+        self.AdjustmentBBoxButton = QtWidgets.QPushButton("Create Facial Curve Guide *")
+        self.ProjectBoxButton = QtWidgets.QPushButton("Project Curves On face model *")
         self.settingsLayout = QtWidgets.QHBoxLayout()
         self.settingsLayout.addWidget(self.AdjustmentBoxButton)
         self.settingsLayout.addWidget(self.AdjustmentBBoxButton)
         self.settingsLayout.addWidget(self.ProjectBoxButton)
-        self.settingsLayoutGrp = QtWidgets.QGroupBox('Create Curve guides')
+        self.settingsLayoutGrp = QtWidgets.QGroupBox("Create Curve guides")
         self.settingsLayoutGrp.setLayout(self.settingsLayout)
         self.nameLayout = QtWidgets.QHBoxLayout()
         self.nameLayout.addWidget(self.nameLabelField)
@@ -496,28 +643,28 @@ class HeadGeoWidget(QtWidgets.QWidget):
         self.nameLayout.addWidget(self.skinJntSuffix)
         self.nameLayout.addWidget(self.chkPrefix)
         self.nameLayout.addStretch()
-        self.nameLayoutGrp = QtWidgets.QGroupBox('Set Name')
+        self.nameLayoutGrp = QtWidgets.QGroupBox("Set Name")
         self.nameLayoutGrp.setLayout(self.nameLayout)
-        self.perseusLabelFieldE = QtWidgets.QLabel('')
+        self.perseusLabelFieldE = QtWidgets.QLabel("")
         self.perseusLayoutE = QtWidgets.QHBoxLayout()
         self.perseusLayoutE.addWidget(self.perseusLabelFieldE)
-        self.perseusLayoutGrpE = QtWidgets.QGroupBox('')
+        self.perseusLayoutGrpE = QtWidgets.QGroupBox("")
         self.perseusLayoutGrpE.setLayout(self.perseusLayoutE)
-        self.perseusLabelFieldF = QtWidgets.QLabel('')
+        self.perseusLabelFieldF = QtWidgets.QLabel("")
         self.perseusLayoutF = QtWidgets.QHBoxLayout()
         self.perseusLayoutF.addWidget(self.perseusLabelFieldF)
-        self.perseusLayoutGrpF = QtWidgets.QGroupBox('')
+        self.perseusLayoutGrpF = QtWidgets.QGroupBox("")
         self.perseusLayoutGrpF.setLayout(self.perseusLayoutF)
         self.perseusLayout = QtWidgets.QHBoxLayout()
         self.perseusLayout.addWidget(self.perseusLabelField)
-        self.perseusLayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusLayoutGrp = QtWidgets.QGroupBox("")
         self.perseusLayoutGrp.setLayout(self.perseusLayout)
         self.modeLayout = QtWidgets.QHBoxLayout()
         self.modeLayout.addWidget(self.ComponentBut)
         self.spacer = QtWidgets.QSpacerItem(200, 0)
         self.modeLayout.addSpacerItem(self.spacer)
         self.modeLayout.addWidget(self.selConstraintEdgeLoop)
-        self.modeLayoutGrp = QtWidgets.QGroupBox('')
+        self.modeLayoutGrp = QtWidgets.QGroupBox("")
         self.modeLayoutGrp.setLayout(self.modeLayout)
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.nameLayoutGrp)
@@ -536,55 +683,55 @@ class SettingsWidget(QtWidgets.QWidget):
         self.font = QtG.QFont()
         self.font.setPointSize(10)
         self.font.setBold(True)
-        self.edgeColor = 'background-color:rgb(255,102,51);color : black;'
-        self.slColor = 'background-color:rgb(0,254,102);color : black;'
-        self.edgeIndColor = 'background-color:rgb(0,179,255);color : black;'
-        self.progressColor = 'background-color:rgb(76,50,50);color : white;'
-        self.defineColor = 'color : white;'
-        self.defineColor2 = 'color : black;'
-        self.chkMaintainMaxInf = QtWidgets.QCheckBox('Maintain Max Inf Jnts')
+        self.edgeColor = "background-color:rgb(255,102,51);color : black;"
+        self.slColor = "background-color:rgb(0,254,102);color : black;"
+        self.edgeIndColor = "background-color:rgb(0,179,255);color : black;"
+        self.progressColor = "background-color:rgb(76,50,50);color : white;"
+        self.defineColor = "color : white;"
+        self.defineColor2 = "color : black;"
+        self.chkMaintainMaxInf = QtWidgets.QCheckBox("Maintain Max Inf Jnts")
         self.chkMaintainMaxInf.setChecked(True)
         self.maxInfs = QtWidgets.QSpinBox()
-        self.maxInfs.setProperty('value', 12)
+        self.maxInfs.setProperty("value", 12)
         self.maxInfs.setRange(1, 14)
-        self.relaxSkLabel = QtWidgets.QLabel(' Skin Relax Steps ')
+        self.relaxSkLabel = QtWidgets.QLabel(" Skin Relax Steps ")
         self.relaxSk = QtWidgets.QSpinBox()
-        self.relaxSk.setProperty('value', 2)
+        self.relaxSk.setProperty("value", 2)
         self.relaxSk.setRange(0, 5)
-        self.chkGame = QtWidgets.QCheckBox('Game Mode')
-        self.chkSoftMod = QtWidgets.QCheckBox('SoftMod')
+        self.chkGame = QtWidgets.QCheckBox("Game Mode")
+        self.chkSoftMod = QtWidgets.QCheckBox("SoftMod")
         self.chkSoftMod.setChecked(False)
-        self.chkTweaker = QtWidgets.QCheckBox('Tweaker')
-        self.chkOptLip = QtWidgets.QCheckBox('Optimize Lip Joints')
+        self.chkTweaker = QtWidgets.QCheckBox("Tweaker")
+        self.chkOptLip = QtWidgets.QCheckBox("Optimize Lip Joints")
         self.chkOptLip.setChecked(True)
         self.lipJnt = QtWidgets.QSpinBox()
-        self.lipJnt.setProperty('value', 20)
+        self.lipJnt.setProperty("value", 20)
         self.lipJnt.setRange(4, 100)
-        self.chkOptEyelidJnt = QtWidgets.QCheckBox('Optimize Eyelid Joints')
+        self.chkOptEyelidJnt = QtWidgets.QCheckBox("Optimize Eyelid Joints")
         self.eyelidJnt = QtWidgets.QSpinBox()
-        self.eyelidJnt.setProperty('value', 20)
+        self.eyelidJnt.setProperty("value", 20)
         self.eyelidJnt.setRange(4, 100)
-        self.chkOptEye = QtWidgets.QCheckBox('Optimize EyeCrease Joints')
+        self.chkOptEye = QtWidgets.QCheckBox("Optimize EyeCrease Joints")
         self.chkOptEye.setChecked(True)
         self.eyeCreaseJnt = QtWidgets.QSpinBox()
-        self.eyeCreaseJnt.setProperty('value', 8)
+        self.eyeCreaseJnt.setProperty("value", 8)
         self.eyeCreaseJnt.setRange(4, 100)
-        self.generateRig = QtWidgets.QPushButton('*   CREATE Facial Rig    ')
+        self.generateRig = QtWidgets.QPushButton("*   CREATE Facial Rig    ")
         self.generateRig.setStyleSheet(self.edgeColor)
         self.progress = QtWidgets.QProgressBar()
-        self.progressText = QtWidgets.QLabel('           ')
+        self.progressText = QtWidgets.QLabel("           ")
         self.progressText.setStyleSheet(self.progressColor)
         self.progressText.setFixedSize(170, 25)
-        self.SaveSettingsBoxButton = QtWidgets.QPushButton(' Save Data ')
+        self.SaveSettingsBoxButton = QtWidgets.QPushButton(" Save Data ")
         self.SaveSettingsBoxButton.setFixedSize(150, 25)
-        self.LoadSettingsBoxButton = QtWidgets.QPushButton(' Load Data ')
-        self.ResetSettingsBoxButton = QtWidgets.QPushButton(' Reset Data ')
+        self.LoadSettingsBoxButton = QtWidgets.QPushButton(" Load Data ")
+        self.ResetSettingsBoxButton = QtWidgets.QPushButton(" Reset Data ")
         self.LoadSettingsBoxButton.setFixedSize(150, 25)
-        self.chkLoadData = QtWidgets.QCheckBox('')
-        self.chkSaveData = QtWidgets.QCheckBox('')
-        self.picker = QtWidgets.QPushButton('     CREATE PICKER     ')
-        self.SaveCtlShapesBoxButton = QtWidgets.QPushButton(' Exp. Ctl. ')
-        self.LoadCtlShapesBoxButton = QtWidgets.QPushButton(' Imp. Ctl. ')
+        self.chkLoadData = QtWidgets.QCheckBox("")
+        self.chkSaveData = QtWidgets.QCheckBox("")
+        self.picker = QtWidgets.QPushButton("     CREATE PICKER     ")
+        self.SaveCtlShapesBoxButton = QtWidgets.QPushButton(" Exp. Ctl. ")
+        self.LoadCtlShapesBoxButton = QtWidgets.QPushButton(" Imp. Ctl. ")
         self.bindLayout = QtWidgets.QHBoxLayout()
         self.bindLayout.addWidget(self.chkMaintainMaxInf)
         self.bindLayout.addWidget(self.maxInfs)
@@ -596,7 +743,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self.bindParentlayout = QtWidgets.QHBoxLayout(self)
         self.bindParentlayout.addLayout(self.bindLayout)
         self.bindParentlayout.addStretch()
-        self.bindLayoutGrp = QtWidgets.QGroupBox('Bind Skin Option')
+        self.bindLayoutGrp = QtWidgets.QGroupBox("Bind Skin Option")
         self.bindLayoutGrp.setLayout(self.bindParentlayout)
         self.deformationLayout = QtWidgets.QHBoxLayout()
         self.deformationLayout.addWidget(self.chkGame)
@@ -610,7 +757,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self.deformationParentlayout = QtWidgets.QHBoxLayout(self)
         self.deformationParentlayout.addLayout(self.deformationLayout)
         self.deformationParentlayout.addStretch()
-        self.deformationLayoutGrp = QtWidgets.QGroupBox('Deformation Layers ')
+        self.deformationLayoutGrp = QtWidgets.QGroupBox("Deformation Layers ")
         self.deformationLayoutGrp.setLayout(self.deformationParentlayout)
         self.optimizeLayout = QtWidgets.QHBoxLayout()
         self.optimizeLayout.addWidget(self.chkOptLip)
@@ -625,7 +772,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self.optimizeParentlayout = QtWidgets.QHBoxLayout(self)
         self.optimizeParentlayout.addLayout(self.optimizeLayout)
         self.optimizeParentlayout.addStretch()
-        self.optimizeLayoutGrp = QtWidgets.QGroupBox('Deformation Layers ')
+        self.optimizeLayoutGrp = QtWidgets.QGroupBox("Deformation Layers ")
         self.optimizeLayoutGrp.setLayout(self.optimizeParentlayout)
         self.createRigLayout = QtWidgets.QHBoxLayout()
         self.createRigLayoutB = QtWidgets.QHBoxLayout()
@@ -635,7 +782,7 @@ class SettingsWidget(QtWidgets.QWidget):
         self.createRigParentlayout = QtWidgets.QVBoxLayout(self)
         self.createRigParentlayout.addLayout(self.createRigLayoutB)
         self.createRigParentlayout.addLayout(self.createRigLayout)
-        self.createRigParentlayoutGrp = QtWidgets.QGroupBox('Create Facial Rig')
+        self.createRigParentlayoutGrp = QtWidgets.QGroupBox("Create Facial Rig")
         self.createRigParentlayoutGrp.setLayout(self.createRigParentlayout)
         self.saveLayout = QtWidgets.QHBoxLayout(self)
         self.saveLayout.addWidget(self.chkSaveData)
@@ -645,32 +792,32 @@ class SettingsWidget(QtWidgets.QWidget):
         self.saveLayout.addWidget(self.chkLoadData)
         self.saveLayout.addWidget(self.LoadSettingsBoxButton)
         self.saveLayout.addStretch()
-        self.saveLayoutGrp = QtWidgets.QGroupBox('Save&Load Settings')
+        self.saveLayoutGrp = QtWidgets.QGroupBox("Save&Load Settings")
         self.saveLayoutGrp.setLayout(self.saveLayout)
         self.pickerLayout = QtWidgets.QHBoxLayout(self)
         self.pickerLayout.addWidget(self.picker)
-        self.pickerLayoutGrp = QtWidgets.QGroupBox('Picker')
+        self.pickerLayoutGrp = QtWidgets.QGroupBox("Picker")
         self.pickerLayoutGrp.setLayout(self.pickerLayout)
         self.shapesLayout = QtWidgets.QHBoxLayout(self)
         self.shapesLayout.addWidget(self.SaveCtlShapesBoxButton)
         self.shapesLayout.addWidget(self.LoadCtlShapesBoxButton)
-        self.shapesLayoutGrp = QtWidgets.QGroupBox('Import/Export Shapes')
+        self.shapesLayoutGrp = QtWidgets.QGroupBox("Import/Export Shapes")
         self.shapesLayoutGrp.setLayout(self.shapesLayout)
         self.mainNameRig = findMainName()
         self.perseusBLabelField = QtWidgets.QLabel(self.mainNameRig)
         self.perseusBLabelField.setStyleSheet(self.progressColor)
         self.perseusBLayout = QtWidgets.QHBoxLayout()
         self.perseusBLayout.addWidget(self.perseusBLabelField)
-        self.perseusBLayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusBLayoutGrp = QtWidgets.QGroupBox("")
         self.perseusBLayoutGrp.setLayout(self.perseusBLayout)
         self.perseusA = QtWidgets.QHBoxLayout(self)
         self.perseusA.addWidget(self.ResetSettingsBoxButton)
-        self.perseusALayoutGrp = QtWidgets.QGroupBox('   Reset Settings   ')
+        self.perseusALayoutGrp = QtWidgets.QGroupBox("   Reset Settings   ")
         self.perseusALayoutGrp.setLayout(self.perseusA)
         self.perseusE = QtWidgets.QHBoxLayout(self)
-        self.perseusELabelField = QtWidgets.QLabel('')
+        self.perseusELabelField = QtWidgets.QLabel("")
         self.perseusE.addWidget(self.perseusELabelField)
-        self.perseusELayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusELayoutGrp = QtWidgets.QGroupBox("")
         self.perseusELayoutGrp.setLayout(self.perseusE)
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.bindLayoutGrp)
@@ -702,46 +849,56 @@ class SkinWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.progressColor = 'background-color:rgb(76,50,50);color : white;'
-        self.prExportSkin = QtWidgets.QPushButton('Export Skin')
-        self.prImpSkinAll = QtWidgets.QPushButton('Import Skin')
-        self.skinCopy = QtWidgets.QPushButton('Copy Skin')
-        self.perseusLabelField = QtWidgets.QLabel('')
+        self.progressColor = "background-color:rgb(76,50,50);color : white;"
+        self.prExportSkin = QtWidgets.QPushButton("Export Skin")
+        self.prImpSkinAll = QtWidgets.QPushButton("Import Skin")
+        self.skinCopy = QtWidgets.QPushButton("Copy Skin")
+        self.perseusLabelField = QtWidgets.QLabel("")
         self.perseusLayout = QtWidgets.QVBoxLayout()
         self.perseusLayout.addWidget(self.prExportSkin)
         self.perseusLayout.addWidget(self.prImpSkinAll)
         self.perseusLayout.addWidget(self.skinCopy)
-        self.perseusLayoutGrp = QtWidgets.QGroupBox('Copy Skin and Influences')
+        self.perseusLayoutGrp = QtWidgets.QGroupBox("Copy Skin and Influences")
         self.perseusLayoutGrp.setLayout(self.perseusLayout)
         self.progress = QtWidgets.QProgressBar()
-        self.source_define = QtWidgets.QPushButton('Source Component')
-        self.destination_define = QtWidgets.QPushButton('Target Component')
-        self.copySkinGlobal = QtWidgets.QPushButton('Copy Src. to Trg.')
-        self.hammerSkinGlobal = QtWidgets.QPushButton('Hammer Skin Weight')
-        self.perseusCLabelField = QtWidgets.QLabel('')
+        self.source_define = QtWidgets.QPushButton("Source Component")
+        self.destination_define = QtWidgets.QPushButton("Target Component")
+        self.copySkinGlobal = QtWidgets.QPushButton("Copy Src. to Trg.")
+        self.hammerSkinGlobal = QtWidgets.QPushButton("Hammer Skin Weight")
+        self.perseusCLabelField = QtWidgets.QLabel("")
         self.perseusCLayout = QtWidgets.QVBoxLayout()
         self.perseusCLayout.addWidget(self.source_define)
         self.perseusCLayout.addWidget(self.destination_define)
         self.perseusCLayout.addWidget(self.copySkinGlobal)
         self.perseusCLayout.addWidget(self.progress)
         self.perseusCLayout.addWidget(self.hammerSkinGlobal)
-        self.perseusCLayoutGrp = QtWidgets.QGroupBox('Copy Skin Components')
+        self.perseusCLayoutGrp = QtWidgets.QGroupBox("Copy Skin Components")
         self.perseusCLayoutGrp.setLayout(self.perseusCLayout)
-        self.DEFINE_large = QtWidgets.QPushButton('Define Exclusion Set')
-        self.EXCLUDE_large = QtWidgets.QPushButton('Exclude System(s)')
+        self.DEFINE_large = QtWidgets.QPushButton("Define Exclusion Set")
+        self.EXCLUDE_large = QtWidgets.QPushButton("Exclude System(s)")
         self.excludeLayout = QtWidgets.QVBoxLayout(self)
         self.excludeLayout.addWidget(self.DEFINE_large)
         self.excludeLayout.addWidget(self.EXCLUDE_large)
-        self.excludeLayoutGrp = QtWidgets.QGroupBox('Skin Exclusion System')
+        self.excludeLayoutGrp = QtWidgets.QGroupBox("Skin Exclusion System")
         self.excludeLayoutGrp.setLayout(self.excludeLayout)
-        self.SaveFacialSkinSet = QtWidgets.QPushButton('Set A')
-        self.TransferFacialSkinSet = QtWidgets.QPushButton('A To B (Add influences and Cpy.Skin for Game Mode)')
-        self.connectBlendShape = QtWidgets.QPushButton('Create Connection(Select body rig head jnt and facial grp)')
-        self.connectBlendShapeB = QtWidgets.QPushButton('Create BlendShape (Select facial and body mesh) ')
-        self.connectBlendShapeC = QtWidgets.QPushButton('Create Wrap Deformer (Select facial and body mesh) ')
-        self.connectBlendShapeD = QtWidgets.QPushButton('Add Space Switch for Eye Aim Ctrl.(Select some Controllers from Body Rig)')
-        self.detachSkinJntConnection = QtWidgets.QPushButton('Detach Skin Joints Connection')
-        self.attachSkinJntConnection = QtWidgets.QPushButton('Attach Skin Joints Connection')
+        self.SaveFacialSkinSet = QtWidgets.QPushButton("Set A")
+        self.TransferFacialSkinSet = QtWidgets.QPushButton(
+            "A To B (Add influences and Cpy.Skin for Game Mode)"
+        )
+        self.connectBlendShape = QtWidgets.QPushButton(
+            "Create Connection(Select body rig head jnt and facial grp)"
+        )
+        self.connectBlendShapeB = QtWidgets.QPushButton(
+            "Create BlendShape (Select facial and body mesh) "
+        )
+        self.connectBlendShapeC = QtWidgets.QPushButton(
+            "Create Wrap Deformer (Select facial and body mesh) "
+        )
+        self.connectBlendShapeD = QtWidgets.QPushButton(
+            "Add Space Switch for Eye Aim Ctrl.(Select some Controllers from Body Rig)"
+        )
+        self.detachSkinJntConnection = QtWidgets.QPushButton("Detach Skin Joints Connection")
+        self.attachSkinJntConnection = QtWidgets.QPushButton("Attach Skin Joints Connection")
         self.perseusDLayout = QtWidgets.QVBoxLayout()
         self.perseusDLayout.addWidget(self.SaveFacialSkinSet)
         self.perseusDLayout.addWidget(self.TransferFacialSkinSet)
@@ -751,24 +908,24 @@ class SkinWidget(QtWidgets.QWidget):
         self.perseusDLayout.addWidget(self.connectBlendShapeD)
         self.perseusDLayout.addWidget(self.detachSkinJntConnection)
         self.perseusDLayout.addWidget(self.attachSkinJntConnection)
-        self.perseusDLayoutGrp = QtWidgets.QGroupBox('Create Connection From Face --> Body')
+        self.perseusDLayoutGrp = QtWidgets.QGroupBox("Create Connection From Face --> Body")
         self.perseusDLayoutGrp.setLayout(self.perseusDLayout)
         self.mainNameRig = findMainName()
         self.perseusBLabelField = QtWidgets.QLabel(self.mainNameRig)
         self.perseusBLabelField.setStyleSheet(self.progressColor)
         self.perseusBLayout = QtWidgets.QHBoxLayout()
         self.perseusBLayout.addWidget(self.perseusBLabelField)
-        self.perseusBLayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusBLayoutGrp = QtWidgets.QGroupBox("")
         self.perseusBLayoutGrp.setLayout(self.perseusBLayout)
         self.perseusA = QtWidgets.QHBoxLayout(self)
-        self.perseusALabelField = QtWidgets.QLabel('')
+        self.perseusALabelField = QtWidgets.QLabel("")
         self.perseusA.addWidget(self.perseusALabelField)
-        self.perseusALayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusALayoutGrp = QtWidgets.QGroupBox("")
         self.perseusALayoutGrp.setLayout(self.perseusA)
         self.perseusE = QtWidgets.QHBoxLayout(self)
-        self.perseusELabelField = QtWidgets.QLabel('')
+        self.perseusELabelField = QtWidgets.QLabel("")
         self.perseusE.addWidget(self.perseusELabelField)
-        self.perseusELayoutGrp = QtWidgets.QGroupBox('')
+        self.perseusELayoutGrp = QtWidgets.QGroupBox("")
         self.perseusELayoutGrp.setLayout(self.perseusE)
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.excludeLayoutGrp)
@@ -791,11 +948,11 @@ class CustomTabWidget(QtWidgets.QWidget):
     def create_widgets(self):
         """Create all child widgets for the tab widget."""
         self.tab_bar = QtWidgets.QTabBar()
-        self.tab_bar.setObjectName('customTabBar')
-        self.tab_bar.setStyleSheet('#customTabBar {background-color: #383838}')
+        self.tab_bar.setObjectName("customTabBar")
+        self.tab_bar.setStyleSheet("#customTabBar {background-color: #383838}")
         self.stacked_wdg = QtWidgets.QStackedWidget()
-        self.stacked_wdg.setObjectName('tabBarStackedWidget')
-        self.stacked_wdg.setStyleSheet('#tabBarStackedWidget {border: 1px solid #2e2e2e}')
+        self.stacked_wdg.setObjectName("tabBarStackedWidget")
+        self.stacked_wdg.setStyleSheet("#tabBarStackedWidget {border: 1px solid #2e2e2e}")
 
     def create_layout(self):
         """Create and set the layout for the tab widget."""
@@ -822,8 +979,9 @@ class CustomTabWidget(QtWidgets.QWidget):
 
 class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     """Facial rig PerseusUI class."""
-    WINDOW_TITLE = 'Perseus UI'
-    UI_NAME = 'PerseusUI'
+
+    WINDOW_TITLE = "Perseus UI"
+    UI_NAME = "PerseusUI"
     ui_instance = None
     perseus_dic = {}
 
@@ -835,7 +993,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             PerseusUI: The dialog instance.
         """
         version = str(cmds.about(v=1))
-        if version != '2017':
+        if version != "2017":
             if not cls.ui_instance:
                 cls.ui_instance = PerseusUI()
             if cls.ui_instance.isHidden():
@@ -843,7 +1001,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             else:
                 cls.ui_instance.raise_()
                 cls.ui_instance.activateWindow()
-        if version == '2017':
+        if version == "2017":
             if not cls.ui_instance:
                 cls.ui_instance = PerseusUI()
             if cls.ui_instance.isHidden():
@@ -894,9 +1052,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.settings_wdg = SettingsWidget()
         self.skin_wdg = SkinWidget()
         self.tab_widget = CustomTabWidget()
-        self.tab_widget.addTab(self.headGeo_wdg, 'Set Models and Components')
-        self.tab_widget.addTab(self.settings_wdg, 'Facial Settings')
-        self.tab_widget.addTab(self.skin_wdg, 'Skin Tools')
+        self.tab_widget.addTab(self.headGeo_wdg, "Set Models and Components")
+        self.tab_widget.addTab(self.settings_wdg, "Facial Settings")
+        self.tab_widget.addTab(self.skin_wdg, "Skin Tools")
 
     def create_layout(self):
         """Create and set the layout for the tab widget."""
@@ -1007,22 +1165,27 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def sl_generateRig_fn(self):
         """Generate facial rig from selected elements."""
         self.pre_generateRig_fn()
-        response = pm.confirmDialog(title='Save Settings', cancelButton='No', defaultButton='Yes', button=[
-         'Yes',
-         'No'], message='Would you like to save your settings?', dismissString='No')
-        if response == 'Yes':
+        response = pm.confirmDialog(
+            title="Save Settings",
+            cancelButton="No",
+            defaultButton="Yes",
+            button=["Yes", "No"],
+            message="Would you like to save your settings?",
+            dismissString="No",
+        )
+        if response == "Yes":
             self.FacialSave()
         self.generateRig_fn()
 
     def pre_generateRig_fn(self):
         """Pre-process and validate before generating rig."""
         name = self.headGeo_wdg.nameField.text()
-        name = name.replace(' ', '')
+        name = name.replace(" ", "")
         self.headGeo_wdg.nameField.setText(name)
-        self.perseus_dic['FacialRigName'] = name
+        self.perseus_dic["FacialRigName"] = name
         skinJntSuffix = self.headGeo_wdg.skinJntSuffix.text()
-        skinJntSuffix = skinJntSuffix.replace(' ', '')
-        self.perseus_dic['skinJntSuffix'] = skinJntSuffix
+        skinJntSuffix = skinJntSuffix.replace(" ", "")
+        self.perseus_dic["skinJntSuffix"] = skinJntSuffix
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
         chkExtra = int(self.headGeo_wdg.chkExtra.isChecked())
         chkMaintainMaxInf = int(self.settings_wdg.chkMaintainMaxInf.isChecked())
@@ -1037,21 +1200,21 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         eyelidJnt = self.settings_wdg.eyelidJnt.value()
         chkOptEye = int(self.settings_wdg.chkOptEye.isChecked())
         eyeCreaseJnt = self.settings_wdg.eyeCreaseJnt.value()
-        self.perseus_dic['chkExtra'] = chkExtra
-        self.perseus_dic['chkMaintainMaxInf'] = chkMaintainMaxInf
-        self.perseus_dic['maxInfs'] = maxInfs
-        self.perseus_dic['relaxSk'] = relaxSk
-        self.perseus_dic['chkGame'] = chkGame
-        self.perseus_dic['chkSoftMod'] = chkSoftMod
-        self.perseus_dic['chkTweaker'] = chkTweaker
-        self.perseus_dic['chkOptLip'] = chkOptLip
-        self.perseus_dic['lipJnt'] = lipJnt
-        self.perseus_dic['chkOptEyelidJnt'] = chkOptEyelidJnt
-        self.perseus_dic['eyelidJnt'] = eyelidJnt
-        self.perseus_dic['chkOptEye'] = chkOptEye
-        self.perseus_dic['eyeCreaseJnt'] = eyeCreaseJnt
-        self.perseus_dic['chkPrefix'] = chkPrefix
-        self.perseus_dic['chkPrefix'] = chkPrefix
+        self.perseus_dic["chkExtra"] = chkExtra
+        self.perseus_dic["chkMaintainMaxInf"] = chkMaintainMaxInf
+        self.perseus_dic["maxInfs"] = maxInfs
+        self.perseus_dic["relaxSk"] = relaxSk
+        self.perseus_dic["chkGame"] = chkGame
+        self.perseus_dic["chkSoftMod"] = chkSoftMod
+        self.perseus_dic["chkTweaker"] = chkTweaker
+        self.perseus_dic["chkOptLip"] = chkOptLip
+        self.perseus_dic["lipJnt"] = lipJnt
+        self.perseus_dic["chkOptEyelidJnt"] = chkOptEyelidJnt
+        self.perseus_dic["eyelidJnt"] = eyelidJnt
+        self.perseus_dic["chkOptEye"] = chkOptEye
+        self.perseus_dic["eyeCreaseJnt"] = eyeCreaseJnt
+        self.perseus_dic["chkPrefix"] = chkPrefix
+        self.perseus_dic["chkPrefix"] = chkPrefix
 
     def generateRig_fn(self):
         """Generate the complete facial rig."""
@@ -1065,204 +1228,228 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def sl_headGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['LHeadGeoSel'], r=1)
+        cmds.select(self.perseus_dic["LHeadGeoSel"], r=1)
 
     def sl_rEyeGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['REyeGeoSel'], r=1)
+        cmds.select(self.perseus_dic["REyeGeoSel"], r=1)
 
     def sl_lEyeGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['LEyeGeoSel'], r=1)
+        cmds.select(self.perseus_dic["LEyeGeoSel"], r=1)
 
     def sl_topTeethGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['TopTeethGeoSel'], r=1)
+        cmds.select(self.perseus_dic["TopTeethGeoSel"], r=1)
 
     def sl_downTeethGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['DownTeethGeoSel'], r=1)
+        cmds.select(self.perseus_dic["DownTeethGeoSel"], r=1)
 
     def sl_tongueGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
+        cmds.select(self.perseus_dic["TongueGeoSel"], r=1)
 
     def sl_extraGeo_fn(self):
         """Store selected geometry in field."""
-        cmds.select(self.perseus_dic['ExtraGeoSel'], r=1)
+        cmds.select(self.perseus_dic["ExtraGeoSel"], r=1)
 
     def sl_rEyeLidMain_fn(self):
         """Store selected main control in field."""
-        self.checkVarExistsB(self.perseus_dic['RTopEyeEdgeSel'], self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["RTopEyeEdgeSel"], self.perseus_dic["RDownEyeEdgeSel"], 0, 1
+        )
 
     def sl_lEyeLidMain_fn(self):
         """Store selected main control in field."""
-        self.checkVarExistsB(self.perseus_dic['LTopEyeEdgeSel'], self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["LTopEyeEdgeSel"], self.perseus_dic["LDownEyeEdgeSel"], 0, 1
+        )
 
     def sl_lTopEyeEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['LTopEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["LTopEyeEdgeSel"], 0, 1)
 
     def sl_lDownEyeEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["LDownEyeEdgeSel"], 0, 1)
 
     def sl_rTopEyeEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['RTopEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["RTopEyeEdgeSel"], 0, 1)
 
     def sl_rDownEyeEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["RDownEyeEdgeSel"], 0, 1)
 
     def sl_rEyeLidOuter_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExistsB(self.perseus_dic['RTopEyeOuterEdgeSel'], self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["RTopEyeOuterEdgeSel"], self.perseus_dic["RDownEyeOuterEdgeSel"], 0, 1
+        )
 
     def sl_lEyeLidOuter_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExistsB(self.perseus_dic['LTopEyeOuterEdgeSel'], self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["LTopEyeOuterEdgeSel"], self.perseus_dic["LDownEyeOuterEdgeSel"], 0, 1
+        )
 
     def sl_lTopEyeOuterEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['LTopEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["LTopEyeOuterEdgeSel"], 0, 1)
 
     def sl_lDownEyeOuterEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["LDownEyeOuterEdgeSel"], 0, 1)
 
     def sl_rTopEyeOuterEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['RTopEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["RTopEyeOuterEdgeSel"], 0, 1)
 
     def sl_rDownEyeOuterEdge_fn(self):
         """Store selected edges in field."""
-        self.checkVarExists(self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["RDownEyeOuterEdgeSel"], 0, 1)
 
     def sl_lipTopDown_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExistsB(self.perseus_dic['DownLipEdgeSel'], self.perseus_dic['TopLipEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["DownLipEdgeSel"], self.perseus_dic["TopLipEdgeSel"], 0, 1
+        )
 
     def sl_lipTop_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['TopLipEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["TopLipEdgeSel"], 0, 1)
 
     def sl_lipDown_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['DownLipEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["DownLipEdgeSel"], 0, 1)
 
     def sl_tongueTopDown_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExistsB(self.perseus_dic['DownTongueEdgeSel'], self.perseus_dic['TopTongueEdgeSel'], 0, 1)
+        self.checkVarExistsB(
+            self.perseus_dic["DownTongueEdgeSel"], self.perseus_dic["TopTongueEdgeSel"], 0, 1
+        )
 
     def sl_tongueTop_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['TopTongueEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["TopTongueEdgeSel"], 0, 1)
 
     def sl_tongueDown_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['DownTongueEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["DownTongueEdgeSel"], 0, 1)
 
     def sl_noseEdges_fn(self):
         """Select and store edge loop from Maya selection."""
-        self.checkVarExists(self.perseus_dic['NoseEdgeSel'], 0, 1)
+        self.checkVarExists(self.perseus_dic["NoseEdgeSel"], 0, 1)
 
     def sl_noseUnderVrtx_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['NoseUnderVertexSel'], 0, 0)
+        self.checkVarExists(self.perseus_dic["NoseUnderVertexSel"], 0, 0)
 
     def sl_foreheadFace_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['ForeheadFaceSel'], 1, 2)
+        self.checkVarExists(self.perseus_dic["ForeheadFaceSel"], 1, 2)
 
     def sl_backHeadNeck_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['BackHeadNeckFaceSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["BackHeadNeckFaceSel"], 0, 2)
 
     def sl_squashStretchFace_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['SquashStretchFaceSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["SquashStretchFaceSel"], 0, 2)
 
     def sl_LPupil_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['LPupilSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["LPupilSel"], 0, 2)
 
     def sl_RPupil_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['RPupilSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["RPupilSel"], 0, 2)
 
     def sl_LIris_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['LIrisSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["LIrisSel"], 0, 2)
 
     def sl_RIris_fn(self):
         """Store selected object from Maya selection."""
-        self.checkVarExists(self.perseus_dic['RIrisSel'], 0, 2)
+        self.checkVarExists(self.perseus_dic["RIrisSel"], 0, 2)
 
     def LHeadGeoSelUI(self):
         """Lheadgeoselui operation."""
         LHeadGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(LHeadGeoSel.split(':')))
+        chkNameSpace = int(len(LHeadGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + LHeadGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + LHeadGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         LHeadGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['LHeadGeoSel'] = LHeadGeoSel
+        self.perseus_dic["LHeadGeoSel"] = LHeadGeoSel
         self.headGeo_wdg.geoField.setText(LHeadGeoSel)
 
     def REyeGeoUI(self):
         """Reyegeoui operation."""
         REyeGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(REyeGeoSel.split(':')))
+        chkNameSpace = int(len(REyeGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + REyeGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + REyeGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         REyeGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['REyeGeoSel'] = REyeGeoSel
+        self.perseus_dic["REyeGeoSel"] = REyeGeoSel
         self.headGeo_wdg.REyeBox.setText(REyeGeoSel)
 
     def LEyeGeoUI(self):
         """Leyegeoui operation."""
         LEyeGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(LEyeGeoSel.split(':')))
+        chkNameSpace = int(len(LEyeGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + LEyeGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + LEyeGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         LEyeGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['LEyeGeoSel'] = LEyeGeoSel
+        self.perseus_dic["LEyeGeoSel"] = LEyeGeoSel
         self.headGeo_wdg.LEyeBox.setText(LEyeGeoSel)
 
     def UpTeethGeoUI(self):
         """Upteethgeoui operation."""
         TopTeethGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(TopTeethGeoSel.split(':')))
+        chkNameSpace = int(len(TopTeethGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + TopTeethGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + TopTeethGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         TopTeethGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['TopTeethGeoSel'] = TopTeethGeoSel
+        self.perseus_dic["TopTeethGeoSel"] = TopTeethGeoSel
         self.headGeo_wdg.UpTeethBox.setText(TopTeethGeoSel)
 
     def DownTeethGeoUI(self):
         """Downteethgeoui operation."""
         DownTeethGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(DownTeethGeoSel.split(':')))
+        chkNameSpace = int(len(DownTeethGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + DownTeethGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + DownTeethGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         DownTeethGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['DownTeethGeoSel'] = DownTeethGeoSel
+        self.perseus_dic["DownTeethGeoSel"] = DownTeethGeoSel
         self.headGeo_wdg.DownTeethBox.setText(DownTeethGeoSel)
 
     def TongueGeoUI(self):
         """Tonguegeoui operation."""
         TongueGeoSel = cmds.ls(sl=1)[0]
-        chkNameSpace = int(len(TongueGeoSel.split(':')))
+        chkNameSpace = int(len(TongueGeoSel.split(":")))
         if chkNameSpace > 1:
-            cmds.namespace(removeNamespace=':' + TongueGeoSel.split(':')[0], mergeNamespaceWithParent=True)
+            cmds.namespace(
+                removeNamespace=":" + TongueGeoSel.split(":")[0], mergeNamespaceWithParent=True
+            )
         TongueGeoSel = cmds.ls(sl=1)[0]
-        self.perseus_dic['TongueGeoSel'] = TongueGeoSel
+        self.perseus_dic["TongueGeoSel"] = TongueGeoSel
         self.headGeo_wdg.TongueBox.setText(TongueGeoSel)
 
     def ExtraGeoUI(self):
         """Extrageoui operation."""
         ExtraGeoSel = cmds.ls(sl=1)
-        self.perseus_dic['ExtraGeoSel'] = ExtraGeoSel
+        self.perseus_dic["ExtraGeoSel"] = ExtraGeoSel
         self.headGeo_wdg.ExtraBox.setText(str(ExtraGeoSel))
         self.headGeo_wdg.chkExtra.setChecked(True)
         pm.parent(w=1)
@@ -1280,8 +1467,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = RTopEyeEdgeSel
             RTopEyeEdgeSel = RDownEyeEdgeSel
             RDownEyeEdgeSel = temp
-        self.perseus_dic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
-        self.perseus_dic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
+        self.perseus_dic["RTopEyeEdgeSel"] = RTopEyeEdgeSel
+        self.perseus_dic["RDownEyeEdgeSel"] = RDownEyeEdgeSel
         self.headGeo_wdg.chkREyeLid.setChecked(True)
 
     def LEyeLidMainUI(self):
@@ -1297,8 +1484,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = LTopEyeEdgeSel
             LTopEyeEdgeSel = LDownEyeEdgeSel
             LDownEyeEdgeSel = temp
-        self.perseus_dic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
-        self.perseus_dic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
+        self.perseus_dic["LTopEyeEdgeSel"] = LTopEyeEdgeSel
+        self.perseus_dic["LDownEyeEdgeSel"] = LDownEyeEdgeSel
         self.headGeo_wdg.chkLEyeLid.setChecked(True)
 
     def REyeLidOuterUI(self):
@@ -1314,8 +1501,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = RTopEyeOuterEdgeSel
             RTopEyeOuterEdgeSel = RDownEyeOuterEdgeSel
             RDownEyeOuterEdgeSel = temp
-        self.perseus_dic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
-        self.perseus_dic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
+        self.perseus_dic["RTopEyeOuterEdgeSel"] = RTopEyeOuterEdgeSel
+        self.perseus_dic["RDownEyeOuterEdgeSel"] = RDownEyeOuterEdgeSel
         self.headGeo_wdg.chkREyeOuterLid.setChecked(True)
 
     def LEyeLidOuterUI(self):
@@ -1331,49 +1518,49 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             temp = LTopEyeOuterEdgeSel
             LTopEyeOuterEdgeSel = LDownEyeOuterEdgeSel
             LDownEyeOuterEdgeSel = temp
-        self.perseus_dic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
-        self.perseus_dic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
+        self.perseus_dic["LTopEyeOuterEdgeSel"] = LTopEyeOuterEdgeSel
+        self.perseus_dic["LDownEyeOuterEdgeSel"] = LDownEyeOuterEdgeSel
         self.headGeo_wdg.chkLEyeOuterLid.setChecked(True)
 
     def LTopEyeEdgeSelUI(self):
         """Ltopeyeedgeselui operation."""
         LTopEyeEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
+        self.perseus_dic["LTopEyeEdgeSel"] = LTopEyeEdgeSel
 
     def LDownEyeEdgeSelUI(self):
         """Ldowneyeedgeselui operation."""
         LDownEyeEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
+        self.perseus_dic["LDownEyeEdgeSel"] = LDownEyeEdgeSel
 
     def RTopEyeEdgeSelUI(self):
         """Rtopeyeedgeselui operation."""
         RTopEyeEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
+        self.perseus_dic["RTopEyeEdgeSel"] = RTopEyeEdgeSel
 
     def RDownEyeEdgeSelUI(self):
         """Rdowneyeedgeselui operation."""
         RDownEyeEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
+        self.perseus_dic["RDownEyeEdgeSel"] = RDownEyeEdgeSel
 
     def LTopEyeOuterEdgeSelUI(self):
         """Ltopeyeouteredgeselui operation."""
         LTopEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
+        self.perseus_dic["LTopEyeOuterEdgeSel"] = LTopEyeOuterEdgeSel
 
     def LDownEyeOuterEdgeSelUI(self):
         """Ldowneyeouteredgeselui operation."""
         LDownEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
+        self.perseus_dic["LDownEyeOuterEdgeSel"] = LDownEyeOuterEdgeSel
 
     def RTopEyeOuterEdgeSelUI(self):
         """Rtopeyeouteredgeselui operation."""
         RTopEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
+        self.perseus_dic["RTopEyeOuterEdgeSel"] = RTopEyeOuterEdgeSel
 
     def RDownEyeOuterEdgeSelUI(self):
         """Rdowneyeouteredgeselui operation."""
         RDownEyeOuterEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
+        self.perseus_dic["RDownEyeOuterEdgeSel"] = RDownEyeOuterEdgeSel
 
     def LipEdgeUI(self):
         """Lipedgeui operation."""
@@ -1388,37 +1575,37 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             TopLipEdgeSel = DownLipEdgeSel
             DownLipEdgeSel = temp
         cmds.select(TopLipEdgeSel, r=1)
-        self.perseus_dic['TopLipEdgeSel'] = TopLipEdgeSel
-        self.perseus_dic['DownLipEdgeSel'] = DownLipEdgeSel
+        self.perseus_dic["TopLipEdgeSel"] = TopLipEdgeSel
+        self.perseus_dic["DownLipEdgeSel"] = DownLipEdgeSel
         self.headGeo_wdg.chkLip.setChecked(True)
 
     def TopLipEdgeSelUI(self):
         """Toplipedgeselui operation."""
         TopLipEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['TopLipEdgeSel'] = TopLipEdgeSel
+        self.perseus_dic["TopLipEdgeSel"] = TopLipEdgeSel
 
     def DownLipEdgeSelUI(self):
         """Downlipedgeselui operation."""
         DownLipEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['DownLipEdgeSel'] = DownLipEdgeSel
+        self.perseus_dic["DownLipEdgeSel"] = DownLipEdgeSel
 
     def TopTongueEdgeSelUI(self):
         """Toptongueedgeselui operation."""
         TopTongueEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
+        self.perseus_dic["TopTongueEdgeSel"] = TopTongueEdgeSel
 
     def DownTongueEdgeSelUI(self):
         """Downtongueedgeselui operation."""
         DownTongueEdgeSel = cmds.ls(sl=1)
-        self.perseus_dic['DownTongueEdgeSel'] = DownTongueEdgeSel
+        self.perseus_dic["DownTongueEdgeSel"] = DownTongueEdgeSel
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def TongueEdgeUI(self):
         """Tongueedgeui operation."""
         TopTongueEdgeSel = self.findEdgeUpDownTongue(0)
         DownTongueEdgeSel = self.findEdgeUpDownTongue(1)
-        self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
-        self.perseus_dic['DownTongueEdgeSel'] = DownTongueEdgeSel
+        self.perseus_dic["TopTongueEdgeSel"] = TopTongueEdgeSel
+        self.perseus_dic["DownTongueEdgeSel"] = DownTongueEdgeSel
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def NoseEdgeUI(self):
@@ -1426,83 +1613,83 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.ConvertSelectionToVertices()
         NoseEdgeSel = cmds.ls(fl=1, sl=1)
         cmds.ConvertSelectionToContainedEdges()
-        self.perseus_dic['NoseEdgeSel'] = NoseEdgeSel
+        self.perseus_dic["NoseEdgeSel"] = NoseEdgeSel
         self.headGeo_wdg.chkNoseEdge.setChecked(True)
 
     def NoseUnderVrtxUI(self):
         """Noseundervrtxui operation."""
         cmds.ConvertSelectionToVertices()
         NoseUnderVertexSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['NoseUnderVertexSel'] = NoseUnderVertexSel
+        self.perseus_dic["NoseUnderVertexSel"] = NoseUnderVertexSel
         self.headGeo_wdg.chkNoseUnderVertex.setChecked(True)
 
     def ForeheadFaceSelUI(self):
         """Foreheadfaceselui operation."""
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         ForeheadFaceSelEx = cmds.ls(fl=1, sl=1)
         headGeoName = LHeadGeoSel
-        cmds.select(headGeoName + '.vtx[*]', r=1)
+        cmds.select(headGeoName + ".vtx[*]", r=1)
         cmds.select(ForeheadFaceSelEx, d=1)
         ForeheadFaceSel = cmds.ls(fl=1, sl=1)
         cmds.select(ForeheadFaceSelEx, r=1)
-        self.perseus_dic['ForeheadFaceSel'] = ForeheadFaceSel
+        self.perseus_dic["ForeheadFaceSel"] = ForeheadFaceSel
         self.headGeo_wdg.checkForeheadFace.setChecked(True)
 
     def BackHeadNeckFaceSelUI(self):
         """Backheadneckfaceselui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         BackHeadNeckFaceSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['BackHeadNeckFaceSel'] = BackHeadNeckFaceSel
+        self.perseus_dic["BackHeadNeckFaceSel"] = BackHeadNeckFaceSel
         self.headGeo_wdg.chkBackFace.setChecked(True)
 
     def SquashStretchFaceSelUI(self):
         """Squashstretchfaceselui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         SquashStretchFaceSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['SquashStretchFaceSel'] = SquashStretchFaceSel
+        self.perseus_dic["SquashStretchFaceSel"] = SquashStretchFaceSel
         self.headGeo_wdg.checkSquashStretchFace.setChecked(True)
 
     def LPupilUI(self):
         """Lpupilui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['LPupilSel'] = LPupilSel
+        self.perseus_dic["LPupilSel"] = LPupilSel
         self.headGeo_wdg.chkLPupil.setChecked(True)
 
     def RPupilUI(self):
         """Rpupilui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['RPupilSel'] = LPupilSel
+        self.perseus_dic["RPupilSel"] = LPupilSel
         self.headGeo_wdg.chkRPupil.setChecked(True)
 
     def LIrisUI(self):
         """Lirisui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['LIrisSel'] = LPupilSel
+        self.perseus_dic["LIrisSel"] = LPupilSel
         self.headGeo_wdg.chkLIris.setChecked(True)
 
     def RIrisUI(self):
         """Ririsui operation."""
         cmds.ConvertSelectionToVertices()
-        excludeJnt = cmds.ls(type='joint', sl=1)
+        excludeJnt = cmds.ls(type="joint", sl=1)
         cmds.select(excludeJnt, d=1)
         LPupilSel = cmds.ls(fl=1, sl=1)
-        self.perseus_dic['RIrisSel'] = LPupilSel
+        self.perseus_dic["RIrisSel"] = LPupilSel
         self.headGeo_wdg.chkRIris.setChecked(True)
 
     def EdgeLoopOn_fn(self):
@@ -1510,12 +1697,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         if not self.headGeo_wdg.edgeLoopToggle:
             pm.mel.dR_selConstraintEdgeLoop()
             self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(self.headGeo_wdg.darkColorB)
-            self.headGeo_wdg.selConstraintEdgeLoop.setText('Edge Loop On')
+            self.headGeo_wdg.selConstraintEdgeLoop.setText("Edge Loop On")
             self.headGeo_wdg.edgeLoopToggle = True
         else:
             pm.mel.dR_selConstraintOff()
             self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(self.headGeo_wdg.defaultColor)
-            self.headGeo_wdg.selConstraintEdgeLoop.setText('Edge Loop Off')
+            self.headGeo_wdg.selConstraintEdgeLoop.setText("Edge Loop Off")
             self.headGeo_wdg.edgeLoopToggle = False
 
     def EdgeLoopOff_fn(self):
@@ -1525,33 +1712,37 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def DuplicateUI(self):
         """Duplicateui operation."""
         cmds.select(cl=1)
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        LEyeGeoSel = self.perseus_dic['LEyeGeoSel']
-        REyeGeoSel = self.perseus_dic['REyeGeoSel']
-        TopTeethGeoSel = self.perseus_dic['TopTeethGeoSel']
-        DownTeethGeoSel = self.perseus_dic['DownTeethGeoSel']
-        TongueGeoSel = self.perseus_dic['TongueGeoSel']
-        cmds.select(LHeadGeoSel, LEyeGeoSel, REyeGeoSel, TopTeethGeoSel, DownTeethGeoSel, TongueGeoSel, r=1)
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
+        LEyeGeoSel = self.perseus_dic["LEyeGeoSel"]
+        REyeGeoSel = self.perseus_dic["REyeGeoSel"]
+        TopTeethGeoSel = self.perseus_dic["TopTeethGeoSel"]
+        DownTeethGeoSel = self.perseus_dic["DownTeethGeoSel"]
+        TongueGeoSel = self.perseus_dic["TongueGeoSel"]
+        cmds.select(
+            LHeadGeoSel, LEyeGeoSel, REyeGeoSel, TopTeethGeoSel, DownTeethGeoSel, TongueGeoSel, r=1
+        )
         self.wffacialDuplicate()
         self.headGeo_wdg.componentLayoutGrp.setChecked(True)
 
     def wffacialDuplicate(self):
         """Wffacialduplicate operation."""
-        pm.displaySmoothness(pointsWire=4, polygonObject=1, pointsShaded=1, divisionsV=0, divisionsU=0)
+        pm.displaySmoothness(
+            pointsWire=4, polygonObject=1, pointsShaded=1, divisionsV=0, divisionsU=0
+        )
         selected_objects = pm.ls(sl=1)
         pm.select(cl=1)
-        if pm.objExists('curve1'):
-            pm.rename('curve1', 'curve1_temp_perseus')
-        if pm.objExists('curve2'):
-            pm.rename('curve2', 'curve2_temp_perseus')
-        if pm.objExists('facial_geo_grp'):
+        if pm.objExists("curve1"):
+            pm.rename("curve1", "curve1_temp_perseus")
+        if pm.objExists("curve2"):
+            pm.rename("curve2", "curve2_temp_perseus")
+        if pm.objExists("facial_geo_grp"):
             pass
         else:
-            pm.group(em=1, n='facial_geo_grp')
+            pm.group(em=1, n="facial_geo_grp")
             pm.select(cl=1)
             for obj in selected_objects:
                 pm.select(obj, r=1)
-                pm.parent(obj, 'facial_geo_grp')
+                pm.parent(obj, "facial_geo_grp")
 
         pm.select(selected_objects[0], r=1)
         if not self.headGeo_wdg.edgeLoopToggle:
@@ -1576,409 +1767,644 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         chkLIris = int(self.headGeo_wdg.chkLIris.isChecked())
         chkRIris = int(self.headGeo_wdg.chkLIris.isChecked())
         try:
-            self.perseus_dic['LHeadGeoSel']
+            self.perseus_dic["LHeadGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Head Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Head Geo'"
+            )
             status = False
 
         try:
-            self.perseus_dic['REyeGeoSel']
+            self.perseus_dic["REyeGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'R Eye Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'R Eye Geo'"
+            )
             status = False
 
         try:
-            self.perseus_dic['LEyeGeoSel']
+            self.perseus_dic["LEyeGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'L Eye Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'L Eye Geo'"
+            )
             status = False
 
         try:
-            self.perseus_dic['TopTeethGeoSel']
+            self.perseus_dic["TopTeethGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Up Teeth Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Up Teeth Geo'"
+            )
             status = False
 
         try:
-            self.perseus_dic['DownTeethGeoSel']
+            self.perseus_dic["DownTeethGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Down Teeth Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Down Teeth Geo'"
+            )
             status = False
 
         try:
-            self.perseus_dic['TongueGeoSel']
+            self.perseus_dic["TongueGeoSel"]
         except Exception:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Tongue Geo'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Tongue Geo'"
+            )
             status = False
 
         if chkLEyeLid == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'LEyeLidMain'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'LEyeLidMain'"
+            )
             status = False
         if chkREyeLid == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'REyeLidMain'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'REyeLidMain'"
+            )
             status = False
         if chkREyeOuterLid == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'REyeLidOuter'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'REyeLidOuter'"
+            )
             status = False
         if chkLEyeOuterLid == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'LEyeLidOuter'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'LEyeLidOuter'"
+            )
             status = False
         if chkNoseEdge == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Nose Edges'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Nose Edges'"
+            )
             status = False
         if chkNoseUnderVertex == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'NoseUnderVtx'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'NoseUnderVtx'"
+            )
             status = False
         if chkLip == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Lip Edge'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Lip Edge'"
+            )
             status = False
         if chkTongue == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'tongue edges'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'tongue edges'"
+            )
             with contextlib.suppress(Exception):
-                cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
+                cmds.select(self.perseus_dic["TongueGeoSel"], r=1)
 
             status = False
         if chkBackFace == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'BackHead_Neck'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'BackHead_Neck'"
+            )
             status = False
         if checkForeheadFace == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'EyeLid Mask'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'EyeLid Mask'"
+            )
             status = False
         if checkSquashStretchFace == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'Squash_Stretch Mask'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'Squash_Stretch Mask'"
+            )
             status = False
         if chkLPupil == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'LPupil'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'LPupil'"
+            )
             status = False
         if chkRPupil == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'RPupil'")
+            QtWidgets.QMessageBox().information(
+                None, "Facial Settings", "You must set the 'RPupil'"
+            )
             status = False
         if chkLIris == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'LIris'")
+            QtWidgets.QMessageBox().information(None, "Facial Settings", "You must set the 'LIris'")
             status = False
         if chkRIris == 0:
-            QtWidgets.QMessageBox().information(None, 'Facial Settings', "You must set the 'RIris'")
+            QtWidgets.QMessageBox().information(None, "Facial Settings", "You must set the 'RIris'")
             status = False
         if status:
-            DownLipEdgeSel = self.perseus_dic['DownLipEdgeSel']
-            TopLipEdgeSel = self.perseus_dic['TopLipEdgeSel']
+            DownLipEdgeSel = self.perseus_dic["DownLipEdgeSel"]
+            TopLipEdgeSel = self.perseus_dic["TopLipEdgeSel"]
             try:
                 TopLipEdgeSel
             except NameError:
                 TopLipEdgeSel = None
 
             if TopLipEdgeSel is None:
-                pm.confirmDialog(message='Please define the components.', backgroundColor=(0.2,
-                                                                                           0.2,
-                                                                                           0.2), title='PERSEUS RIGGING')
+                pm.confirmDialog(
+                    message="Please define the components.",
+                    backgroundColor=(0.2, 0.2, 0.2),
+                    title="PERSEUS RIGGING",
+                )
             else:
                 self.Adjustment_a(DownLipEdgeSel, TopLipEdgeSel)
         return
 
     def Adjustment_a(self, down_lip_edge_sel, top_lip_edge_sel):
         """Adjustment a operation."""
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
         pos1 = cmds.xform(top_lip_edge_sel[0], q=1, ws=1, t=1)
         pos2 = cmds.xform(top_lip_edge_sel[int(len(top_lip_edge_sel) / 4)], q=1, ws=1, t=1)
         pos3 = cmds.xform(top_lip_edge_sel[int(len(top_lip_edge_sel) / 3)], q=1, ws=1, t=1)
         pos4 = cmds.xform(top_lip_edge_sel[int(int(len(top_lip_edge_sel) / 2))], q=1, ws=1, t=1)
-        curve2 = str(cmds.curve(p=[(pos1[0], pos1[1], pos1[2]), (pos2[0], pos2[1], pos2[2]), (pos3[0], pos3[1], pos3[2]), (pos4[0], pos4[1], pos4[2])], k=[0, 1, 2, 3], d=1))
+        curve2 = str(
+            cmds.curve(
+                p=[
+                    (pos1[0], pos1[1], pos1[2]),
+                    (pos2[0], pos2[1], pos2[2]),
+                    (pos3[0], pos3[1], pos3[2]),
+                    (pos4[0], pos4[1], pos4[2]),
+                ],
+                k=[0, 1, 2, 3],
+                d=1,
+            )
+        )
         sizeScale = float(cmds.arclen(curve2))
         cmds.delete(curve2)
-        name = 'l'
-        curveDis = str(cmds.curve(p=[(0.2, 9.2, 0.66), (0.345, 9.2, 0.65), (0.607, 9.2, 0.589), (0.842, 9.2, 0.427), (1, 9.2, 0.2)], d=1))
+        name = "l"
+        curveDis = str(
+            cmds.curve(
+                p=[
+                    (0.2, 9.2, 0.66),
+                    (0.345, 9.2, 0.65),
+                    (0.607, 9.2, 0.589),
+                    (0.842, 9.2, 0.427),
+                    (1, 9.2, 0.2),
+                ],
+                d=1,
+            )
+        )
         selsel = cmds.ls(sl=1)
-        cmds.rename(selsel, str(name) + '_browsCurve')
-        pm.rebuildCurve(str(name) + '_browsCurve', rt=0, ch=1, end=1, d=3, kr=0, s=4, kcp=1, tol=0.01, kt=0, rpo=1, kep=1)
-        cmds.select(str(name) + '_browsCurve', r=1)
+        cmds.rename(selsel, str(name) + "_browsCurve")
+        pm.rebuildCurve(
+            str(name) + "_browsCurve",
+            rt=0,
+            ch=1,
+            end=1,
+            d=3,
+            kr=0,
+            s=4,
+            kcp=1,
+            tol=0.01,
+            kt=0,
+            rpo=1,
+            kep=1,
+        )
+        cmds.select(str(name) + "_browsCurve", r=1)
         cmds.instance()
         pm.mel.scale(-1, 1, 1, r=1)
-        cmds.select(str(name) + '_browsCurve.cv[*]', r=1)
+        cmds.select(str(name) + "_browsCurve.cv[*]", r=1)
         verSel = cmds.ls(fl=1, sl=1)
         diss = []
         diss.append(0.0)
         for i in range(1, len(verSel) + 1):
-            middle_pos = cmds.xform(str(name) + '_browsCurve.cv[+' + str(i - 1) + ']', q=1, ws=1, t=1)
-            end_pos2 = cmds.xform(str(name) + '_browsCurve.cv[+' + str(i) + ']', q=1, ws=1, t=1)
-            curveDis = str(cmds.curve(p=[(middle_pos[0], middle_pos[1], middle_pos[2]), (end_pos2[0], end_pos2[1], end_pos2[2])], k=[0, 1], d=1))
+            middle_pos = cmds.xform(
+                str(name) + "_browsCurve.cv[+" + str(i - 1) + "]", q=1, ws=1, t=1
+            )
+            end_pos2 = cmds.xform(str(name) + "_browsCurve.cv[+" + str(i) + "]", q=1, ws=1, t=1)
+            curveDis = str(
+                cmds.curve(
+                    p=[
+                        (middle_pos[0], middle_pos[1], middle_pos[2]),
+                        (end_pos2[0], end_pos2[1], end_pos2[2]),
+                    ],
+                    k=[0, 1],
+                    d=1,
+                )
+            )
             distance = cmds.arclen(curveDis)
             diss.append(diss[(i - 1)] + distance)
             cmds.delete(curveDis)
 
-        distance = cmds.arclen(str(name) + '_browsCurve')
-        cmds.select(str(name) + '_browsCurve.cv[*]', r=1)
+        distance = cmds.arclen(str(name) + "_browsCurve")
+        cmds.select(str(name) + "_browsCurve.cv[*]", r=1)
         verSel = cmds.ls(fl=1, sl=1)
         for i in range(0, len(verSel)):
             cmds.select(cl=1)
             tt = cmds.CreateEmptyGroup()
-            cmds.rename(tt, str(name) + '_brows_loc_' + str(i))
-            cmds.joint(n=str(name) + '_brows_jnt_' + str(i) + '_skin')
-            cmds.select(str(name) + '_brows_loc_' + str(i), str(name) + '_browsCurve', r=1)
-            cmds.shadingNode('pointOnCurveInfo', asUtility=1, n=str(name) + '_brows_pcInfo_' + str(i))
-            cmds.connectAttr(str(name) + '_browsCurveShape.worldSpace', str(name) + '_brows_pcInfo_' + str(i) + '.inputCurve')
-            cmds.setAttr(str(name) + '_brows_pcInfo_' + str(i) + '.parameter', diss[i])
-            cmds.connectAttr(str(name) + '_brows_pcInfo_' + str(i) + '.position', str(name) + '_brows_loc_' + str(i) + '.translate', f=1)
+            cmds.rename(tt, str(name) + "_brows_loc_" + str(i))
+            cmds.joint(n=str(name) + "_brows_jnt_" + str(i) + "_skin")
+            cmds.select(str(name) + "_brows_loc_" + str(i), str(name) + "_browsCurve", r=1)
+            cmds.shadingNode(
+                "pointOnCurveInfo", asUtility=1, n=str(name) + "_brows_pcInfo_" + str(i)
+            )
+            cmds.connectAttr(
+                str(name) + "_browsCurveShape.worldSpace",
+                str(name) + "_brows_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.setAttr(str(name) + "_brows_pcInfo_" + str(i) + ".parameter", diss[i])
+            cmds.connectAttr(
+                str(name) + "_brows_pcInfo_" + str(i) + ".position",
+                str(name) + "_brows_loc_" + str(i) + ".translate",
+                f=1,
+            )
             cmds.select(cl=1)
 
-        cmds.select('l_brows_loc_0', 'l_brows_loc_1', 'l_brows_loc_2', 'l_brows_loc_3', 'l_brows_loc_4', r=1)
-        cmds.group(n='l_brows_grp')
+        cmds.select(
+            "l_brows_loc_0", "l_brows_loc_1", "l_brows_loc_2", "l_brows_loc_3", "l_brows_loc_4", r=1
+        )
+        cmds.group(n="l_brows_grp")
         cmds.ResetTransformations()
-        cmds.duplicate(rr=1, n='r_brows_grp')
-        cmds.xform('r_brows_grp', s=(-1, 1, 1))
-        cmds.select('r_brows_grp', hi=1)
-        pm.mel.searchReplaceNames('l_', 'r_', 'hierarchy')
-        cmds.select('l_brows_grp', hi=1)
-        cmds.select('l_brows_grp', d=1)
+        cmds.duplicate(rr=1, n="r_brows_grp")
+        cmds.xform("r_brows_grp", s=(-1, 1, 1))
+        cmds.select("r_brows_grp", hi=1)
+        pm.mel.searchReplaceNames("l_", "r_", "hierarchy")
+        cmds.select("l_brows_grp", hi=1)
+        cmds.select("l_brows_grp", d=1)
         self.wflrConnect()
-        name = 'l'
-        curveDis = str(cmds.curve(p=[(0, 10.3, 0.43), (1.12, 10.15, 0.27), (1.5, 9.21, -0.85), (1.5, 8.4, -0.85), (1.4, 7.6, -0.6), (1.07, 7.2, 0), (0.7, 7, 0.7), (0.0, 7.005, 0.879)], d=1))
+        name = "l"
+        curveDis = str(
+            cmds.curve(
+                p=[
+                    (0, 10.3, 0.43),
+                    (1.12, 10.15, 0.27),
+                    (1.5, 9.21, -0.85),
+                    (1.5, 8.4, -0.85),
+                    (1.4, 7.6, -0.6),
+                    (1.07, 7.2, 0),
+                    (0.7, 7, 0.7),
+                    (0.0, 7.005, 0.879),
+                ],
+                d=1,
+            )
+        )
         selsel = cmds.ls(sl=1)
-        cmds.rename(selsel, str(name) + '_jawCurve')
-        cmds.select(str(name) + '_jawCurve', r=1)
+        cmds.rename(selsel, str(name) + "_jawCurve")
+        cmds.select(str(name) + "_jawCurve", r=1)
         cmds.instance()
         pm.mel.scale(-1, 1, 1, r=1)
-        cmds.select(str(name) + '_jawCurve.cv[*]', r=1)
+        cmds.select(str(name) + "_jawCurve.cv[*]", r=1)
         verSel = cmds.ls(fl=1, sl=1)
         diss = []
         diss.append(0.0)
         for i in range(1, len(verSel) + 1):
-            middle_pos = cmds.xform(str(name) + '_jawCurve.cv[+' + str(i - 1) + ']', q=1, ws=1, t=1)
-            end_pos2 = cmds.xform(str(name) + '_jawCurve.cv[+' + str(i) + ']', q=1, ws=1, t=1)
-            curveDis = str(cmds.curve(p=[(middle_pos[0], middle_pos[1], middle_pos[2]), (end_pos2[0], end_pos2[1], end_pos2[2])], k=[0, 1], d=1))
+            middle_pos = cmds.xform(str(name) + "_jawCurve.cv[+" + str(i - 1) + "]", q=1, ws=1, t=1)
+            end_pos2 = cmds.xform(str(name) + "_jawCurve.cv[+" + str(i) + "]", q=1, ws=1, t=1)
+            curveDis = str(
+                cmds.curve(
+                    p=[
+                        (middle_pos[0], middle_pos[1], middle_pos[2]),
+                        (end_pos2[0], end_pos2[1], end_pos2[2]),
+                    ],
+                    k=[0, 1],
+                    d=1,
+                )
+            )
             distance = cmds.arclen(curveDis)
             diss.append(diss[(i - 1)] + distance)
             cmds.delete(curveDis)
 
-        distance = cmds.arclen(str(name) + '_jawCurve')
-        int(cmds.getAttr(str(name) + '_jawCurveShape.spans'))
-        cmds.select(str(name) + '_jawCurve.cv[*]', r=1)
+        distance = cmds.arclen(str(name) + "_jawCurve")
+        int(cmds.getAttr(str(name) + "_jawCurveShape.spans"))
+        cmds.select(str(name) + "_jawCurve.cv[*]", r=1)
         verNumsss = cmds.ls(fl=1, sl=1)
         cmds.select(cl=1)
         for i in range(0, len(verNumsss)):
             cmds.select(cl=1)
             tt = cmds.CreateEmptyGroup()
-            cmds.rename(tt, str(name) + '_jaw_loc_' + str(i))
-            cmds.joint(n=str(name) + '_jaw_jnt_' + str(i) + '_skin')
-            cmds.select(str(name) + '_jaw_loc_' + str(i), str(name) + '_jawCurve', r=1)
-            cmds.shadingNode('pointOnCurveInfo', asUtility=1, n=str(name) + '_jaw_pcInfo_' + str(i))
-            cmds.connectAttr(str(name) + '_jawCurveShape.worldSpace', str(name) + '_jaw_pcInfo_' + str(i) + '.inputCurve')
-            cmds.setAttr(str(name) + '_jaw_pcInfo_' + str(i) + '.parameter', i)
-            cmds.connectAttr(str(name) + '_jaw_pcInfo_' + str(i) + '.position', str(name) + '_jaw_loc_' + str(i) + '.translate', f=1)
+            cmds.rename(tt, str(name) + "_jaw_loc_" + str(i))
+            cmds.joint(n=str(name) + "_jaw_jnt_" + str(i) + "_skin")
+            cmds.select(str(name) + "_jaw_loc_" + str(i), str(name) + "_jawCurve", r=1)
+            cmds.shadingNode("pointOnCurveInfo", asUtility=1, n=str(name) + "_jaw_pcInfo_" + str(i))
+            cmds.connectAttr(
+                str(name) + "_jawCurveShape.worldSpace",
+                str(name) + "_jaw_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.setAttr(str(name) + "_jaw_pcInfo_" + str(i) + ".parameter", i)
+            cmds.connectAttr(
+                str(name) + "_jaw_pcInfo_" + str(i) + ".position",
+                str(name) + "_jaw_loc_" + str(i) + ".translate",
+                f=1,
+            )
             cmds.select(cl=1)
 
-        cmds.rebuildCurve(str(name) + '_jawCurve', rt=0, ch=1, end=1, d=3, kr=1, s=0, kcp=0, tol=0.01, kt=1, rpo=1, kep=1)
-        cmds.select('l_jaw_loc_1', 'l_jaw_loc_2', 'l_jaw_loc_3', 'l_jaw_loc_4', 'l_jaw_loc_5', 'l_jaw_loc_6', r=1)
-        cmds.group(n='l_jaw_grp')
+        cmds.rebuildCurve(
+            str(name) + "_jawCurve",
+            rt=0,
+            ch=1,
+            end=1,
+            d=3,
+            kr=1,
+            s=0,
+            kcp=0,
+            tol=0.01,
+            kt=1,
+            rpo=1,
+            kep=1,
+        )
+        cmds.select(
+            "l_jaw_loc_1",
+            "l_jaw_loc_2",
+            "l_jaw_loc_3",
+            "l_jaw_loc_4",
+            "l_jaw_loc_5",
+            "l_jaw_loc_6",
+            r=1,
+        )
+        cmds.group(n="l_jaw_grp")
         cmds.ResetTransformations()
-        cmds.duplicate(rr=1, n='r_jaw_grp')
-        cmds.xform('r_jaw_grp', s=(-1, 1, 1))
-        cmds.select('r_jaw_grp', hi=1)
-        pm.mel.searchReplaceNames('l_', 'r_', 'hierarchy')
-        cmds.select('l_jaw_grp', hi=1)
-        cmds.select('l_jaw_grp', d=1)
+        cmds.duplicate(rr=1, n="r_jaw_grp")
+        cmds.xform("r_jaw_grp", s=(-1, 1, 1))
+        cmds.select("r_jaw_grp", hi=1)
+        pm.mel.searchReplaceNames("l_", "r_", "hierarchy")
+        cmds.select("l_jaw_grp", hi=1)
+        cmds.select("l_jaw_grp", d=1)
         self.wflrConnect()
-        name = 'neck'
+        name = "neck"
         curveDis = str(cmds.curve(p=[(0, 7.8, -1), (0, 8, -0.77)], d=1))
         selsel = cmds.ls(sl=1)
-        cmds.rename(selsel, str(name) + '_neckHeadCurve')
+        cmds.rename(selsel, str(name) + "_neckHeadCurve")
         diss = []
         diss.append(0.0)
         for i in range(1, len(verSel) + 1):
-            middle_pos = cmds.xform(str(name) + '_neckHeadCurve.cv[+' + str(i - 1) + ']', q=1, ws=1, t=1)
-            end_pos2 = cmds.xform(str(name) + '_neckHeadCurve.cv[+' + str(i) + ']', q=1, ws=1, t=1)
-            curveDis = str(cmds.curve(p=[(middle_pos[0], middle_pos[1], middle_pos[2]), (end_pos2[0], end_pos2[1], end_pos2[2])], k=[0, 1], d=1))
+            middle_pos = cmds.xform(
+                str(name) + "_neckHeadCurve.cv[+" + str(i - 1) + "]", q=1, ws=1, t=1
+            )
+            end_pos2 = cmds.xform(str(name) + "_neckHeadCurve.cv[+" + str(i) + "]", q=1, ws=1, t=1)
+            curveDis = str(
+                cmds.curve(
+                    p=[
+                        (middle_pos[0], middle_pos[1], middle_pos[2]),
+                        (end_pos2[0], end_pos2[1], end_pos2[2]),
+                    ],
+                    k=[0, 1],
+                    d=1,
+                )
+            )
             distance = cmds.arclen(curveDis)
             diss.append(diss[(i - 1)] + distance)
             cmds.delete(curveDis)
 
-        distance = cmds.arclen(str(name) + '_neckHeadCurve')
-        int(cmds.getAttr(str(name) + '_neckHeadCurveShape.spans'))
-        cmds.select(str(name) + '_neckHeadCurve.cv[*]', r=1)
+        distance = cmds.arclen(str(name) + "_neckHeadCurve")
+        int(cmds.getAttr(str(name) + "_neckHeadCurveShape.spans"))
+        cmds.select(str(name) + "_neckHeadCurve.cv[*]", r=1)
         verNumsss = cmds.ls(fl=1, sl=1)
         cmds.select(cl=1)
         for i in range(0, len(verNumsss)):
             cmds.select(cl=1)
             tt = cmds.CreateEmptyGroup()
-            cmds.rename(tt, str(name) + '_loc_' + str(i))
-            cmds.joint(n=str(name) + '_jnt_' + str(i) + '_skin')
-            cmds.select(str(name) + '_loc_' + str(i), str(name) + '_neckHeadCurve', r=1)
-            cmds.shadingNode('pointOnCurveInfo', asUtility=1, n=str(name) + '_pcInfo_' + str(i))
-            cmds.connectAttr(str(name) + '_neckHeadCurveShape.worldSpace', str(name) + '_pcInfo_' + str(i) + '.inputCurve')
-            cmds.setAttr(str(name) + '_pcInfo_' + str(i) + '.parameter', i)
-            cmds.connectAttr(str(name) + '_pcInfo_' + str(i) + '.position', str(name) + '_loc_' + str(i) + '.translate', f=1)
+            cmds.rename(tt, str(name) + "_loc_" + str(i))
+            cmds.joint(n=str(name) + "_jnt_" + str(i) + "_skin")
+            cmds.select(str(name) + "_loc_" + str(i), str(name) + "_neckHeadCurve", r=1)
+            cmds.shadingNode("pointOnCurveInfo", asUtility=1, n=str(name) + "_pcInfo_" + str(i))
+            cmds.connectAttr(
+                str(name) + "_neckHeadCurveShape.worldSpace",
+                str(name) + "_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.setAttr(str(name) + "_pcInfo_" + str(i) + ".parameter", i)
+            cmds.connectAttr(
+                str(name) + "_pcInfo_" + str(i) + ".position",
+                str(name) + "_loc_" + str(i) + ".translate",
+                f=1,
+            )
             cmds.select(cl=1)
 
-        name = 'l'
-        curveDis = str(cmds.curve(p=[(0.5, 8.2, 0), (0.7, 8.1, 0), (1, 7.8, 0), (1.2, 7.8, 0), (1.4, 8.2, 0)], d=1))
+        name = "l"
+        curveDis = str(
+            cmds.curve(
+                p=[(0.5, 8.2, 0), (0.7, 8.1, 0), (1, 7.8, 0), (1.2, 7.8, 0), (1.4, 8.2, 0)], d=1
+            )
+        )
         selsel = cmds.ls(sl=1)
-        cmds.rename(selsel, str(name) + '_cheekCurve')
+        cmds.rename(selsel, str(name) + "_cheekCurve")
         cmds.instance()
         pm.mel.scale(-1, 1, 1, r=1)
-        cmds.select(str(name) + '_cheekCurve.cv[*]', r=1)
+        cmds.select(str(name) + "_cheekCurve.cv[*]", r=1)
         verSel = cmds.ls(fl=1, sl=1)
         diss = []
         diss.append(0.0)
         for i in range(1, len(verSel) + 1):
-            middle_pos = cmds.xform(str(name) + '_cheekCurve.cv[+' + str(i - 1) + ']', q=1, ws=1, t=1)
-            end_pos2 = cmds.xform(str(name) + '_cheekCurve.cv[+' + str(i) + ']', q=1, ws=1, t=1)
-            curveDis = str(cmds.curve(p=[(middle_pos[0], middle_pos[1], middle_pos[2]), (end_pos2[0], end_pos2[1], end_pos2[2])], k=[0, 1], d=1))
+            middle_pos = cmds.xform(
+                str(name) + "_cheekCurve.cv[+" + str(i - 1) + "]", q=1, ws=1, t=1
+            )
+            end_pos2 = cmds.xform(str(name) + "_cheekCurve.cv[+" + str(i) + "]", q=1, ws=1, t=1)
+            curveDis = str(
+                cmds.curve(
+                    p=[
+                        (middle_pos[0], middle_pos[1], middle_pos[2]),
+                        (end_pos2[0], end_pos2[1], end_pos2[2]),
+                    ],
+                    k=[0, 1],
+                    d=1,
+                )
+            )
             distance = cmds.arclen(curveDis)
             diss.append(diss[(i - 1)] + distance)
             cmds.delete(curveDis)
 
-        distance = cmds.arclen(str(name) + '_cheekCurve')
-        int(cmds.getAttr(str(name) + '_cheekCurveShape.spans'))
-        cmds.select(str(name) + '_cheekCurve.cv[*]', r=1)
+        distance = cmds.arclen(str(name) + "_cheekCurve")
+        int(cmds.getAttr(str(name) + "_cheekCurveShape.spans"))
+        cmds.select(str(name) + "_cheekCurve.cv[*]", r=1)
         verNumsss = cmds.ls(fl=1, sl=1)
         cmds.select(cl=1)
         for i in range(0, len(verNumsss)):
             cmds.select(cl=1)
             tt = cmds.CreateEmptyGroup()
-            cmds.rename(tt, str(name) + '_cheek_loc_' + str(i))
-            cmds.joint(n=str(name) + '_cheek_jnt_' + str(i) + '_skin')
-            cmds.select(str(name) + '_cheek_loc_' + str(i), str(name) + '_cheekCurve', r=1)
-            cmds.shadingNode('pointOnCurveInfo', asUtility=1, n=str(name) + '_cheek_pcInfo_' + str(i))
-            cmds.connectAttr(str(name) + '_cheekCurveShape.worldSpace', str(name) + '_cheek_pcInfo_' + str(i) + '.inputCurve')
-            cmds.setAttr(str(name) + '_cheek_pcInfo_' + str(i) + '.parameter', i)
-            cmds.connectAttr(str(name) + '_cheek_pcInfo_' + str(i) + '.position', str(name) + '_cheek_loc_' + str(i) + '.translate', f=1)
+            cmds.rename(tt, str(name) + "_cheek_loc_" + str(i))
+            cmds.joint(n=str(name) + "_cheek_jnt_" + str(i) + "_skin")
+            cmds.select(str(name) + "_cheek_loc_" + str(i), str(name) + "_cheekCurve", r=1)
+            cmds.shadingNode(
+                "pointOnCurveInfo", asUtility=1, n=str(name) + "_cheek_pcInfo_" + str(i)
+            )
+            cmds.connectAttr(
+                str(name) + "_cheekCurveShape.worldSpace",
+                str(name) + "_cheek_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.setAttr(str(name) + "_cheek_pcInfo_" + str(i) + ".parameter", i)
+            cmds.connectAttr(
+                str(name) + "_cheek_pcInfo_" + str(i) + ".position",
+                str(name) + "_cheek_loc_" + str(i) + ".translate",
+                f=1,
+            )
             cmds.select(cl=1)
 
-        cmds.rebuildCurve(str(name) + '_cheekCurve', rt=0, ch=1, end=1, d=1, kr=1, s=0, kcp=0, tol=0.01, kt=1, rpo=1, kep=1)
-        cmds.select('l_cheek_loc_0', 'l_cheek_loc_1', 'l_cheek_loc_2', 'l_cheek_loc_3', 'l_cheek_loc_4', r=1)
-        cmds.group(n='l_cheek_grp')
+        cmds.rebuildCurve(
+            str(name) + "_cheekCurve",
+            rt=0,
+            ch=1,
+            end=1,
+            d=1,
+            kr=1,
+            s=0,
+            kcp=0,
+            tol=0.01,
+            kt=1,
+            rpo=1,
+            kep=1,
+        )
+        cmds.select(
+            "l_cheek_loc_0", "l_cheek_loc_1", "l_cheek_loc_2", "l_cheek_loc_3", "l_cheek_loc_4", r=1
+        )
+        cmds.group(n="l_cheek_grp")
         cmds.ResetTransformations()
-        cmds.duplicate(rr=1, n='r_cheek_grp')
-        cmds.xform('r_cheek_grp', s=(-1, 1, 1))
-        cmds.select('r_cheek_grp', hi=1)
-        pm.mel.searchReplaceNames('l_', 'r_', 'hierarchy')
-        cmds.select('l_cheek_grp', hi=1)
-        cmds.select('l_cheek_grp', d=1)
+        cmds.duplicate(rr=1, n="r_cheek_grp")
+        cmds.xform("r_cheek_grp", s=(-1, 1, 1))
+        cmds.select("r_cheek_grp", hi=1)
+        pm.mel.searchReplaceNames("l_", "r_", "hierarchy")
+        cmds.select("l_cheek_grp", hi=1)
+        cmds.select("l_cheek_grp", d=1)
         self.wflrConnect()
-        cmds.select('l_jawCurve', r=1)
-        cmds.select('l_jawCurve1', tgl=1)
-        cmds.select('l_browsCurve', tgl=1)
-        cmds.select('l_browsCurve1', tgl=1)
-        cmds.select('neck_neckHeadCurve', tgl=1)
-        cmds.select('l_cheekCurve', tgl=1)
-        cmds.select('l_cheekCurve1', tgl=1)
+        cmds.select("l_jawCurve", r=1)
+        cmds.select("l_jawCurve1", tgl=1)
+        cmds.select("l_browsCurve", tgl=1)
+        cmds.select("l_browsCurve1", tgl=1)
+        cmds.select("neck_neckHeadCurve", tgl=1)
+        cmds.select("l_cheekCurve", tgl=1)
+        cmds.select("l_cheekCurve1", tgl=1)
         cmds.CenterPivot()
         cmds.circle(nr=(0, 1, 0), ch=True, r=1, o=True)
         selsel = cmds.ls(sl=1)
-        cmds.rename(selsel, 'all_facial_grp')
-        cmds.parentConstraint('neck_jnt_0_skin', 'all_facial_grp', n='all_pc')
-        cmds.delete('all_pc')
-        cmds.select('all_facial_grp.cv[0:7]', r=1)
+        cmds.rename(selsel, "all_facial_grp")
+        cmds.parentConstraint("neck_jnt_0_skin", "all_facial_grp", n="all_pc")
+        cmds.delete("all_pc")
+        cmds.select("all_facial_grp.cv[0:7]", r=1)
         pm.mel.move(0, -1.25, 0, r=1)
         cmds.makeIdentity(n=0, s=1, r=1, t=1, apply=True, pn=1)
-        cmds.parent('l_jawCurve', 'l_jawCurve1', 'l_cheekCurve1', 'neck_neckHeadCurve', 'l_cheekCurve', 'l_browsCurve', 'l_browsCurve1', 'all_facial_grp')
-        cmds.select('all_facial_grp', r=1)
-        cmds.setAttr('l_jawCurve1.visibility', 0)
-        cmds.setAttr('l_browsCurve1.visibility', 0)
-        cmds.setAttr('l_cheekCurve1.visibility', 0)
+        cmds.parent(
+            "l_jawCurve",
+            "l_jawCurve1",
+            "l_cheekCurve1",
+            "neck_neckHeadCurve",
+            "l_cheekCurve",
+            "l_browsCurve",
+            "l_browsCurve1",
+            "all_facial_grp",
+        )
+        cmds.select("all_facial_grp", r=1)
+        cmds.setAttr("l_jawCurve1.visibility", 0)
+        cmds.setAttr("l_browsCurve1.visibility", 0)
+        cmds.setAttr("l_cheekCurve1.visibility", 0)
         cmds.select(down_lip_edge_sel[int(int(len(down_lip_edge_sel) / 2))], r=1)
-        pm.mel.newCluster(' -n adjustClust -envelope 1')
-        cmds.parentConstraint('adjustClustHandle', 'all_facial_grp')
-        cmds.delete('adjustClustHandle')
-        cmds.select('l_brows_jnt_*_skin', 'r_brows_jnt_*_skin', 'l_jaw_jnt_*_skin', 'r_jaw_jnt_*_skin', 'neck_jnt_*_skin', 'l_cheek_jnt_*_skin', 'r_cheek_jnt_*_skin', r=1)
+        pm.mel.newCluster(" -n adjustClust -envelope 1")
+        cmds.parentConstraint("adjustClustHandle", "all_facial_grp")
+        cmds.delete("adjustClustHandle")
+        cmds.select(
+            "l_brows_jnt_*_skin",
+            "r_brows_jnt_*_skin",
+            "l_jaw_jnt_*_skin",
+            "r_jaw_jnt_*_skin",
+            "neck_jnt_*_skin",
+            "l_cheek_jnt_*_skin",
+            "r_cheek_jnt_*_skin",
+            r=1,
+        )
         obj = cmds.ls(sl=1)
         for maya_object in obj:
-            cmds.setAttr(str(maya_object) + '.overrideEnabled', 1)
-            cmds.setAttr(str(maya_object) + '.overrideColor', 17)
+            cmds.setAttr(str(maya_object) + ".overrideEnabled", 1)
+            cmds.setAttr(str(maya_object) + ".overrideColor", 17)
 
-        cmds.setAttr('all_facial_grp.overrideEnabled', 1)
-        cmds.setAttr('all_facial_grp.overrideColor', 16)
-        cmds.select('neck_jnt_0_skin', r=1)
-        cmds.setAttr('neck_jnt_0_skin.drawLabel', 1)
-        cmds.setAttr('neck_jnt_0_skin.type', 8)
-        cmds.select('neck_jnt_1_skin', r=1)
-        cmds.setAttr('neck_jnt_1_skin.drawLabel', 1)
-        cmds.setAttr('neck_jnt_1_skin.type', 18)
-        cmds.setAttr('neck_jnt_1_skin.otherType', 'jaw', type='string')
-        cmds.setAttr('l_cheek_jnt_0_skin.drawLabel', 1)
-        cmds.setAttr('l_cheek_jnt_0_skin.type', 18)
-        cmds.setAttr('l_cheek_jnt_0_skin.otherType', 'cheek', type='string')
-        cmds.setAttr('l_cheek_jnt_1_skin.drawLabel', 1)
-        cmds.setAttr('l_cheek_jnt_1_skin.type', 18)
-        cmds.setAttr('l_cheek_jnt_1_skin.otherType', 'cheek', type='string')
-        cmds.setAttr('l_cheek_jnt_2_skin.drawLabel', 1)
-        cmds.setAttr('l_cheek_jnt_2_skin.type', 18)
-        cmds.setAttr('l_cheek_jnt_2_skin.otherType', 'cheek', type='string')
-        cmds.setAttr('l_cheek_jnt_3_skin.drawLabel', 1)
-        cmds.setAttr('l_cheek_jnt_3_skin.type', 18)
-        cmds.setAttr('l_cheek_jnt_3_skin.otherType', 'cheek', type='string')
-        cmds.setAttr('l_cheek_jnt_4_skin.drawLabel', 1)
-        cmds.setAttr('l_cheek_jnt_4_skin.type', 18)
-        cmds.setAttr('l_cheek_jnt_4_skin.otherType', 'cheek', type='string')
-        cmds.setAttr('l_brows_jnt_0_skin.drawLabel', 1)
-        cmds.setAttr('l_brows_jnt_0_skin.type', 18)
-        cmds.setAttr('l_brows_jnt_0_skin.otherType', 'brow', type='string')
-        cmds.setAttr('l_brows_jnt_1_skin.drawLabel', 1)
-        cmds.setAttr('l_brows_jnt_1_skin.type', 18)
-        cmds.setAttr('l_brows_jnt_1_skin.otherType', 'brow', type='string')
-        cmds.setAttr('l_brows_jnt_2_skin.drawLabel', 1)
-        cmds.setAttr('l_brows_jnt_2_skin.type', 18)
-        cmds.setAttr('l_brows_jnt_2_skin.otherType', 'brow', type='string')
-        cmds.setAttr('l_brows_jnt_3_skin.drawLabel', 1)
-        cmds.setAttr('l_brows_jnt_3_skin.type', 18)
-        cmds.setAttr('l_brows_jnt_3_skin.otherType', 'brow', type='string')
-        cmds.setAttr('l_brows_jnt_4_skin.drawLabel', 1)
-        cmds.setAttr('l_brows_jnt_4_skin.type', 18)
-        cmds.setAttr('l_brows_jnt_4_skin.otherType', 'brow', type='string')
-        cmds.setAttr('l_jawCurve.overrideEnabled', 1)
-        cmds.setAttr('l_jawCurve.overrideColor', 16)
-        cmds.setAttr('l_browsCurve.overrideEnabled', 1)
-        cmds.setAttr('l_browsCurve.overrideColor', 17)
+        cmds.setAttr("all_facial_grp.overrideEnabled", 1)
+        cmds.setAttr("all_facial_grp.overrideColor", 16)
+        cmds.select("neck_jnt_0_skin", r=1)
+        cmds.setAttr("neck_jnt_0_skin.drawLabel", 1)
+        cmds.setAttr("neck_jnt_0_skin.type", 8)
+        cmds.select("neck_jnt_1_skin", r=1)
+        cmds.setAttr("neck_jnt_1_skin.drawLabel", 1)
+        cmds.setAttr("neck_jnt_1_skin.type", 18)
+        cmds.setAttr("neck_jnt_1_skin.otherType", "jaw", type="string")
+        cmds.setAttr("l_cheek_jnt_0_skin.drawLabel", 1)
+        cmds.setAttr("l_cheek_jnt_0_skin.type", 18)
+        cmds.setAttr("l_cheek_jnt_0_skin.otherType", "cheek", type="string")
+        cmds.setAttr("l_cheek_jnt_1_skin.drawLabel", 1)
+        cmds.setAttr("l_cheek_jnt_1_skin.type", 18)
+        cmds.setAttr("l_cheek_jnt_1_skin.otherType", "cheek", type="string")
+        cmds.setAttr("l_cheek_jnt_2_skin.drawLabel", 1)
+        cmds.setAttr("l_cheek_jnt_2_skin.type", 18)
+        cmds.setAttr("l_cheek_jnt_2_skin.otherType", "cheek", type="string")
+        cmds.setAttr("l_cheek_jnt_3_skin.drawLabel", 1)
+        cmds.setAttr("l_cheek_jnt_3_skin.type", 18)
+        cmds.setAttr("l_cheek_jnt_3_skin.otherType", "cheek", type="string")
+        cmds.setAttr("l_cheek_jnt_4_skin.drawLabel", 1)
+        cmds.setAttr("l_cheek_jnt_4_skin.type", 18)
+        cmds.setAttr("l_cheek_jnt_4_skin.otherType", "cheek", type="string")
+        cmds.setAttr("l_brows_jnt_0_skin.drawLabel", 1)
+        cmds.setAttr("l_brows_jnt_0_skin.type", 18)
+        cmds.setAttr("l_brows_jnt_0_skin.otherType", "brow", type="string")
+        cmds.setAttr("l_brows_jnt_1_skin.drawLabel", 1)
+        cmds.setAttr("l_brows_jnt_1_skin.type", 18)
+        cmds.setAttr("l_brows_jnt_1_skin.otherType", "brow", type="string")
+        cmds.setAttr("l_brows_jnt_2_skin.drawLabel", 1)
+        cmds.setAttr("l_brows_jnt_2_skin.type", 18)
+        cmds.setAttr("l_brows_jnt_2_skin.otherType", "brow", type="string")
+        cmds.setAttr("l_brows_jnt_3_skin.drawLabel", 1)
+        cmds.setAttr("l_brows_jnt_3_skin.type", 18)
+        cmds.setAttr("l_brows_jnt_3_skin.otherType", "brow", type="string")
+        cmds.setAttr("l_brows_jnt_4_skin.drawLabel", 1)
+        cmds.setAttr("l_brows_jnt_4_skin.type", 18)
+        cmds.setAttr("l_brows_jnt_4_skin.otherType", "brow", type="string")
+        cmds.setAttr("l_jawCurve.overrideEnabled", 1)
+        cmds.setAttr("l_jawCurve.overrideColor", 16)
+        cmds.setAttr("l_browsCurve.overrideEnabled", 1)
+        cmds.setAttr("l_browsCurve.overrideColor", 17)
         cmds.select(down_lip_edge_sel[int(int(len(down_lip_edge_sel) / 2))], r=1)
-        pm.mel.newCluster(' -n adjustClust -envelope 1')
-        cmds.parentConstraint('adjustClustHandle', 'all_facial_grp')
-        cmds.delete('adjustClustHandle')
+        pm.mel.newCluster(" -n adjustClust -envelope 1")
+        cmds.parentConstraint("adjustClustHandle", "all_facial_grp")
+        cmds.delete("adjustClustHandle")
         cmds.select(down_lip_edge_sel[2], r=1)
-        pm.mel.modelPanelBarXRayCallback('XRayJointsBtn', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar')
+        pm.mel.modelPanelBarXRayCallback(
+            "XRayJointsBtn",
+            "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4",
+            "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar",
+        )
         pm.mel.restoreLastPanelWithFocus()
-        pm.mel.updateModelPanelBar('MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4')
+        pm.mel.updateModelPanelBar(
+            "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4"
+        )
         cmds.select(cl=1)
-        cmds.select('l_cheekCurve', r=1)
+        cmds.select("l_cheekCurve", r=1)
         pm.mel.move(0, 0, 1.307193, r=1, os=1, wd=1)
-        cmds.select('l_browsCurve', r=1)
+        cmds.select("l_browsCurve", r=1)
         pm.mel.move(0, 0, 0.8, r=1, os=1, wd=1)
         name = LHeadGeoSel
-        pm.mel.setObjectPickMask('All', 0)
-        pm.mel.setObjectPickMask('Curve', True)
-        cmds.setAttr('makeNurbCircle1.radius', 0.5)
-        cmds.select('neck_neckHeadCurve', r=1)
+        pm.mel.setObjectPickMask("All", 0)
+        pm.mel.setObjectPickMask("Curve", True)
+        cmds.setAttr("makeNurbCircle1.radius", 0.5)
+        cmds.select("neck_neckHeadCurve", r=1)
         pm.mel.move(0, 0, -1.05, r=1)
-        cmds.select('neck_neckHeadCurve', r=1)
+        cmds.select("neck_neckHeadCurve", r=1)
         cmds.parent(w=1)
-        cmds.setAttr('all_facial_grp.visibility', 0)
-        cmds.setAttr('l_brows_grp.visibility', 0)
-        cmds.setAttr('r_brows_grp.visibility', 0)
-        cmds.setAttr('l_jaw_loc_0.visibility', 0)
-        cmds.setAttr('l_jaw_loc_7.visibility', 0)
-        cmds.setAttr('l_jaw_grp.visibility', 0)
-        cmds.setAttr('r_jaw_grp.visibility', 0)
-        cmds.setAttr('l_cheek_grp.visibility', 0)
-        cmds.setAttr('r_cheek_grp.visibility', 0)
+        cmds.setAttr("all_facial_grp.visibility", 0)
+        cmds.setAttr("l_brows_grp.visibility", 0)
+        cmds.setAttr("r_brows_grp.visibility", 0)
+        cmds.setAttr("l_jaw_loc_0.visibility", 0)
+        cmds.setAttr("l_jaw_loc_7.visibility", 0)
+        cmds.setAttr("l_jaw_grp.visibility", 0)
+        cmds.setAttr("r_jaw_grp.visibility", 0)
+        cmds.setAttr("l_cheek_grp.visibility", 0)
+        cmds.setAttr("r_cheek_grp.visibility", 0)
         cmds.select(cl=1)
-        cmds.select('neck_neckHeadCurve', r=1)
-        pm.catch(lambda : pm.mel.lookThroughModelPanel('side', 'modelPanel4'))
+        cmds.select("neck_neckHeadCurve", r=1)
+        pm.catch(lambda: pm.mel.lookThroughModelPanel("side", "modelPanel4"))
         cmds.DisplayWireframe()
-        pm.catch(lambda : pm.mel.modelPanelBarXRayCallback('XRayJointsBtn', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar'))
+        pm.catch(
+            lambda: pm.mel.modelPanelBarXRayCallback(
+                "XRayJointsBtn",
+                "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4",
+                "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar",
+            )
+        )
         pm.mel.restoreLastPanelWithFocus()
-        cmds.select('all_facial_grp', r=1)
+        cmds.select("all_facial_grp", r=1)
         pm.mel.scale(sizeScale * 0.5, sizeScale * 0.5, sizeScale * 0.5, r=1)
-        cmds.setAttr('all_facial_grp.tx', lock=True)
-        cmds.select('neck_neckHeadCurve', r=1)
+        cmds.setAttr("all_facial_grp.tx", lock=True)
+        cmds.select("neck_neckHeadCurve", r=1)
         pm.mel.scale(sizeScale * 0.5, sizeScale * 0.5, sizeScale * 0.5, r=1)
         cmds.FrameSelected()
-        pm.mel.fitPanel('-selected')
-        pm.mel.setComponentPickMask('Line', False)
-        cmds.createDisplayLayer(name='tempGeoLayer', empty=1, number=1)
-        pm.mel.layerEditorLayerButtonTypeChange('tempGeoLayer')
-        pm.mel.layerEditorLayerButtonTypeChange('tempGeoLayer')
-        cmds.setAttr('neck_jnt_0_skin.overrideDisplayType', 2)
-        cmds.setAttr('neck_jnt_1_skin.overrideDisplayType', 2)
-        cmds.setAttr('neck_jnt_0_skin.displayLocalAxis', 1)
-        cmds.setAttr('neck_jnt_1_skin.displayLocalAxis', 1)
+        pm.mel.fitPanel("-selected")
+        pm.mel.setComponentPickMask("Line", False)
+        cmds.createDisplayLayer(name="tempGeoLayer", empty=1, number=1)
+        pm.mel.layerEditorLayerButtonTypeChange("tempGeoLayer")
+        pm.mel.layerEditorLayerButtonTypeChange("tempGeoLayer")
+        cmds.setAttr("neck_jnt_0_skin.overrideDisplayType", 2)
+        cmds.setAttr("neck_jnt_1_skin.overrideDisplayType", 2)
+        cmds.setAttr("neck_jnt_0_skin.displayLocalAxis", 1)
+        cmds.setAttr("neck_jnt_1_skin.displayLocalAxis", 1)
         cmds.select(cl=1)
 
     def FaceCurvesUI(self):
@@ -1987,35 +2413,49 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def Adjustment_a2(self):
         """Adjustment a2 operation."""
-        cmds.setAttr('all_facial_grp.visibility', 1)
-        cmds.setAttr('l_brows_grp.visibility', 1)
-        cmds.setAttr('r_brows_grp.visibility', 1)
-        cmds.setAttr('l_jaw_loc_0.visibility', 1)
-        cmds.setAttr('l_jaw_loc_7.visibility', 1)
-        cmds.setAttr('l_jaw_grp.visibility', 1)
-        cmds.setAttr('r_jaw_grp.visibility', 1)
-        cmds.setAttr('l_cheek_grp.visibility', 1)
-        cmds.setAttr('r_cheek_grp.visibility', 1)
-        cmds.setAttr('neck_neckHeadCurve.visibility', 0)
+        cmds.setAttr("all_facial_grp.visibility", 1)
+        cmds.setAttr("l_brows_grp.visibility", 1)
+        cmds.setAttr("r_brows_grp.visibility", 1)
+        cmds.setAttr("l_jaw_loc_0.visibility", 1)
+        cmds.setAttr("l_jaw_loc_7.visibility", 1)
+        cmds.setAttr("l_jaw_grp.visibility", 1)
+        cmds.setAttr("r_jaw_grp.visibility", 1)
+        cmds.setAttr("l_cheek_grp.visibility", 1)
+        cmds.setAttr("r_cheek_grp.visibility", 1)
+        cmds.setAttr("neck_neckHeadCurve.visibility", 0)
         pm.select(cl=1)
-        pm.select('all_facial_grp', r=1)
-        pm.mel.lookThroughModelPanel('front', 'modelPanel4')
+        pm.select("all_facial_grp", r=1)
+        pm.mel.lookThroughModelPanel("front", "modelPanel4")
         cmds.DisplayWireframe()
-        pm.catch(lambda : pm.mel.modelPanelBarXRayCallback('XRayJointsBtn', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4', 'MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar'))
+        pm.catch(
+            lambda: pm.mel.modelPanelBarXRayCallback(
+                "XRayJointsBtn",
+                "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelPanel4",
+                "MayaWindow|formLayout1|viewPanes|modelPanel4|modelPanel4|modelEditorIconBar",
+            )
+        )
         pm.mel.restoreLastPanelWithFocus()
 
     def projectCrv(self):
         """Projectcrv operation."""
         cmds.undoInfo(openChunk=True)
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
         headGeo = LHeadGeoSel
-        cmds.select('l_browsCurve', r=1)
+        cmds.select("l_browsCurve", r=1)
         cmds.select(headGeo, tgl=1)
-        pm.mel.lookThroughModelPanel('front', 'modelPanel4')
-        cmds.polyProjectCurve('l_browsCurve', headGeo, ch=True, automatic=1, pointsOnEdges=0, curveSamples=50, n='brow')
-        pm.mel.lookThroughModelPanel('persp', 'modelPanel4')
-        cmds.select('browShape_*', r=1)
-        cmds.select('browShape_Shape*', d=1)
+        pm.mel.lookThroughModelPanel("front", "modelPanel4")
+        cmds.polyProjectCurve(
+            "l_browsCurve",
+            headGeo,
+            ch=True,
+            automatic=1,
+            pointsOnEdges=0,
+            curveSamples=50,
+            n="brow",
+        )
+        pm.mel.lookThroughModelPanel("persp", "modelPanel4")
+        cmds.select("browShape_*", r=1)
+        cmds.select("browShape_Shape*", d=1)
         objSel = cmds.ls(sl=1)
         poss = []
         for i in range(0, len(objSel)):
@@ -2033,35 +2473,44 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
         firstCurve = cmds.ls(sl=1)
         cmds.parent(w=1)
-        cmds.select('browShape', r=1)
+        cmds.select("browShape", r=1)
         pm.mel.doDelete()
-        cmds.rebuildCurve(firstCurve, rt=0, ch=1, end=1, d=3, kr=0, s=1, kcp=0, tol=0.01, kt=0, rpo=1, kep=1)
-        startPos = cmds.xform(str(firstCurve[0]) + '.cv[0]', q=1, ws=1, t=1)
-        endPos = cmds.xform(str(firstCurve[0]) + '.cv[3]', q=1, ws=1, t=1)
+        cmds.rebuildCurve(
+            firstCurve, rt=0, ch=1, end=1, d=3, kr=0, s=1, kcp=0, tol=0.01, kt=0, rpo=1, kep=1
+        )
+        startPos = cmds.xform(str(firstCurve[0]) + ".cv[0]", q=1, ws=1, t=1)
+        endPos = cmds.xform(str(firstCurve[0]) + ".cv[3]", q=1, ws=1, t=1)
         if startPos[0] > endPos[0]:
             cmds.reverseCurve(firstCurve, ch=1, rpo=1)
         for i in range(0, 5):
             cmds.select(firstCurve, r=1)
-            cmds.pickWalk(d='down')
+            cmds.pickWalk(d="down")
             childFirst = cmds.ls(sl=1)
-            cmds.disconnectAttr('|all_facial_grp|l_browsCurve1|l_browsCurveShape.worldSpace[0]', 'l_brows_pcInfo_' + str(i) + '.inputCurve')
-            cmds.connectAttr(str(childFirst[0]) + '.worldSpace[0]', 'l_brows_pcInfo_' + str(i) + '.inputCurve')
+            cmds.disconnectAttr(
+                "|all_facial_grp|l_browsCurve1|l_browsCurveShape.worldSpace[0]",
+                "l_brows_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.connectAttr(
+                str(childFirst[0]) + ".worldSpace[0]", "l_brows_pcInfo_" + str(i) + ".inputCurve"
+            )
 
-        cmds.setAttr(str(firstCurve[0]) + '.overrideEnabled', 1)
-        cmds.setAttr(str(firstCurve[0]) + '.overrideColor', 17)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideEnabled", 1)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideColor", 17)
         cmds.select(firstCurve[0], r=1)
-        cmds.select('all_facial_grp', add=1)
+        cmds.select("all_facial_grp", add=1)
         cmds.parent()
-        cmds.select('l_browsCurve', r=1)
+        cmds.select("l_browsCurve", r=1)
         pm.mel.doDelete()
-        cmds.rename(firstCurve, 'l_browsCurve ')
-        cmds.select('l_jawCurve', r=1)
+        cmds.rename(firstCurve, "l_browsCurve ")
+        cmds.select("l_jawCurve", r=1)
         cmds.select(headGeo, tgl=1)
-        pm.mel.lookThroughModelPanel('front', 'modelPanel4')
-        cmds.polyProjectCurve('l_jawCurve', headGeo, ch=True, automatic=1, pointsOnEdges=0, curveSamples=50, n='jaw')
-        pm.mel.lookThroughModelPanel('persp', 'modelPanel4')
-        cmds.select('jawShape_*', r=1)
-        cmds.select('jawShape_Shape*', d=1)
+        pm.mel.lookThroughModelPanel("front", "modelPanel4")
+        cmds.polyProjectCurve(
+            "l_jawCurve", headGeo, ch=True, automatic=1, pointsOnEdges=0, curveSamples=50, n="jaw"
+        )
+        pm.mel.lookThroughModelPanel("persp", "modelPanel4")
+        cmds.select("jawShape_*", r=1)
+        cmds.select("jawShape_Shape*", d=1)
         objSel = cmds.ls(sl=1)
         possJ = []
         for i in range(0, len(objSel)):
@@ -2079,35 +2528,50 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
         firstCurve = cmds.ls(sl=1)
         cmds.parent(w=1)
-        cmds.select('jawShape', r=1)
+        cmds.select("jawShape", r=1)
         pm.mel.doDelete()
-        cmds.rebuildCurve(firstCurve, rt=0, ch=1, end=1, d=3, kr=2, s=7, kcp=0, tol=0.01, kt=0, rpo=1, kep=1)
-        startPos = cmds.xform(str(firstCurve[0]) + '.cv[0]', q=1, ws=1, t=1)
-        endPos = cmds.xform(str(firstCurve[0]) + '.cv[9]', q=1, ws=1, t=1)
+        cmds.rebuildCurve(
+            firstCurve, rt=0, ch=1, end=1, d=3, kr=2, s=7, kcp=0, tol=0.01, kt=0, rpo=1, kep=1
+        )
+        startPos = cmds.xform(str(firstCurve[0]) + ".cv[0]", q=1, ws=1, t=1)
+        endPos = cmds.xform(str(firstCurve[0]) + ".cv[9]", q=1, ws=1, t=1)
         if startPos[1] < endPos[1]:
             cmds.reverseCurve(firstCurve, ch=1, rpo=1)
         for i in range(0, 8):
             cmds.select(firstCurve, r=1)
-            cmds.pickWalk(d='down')
+            cmds.pickWalk(d="down")
             childFirst = cmds.ls(sl=1)
-            cmds.disconnectAttr('|all_facial_grp|l_jawCurve|l_jawCurveShape.worldSpace[0]', 'l_jaw_pcInfo_' + str(i) + '.inputCurve')
-            cmds.connectAttr(str(childFirst[0]) + '.worldSpace[0]', 'l_jaw_pcInfo_' + str(i) + '.inputCurve')
+            cmds.disconnectAttr(
+                "|all_facial_grp|l_jawCurve|l_jawCurveShape.worldSpace[0]",
+                "l_jaw_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.connectAttr(
+                str(childFirst[0]) + ".worldSpace[0]", "l_jaw_pcInfo_" + str(i) + ".inputCurve"
+            )
 
-        cmds.setAttr(str(firstCurve[0]) + '.overrideEnabled', 1)
-        cmds.setAttr(str(firstCurve[0]) + '.overrideColor', 17)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideEnabled", 1)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideColor", 17)
         cmds.select(firstCurve[0], r=1)
-        cmds.select('all_facial_grp', add=1)
+        cmds.select("all_facial_grp", add=1)
         cmds.parent()
-        cmds.select('l_jawCurve', r=1)
+        cmds.select("l_jawCurve", r=1)
         pm.mel.doDelete()
-        cmds.rename(firstCurve, 'l_jawCurve ')
-        cmds.select('l_cheekCurve', r=1)
+        cmds.rename(firstCurve, "l_jawCurve ")
+        cmds.select("l_cheekCurve", r=1)
         cmds.select(headGeo, tgl=1)
-        pm.mel.lookThroughModelPanel('front', 'modelPanel4')
-        cmds.polyProjectCurve('l_cheekCurve', headGeo, ch=True, automatic=1, pointsOnEdges=0, curveSamples=50, n='cheek')
-        pm.mel.lookThroughModelPanel('persp', 'modelPanel4')
-        cmds.select('cheekShape_*', r=1)
-        cmds.select('cheekShape_Shape*', d=1)
+        pm.mel.lookThroughModelPanel("front", "modelPanel4")
+        cmds.polyProjectCurve(
+            "l_cheekCurve",
+            headGeo,
+            ch=True,
+            automatic=1,
+            pointsOnEdges=0,
+            curveSamples=50,
+            n="cheek",
+        )
+        pm.mel.lookThroughModelPanel("persp", "modelPanel4")
+        cmds.select("cheekShape_*", r=1)
+        cmds.select("cheekShape_Shape*", d=1)
         objSel = cmds.ls(sl=1)
         possC = []
         for i in range(0, len(objSel)):
@@ -2125,28 +2589,35 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
         firstCurve = cmds.ls(sl=1)
         cmds.parent(w=1)
-        cmds.select('cheekShape', r=1)
+        cmds.select("cheekShape", r=1)
         pm.mel.doDelete()
-        cmds.rebuildCurve(firstCurve, rt=0, ch=1, end=1, d=1, kr=2, s=4, kcp=0, tol=0.01, kt=0, rpo=1, kep=1)
-        startPos = cmds.xform(str(firstCurve[0]) + '.cv[0]', q=1, ws=1, t=1)
-        endPos = cmds.xform(str(firstCurve[0]) + '.cv[4]', q=1, ws=1, t=1)
+        cmds.rebuildCurve(
+            firstCurve, rt=0, ch=1, end=1, d=1, kr=2, s=4, kcp=0, tol=0.01, kt=0, rpo=1, kep=1
+        )
+        startPos = cmds.xform(str(firstCurve[0]) + ".cv[0]", q=1, ws=1, t=1)
+        endPos = cmds.xform(str(firstCurve[0]) + ".cv[4]", q=1, ws=1, t=1)
         if startPos[0] > endPos[0]:
             cmds.reverseCurve(firstCurve, ch=1, rpo=1)
         for i in range(0, 5):
             cmds.select(firstCurve, r=1)
-            cmds.pickWalk(d='down')
+            cmds.pickWalk(d="down")
             childFirst = cmds.ls(sl=1)
-            cmds.disconnectAttr('|all_facial_grp|l_cheekCurve1|l_cheekCurveShape.worldSpace[1]', 'l_cheek_pcInfo_' + str(i) + '.inputCurve')
-            cmds.connectAttr(str(childFirst[0]) + '.worldSpace[0]', 'l_cheek_pcInfo_' + str(i) + '.inputCurve')
+            cmds.disconnectAttr(
+                "|all_facial_grp|l_cheekCurve1|l_cheekCurveShape.worldSpace[1]",
+                "l_cheek_pcInfo_" + str(i) + ".inputCurve",
+            )
+            cmds.connectAttr(
+                str(childFirst[0]) + ".worldSpace[0]", "l_cheek_pcInfo_" + str(i) + ".inputCurve"
+            )
 
-        cmds.setAttr(str(firstCurve[0]) + '.overrideEnabled', 1)
-        cmds.setAttr(str(firstCurve[0]) + '.overrideColor', 17)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideEnabled", 1)
+        cmds.setAttr(str(firstCurve[0]) + ".overrideColor", 17)
         cmds.select(firstCurve[0], r=1)
-        cmds.select('all_facial_grp', add=1)
+        cmds.select("all_facial_grp", add=1)
         cmds.parent()
-        cmds.select('l_cheekCurve', r=1)
+        cmds.select("l_cheekCurve", r=1)
         pm.mel.doDelete()
-        cmds.rename(firstCurve, 'l_cheekCurve ')
+        cmds.rename(firstCurve, "l_cheekCurve ")
         self.tab_widget.tab_bar.setCurrentIndex(1)
         cmds.undoInfo(closeChunk=True)
 
@@ -2157,11 +2628,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         while s >= 0:
             sel = sels[s]
             size = len(sel)
-            last = sel[size - 1:size]
-            if last == '1' or last == '2':
-                pm.rename(sel, 'r_' + sel[2:size - 1])
+            last = sel[size - 1 : size]
+            if last == "1" or last == "2":
+                pm.rename(sel, "r_" + sel[2 : size - 1])
             else:
-                pm.rename(sel, 'r_' + sel[2:size])
+                pm.rename(sel, "r_" + sel[2:size])
             s -= 1
 
     def wflrConnect(self):
@@ -2169,20 +2640,20 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         sels = cmds.ls(transforms=1, sl=1)
         for sel in sels:
             size = len(sel)
-            cmds.connectAttr(str(sel) + '.t', 'r_' + sel[2:size] + '.t')
-            cmds.connectAttr(str(sel) + '.r', 'r_' + sel[2:size] + '.r')
-            cmds.connectAttr(str(sel) + '.s', 'r_' + sel[2:size] + '.s')
-            cmds.setAttr('r_' + sel[2:size] + '.overrideColor', 1)
+            cmds.connectAttr(str(sel) + ".t", "r_" + sel[2:size] + ".t")
+            cmds.connectAttr(str(sel) + ".r", "r_" + sel[2:size] + ".r")
+            cmds.connectAttr(str(sel) + ".s", "r_" + sel[2:size] + ".s")
+            cmds.setAttr("r_" + sel[2:size] + ".overrideColor", 1)
 
     def checkVarExists(self, new_list, invert, conversion_type):
         """Checkvarexists operation."""
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
         if len(new_list) != 0:
             pm.select(new_list, r=1)
             if invert == 1:
                 cmds.ConvertSelectionToVertices()
                 headGeoName = LHeadGeoSel
-                pm.select(headGeoName + '.vtx[*]', r=1)
+                pm.select(headGeoName + ".vtx[*]", r=1)
                 pm.select(new_list, d=1)
             if len(new_list) != 1:
                 if conversion_type == 0:
@@ -2193,7 +2664,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.ConvertSelectionToVertices()
         else:
             pm.select(cl=1)
-            print('The variable has not been assigned ')
+            print("The variable has not been assigned ")
 
     def checkVarExistsB(self, new_list, new_list_b, invert, conversion_type):
         """Checkvarexistsb operation."""
@@ -2210,12 +2681,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.ConvertSelectionToContainedEdges()
         else:
             pm.select(cl=1)
-            print('The variable has not been assigned ')
+            print("The variable has not been assigned ")
 
     def findEdgeUpDown(self, up_down):
         """Findedgeupdown operation."""
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        vertexList = ['']
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
+        vertexList = [""]
         vertexList = []
         name = LHeadGeoSel
         edgeSel = cmds.ls(fl=1, sl=1)
@@ -2291,7 +2762,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.ConvertSelectionToContainedEdges()
         if not self.headGeo_wdg.edgeLoopToggle:
             self.EdgeLoopOn_fn()
-        pm.catch(lambda : pm.mel.doMenuComponentSelection(name, 'edge'))
+        pm.catch(lambda: pm.mel.doMenuComponentSelection(name, "edge"))
         return downVertex
 
     def wfFixEdgeLoopA(self, up_down):
@@ -2314,7 +2785,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def findEdgeUpDownTongue(self, up_down):
         """Findedgeupdowntongue operation."""
-        self.perseus_dic['LHeadGeoSel']
+        self.perseus_dic["LHeadGeoSel"]
         vertexList = []
         edgeSel = cmds.ls(fl=1, sl=1)
         cmds.ConvertSelectionToVertices()
@@ -2393,39 +2864,53 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def FacialSave(self):
         """Facialsave operation."""
         self.pre_generateRig_fn()
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        self.perseus_dic['skinJntSuffix']
-        if cmds.window('OptionBoxWindow', exists=1):
-            cmds.deleteUI('OptionBoxWindow', window=1)
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
+        self.perseus_dic["skinJntSuffix"]
+        if cmds.window("OptionBoxWindow", exists=1):
+            cmds.deleteUI("OptionBoxWindow", window=1)
         pm.mel.saveOptionBoxSize()
-        basicFilter = '*.json'
+        basicFilter = "*.json"
         fDialog = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
-        fDialogCurve = fDialog[0].replace('.json', '')
-        fDialogCurve = fDialogCurve + '.ma'
+        fDialogCurve = fDialog[0].replace(".json", "")
+        fDialogCurve = fDialogCurve + ".ma"
         pm.select(cl=1)
         if len(fDialog) != 0:
             adress = fDialog[0]
             self.to_json(self.perseus_dic, adress)
         skinMesh = LHeadGeoSel
         try:
-            bSMainName = cmds.ls(type='blendShape', *(cmds.listHistory(skinMesh) or []))[0]
+            bSMainName = cmds.ls(type="blendShape", *(cmds.listHistory(skinMesh) or []))[0]
         except Exception:
-            bSMainName = 'None'
+            bSMainName = "None"
 
-        if bSMainName != 'None':
-            cmds.listAttr(bSMainName + '.w', m=1)
-            if cmds.objExists(skinMesh + '_prs_trg') == 1:
-                cmds.delete(skinMesh + '_prs_trg')
-            cmds.duplicate(skinMesh, rr=1, n=skinMesh + '_prs_trg')
+        if bSMainName != "None":
+            cmds.listAttr(bSMainName + ".w", m=1)
+            if cmds.objExists(skinMesh + "_prs_trg") == 1:
+                cmds.delete(skinMesh + "_prs_trg")
+            cmds.duplicate(skinMesh, rr=1, n=skinMesh + "_prs_trg")
             with contextlib.suppress(Exception):
-                cmds.parent(skinMesh + '_prs_trg', w=1)
+                cmds.parent(skinMesh + "_prs_trg", w=1)
 
-            cmds.setAttr(skinMesh + '_prs_trg.visibility', 0)
-            cmds.select(skinMesh + '_prs_trg', r=1)
-        pm.select('l_brows_grp', 'r_brows_grp', 'l_jaw_loc_0', 'l_jaw_loc_7', 'l_jaw_grp', 'r_jaw_grp', 'neck_loc_0', 'neck_loc_1', 'l_cheek_grp', 'r_cheek_grp', 'all_facial_grp', 'neck_neckHeadCurve', add=1)
-        cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1)
-        if cmds.objExists(skinMesh + '_prs_trg') == 1:
-            cmds.delete(skinMesh + '_prs_trg')
+            cmds.setAttr(skinMesh + "_prs_trg.visibility", 0)
+            cmds.select(skinMesh + "_prs_trg", r=1)
+        pm.select(
+            "l_brows_grp",
+            "r_brows_grp",
+            "l_jaw_loc_0",
+            "l_jaw_loc_7",
+            "l_jaw_grp",
+            "r_jaw_grp",
+            "neck_loc_0",
+            "neck_loc_1",
+            "l_cheek_grp",
+            "r_cheek_grp",
+            "all_facial_grp",
+            "neck_neckHeadCurve",
+            add=1,
+        )
+        cmds.file(fDialogCurve, pr=1, typ="mayaAscii", force=1, options="v=0;", es=1)
+        if cmds.objExists(skinMesh + "_prs_trg") == 1:
+            cmds.delete(skinMesh + "_prs_trg")
         self.settings_wdg.chkSaveData.setChecked(1)
 
     def FacialLoad(self):
@@ -2451,47 +2936,57 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def FacialLoadUI(self):
         """Facialloadui operation."""
         self.FacialResetUI()
-        pm.mel.reflectionSetMode('none')
-        fDialogLd = str(pm.fileDialog(dm='*.json'))
-        fDialogLdCurve = fDialogLd.replace('.json', '.ma')
+        pm.mel.reflectionSetMode("none")
+        fDialogLd = str(pm.fileDialog(dm="*.json"))
+        fDialogLdCurve = fDialogLd.replace(".json", ".ma")
         with open(fDialogLd) as (fp):
             data = json.load(fp)
         self.perseus_dic = data
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        self.headGeo_wdg.geoField.setText(self.perseus_dic['LHeadGeoSel'])
-        self.headGeo_wdg.REyeBox.setText(self.perseus_dic['REyeGeoSel'])
-        self.headGeo_wdg.LEyeBox.setText(self.perseus_dic['LEyeGeoSel'])
-        self.headGeo_wdg.UpTeethBox.setText(self.perseus_dic['TopTeethGeoSel'])
-        self.headGeo_wdg.DownTeethBox.setText(self.perseus_dic['DownTeethGeoSel'])
-        self.headGeo_wdg.TongueBox.setText(self.perseus_dic['TongueGeoSel'])
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
+        self.headGeo_wdg.geoField.setText(self.perseus_dic["LHeadGeoSel"])
+        self.headGeo_wdg.REyeBox.setText(self.perseus_dic["REyeGeoSel"])
+        self.headGeo_wdg.LEyeBox.setText(self.perseus_dic["LEyeGeoSel"])
+        self.headGeo_wdg.UpTeethBox.setText(self.perseus_dic["TopTeethGeoSel"])
+        self.headGeo_wdg.DownTeethBox.setText(self.perseus_dic["DownTeethGeoSel"])
+        self.headGeo_wdg.TongueBox.setText(self.perseus_dic["TongueGeoSel"])
         try:
-            self.headGeo_wdg.chkPrefix.setChecked(self.perseus_dic['chkPrefix'])
-            self.headGeo_wdg.skinJntSuffix.setText(self.perseus_dic['skinJntSuffix'])
+            self.headGeo_wdg.chkPrefix.setChecked(self.perseus_dic["chkPrefix"])
+            self.headGeo_wdg.skinJntSuffix.setText(self.perseus_dic["skinJntSuffix"])
         except Exception:
             pass
 
-        self.settings_wdg.chkMaintainMaxInf.setChecked(self.perseus_dic['chkMaintainMaxInf'])
-        self.settings_wdg.maxInfs.setValue(self.perseus_dic['maxInfs'])
-        self.settings_wdg.relaxSk.setValue(self.perseus_dic['relaxSk'])
-        self.settings_wdg.chkGame.setChecked(self.perseus_dic['chkGame'])
-        self.settings_wdg.chkSoftMod.setChecked(self.perseus_dic['chkSoftMod'])
-        self.settings_wdg.chkTweaker.setChecked(self.perseus_dic['chkTweaker'])
-        self.settings_wdg.chkOptLip.setChecked(self.perseus_dic['chkOptLip'])
-        self.settings_wdg.lipJnt.setValue(self.perseus_dic['lipJnt'])
-        self.settings_wdg.chkOptEyelidJnt.setChecked(self.perseus_dic['chkOptEyelidJnt'])
-        self.settings_wdg.eyelidJnt.setValue(self.perseus_dic['eyelidJnt'])
-        self.settings_wdg.chkOptEye.setChecked(self.perseus_dic['chkOptEye'])
-        self.settings_wdg.eyeCreaseJnt.setValue(self.perseus_dic['eyeCreaseJnt'])
-        if self.perseus_dic['chkExtra'] == 1:
-            self.headGeo_wdg.ExtraBox.setText(str(self.perseus_dic['ExtraGeoSel']))
+        self.settings_wdg.chkMaintainMaxInf.setChecked(self.perseus_dic["chkMaintainMaxInf"])
+        self.settings_wdg.maxInfs.setValue(self.perseus_dic["maxInfs"])
+        self.settings_wdg.relaxSk.setValue(self.perseus_dic["relaxSk"])
+        self.settings_wdg.chkGame.setChecked(self.perseus_dic["chkGame"])
+        self.settings_wdg.chkSoftMod.setChecked(self.perseus_dic["chkSoftMod"])
+        self.settings_wdg.chkTweaker.setChecked(self.perseus_dic["chkTweaker"])
+        self.settings_wdg.chkOptLip.setChecked(self.perseus_dic["chkOptLip"])
+        self.settings_wdg.lipJnt.setValue(self.perseus_dic["lipJnt"])
+        self.settings_wdg.chkOptEyelidJnt.setChecked(self.perseus_dic["chkOptEyelidJnt"])
+        self.settings_wdg.eyelidJnt.setValue(self.perseus_dic["eyelidJnt"])
+        self.settings_wdg.chkOptEye.setChecked(self.perseus_dic["chkOptEye"])
+        self.settings_wdg.eyeCreaseJnt.setValue(self.perseus_dic["eyeCreaseJnt"])
+        if self.perseus_dic["chkExtra"] == 1:
+            self.headGeo_wdg.ExtraBox.setText(str(self.perseus_dic["ExtraGeoSel"]))
             self.headGeo_wdg.chkExtra.setChecked(True)
-        if cmds.objExists('neck_neckHeadCurve') == 0:
-            cmds.file(fDialogLdCurve, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-            if cmds.objExists(LHeadGeoSel + '_prs_trg') == 1:
+        if cmds.objExists("neck_neckHeadCurve") == 0:
+            cmds.file(
+                fDialogLdCurve,
+                pr=1,
+                ignoreVersion=1,
+                i=1,
+                type="mayaAscii",
+                namespace=":",
+                ra=True,
+                mergeNamespacesOnClash=True,
+                options="v=0;",
+            )
+            if cmds.objExists(LHeadGeoSel + "_prs_trg") == 1:
                 cmds.select(LHeadGeoSel, r=1)
                 cmds.DeleteHistory()
-                cmds.blendShape(LHeadGeoSel + '_prs_trg', LHeadGeoSel, n=LHeadGeoSel + '_bs')
-                cmds.setAttr(LHeadGeoSel + '_bs.' + LHeadGeoSel + '_prs_trg', 1)
+                cmds.blendShape(LHeadGeoSel + "_prs_trg", LHeadGeoSel, n=LHeadGeoSel + "_bs")
+                cmds.setAttr(LHeadGeoSel + "_bs." + LHeadGeoSel + "_prs_trg", 1)
         self.sl_lEyeLidMain_fn()
         self.LEyeLidMainUI()
         self.sl_rEyeLidMain_fn()
@@ -2537,97 +3032,127 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.settings_wdg.chkOptLip.setChecked(True)
         self.settings_wdg.chkOptEye.setChecked(True)
         self.settings_wdg.chkOptEyelidJnt.setChecked(False)
-        self.settings_wdg.maxInfs.setProperty('value', 12)
-        self.settings_wdg.relaxSk.setProperty('value', 2)
-        self.settings_wdg.lipJnt.setProperty('value', 20)
-        self.settings_wdg.eyelidJnt.setProperty('value', 20)
-        self.settings_wdg.eyeCreaseJnt.setProperty('value', 8)
-        self.headGeo_wdg.nameField.setText('name')
-        self.headGeo_wdg.geoField.setText('')
-        self.headGeo_wdg.LEyeBox.setText('')
-        self.headGeo_wdg.REyeBox.setText('')
-        self.headGeo_wdg.UpTeethBox.setText('')
-        self.headGeo_wdg.DownTeethBox.setText('')
-        self.headGeo_wdg.TongueBox.setText('')
-        self.headGeo_wdg.ExtraBox.setText('')
+        self.settings_wdg.maxInfs.setProperty("value", 12)
+        self.settings_wdg.relaxSk.setProperty("value", 2)
+        self.settings_wdg.lipJnt.setProperty("value", 20)
+        self.settings_wdg.eyelidJnt.setProperty("value", 20)
+        self.settings_wdg.eyeCreaseJnt.setProperty("value", 8)
+        self.headGeo_wdg.nameField.setText("name")
+        self.headGeo_wdg.geoField.setText("")
+        self.headGeo_wdg.LEyeBox.setText("")
+        self.headGeo_wdg.REyeBox.setText("")
+        self.headGeo_wdg.UpTeethBox.setText("")
+        self.headGeo_wdg.DownTeethBox.setText("")
+        self.headGeo_wdg.TongueBox.setText("")
+        self.headGeo_wdg.ExtraBox.setText("")
         self.settings_wdg.progress.setValue(0)
-        self.settings_wdg.progressText.setText('')
+        self.settings_wdg.progressText.setText("")
 
     def FacialLoadCtlShapesNoUI(self, ctrl_path, name_rig):
         """Facialloadctlshapesnoui operation."""
         name = name_rig
         fDialogLd = ctrl_path
         if name_rig is not None:
-            if cmds.objExists(name + '_facial_shapeCtrl_grp') == 0:
-                cmds.file(fDialogLd, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-                cmds.select(name + '_facialRig_controllers_grp', r=1)
+            if cmds.objExists(name + "_facial_shapeCtrl_grp") == 0:
+                cmds.file(
+                    fDialogLd,
+                    pr=1,
+                    ignoreVersion=1,
+                    i=1,
+                    type="mayaAscii",
+                    namespace=":",
+                    ra=True,
+                    mergeNamespacesOnClash=True,
+                    options="v=0;",
+                )
+                cmds.select(name + "_facialRig_controllers_grp", r=1)
                 facialCtrl = cmds.ls(sl=1)
                 cmds.select(cl=1)
                 for obj in facialCtrl:
-                    if cmds.objExists(obj + '_buffer') == 1:
-                        oldChild = cmds.listRelatives(obj, children=1, type='shape')
-                        ctrlChild = cmds.listRelatives(obj + '_buffer', children=1, type='shape')
+                    if cmds.objExists(obj + "_buffer") == 1:
+                        oldChild = cmds.listRelatives(obj, children=1, type="shape")
+                        ctrlChild = cmds.listRelatives(obj + "_buffer", children=1, type="shape")
                         for i in range(0, len(ctrlChild)):
                             cmds.parent(ctrlChild[i], obj, s=1, r=1)
 
                         cmds.delete(oldChild)
 
-                cmds.delete(name + '_facial_shapeCtrl_grp')
-                cmds.select(name + '_facialRig_controllers_grp', r=1)
+                cmds.delete(name + "_facial_shapeCtrl_grp")
+                cmds.select(name + "_facialRig_controllers_grp", r=1)
                 facialCtrl = pm.ls(sl=1)
                 for obj in facialCtrl:
-                    origChild = cmds.listRelatives(str(obj), children=1, type='shape')
+                    origChild = cmds.listRelatives(str(obj), children=1, type="shape")
                     if len(origChild) == 1:
-                        cmds.rename(str(obj.getShape()), str(obj) + 'Shape')
+                        cmds.rename(str(obj.getShape()), str(obj) + "Shape")
                     else:
                         for i in range(0, len(origChild)):
-                            cmds.rename(origChild[i], str(obj) + 'Shape' + str(i))
+                            cmds.rename(origChild[i], str(obj) + "Shape" + str(i))
 
         else:
-            if cmds.objExists('facial_shapeCtrl_grp') == 0:
-                cmds.file(fDialogLd, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-                cmds.select('facialRig_controllers_grp', r=1)
+            if cmds.objExists("facial_shapeCtrl_grp") == 0:
+                cmds.file(
+                    fDialogLd,
+                    pr=1,
+                    ignoreVersion=1,
+                    i=1,
+                    type="mayaAscii",
+                    namespace=":",
+                    ra=True,
+                    mergeNamespacesOnClash=True,
+                    options="v=0;",
+                )
+                cmds.select("facialRig_controllers_grp", r=1)
                 facialCtrl = cmds.ls(sl=1)
                 cmds.select(cl=1)
                 for obj in facialCtrl:
-                    if cmds.objExists(obj + '_buffer') == 1:
-                        oldChild = cmds.listRelatives(obj, children=1, type='shape')
-                        ctrlChild = cmds.listRelatives(obj + '_buffer', children=1, type='shape')
+                    if cmds.objExists(obj + "_buffer") == 1:
+                        oldChild = cmds.listRelatives(obj, children=1, type="shape")
+                        ctrlChild = cmds.listRelatives(obj + "_buffer", children=1, type="shape")
                         for i in range(0, len(ctrlChild)):
                             cmds.parent(ctrlChild[i], obj, s=1, r=1)
 
                         cmds.delete(oldChild)
 
-                cmds.delete('facial_shapeCtrl_grp')
-                cmds.select('facialRig_controllers_grp', r=1)
+                cmds.delete("facial_shapeCtrl_grp")
+                cmds.select("facialRig_controllers_grp", r=1)
                 facialCtrl = pm.ls(sl=1)
                 for obj in facialCtrl:
-                    origChild = cmds.listRelatives(str(obj), children=1, type='shape')
+                    origChild = cmds.listRelatives(str(obj), children=1, type="shape")
                     if len(origChild) == 1:
-                        cmds.rename(str(obj.getShape()), str(obj) + 'Shape')
+                        cmds.rename(str(obj.getShape()), str(obj) + "Shape")
                     else:
                         for i in range(0, len(origChild)):
-                            cmds.rename(origChild[i], str(obj) + 'Shape' + str(i))
+                            cmds.rename(origChild[i], str(obj) + "Shape" + str(i))
 
             cmds.select(cl=1)
         return
 
     def FacialLoadNoUI(self, json_path):
         """Facialloadnoui operation."""
-        pm.mel.reflectionSetMode('none')
+        pm.mel.reflectionSetMode("none")
         fDialogLd = json_path
-        fDialogLdCurve = fDialogLd.replace('.json', '.ma')
+        fDialogLdCurve = fDialogLd.replace(".json", ".ma")
         with open(fDialogLd) as (fp):
             data = json.load(fp)
         self.perseus_dic = data
-        LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
-        if cmds.objExists('neck_neckHeadCurve') == 0:
-            cmds.file(fDialogLdCurve, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-            if cmds.objExists(LHeadGeoSel + '_prs_trg') == 1:
+        LHeadGeoSel = self.perseus_dic["LHeadGeoSel"]
+        if cmds.objExists("neck_neckHeadCurve") == 0:
+            cmds.file(
+                fDialogLdCurve,
+                pr=1,
+                ignoreVersion=1,
+                i=1,
+                type="mayaAscii",
+                namespace=":",
+                ra=True,
+                mergeNamespacesOnClash=True,
+                options="v=0;",
+            )
+            if cmds.objExists(LHeadGeoSel + "_prs_trg") == 1:
                 cmds.select(LHeadGeoSel, r=1)
                 cmds.DeleteHistory()
-                cmds.blendShape(LHeadGeoSel + '_prs_trg', LHeadGeoSel, n=LHeadGeoSel + '_bs')
-                cmds.setAttr(LHeadGeoSel + '_bs.' + LHeadGeoSel + '_prs_trg', 1)
+                cmds.blendShape(LHeadGeoSel + "_prs_trg", LHeadGeoSel, n=LHeadGeoSel + "_bs")
+                cmds.setAttr(LHeadGeoSel + "_bs." + LHeadGeoSel + "_prs_trg", 1)
         self.sl_lEyeLidMain_fn()
         self.LEyeLidMainUI()
         self.sl_rEyeLidMain_fn()
@@ -2645,43 +3170,48 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     def to_json(self, dictionary, filename):
         """To json operation."""
-        with open(filename, 'w') as (fp):
+        with open(filename, "w") as (fp):
             json.dump(dictionary, fp, sort_keys=True, indent=4, ensure_ascii=False)
 
     def createMGPickerUI(self):
         """Generate or create m g picker u i."""
         name = self.headGeo_wdg.nameField.text()
-        name = name.replace(' ', '')
+        name = name.replace(" ", "")
         self.headGeo_wdg.nameField.setText(name)
         name = str(name)
         path = __file__
-        pathPerseusBiped = os.path.dirname(path) + '/'
-        pickerName = 'pickerBodyFacial'
-        response = pm.confirmDialog(title='Create Picker', cancelButton='Cancel', defaultButton='Biped', button=[
-         'Biped',
-         'Facial', 'Biped&Facial', 'Quadruped', 'Quadruped$Facial', 'Cancel'], message='', dismissString='No')
-        if response != 'Cancel':
-            if response == 'Facial':
-                pickerName = 'pickerFacial'
+        pathPerseusBiped = os.path.dirname(path) + "/"
+        pickerName = "pickerBodyFacial"
+        response = pm.confirmDialog(
+            title="Create Picker",
+            cancelButton="Cancel",
+            defaultButton="Biped",
+            button=["Biped", "Facial", "Biped&Facial", "Quadruped", "Quadruped$Facial", "Cancel"],
+            message="",
+            dismissString="No",
+        )
+        if response != "Cancel":
+            if response == "Facial":
+                pickerName = "pickerFacial"
             else:
-                if response == 'Biped':
-                    pickerName = 'pickerBody'
-                elif response == 'Biped&Facial':
-                    pickerName = 'pickerBipedFacial'
-                elif response == 'Quadruped':
-                    pickerName = 'pickerQuadruped'
-                elif response == 'Quadruped$Facial':
-                    pickerName = 'pickerQuadrupedFacial'
-                basicFilter = '*.mgpkr'
+                if response == "Biped":
+                    pickerName = "pickerBody"
+                elif response == "Biped&Facial":
+                    pickerName = "pickerBipedFacial"
+                elif response == "Quadruped":
+                    pickerName = "pickerQuadruped"
+                elif response == "Quadruped$Facial":
+                    pickerName = "pickerQuadrupedFacial"
+                basicFilter = "*.mgpkr"
                 fDialog = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
                 pickerFile = fDialog[0]
                 newPath = pathPerseusBiped
-                newPath = newPath + pickerName + '.mgpkr'
+                newPath = newPath + pickerName + ".mgpkr"
                 fin = open(newPath)
-                fout = open(pickerFile, 'w')
-                pathPerseusBiped.replace('\\', '/')
+                fout = open(pickerFile, "w")
+                pathPerseusBiped.replace("\\", "/")
                 for line in fin:
-                    newLine = line.replace('name_', name + '_')
+                    newLine = line.replace("name_", name + "_")
                     newLineB = newLine.replace("'name'", "'" + name + "'")
                     fout.write(newLineB)
 
@@ -2691,71 +3221,91 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def FacialSaveCtlShapes(self):
         """Facialsavectlshapes operation."""
         name = self.headGeo_wdg.nameField.text()
-        name = name.replace(' ', '')
+        name = name.replace(" ", "")
         self.headGeo_wdg.nameField.setText(name)
         name = str(name)
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
-        if cmds.window('OptionBoxWindow', exists=1):
-            cmds.deleteUI('OptionBoxWindow', window=1)
+        if cmds.window("OptionBoxWindow", exists=1):
+            cmds.deleteUI("OptionBoxWindow", window=1)
         pm.mel.saveOptionBoxSize()
-        basicFilter = '*.ma'
+        basicFilter = "*.ma"
         fDialog = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
-        fDialogCurve = fDialog[0].replace('.ma', '')
-        fDialogCurve = fDialogCurve + '.ma'
+        fDialogCurve = fDialog[0].replace(".ma", "")
+        fDialogCurve = fDialogCurve + ".ma"
         if fDialog is not None:
             if chkPrefix == 0:
-                if cmds.objExists(name + '_facial_shapeCtrl_grp') == 0:
-                    cmds.group(em=1, n=name + '_facial_shapeCtrl_grp')
-                    cmds.select(name + '_facialRig_controllers_grp', r=1)
+                if cmds.objExists(name + "_facial_shapeCtrl_grp") == 0:
+                    cmds.group(em=1, n=name + "_facial_shapeCtrl_grp")
+                    cmds.select(name + "_facialRig_controllers_grp", r=1)
                     facialCtrl = cmds.ls(sl=1)
                     cmds.select(cl=1)
                     for obj in facialCtrl:
                         cmds.select(obj, r=1)
-                        cmds.duplicate(rr=1, n=obj + '_buffer')
-                        ctrlChild = pm.listRelatives(obj + '_buffer', children=1, type='transform')
+                        cmds.duplicate(rr=1, n=obj + "_buffer")
+                        ctrlChild = pm.listRelatives(obj + "_buffer", children=1, type="transform")
                         for childC in ctrlChild:
                             cmds.delete(str(childC))
 
-                        cmds.select(obj + '_buffer', r=1)
-                        cmds.group(n=obj + '_buffer_grp')
-                        cmds.parent(obj + '_buffer_grp', name + '_facial_shapeCtrl_grp')
-                        cmds.sets(obj + '_buffer', edit=1, rm=name + '_facialRig_controllers_grp')
+                        cmds.select(obj + "_buffer", r=1)
+                        cmds.group(n=obj + "_buffer_grp")
+                        cmds.parent(obj + "_buffer_grp", name + "_facial_shapeCtrl_grp")
+                        cmds.sets(obj + "_buffer", edit=1, rm=name + "_facialRig_controllers_grp")
 
-                pm.setAttr(name + '_facial_shapeCtrl_grp.visibility', 0)
-                cmds.select(name + '_facial_shapeCtrl_grp', hi=1)
+                pm.setAttr(name + "_facial_shapeCtrl_grp.visibility", 0)
+                cmds.select(name + "_facial_shapeCtrl_grp", hi=1)
                 cmds.DeleteHistory()
                 with contextlib.suppress(Exception):
-                    cmds.disconnectAttr(name + '_jaw_ctrl.scale', name + '_jaw_fk_ctrl_buffer.inverseScale')
+                    cmds.disconnectAttr(
+                        name + "_jaw_ctrl.scale", name + "_jaw_fk_ctrl_buffer.inverseScale"
+                    )
 
-                cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
-                cmds.delete(name + '_facial_shapeCtrl_grp')
+                cmds.file(
+                    fDialogCurve,
+                    pr=1,
+                    typ="mayaAscii",
+                    force=1,
+                    options="v=0;",
+                    es=1,
+                    constructionHistory=0,
+                    con=0,
+                )
+                cmds.delete(name + "_facial_shapeCtrl_grp")
                 cmds.select(cl=1)
             else:
-                if cmds.objExists('facial_shapeCtrl_grp') == 0:
-                    cmds.group(em=1, n='facial_shapeCtrl_grp')
-                    cmds.select('facialRig_controllers_grp', r=1)
+                if cmds.objExists("facial_shapeCtrl_grp") == 0:
+                    cmds.group(em=1, n="facial_shapeCtrl_grp")
+                    cmds.select("facialRig_controllers_grp", r=1)
                     facialCtrl = cmds.ls(sl=1)
                     cmds.select(cl=1)
                     for obj in facialCtrl:
                         cmds.select(obj, r=1)
-                        cmds.duplicate(rr=1, n=obj + '_buffer')
-                        ctrlChild = pm.listRelatives(obj + '_buffer', children=1, type='transform')
+                        cmds.duplicate(rr=1, n=obj + "_buffer")
+                        ctrlChild = pm.listRelatives(obj + "_buffer", children=1, type="transform")
                         for childC in ctrlChild:
                             cmds.delete(str(childC))
 
-                        cmds.select(obj + '_buffer', r=1)
-                        cmds.group(n=obj + '_buffer_grp')
-                        cmds.parent(obj + '_buffer_grp', 'facial_shapeCtrl_grp')
-                        cmds.sets(obj + '_buffer', edit=1, rm='facialRig_controllers_grp')
+                        cmds.select(obj + "_buffer", r=1)
+                        cmds.group(n=obj + "_buffer_grp")
+                        cmds.parent(obj + "_buffer_grp", "facial_shapeCtrl_grp")
+                        cmds.sets(obj + "_buffer", edit=1, rm="facialRig_controllers_grp")
 
-                pm.setAttr('facial_shapeCtrl_grp.visibility', 0)
-                cmds.select('facial_shapeCtrl_grp', hi=1)
+                pm.setAttr("facial_shapeCtrl_grp.visibility", 0)
+                cmds.select("facial_shapeCtrl_grp", hi=1)
                 cmds.DeleteHistory()
                 with contextlib.suppress(Exception):
-                    cmds.disconnectAttr('jaw_ctrl.scale', 'jaw_fk_ctrl_buffer.inverseScale')
+                    cmds.disconnectAttr("jaw_ctrl.scale", "jaw_fk_ctrl_buffer.inverseScale")
 
-                cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
-                cmds.delete('facial_shapeCtrl_grp')
+                cmds.file(
+                    fDialogCurve,
+                    pr=1,
+                    typ="mayaAscii",
+                    force=1,
+                    options="v=0;",
+                    es=1,
+                    constructionHistory=0,
+                    con=0,
+                )
+                cmds.delete("facial_shapeCtrl_grp")
                 cmds.select(cl=1)
         return
 
@@ -2764,129 +3314,169 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         chkPrefix = 0
         if name is None:
             chkPrefix = 1
-        if cmds.window('OptionBoxWindow', exists=1):
-            cmds.deleteUI('OptionBoxWindow', window=1)
+        if cmds.window("OptionBoxWindow", exists=1):
+            cmds.deleteUI("OptionBoxWindow", window=1)
         pm.mel.saveOptionBoxSize()
-        basicFilter = '*.ma'
+        basicFilter = "*.ma"
         fDialog = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
-        fDialogCurve = fDialog[0].replace('.ma', '')
-        fDialogCurve = fDialogCurve + '.ma'
+        fDialogCurve = fDialog[0].replace(".ma", "")
+        fDialogCurve = fDialogCurve + ".ma"
         if fDialog is not None:
             if chkPrefix == 0:
-                if cmds.objExists(name + '_facial_shapeCtrl_grp') == 0:
-                    cmds.group(em=1, n=name + '_facial_shapeCtrl_grp')
-                    cmds.select(name + '_facialRig_controllers_grp', r=1)
+                if cmds.objExists(name + "_facial_shapeCtrl_grp") == 0:
+                    cmds.group(em=1, n=name + "_facial_shapeCtrl_grp")
+                    cmds.select(name + "_facialRig_controllers_grp", r=1)
                     facialCtrl = cmds.ls(sl=1)
                     cmds.select(cl=1)
                     for obj in facialCtrl:
                         cmds.select(obj, r=1)
-                        cmds.duplicate(rr=1, n=obj + '_buffer')
-                        ctrlChild = pm.listRelatives(obj + '_buffer', children=1, type='transform')
+                        cmds.duplicate(rr=1, n=obj + "_buffer")
+                        ctrlChild = pm.listRelatives(obj + "_buffer", children=1, type="transform")
                         for childC in ctrlChild:
                             cmds.delete(str(childC))
 
-                        cmds.select(obj + '_buffer', r=1)
-                        cmds.group(n=obj + '_buffer_grp')
-                        cmds.parent(obj + '_buffer_grp', name + '_facial_shapeCtrl_grp')
-                        cmds.sets(obj + '_buffer', edit=1, rm=name + '_facialRig_controllers_grp')
+                        cmds.select(obj + "_buffer", r=1)
+                        cmds.group(n=obj + "_buffer_grp")
+                        cmds.parent(obj + "_buffer_grp", name + "_facial_shapeCtrl_grp")
+                        cmds.sets(obj + "_buffer", edit=1, rm=name + "_facialRig_controllers_grp")
 
-                pm.setAttr(name + '_facial_shapeCtrl_grp.visibility', 0)
-                cmds.select(name + '_facial_shapeCtrl_grp', hi=1)
+                pm.setAttr(name + "_facial_shapeCtrl_grp.visibility", 0)
+                cmds.select(name + "_facial_shapeCtrl_grp", hi=1)
                 cmds.DeleteHistory()
                 with contextlib.suppress(Exception):
-                    cmds.disconnectAttr(name + '_jaw_ctrl.scale', name + '_jaw_fk_ctrl_buffer.inverseScale')
+                    cmds.disconnectAttr(
+                        name + "_jaw_ctrl.scale", name + "_jaw_fk_ctrl_buffer.inverseScale"
+                    )
 
-                cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
-                cmds.delete(name + '_facial_shapeCtrl_grp')
+                cmds.file(
+                    fDialogCurve,
+                    pr=1,
+                    typ="mayaAscii",
+                    force=1,
+                    options="v=0;",
+                    es=1,
+                    constructionHistory=0,
+                    con=0,
+                )
+                cmds.delete(name + "_facial_shapeCtrl_grp")
                 cmds.select(cl=1)
             else:
-                if cmds.objExists('facial_shapeCtrl_grp') == 0:
-                    cmds.group(em=1, n='facial_shapeCtrl_grp')
-                    cmds.select('facialRig_controllers_grp', r=1)
+                if cmds.objExists("facial_shapeCtrl_grp") == 0:
+                    cmds.group(em=1, n="facial_shapeCtrl_grp")
+                    cmds.select("facialRig_controllers_grp", r=1)
                     facialCtrl = cmds.ls(sl=1)
                     cmds.select(cl=1)
                     for obj in facialCtrl:
                         cmds.select(obj, r=1)
-                        cmds.duplicate(rr=1, n=obj + '_buffer')
-                        ctrlChild = pm.listRelatives(obj + '_buffer', children=1, type='transform')
+                        cmds.duplicate(rr=1, n=obj + "_buffer")
+                        ctrlChild = pm.listRelatives(obj + "_buffer", children=1, type="transform")
                         for childC in ctrlChild:
                             cmds.delete(str(childC))
 
-                        cmds.select(obj + '_buffer', r=1)
-                        cmds.group(n=obj + '_buffer_grp')
-                        cmds.parent(obj + '_buffer_grp', 'facial_shapeCtrl_grp')
-                        cmds.sets(obj + '_buffer', edit=1, rm='facialRig_controllers_grp')
+                        cmds.select(obj + "_buffer", r=1)
+                        cmds.group(n=obj + "_buffer_grp")
+                        cmds.parent(obj + "_buffer_grp", "facial_shapeCtrl_grp")
+                        cmds.sets(obj + "_buffer", edit=1, rm="facialRig_controllers_grp")
 
-                pm.setAttr('facial_shapeCtrl_grp.visibility', 0)
-                cmds.select('facial_shapeCtrl_grp', hi=1)
+                pm.setAttr("facial_shapeCtrl_grp.visibility", 0)
+                cmds.select("facial_shapeCtrl_grp", hi=1)
                 cmds.DeleteHistory()
                 with contextlib.suppress(Exception):
-                    cmds.disconnectAttr('jaw_ctrl.scale', 'jaw_fk_ctrl_buffer.inverseScale')
+                    cmds.disconnectAttr("jaw_ctrl.scale", "jaw_fk_ctrl_buffer.inverseScale")
 
-                cmds.file(fDialogCurve, pr=1, typ='mayaAscii', force=1, options='v=0;', es=1, constructionHistory=0, con=0)
-                cmds.delete('facial_shapeCtrl_grp')
+                cmds.file(
+                    fDialogCurve,
+                    pr=1,
+                    typ="mayaAscii",
+                    force=1,
+                    options="v=0;",
+                    es=1,
+                    constructionHistory=0,
+                    con=0,
+                )
+                cmds.delete("facial_shapeCtrl_grp")
                 cmds.select(cl=1)
         return
 
     def FacialLoadCtlShapes(self):
         """Facialloadctlshapes operation."""
         name = self.headGeo_wdg.nameField.text()
-        name = name.replace(' ', '')
+        name = name.replace(" ", "")
         self.headGeo_wdg.nameField.setText(name)
         name = str(name)
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
-        fDialogLd = str(pm.fileDialog(dm='*.ma'))
+        fDialogLd = str(pm.fileDialog(dm="*.ma"))
         if chkPrefix == 0:
-            if cmds.objExists(name + '_facial_shapeCtrl_grp') == 0:
-                cmds.file(fDialogLd, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-                cmds.select(name + '_facialRig_controllers_grp', r=1)
+            if cmds.objExists(name + "_facial_shapeCtrl_grp") == 0:
+                cmds.file(
+                    fDialogLd,
+                    pr=1,
+                    ignoreVersion=1,
+                    i=1,
+                    type="mayaAscii",
+                    namespace=":",
+                    ra=True,
+                    mergeNamespacesOnClash=True,
+                    options="v=0;",
+                )
+                cmds.select(name + "_facialRig_controllers_grp", r=1)
                 facialCtrl = cmds.ls(sl=1)
                 cmds.select(cl=1)
                 for obj in facialCtrl:
-                    if cmds.objExists(obj + '_buffer') == 1:
-                        oldChild = cmds.listRelatives(obj, children=1, type='shape')
-                        ctrlChild = cmds.listRelatives(obj + '_buffer', children=1, type='shape')
+                    if cmds.objExists(obj + "_buffer") == 1:
+                        oldChild = cmds.listRelatives(obj, children=1, type="shape")
+                        ctrlChild = cmds.listRelatives(obj + "_buffer", children=1, type="shape")
                         for i in range(0, len(ctrlChild)):
                             cmds.parent(ctrlChild[i], obj, s=1, r=1)
 
                         cmds.delete(oldChild)
 
-                cmds.delete(name + '_facial_shapeCtrl_grp')
-                cmds.select(name + '_facialRig_controllers_grp', r=1)
+                cmds.delete(name + "_facial_shapeCtrl_grp")
+                cmds.select(name + "_facialRig_controllers_grp", r=1)
                 facialCtrl = pm.ls(sl=1)
                 for obj in facialCtrl:
-                    origChild = cmds.listRelatives(str(obj), children=1, type='shape')
+                    origChild = cmds.listRelatives(str(obj), children=1, type="shape")
                     if len(origChild) == 1:
-                        cmds.rename(str(obj.getShape()), str(obj) + 'Shape')
+                        cmds.rename(str(obj.getShape()), str(obj) + "Shape")
                     else:
                         for i in range(0, len(origChild)):
-                            cmds.rename(origChild[i], str(obj) + 'Shape' + str(i))
+                            cmds.rename(origChild[i], str(obj) + "Shape" + str(i))
 
         else:
-            if cmds.objExists('facial_shapeCtrl_grp') == 0:
-                cmds.file(fDialogLd, pr=1, ignoreVersion=1, i=1, type='mayaAscii', namespace=':', ra=True, mergeNamespacesOnClash=True, options='v=0;')
-                cmds.select('facialRig_controllers_grp', r=1)
+            if cmds.objExists("facial_shapeCtrl_grp") == 0:
+                cmds.file(
+                    fDialogLd,
+                    pr=1,
+                    ignoreVersion=1,
+                    i=1,
+                    type="mayaAscii",
+                    namespace=":",
+                    ra=True,
+                    mergeNamespacesOnClash=True,
+                    options="v=0;",
+                )
+                cmds.select("facialRig_controllers_grp", r=1)
                 facialCtrl = cmds.ls(sl=1)
                 cmds.select(cl=1)
                 for obj in facialCtrl:
-                    if cmds.objExists(obj + '_buffer') == 1:
-                        oldChild = cmds.listRelatives(obj, children=1, type='shape')
-                        ctrlChild = cmds.listRelatives(obj + '_buffer', children=1, type='shape')
+                    if cmds.objExists(obj + "_buffer") == 1:
+                        oldChild = cmds.listRelatives(obj, children=1, type="shape")
+                        ctrlChild = cmds.listRelatives(obj + "_buffer", children=1, type="shape")
                         for i in range(0, len(ctrlChild)):
                             cmds.parent(ctrlChild[i], obj, s=1, r=1)
 
                         cmds.delete(oldChild)
 
-                cmds.delete('facial_shapeCtrl_grp')
-                cmds.select('facialRig_controllers_grp', r=1)
+                cmds.delete("facial_shapeCtrl_grp")
+                cmds.select("facialRig_controllers_grp", r=1)
                 facialCtrl = pm.ls(sl=1)
                 for obj in facialCtrl:
-                    origChild = cmds.listRelatives(str(obj), children=1, type='shape')
+                    origChild = cmds.listRelatives(str(obj), children=1, type="shape")
                     if len(origChild) == 1:
-                        cmds.rename(str(obj.getShape()), str(obj) + 'Shape')
+                        cmds.rename(str(obj.getShape()), str(obj) + "Shape")
                     else:
                         for i in range(0, len(origChild)):
-                            cmds.rename(origChild[i], str(obj) + 'Shape' + str(i))
+                            cmds.rename(origChild[i], str(obj) + "Shape" + str(i))
 
             cmds.select(cl=1)
 
@@ -2904,140 +3494,188 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.SelectToggleMode()
         pm.mel.toggleSelMode()
         pm.mel.updateSelectionModeIcons()
-        pm.mel.dR_selTypeChanged('')
+        pm.mel.dR_selTypeChanged("")
 
     def wfexcludeSystem(self):
         """Wfexcludesystem operation."""
         name = self.headGeo_wdg.nameField.text()
-        name = name.replace(' ', '')
+        name = name.replace(" ", "")
         self.headGeo_wdg.nameField.setText(name)
         name = str(name)
         vertexList = self.newExclusion
         len(vertexList)
         ClusterName = []
-        ClusterName = vertexList[0].split('.')
+        ClusterName = vertexList[0].split(".")
         SkCluster = str(pm.mel.findRelatedSkinCluster(ClusterName[0]))
         objects = cmds.ls(sl=1)
         infJooints = []
         verListSkin = []
         for obj in objects:
-            index = int(pm.getAttr(str(obj) + '.index'))
+            index = int(pm.getAttr(str(obj) + ".index"))
             cmds.select(cl=1)
             verListSkin = []
             for i in range(0, len(vertexList)):
                 verListSkin.append(vertexList[i])
 
             if index == 1:
-                pm.catch(lambda : pm.select(name + '_downLip_jnt_*_skin', name + '_jaw_lip_r_1_skin', name + '_jaw_lip_r_0_skin', name + '_jaw_lip_l_1_skin', name + '_jaw_lip_l_0_skin', name + '_jaw_lip_c_skin', r=1))
+                pm.catch(
+                    lambda: pm.select(
+                        name + "_downLip_jnt_*_skin",
+                        name + "_jaw_lip_r_1_skin",
+                        name + "_jaw_lip_r_0_skin",
+                        name + "_jaw_lip_l_1_skin",
+                        name + "_jaw_lip_l_0_skin",
+                        name + "_jaw_lip_c_skin",
+                        r=1,
+                    )
+                )
             else:
                 if index == 2:
-                    pm.catch(lambda : pm.select(name + '_upLip_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_upLip_jnt_*_skin", r=1))
                 elif index == 3:
-                    pm.catch(lambda : pm.select(name + '_jaw_lip_c_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_jaw_lip_c_skin", r=1))
                 elif index == 4:
-                    pm.catch(lambda : pm.select(name + '_jaw_lip_l_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_jaw_lip_l_0_skin", r=1))
                 elif index == 5:
-                    pm.catch(lambda : pm.select(name + '_jaw_lip_l_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_jaw_lip_l_1_skin", r=1))
                 elif index == 6:
-                    pm.catch(lambda : pm.select(name + '_jaw_lip_r_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_jaw_lip_r_0_skin", r=1))
                 elif index == 7:
-                    pm.catch(lambda : pm.select(name + '_jaw_lip_r_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_jaw_lip_r_1_skin", r=1))
                 elif index == 8:
-                    pm.catch(lambda : pm.select(name + '_l_jaw_jnt_7_skin', name + '_jaw_lip_r_1_skin', name + '_jaw_lip_r_0_skin', name + '_jaw_lip_l_1_skin', name + '_jaw_lip_l_0_skin', name + '_jaw_lip_c_skin', name + '_downLip_jnt_*_skin', r=1))
+                    pm.catch(
+                        lambda: pm.select(
+                            name + "_l_jaw_jnt_7_skin",
+                            name + "_jaw_lip_r_1_skin",
+                            name + "_jaw_lip_r_0_skin",
+                            name + "_jaw_lip_l_1_skin",
+                            name + "_jaw_lip_l_0_skin",
+                            name + "_jaw_lip_c_skin",
+                            name + "_downLip_jnt_*_skin",
+                            r=1,
+                        )
+                    )
                 elif index == 9:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_2_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_2_skin", r=1))
                 elif index == 10:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_3_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_3_skin", r=1))
                 elif index == 11:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_4_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_4_skin", r=1))
                 elif index == 12:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_1_skin", r=1))
                 elif index == 13:
-                    pm.catch(lambda : pm.select(name + '_nose_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_nose_jnt_0_skin", r=1))
                 elif index == 14:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_2_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_2_skin", r=1))
                 elif index == 15:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_3_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_3_skin", r=1))
                 elif index == 16:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_4_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_4_skin", r=1))
                 elif index == 17:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_1_skin", r=1))
                 elif index == 18:
-                    pm.catch(lambda : pm.select(name + '_nose_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_nose_jnt_0_skin", r=1))
                 elif index == 19:
-                    pm.catch(lambda : pm.select(name + '_nose_jnt_7_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_nose_jnt_7_skin", r=1))
                 elif index == 20:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_0_skin", r=1))
                 elif index == 21:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_0_skin", r=1))
                 elif index == 22:
-                    pm.catch(lambda : pm.select(name + '_l_downEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_downEyeBorder_jnt_*_skin", r=1))
                 elif index == 23:
-                    pm.catch(lambda : pm.select(name + '_l_downEye_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_downEye_jnt_*_skin", r=1))
                 elif index == 24:
-                    pm.catch(lambda : pm.select(name + '_l_upEye_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_upEye_jnt_*_skin", r=1))
                 elif index == 25:
-                    pm.catch(lambda : pm.select(name + '_l_upEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_upEyeBorder_jnt_*_skin", r=1))
                 elif index == 26:
-                    pm.catch(lambda : pm.select(name + '_r_downEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_downEyeBorder_jnt_*_skin", r=1))
                 elif index == 27:
-                    pm.catch(lambda : pm.select(name + '_r_downEye_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_downEye_jnt_*_skin", r=1))
                 elif index == 28:
-                    pm.catch(lambda : pm.select(name + '_r_upEye_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_upEye_jnt_*_skin", r=1))
                 elif index == 29:
-                    pm.catch(lambda : pm.select(name + '_r_upEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_upEyeBorder_jnt_*_skin", r=1))
                 elif index == 30:
-                    pm.catch(lambda : pm.select(name + '_up_nose_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_up_nose_jnt_0_skin", r=1))
                 elif index == 31:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_0_skin", r=1))
                 elif index == 32:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_1_skin", r=1))
                 elif index == 33:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_2_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_2_skin", r=1))
                 elif index == 34:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_3_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_3_skin", r=1))
                 elif index == 35:
-                    pm.catch(lambda : pm.select(name + '_c_brows_jnt_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_c_brows_jnt_skin", r=1))
                 elif index == 36:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_0_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_0_skin", r=1))
                 elif index == 37:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_1_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_1_skin", r=1))
                 elif index == 38:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_2_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_2_skin", r=1))
                 elif index == 39:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_3_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_3_skin", r=1))
                 elif index == 40:
-                    pm.catch(lambda : pm.select(name + '_nose_jnt_down_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_nose_jnt_down_skin", r=1))
                 elif index == 41:
-                    pm.catch(lambda : pm.select(name + '_l_cheek_jnt_5_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_cheek_jnt_5_skin", r=1))
                 elif index == 42:
-                    pm.catch(lambda : pm.select(name + '_r_cheek_jnt_5_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_cheek_jnt_5_skin", r=1))
                 elif index == 43:
-                    pm.catch(lambda : pm.select(name + '_downLip_jnt_*_skin', name + '_upLip_jnt_*_skin', r=1))
+                    pm.catch(
+                        lambda: pm.select(
+                            name + "_downLip_jnt_*_skin", name + "_upLip_jnt_*_skin", r=1
+                        )
+                    )
                 elif index == 44:
-                    pm.catch(lambda : pm.select(name + '_nose_jnt_*_skin', name + '_l_cheek_jnt_0_skin', name + '_r_cheek_jnt_0_skin', r=1))
+                    pm.catch(
+                        lambda: pm.select(
+                            name + "_nose_jnt_*_skin",
+                            name + "_l_cheek_jnt_0_skin",
+                            name + "_r_cheek_jnt_0_skin",
+                            r=1,
+                        )
+                    )
                 elif index == 45:
-                    pm.catch(lambda : pm.select(name + '_l_downEye_jnt_*_skin', name + '_l_upEye_jnt_*_skin', name + '_l_upEyeBorder_jnt_*_skin', name + '_l_downEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(
+                        lambda: pm.select(
+                            name + "_l_downEye_jnt_*_skin",
+                            name + "_l_upEye_jnt_*_skin",
+                            name + "_l_upEyeBorder_jnt_*_skin",
+                            name + "_l_downEyeBorder_jnt_*_skin",
+                            r=1,
+                        )
+                    )
                 elif index == 46:
-                    pm.catch(lambda : pm.select(name + '_r_downEye_jnt_*_skin', name + '_r_upEye_jnt_*_skin', name + '_r_upEyeBorder_jnt_*_skin', name + '_r_downEyeBorder_jnt_*_skin', r=1))
+                    pm.catch(
+                        lambda: pm.select(
+                            name + "_r_downEye_jnt_*_skin",
+                            name + "_r_upEye_jnt_*_skin",
+                            name + "_r_upEyeBorder_jnt_*_skin",
+                            name + "_r_downEyeBorder_jnt_*_skin",
+                            r=1,
+                        )
+                    )
                 elif index == 47:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_*_skin", r=1))
                 elif index == 48:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_*_skin", r=1))
                 elif index == 49:
-                    pm.catch(lambda : pm.select(name + '_up_teeth_jnt_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_up_teeth_jnt_skin", r=1))
                 elif index == 50:
-                    pm.catch(lambda : pm.select(name + '_down_teeth_jnt_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_down_teeth_jnt_skin", r=1))
                 elif index == 51:
-                    pm.catch(lambda : pm.select(name + '_upTongue_jnt_*_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_upTongue_jnt_*_skin", r=1))
                 elif index == 52:
-                    pm.catch(lambda : pm.select(name + '_l_brows_jnt_4_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_l_brows_jnt_4_skin", r=1))
                 elif index == 53:
-                    pm.catch(lambda : pm.select(name + '_r_brows_jnt_4_skin', r=1))
+                    pm.catch(lambda: pm.select(name + "_r_brows_jnt_4_skin", r=1))
                 infJooints = cmds.ls(sl=1)
                 for objs in infJooints:
-                    '-tv ' + str(objs) + ' 0 '
-                    pm.catch(lambda : pm.skinPercent(SkCluster, verListSkin, tv=(objs, 0)))
+                    "-tv " + str(objs) + " 0 "
+                    pm.catch(lambda: pm.skinPercent(SkCluster, verListSkin, tv=(objs, 0)))
 
             pm.select(objects, r=1)
 
@@ -3049,14 +3687,15 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pyNode: The skin cluster pynode object.
         """
         import pymel.all as pm
+
         skinCluster = None
         if isinstance(obj, basestring):
             obj = pm.PyNode(obj)
         try:
-            if pm.nodeType(obj.getShape()) in ('mesh', 'nurbsSurface', 'nurbsCurve'):
+            if pm.nodeType(obj.getShape()) in ("mesh", "nurbsSurface", "nurbsCurve"):
                 for shape in obj.getShapes():
                     try:
-                        for skC in pm.listHistory(shape, type='skinCluster'):
+                        for skC in pm.listHistory(shape, type="skinCluster"):
                             try:
                                 if skC.getGeometry()[0] == shape:
                                     skinCluster = skC
@@ -3067,7 +3706,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                         pass
 
         except Exception:
-            pm.displayWarning(f'{obj.name()}: is not supported.')
+            pm.displayWarning(f"{obj.name()}: is not supported.")
 
         return skinCluster
 
@@ -3078,11 +3717,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 source_mesh = pm.ls(sl=1)[0]
                 targetMeshes = pm.ls(sl=1)[1:]
             else:
-                pm.displayWarning('Please select target mesh/meshes and source mesh with skinCluster.')
+                pm.displayWarning(
+                    "Please select target mesh/meshes and source mesh with skinCluster."
+                )
                 return
         else:
-            targetMeshes = [
-             target_mesh]
+            targetMeshes = [target_mesh]
             if isinstance(source_mesh, basestring):
                 source_mesh = pm.PyNode(source_mesh)
             for target_mesh in targetMeshes:
@@ -3091,24 +3731,35 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 ss = self.getSkinCluster(source_mesh)
                 if ss:
                     oDef = pm.skinCluster(source_mesh, query=True, influence=True)
-                    skinCluster = pm.skinCluster(oDef, target_mesh, tsb=True, nw=1, n=target_mesh.name() + '_SkinCluster')
-                    pm.copySkinWeights(ss=ss.stripNamespace(), ds=skinCluster.name(), noMirror=True, ia='oneToOne', sm=True, nr=True)
+                    skinCluster = pm.skinCluster(
+                        oDef, target_mesh, tsb=True, nw=1, n=target_mesh.name() + "_SkinCluster"
+                    )
+                    pm.copySkinWeights(
+                        ss=ss.stripNamespace(),
+                        ds=skinCluster.name(),
+                        noMirror=True,
+                        ia="oneToOne",
+                        sm=True,
+                        nr=True,
+                    )
                 else:
-                    pm.displayError('Source Mesh :' + source_mesh.name() + " Don't have skinCluster")
+                    pm.displayError(
+                        "Source Mesh :" + source_mesh.name() + " Don't have skinCluster"
+                    )
 
     def source_define(self):
         """Source define operation."""
         base = cmds.ls(sl=1)
-        mel.eval('PolySelectConvert 3;')
-        self.SourceDestinationSel('source')
+        mel.eval("PolySelectConvert 3;")
+        self.SourceDestinationSel("source")
         print(sourceVertexLs)
         cmds.select(base)
 
     def destination_define(self):
         """Destination define operation."""
         base = cmds.ls(sl=1)
-        mel.eval('PolySelectConvert 3;')
-        self.SourceDestinationSel('destination')
+        mel.eval("PolySelectConvert 3;")
+        self.SourceDestinationSel("destination")
         print(destinationVertexLs)
         cmds.select(base)
 
@@ -3117,12 +3768,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         global destinationVertexLs
         global sourceVertexLs
         selectionList = pm.ls(sl=1, flatten=1)
-        if selectionList and pm.nodeType(selectionList[0]) == 'mesh':
-            mel.eval('PolySelectConvert 3;')
+        if selectionList and pm.nodeType(selectionList[0]) == "mesh":
+            mel.eval("PolySelectConvert 3;")
             selectionList = pm.ls(sl=1, flatten=1)
-            if sd_type == 'destination':
+            if sd_type == "destination":
                 destinationVertexLs = selectionList
-            if sd_type == 'source':
+            if sd_type == "source":
                 sourceVertexLs = selectionList
 
     def copySkinGlobal(self):
@@ -3158,9 +3809,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
                 if closest_src:
                     pm.select(closest_src)
-                    mel.eval('artAttrSkinWeightCopy')
+                    mel.eval("artAttrSkinWeightCopy")
                     pm.select(x_dis)
-                    mel.eval('artAttrSkinWeightPaste')
+                    mel.eval("artAttrSkinWeightPaste")
                     i += 10.0 / len(destinationVer)
                     self.skin_wdg.progress.setValue(i * 10)
 
@@ -3175,72 +3826,72 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         """Connectblendshape operation."""
         objects = pm.ls(sl=1)
         objectTypeFace = pm.objectType(objects[0])
-        if objectTypeFace != 'joint':
+        if objectTypeFace != "joint":
             objectShapeTypeFace = pm.objectType(objects[0].getShape())
-            if objectShapeTypeFace == 'nurbsCurve':
+            if objectShapeTypeFace == "nurbsCurve":
                 self.copyPivotF(str(objects[1]), str(objects[0]))
-                pm.parentConstraint(objects[0], objects[1], n=objects[0] + '_Facial_pc', mo=1)
-                pm.connectAttr(objects[0] + '.scale', objects[1] + '.scale')
+                pm.parentConstraint(objects[0], objects[1], n=objects[0] + "_Facial_pc", mo=1)
+                pm.connectAttr(objects[0] + ".scale", objects[1] + ".scale")
         else:
             self.copyPivotF(str(objects[1]), str(objects[0]))
-            pm.parentConstraint(objects[0], objects[1], n=objects[0] + '_Facial_pc', mo=1)
-            pm.connectAttr(objects[0] + '.scale', objects[1] + '.scale')
+            pm.parentConstraint(objects[0], objects[1], n=objects[0] + "_Facial_pc", mo=1)
+            pm.connectAttr(objects[0] + ".scale", objects[1] + ".scale")
 
     def connectBlendShapeB(self):
         """Connectblendshapeb operation."""
         objects = pm.ls(sl=1)
         if len(objects) == 2:
             nameRefObj = pm.selected()[0].namespace()
-            objNoSpaceObj = objects[0].replace(nameRefObj, '')
-            pm.blendShape(objects[0], objects[1], frontOfChain=1, tc=0, n=objects[0] + '_faceRig_bs')
-            pm.setAttr(objects[0] + '_faceRig_bs.' + objNoSpaceObj, 1)
-            print('// Result: BlendShape ->> {}').format(objects[0] + '_faceRig_bs')
+            objNoSpaceObj = objects[0].replace(nameRefObj, "")
+            pm.blendShape(
+                objects[0], objects[1], frontOfChain=1, tc=0, n=objects[0] + "_faceRig_bs"
+            )
+            pm.setAttr(objects[0] + "_faceRig_bs." + objNoSpaceObj, 1)
+            print("// Result: BlendShape ->> {}").format(objects[0] + "_faceRig_bs")
         else:
-            print('Please select source and target mesh to connect with BlendShape')
+            print("Please select source and target mesh to connect with BlendShape")
 
     def connectBlendShapeC(self):
         """Connectblendshapec operation."""
         objects = pm.ls(sl=1)
         if len(objects) == 2:
-            cmds.optionVar(fv=('exclusiveBind', 1), iv=[('autoWeightThreshold', 0), ('maxDistance', 0.01)])
+            cmds.optionVar(
+                fv=("exclusiveBind", 1), iv=[("autoWeightThreshold", 0), ("maxDistance", 0.01)]
+            )
             pm.select(objects[1], objects[0], r=1)
-            cmds.CreateWrap(n=objects[0] + '_wrap', frontOfChain=1)
-            print('// Result: Wrap deformer ')
+            cmds.CreateWrap(n=objects[0] + "_wrap", frontOfChain=1)
+            print("// Result: Wrap deformer ")
         else:
-            print('Please select source and target mesh to connect with BlendShape')
+            print("Please select source and target mesh to connect with BlendShape")
 
     def connectBlendShapeD(self):
         """Connectblendshaped operation."""
         name = self.headGeo_wdg.nameField.text()
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
         if chkPrefix == 0:
-            parentsDict = [
-             [
-              name + '_face_Ctrl_root', 'local']]
+            parentsDict = [[name + "_face_Ctrl_root", "local"]]
         else:
-            parentsDict = [
-             [
-              'face_Ctrl_root', 'local']]
+            parentsDict = [["face_Ctrl_root", "local"]]
         objects = cmds.ls(sl=1)
         for obj in objects:
             parentsDict.append([obj, obj])
 
         if chkPrefix == 0:
-            aimctl = pm.PyNode(name + '_eye_Target_ctrl')
-            cns = name + '_eye_Target_ctrl_grp'
+            aimctl = pm.PyNode(name + "_eye_Target_ctrl")
+            cns = name + "_eye_Target_ctrl_grp"
         else:
-            aimctl = pm.PyNode('eye_Target_ctrl')
-            cns = 'eye_Target_ctrl_grp'
-        aimctl.addAttr('space', at='enum', en=(':').join([ it[1] for it in parentsDict ]), k=1)
-        parCnst = pm.parentConstraint(mo=1, *([ it[0] for it in parentsDict ] + [cns]))
+            aimctl = pm.PyNode("eye_Target_ctrl")
+            cns = "eye_Target_ctrl_grp"
+        aimctl.addAttr("space", at="enum", en=(":").join([it[1] for it in parentsDict]), k=1)
+        parCnst = pm.parentConstraint(mo=1, *([it[0] for it in parentsDict] + [cns]))
         i = 0
         for ctl, _spcName in parentsDict:
-            cnd = pm.createNode('condition')
+            cnd = pm.createNode("condition")
             cnd.secondTerm.set(i)
             aimctl.space >> cnd.firstTerm
             cnd.colorIfTrueR.set(1)
             cnd.colorIfFalseR.set(0)
-            cnd.outColorR >> parCnst.attr(ctl + 'W' + str(i))
+            cnd.outColorR >> parCnst.attr(ctl + "W" + str(i))
             i += 1
 
     def detachSkinJntConnection(self):
@@ -3248,13 +3899,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         currentSel = cmds.ls(sl=1)
         cmds.select(hi=1)
         cmds.select(currentSel, d=1)
-        skinJntList = cmds.ls(sl=1, type='joint')
+        skinJntList = cmds.ls(sl=1, type="joint")
         if len(skinJntList) > 0:
             for obj in skinJntList:
                 try:
-                    cmds.copyAttr(obj, obj + '_ghost', inConnections=True, values=True)
+                    cmds.copyAttr(obj, obj + "_ghost", inConnections=True, values=True)
                 except Exception:
-                    print('There is no ghost group for ' + obj)
+                    print("There is no ghost group for " + obj)
 
         cmds.select(currentSel, r=1)
 
@@ -3263,13 +3914,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         currentSel = cmds.ls(sl=1)
         cmds.select(hi=1)
         cmds.select(currentSel, d=1)
-        skinJntList = cmds.ls(sl=1, type='joint')
+        skinJntList = cmds.ls(sl=1, type="joint")
         if len(skinJntList) > 0:
             for obj in skinJntList:
                 try:
-                    cmds.copyAttr(obj + '_ghost', obj, inConnections=True, values=True)
+                    cmds.copyAttr(obj + "_ghost", obj, inConnections=True, values=True)
                 except Exception:
-                    print('There is no ghost group for ' + obj)
+                    print("There is no ghost group for " + obj)
 
         cmds.select(currentSel, r=1)
 
@@ -3279,34 +3930,36 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         FirstObj = pm.selected()[0]
         orig = str(pm.selected()[0])
         jntsFaceInf = pm.skinCluster(orig, q=True, influence=True)
-        if pm.objExists('setA_Perseus'):
-            pm.select('setA_Perseus', r=1, ne=1)
+        if pm.objExists("setA_Perseus"):
+            pm.select("setA_Perseus", r=1, ne=1)
             pm.mel.doDelete()
         pm.select(FirstObj, r=1)
         cmds.ConvertSelectionToVertices()
-        cmds.sets(name='setA_Perseus')
+        cmds.sets(name="setA_Perseus")
         pm.select(FirstObj, r=1)
 
     def TransferFacialSkinSet(self):
         """Transferfacialskinset operation."""
         SecondObj = pm.selected()
-        if pm.objExists('setB_Perseus'):
-            pm.select('setB_Perseus', r=1, ne=1)
+        if pm.objExists("setB_Perseus"):
+            pm.select("setB_Perseus", r=1, ne=1)
             pm.mel.doDelete()
         pm.select(SecondObj, r=1)
         cmds.ConvertSelectionToVertices()
-        cmds.sets(name='setB_Perseus')
+        cmds.sets(name="setB_Perseus")
         vtx = pm.selected()[0]
         transforms = pm.listTransforms(vtx.node())
         pm.select(jntsFaceInf, transforms, r=1)
-        pm.mel.skinClusterInfluence(1, '-ug -dr 4 -ps 0 -ns 10 -lw true -wt 0')
-        pm.select('setA_Perseus', 'setB_Perseus', r=1)
-        pm.copySkinWeights(surfaceAssociation='closestPoint', influenceAssociation='label', noMirror=1)
-        if pm.objExists('setA_Perseus'):
-            pm.select('setA_Perseus', r=1, ne=1)
+        pm.mel.skinClusterInfluence(1, "-ug -dr 4 -ps 0 -ns 10 -lw true -wt 0")
+        pm.select("setA_Perseus", "setB_Perseus", r=1)
+        pm.copySkinWeights(
+            surfaceAssociation="closestPoint", influenceAssociation="label", noMirror=1
+        )
+        if pm.objExists("setA_Perseus"):
+            pm.select("setA_Perseus", r=1, ne=1)
             pm.mel.doDelete()
-        if pm.objExists('setB_Perseus'):
-            pm.select('setB_Perseus', r=1, ne=1)
+        if pm.objExists("setB_Perseus"):
+            pm.select("setB_Perseus", r=1, ne=1)
             pm.mel.doDelete()
         pm.select(SecondObj, r=1)
 
@@ -3315,7 +3968,7 @@ def prExportSkin():
     """Prexportskin operation."""
     newSel = pm.selected()
     if len(newSel) == 0:
-        pm.displayWarning('Please Select Some Objects')
+        pm.displayWarning("Please Select Some Objects")
     else:
         prSkinExp()
 
@@ -3326,34 +3979,38 @@ def prSkinExp(pack_path=None, objs=None, *args):
         if pm.selected():
             objs = pm.selected()
         else:
-            pm.displayWarning('Please Select Some Objects')
+            pm.displayWarning("Please Select Some Objects")
             return
-    packDic = {'objectsList': [], 'rootPath': []}
+    packDic = {"objectsList": [], "rootPath": []}
     startDir = pm.workspace(q=True, rootDirectory=True)
-    pack_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter=f'data list (*{PACK_EXT})')
+    pack_path = pm.fileDialog2(
+        dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter=f"data list (*{PACK_EXT})"
+    )
     if not pack_path:
         return
     pack_path = pack_path[0]
     if not pack_path.endswith(PACK_EXT):
         pack_path += PACK_EXT
-    packDic['Path'], packName = os.path.split(pack_path)
+    packDic["Path"], packName = os.path.split(pack_path)
     for obj in objs:
         fileName = obj.stripNamespace() + FILE_EXT
-        filePath = os.path.join(packDic['Path'], fileName)
+        filePath = os.path.join(packDic["Path"], fileName)
         if exportSkin(filePath, [obj]):
-            packDic['objectsList'].append(fileName)
+            packDic["objectsList"].append(fileName)
             pm.displayInfo(filePath)
         else:
             pm.displayWarning(obj.name() + ": Skipped because don't have Skin Cluster")
 
-    if packDic['objectsList']:
+    if packDic["objectsList"]:
         data_string = json.dumps(packDic, indent=4, sort_keys=True)
-        f = open(pack_path, 'w')
-        f.write(data_string + '\n')
+        f = open(pack_path, "w")
+        f.write(data_string + "\n")
         f.close()
-        pm.displayInfo('Skin Data exported: ' + pack_path)
+        pm.displayInfo("Skin Data exported: " + pack_path)
     else:
-        pm.displayWarning('Any of the selected objects have Skin Cluster. Skin Pack export aborted.')
+        pm.displayWarning(
+            "Any of the selected objects have Skin Cluster. Skin Pack export aborted."
+        )
 
 
 def exportSkin(file_path=None, objs=None, *args):
@@ -3362,12 +4019,17 @@ def exportSkin(file_path=None, objs=None, *args):
         if pm.selected():
             objs = pm.selected()
         else:
-            pm.displayWarning('Please Select One or more objects')
+            pm.displayWarning("Please Select One or more objects")
             return False
-    packDic = {'objs': [], 'objDDic': [], 'bypassObj': []}
+    packDic = {"objs": [], "objDDic": [], "bypassObj": []}
     if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        file_path = pm.fileDialog2(dialogStyle=2, fileMode=0, startingDirectory=startDir, fileFilter=f'data data (*{FILE_EXT})')
+        file_path = pm.fileDialog2(
+            dialogStyle=2,
+            fileMode=0,
+            startingDirectory=startDir,
+            fileFilter=f"data data (*{FILE_EXT})",
+        )
         file_path = file_path[0]
     if not file_path:
         return False
@@ -3378,22 +4040,30 @@ def exportSkin(file_path=None, objs=None, *args):
         if not skinCls:
             pm.displayWarning(obj.name() + ": Skipped because don't have Skin Cluster")
         else:
-            listDic = {'weights': {}, 'blendWeights': [], 'skinClsName': '',
-               'objName': '',
-               'nameSpace': ''}
-            listDic['objName'] = obj.name()
-            listDic['nameSpace'] = obj.namespace()
+            listDic = {
+                "weights": {},
+                "blendWeights": [],
+                "skinClsName": "",
+                "objName": "",
+                "nameSpace": "",
+            }
+            listDic["objName"] = obj.name()
+            listDic["nameSpace"] = obj.namespace()
             collectlist(skinCls, listDic)
-            packDic['objs'].append(obj.name())
-            packDic['objDDic'].append(listDic)
-            pm.displayInfo('%s (%d influences, %d points) %s' % (
-             skinCls.name(),
-             len(listDic['weights'].keys()),
-             len(listDic['blendWeights']),
-             obj.name()))
+            packDic["objs"].append(obj.name())
+            packDic["objDDic"].append(listDic)
+            pm.displayInfo(
+                "%s (%d influences, %d points) %s"
+                % (
+                    skinCls.name(),
+                    len(listDic["weights"].keys()),
+                    len(listDic["blendWeights"]),
+                    obj.name(),
+                )
+            )
 
-    if packDic['objs']:
-        fh = open(file_path, 'wb')
+    if packDic["objs"]:
+        fh = open(file_path, "wb")
         pickle.dump(packDic, fh, pickle.HIGHEST_PROTOCOL)
         fh.close()
         return True
@@ -3410,10 +4080,10 @@ def getSkinCluster(obj):
     if isinstance(obj, basestring):
         obj = pm.PyNode(obj)
     try:
-        if pm.nodeType(obj.getShape()) in ('mesh', 'nurbsSurface', 'nurbsCurve'):
+        if pm.nodeType(obj.getShape()) in ("mesh", "nurbsSurface", "nurbsCurve"):
             for shape in obj.getShapes():
                 try:
-                    for skC in pm.listHistory(shape, type='skinCluster'):
+                    for skC in pm.listHistory(shape, type="skinCluster"):
                         try:
                             if skC.getGeometry()[0] == shape:
                                 skinCluster = skC
@@ -3424,7 +4094,7 @@ def getSkinCluster(obj):
                     pass
 
     except Exception:
-        pm.displayWarning(f'{obj.name()}: is not supported.')
+        pm.displayWarning(f"{obj.name()}: is not supported.")
 
     return skinCluster
 
@@ -3433,13 +4103,18 @@ def prImpSkinAll(file_path=None, *args):
     """Primpskinall operation."""
     if not file_path:
         startDir = cmds.workspace(q=True, rootDirectory=True)
-        file_path = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter=f'data list (*{PACK_EXT})')
+        file_path = cmds.fileDialog2(
+            dialogStyle=2,
+            fileMode=1,
+            startingDirectory=startDir,
+            fileFilter=f"data list (*{PACK_EXT})",
+        )
     if not file_path:
         return
     if not isinstance(file_path, basestring):
         file_path = file_path[0]
     packDic = json.load(open(file_path))
-    for pFile in packDic['objectsList']:
+    for pFile in packDic["objectsList"]:
         file_path = os.path.join(os.path.split(file_path)[0], pFile)
         prImpSkin(file_path, True)
 
@@ -3448,25 +4123,31 @@ def prImpSkin(file_path=None, *args):
     """Primpskin operation."""
     if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
-        file_path = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter=f'data data (*{FILE_EXT})')
+        file_path = pm.fileDialog2(
+            dialogStyle=2,
+            fileMode=1,
+            startingDirectory=startDir,
+            fileFilter=f"data data (*{FILE_EXT})",
+        )
     if not file_path:
         return
     if not isinstance(file_path, basestring):
         file_path = file_path[0]
-    fh = open(file_path, 'rb')
+    fh = open(file_path, "rb")
     listPack = pickle.load(fh)
     fh.close()
-    for obj_data in listPack['objDDic']:
+    for obj_data in listPack["objDDic"]:
         try:
             skinCluster = False
-            objName = obj_data['objName']
+            objName = obj_data["objName"]
             objNode = pm.PyNode(objName)
             try:
                 meshVertices = pm.polyEvaluate(objNode, vertex=True)
-                importedVertices = len(obj_data['blendWeights'])
+                importedVertices = len(obj_data["blendWeights"])
                 if meshVertices != importedVertices:
-                    pm.displayWarning('Vertex counts do not match. %d != %d' % (
-                     meshVertices, importedVertices))
+                    pm.displayWarning(
+                        "Vertex counts do not match. %d != %d" % (meshVertices, importedVertices)
+                    )
                     continue
             except Exception:
                 pass
@@ -3475,24 +4156,30 @@ def prImpSkin(file_path=None, *args):
                 skinCluster = getSkinCluster(objNode)
             else:
                 try:
-                    joints = obj_data['weights'].keys()
-                    skinCluster = pm.skinCluster(joints, objNode, tsb=True, nw=2, n=obj_data['skinClsName'])
+                    joints = obj_data["weights"].keys()
+                    skinCluster = pm.skinCluster(
+                        joints, objNode, tsb=True, nw=2, n=obj_data["skinClsName"]
+                    )
                 except Exception:
-                    notFound = obj_data['weights'].keys()
-                    sceneJoints = { pm.PyNode(x).name() for x in pm.ls(type='joint')
-                                      }
+                    notFound = obj_data["weights"].keys()
+                    sceneJoints = {pm.PyNode(x).name() for x in pm.ls(type="joint")}
                     for j in notFound:
                         if j in sceneJoints:
                             notFound.remove(j)
 
-                    pm.displayWarning('Object: ' + objName + " Skiped. Can't found corresponding deformer for the following joints: " + str(notFound))
+                    pm.displayWarning(
+                        "Object: "
+                        + objName
+                        + " Skiped. Can't found corresponding deformer for the following joints: "
+                        + str(notFound)
+                    )
                     continue
 
             if skinCluster:
                 setlist(skinCluster, obj_data)
-                print(f'{objName} skin data loaded.')
+                print(f"{objName} skin data loaded.")
         except Exception:
-            pm.displayWarning('Object: ' + objName + ' Skiped. Can NOT be found in the scene')
+            pm.displayWarning("Object: " + objName + " Skiped. Can NOT be found in the scene")
 
 
 def setlist(skin_cls, list_dic):
@@ -3500,8 +4187,8 @@ def setlist(skin_cls, list_dic):
     dagPath, components = getGeometryComponents(skin_cls)
     setInfluenceWeights(skin_cls, dagPath, components, list_dic)
     setBlendWeights(skin_cls, dagPath, components, list_dic)
-    for attr in ['skinningMethod', 'normalizeWeights']:
-        cmds.setAttr(f'{skin_cls}.{attr}', list_dic[attr])
+    for attr in ["skinningMethod", "normalizeWeights"]:
+        cmds.setAttr(f"{skin_cls}.{attr}", list_dic[attr])
 
 
 def getGeometryComponents(skin_cls):
@@ -3518,12 +4205,13 @@ def getGeometryComponents(skin_cls):
 def setInfluenceWeights(skin_cls, dag_path, components, list_dic):
     """Setinfluenceweights operation."""
     import pymel.all as pm
+
     unusedImports = []
     weights = getCurrentWeights(skin_cls, dag_path, components)
     influencePaths = OpenMaya.MDagPathArray()
     numInfluences = skin_cls.__apimfn__().influenceObjects(influencePaths)
     numComponentsPerInfluence = weights.length() / numInfluences
-    for importedInfluence, importedWeights in list_dic['weights'].items():
+    for importedInfluence, importedWeights in list_dic["weights"].items():
         for ii in range(influencePaths.length()):
             influenceName = influencePaths[ii].partialPathName()
             nnspace = pm.PyNode(influenceName).stripNamespace()
@@ -3545,8 +4233,8 @@ def setInfluenceWeights(skin_cls, dag_path, components, list_dic):
 
 def setBlendWeights(skin_cls, dag_path, components, list_dic):
     """Setblendweights operation."""
-    blendWeights = OpenMaya.MDoubleArray(len(list_dic['blendWeights']))
-    for i, w in enumerate(list_dic['blendWeights']):
+    blendWeights = OpenMaya.MDoubleArray(len(list_dic["blendWeights"]))
+    for i, w in enumerate(list_dic["blendWeights"]):
         blendWeights.set(w, i)
 
     skin_cls.__apimfn__().setBlendWeights(dag_path, components, blendWeights)
@@ -3557,15 +4245,16 @@ def collectlist(skin_cls, list_dic):
     dagPath, components = getGeometryComponents(skin_cls)
     collectInfluenceWeights(skin_cls, dagPath, components, list_dic)
     collectBlendWeights(skin_cls, dagPath, components, list_dic)
-    for attr in ['skinningMethod', 'normalizeWeights']:
-        list_dic[attr] = cmds.getAttr(f'{skin_cls}.{attr}')
+    for attr in ["skinningMethod", "normalizeWeights"]:
+        list_dic[attr] = cmds.getAttr(f"{skin_cls}.{attr}")
 
-    list_dic['skinClsName'] = skin_cls.name()
+    list_dic["skinClsName"] = skin_cls.name()
 
 
 def collectInfluenceWeights(skin_cls, dag_path, components, list_dic):
     """Collectinfluenceweights operation."""
     import pymel.all as pm
+
     weights = getCurrentWeights(skin_cls, dag_path, components)
     influencePaths = OpenMaya.MDagPathArray()
     numInfluences = skin_cls.__apimfn__().influenceObjects(influencePaths)
@@ -3573,16 +4262,15 @@ def collectInfluenceWeights(skin_cls, dag_path, components, list_dic):
     for ii in range(influencePaths.length()):
         influenceName = influencePaths[ii].partialPathName()
         influenceWithoutNamespace = pm.PyNode(influenceName).stripNamespace()
-        inf_w = [ weights[(jj * numInfluences + ii)] for jj in range(numComponentsPerInfluence)
-                ]
-        list_dic['weights'][influenceWithoutNamespace] = inf_w
+        inf_w = [weights[(jj * numInfluences + ii)] for jj in range(numComponentsPerInfluence)]
+        list_dic["weights"][influenceWithoutNamespace] = inf_w
 
 
 def collectBlendWeights(skin_cls, dag_path, components, list_dic):
     """Collectblendweights operation."""
     weights = OpenMaya.MDoubleArray()
     skin_cls.__apimfn__().getBlendWeights(dag_path, components, weights)
-    list_dic['blendWeights'] = [ weights[i] for i in range(weights.length()) ]
+    list_dic["blendWeights"] = [weights[i] for i in range(weights.length())]
 
 
 def getCurrentWeights(skin_cls, dag_path, components):
@@ -3603,7 +4291,7 @@ def encode_data_to_attr(node, attr_name, data):
             data (python object): python data object.
     """
     if not node.hasAttr(attr_name):
-        node.addAttr(attr_name, dataType='string')
+        node.addAttr(attr_name, dataType="string")
     pickled_data = pickle.dumps(data)
     node.attr(attr_name).unlock()
     node.attr(attr_name).set(pickled_data)
@@ -3619,7 +4307,7 @@ def decode_data_from_attr(node, attr_name):
             list or dict.
     """
     if not node.hasAttr(attr_name):
-        raise pm.MayaAttributeError(f'Attribute does not exist:{attr_name}')
+        raise pm.MayaAttributeError(f"Attribute does not exist:{attr_name}")
     data = str(node.attr(attr_name).get())
     return pickle.loads(data)
 
@@ -3628,9 +4316,9 @@ def detach_bind_joints():
     """Detach bind joints from rig.
     Adds a custom compound attribute (connected_nodes) to what the node was connected to.
     """
-    SKIN_JNT_GRP = '*facialRig_skinJnt_grp'
+    SKIN_JNT_GRP = "*facialRig_skinJnt_grp"
     if not pm.objExists(SKIN_JNT_GRP):
-        raise pm.MayaObjectError(f'Missing node: {SKIN_JNT_GRP}')
+        raise pm.MayaObjectError(f"Missing node: {SKIN_JNT_GRP}")
     pm.select(SKIN_JNT_GRP, replace=True)
     bind_joints = pm.selected()
     for joint in bind_joints:
@@ -3655,18 +4343,18 @@ def detach_bind_joints():
             connection_data.append((incoming_node_attr, outgoing_node_attr))
             outgoing_plug.disconnect(incoming_plug)
 
-        encode_data_to_attr(joint, 'connection_data', connection_data)
+        encode_data_to_attr(joint, "connection_data", connection_data)
 
-    logging.info('Bind joints detached!')
+    logging.info("Bind joints detached!")
 
 
 def attach_bind_joints():
     """Attach bind joints to rig nodes."""
-    connection_attr_name = 'connection_data'
+    connection_attr_name = "connection_data"
     all_joints = pm.ls(type=pm.nt.Joint)
-    bind_joints = [ joint for joint in all_joints if joint.hasAttr(connection_attr_name) ]
+    bind_joints = [joint for joint in all_joints if joint.hasAttr(connection_attr_name)]
     if not bind_joints:
-        raise RuntimeError('No joints found to re-attach rig! Detach bind joints first!')
+        raise RuntimeError("No joints found to re-attach rig! Detach bind joints first!")
     for joint in bind_joints:
         connection_data = decode_data_from_attr(joint, connection_attr_name)
         for incoming_data, outgoing_data in connection_data:
@@ -3683,10 +4371,18 @@ def attach_bind_joints():
             joint.attr(connection_attr_name).unlock()
             joint.deleteAttr(connection_attr_name)
 
-    logging.info('Bind joints attached!')
+    logging.info("Bind joints attached!")
 
 
-def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2, left_prefix='left', right_prefix='right', center_prefix='center', suffix=''):
+def rename_transforms_by_position(
+    transforms,
+    search_name,
+    center_tolerance=0.2,
+    left_prefix="left",
+    right_prefix="right",
+    center_prefix="center",
+    suffix="",
+):
     """Given a list of pm.nt.Transforms and a search name, rename objects based on the
     X axis world position in order starting from lowest(0) to highest position(nth)
     The center tolerance is used to test if an object is close enough to the center origin
@@ -3708,10 +4404,10 @@ def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2,
     Returns:
             list of renamed pm.nt.Transforms
     """
-    transform_list = [ transform for transform in transforms if search_name in transform.name() ]
+    transform_list = [transform for transform in transforms if search_name in transform.name()]
     position_dict = {}
     for transform in transform_list:
-        pos = transform.getTranslation(space='world')
+        pos = transform.getTranslation(space="world")
         position_dict[transform] = pos
 
     sorted_array = sorted(position_dict.items(), key=lambda i: i[1][0], reverse=True)
@@ -3733,23 +4429,23 @@ def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2,
     renamed_transforms = []
     for i, (transform, _position) in enumerate(reversed(left_array)):
         if suffix:
-            transform.rename(f'{left_prefix}_{search_name}_{i}_{suffix}')
+            transform.rename(f"{left_prefix}_{search_name}_{i}_{suffix}")
         else:
-            transform.rename(f'{left_prefix}_{search_name}_{i}')
+            transform.rename(f"{left_prefix}_{search_name}_{i}")
         renamed_transforms.append(transform)
 
     for i, (transform, _position) in enumerate(right_array):
         if suffix:
-            transform.rename(f'{right_prefix}_{search_name}_{i}_{suffix}')
+            transform.rename(f"{right_prefix}_{search_name}_{i}_{suffix}")
         else:
-            transform.rename(f'{right_prefix}_{search_name}_{i}')
+            transform.rename(f"{right_prefix}_{search_name}_{i}")
         renamed_transforms.append(transform)
 
     for i, (transform, _position) in enumerate(center_array):
         if suffix:
-            transform.rename(f'{center_prefix}_{search_name}_{i}_{suffix}')
+            transform.rename(f"{center_prefix}_{search_name}_{i}_{suffix}")
         else:
-            transform.rename(f'{center_prefix}_{search_name}_{i}')
+            transform.rename(f"{center_prefix}_{search_name}_{i}")
         renamed_transforms.append(transform)
 
     return renamed_transforms

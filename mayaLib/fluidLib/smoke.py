@@ -4,7 +4,7 @@ Provides WispySmoke and ThickSmoke classes for creating smoke simulations
 with appropriate container, emitter, and shading settings.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid
@@ -18,7 +18,7 @@ from mayaLib.fluidLib.utility import density_color
 class WispySmoke(BaseFluid):
     """Wispy Smoke Preset."""
 
-    def __init__(self, fluid_name='', base_res=32, emit_obj=None):
+    def __init__(self, fluid_name="", base_res=32, emit_obj=None):
         """Initializes the WispySmoke class with fluid properties.
 
         Args:
@@ -69,8 +69,8 @@ class WispySmoke(BaseFluid):
 
     def set_turbulence(self):
         """Set the turbulence parameters and keyframes for wispy smoke."""
-        pm.setKeyframe(self.fluid_container, attribute='turbulenceStrength', time=1, value=5)
-        pm.setKeyframe(self.fluid_container, attribute='turbulenceStrength', time=12, value=0.1)
+        pm.setKeyframe(self.fluid_container, attribute="turbulenceStrength", time=1, value=5)
+        pm.setKeyframe(self.fluid_container, attribute="turbulenceStrength", time=12, value=0.1)
         self.fluid_container.turbulenceFrequency.set(0.5)
         self.fluid_container.turbulenceSpeed.set(0.5)
 
@@ -94,7 +94,7 @@ class WispySmoke(BaseFluid):
                 (0.5, 0.5, 3),
                 (0.75, 0.1, 3),
                 (1.0, 0.0, 3),
-            ]
+            ],
         )
         self.fluid_container.opacityInputBias.set(0.4)
 
@@ -102,7 +102,7 @@ class WispySmoke(BaseFluid):
 class ThickSmoke(BaseFluid):
     """Thick Smoke Preset."""
 
-    def __init__(self, fluid_name='', base_res=32, emit_obj=None):
+    def __init__(self, fluid_name="", base_res=32, emit_obj=None):
         """Initializes the ThickSmoke class with fluid properties.
 
         Args:
@@ -178,6 +178,6 @@ class ThickSmoke(BaseFluid):
         self.fluid_container.opacityInputBias.set(0.4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     wsmoke = WispySmoke()
     tsmoke = ThickSmoke()

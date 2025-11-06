@@ -6,7 +6,7 @@ file node and the input of the shader.
 
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import maya.cmds as cmds
 import pymel.core as pmc
@@ -19,9 +19,9 @@ def gamma_node():
         str: The name of the created node.
     """
     gamma = cmds.shadingNode("gammaCorrect", asUtility=True)
-    cmds.setAttr(gamma + '.gammaX', 0.454)
-    cmds.setAttr(gamma + '.gammaY', 0.454)
-    cmds.setAttr(gamma + '.gammaZ', 0.454)
+    cmds.setAttr(gamma + ".gammaX", 0.454)
+    cmds.setAttr(gamma + ".gammaY", 0.454)
+    cmds.setAttr(gamma + ".gammaZ", 0.454)
     return gamma
 
 
@@ -63,15 +63,15 @@ def connect_gamma(selection):
         selection (str): The selected file node.
     """
     # Find where it is connected
-    connection = cmds.listConnections(f'{selection}.outColor', p=True, d=True)
+    connection = cmds.listConnections(f"{selection}.outColor", p=True, d=True)
     # Create the gamma node
     gamma = gamma_node()
     # Connect the selected file node to the gamma node
-    cmds.connectAttr(f'{selection}.outColor', f'{gamma}.value')
+    cmds.connectAttr(f"{selection}.outColor", f"{gamma}.value")
     # Disconnect the file node from the shader
-    cmds.disconnectAttr(f'{selection}.outColor', connection[0])
+    cmds.disconnectAttr(f"{selection}.outColor", connection[0])
     # Connect the gamma node to the shader
-    cmds.connectAttr(f'{gamma}.value', connection[0])
+    cmds.connectAttr(f"{gamma}.value", connection[0])
 
 
 def add_gamma_correct():

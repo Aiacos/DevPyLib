@@ -18,9 +18,7 @@ class BaseRig:
     and managing rig components like HumanIK and facial rigs.
     """
 
-    def __init__(
-        self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False
-    ):
+    def __init__(self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False):
         """Initialize the BaseRig class with character settings.
 
         Args:
@@ -70,12 +68,8 @@ class BaseRig:
             pm.setAttr("geo.overrideEnabled", 1)
             # Connect the geometry_display attribute to the overrideDisplayType
             # attribute of the geometry group if it's not already connected.
-            if not pm.isConnected(
-                "Base_main_ctrl.geometry_display", "geo.overrideDisplayType"
-            ):
-                pm.connectAttr(
-                    "Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True
-                )
+            if not pm.isConnected("Base_main_ctrl.geometry_display", "geo.overrideDisplayType"):
+                pm.connectAttr("Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True)
 
     def connect_purpose(self, source, destination_list=None):
         """Connect purpose attribute to visibility of destination objects.
@@ -196,9 +190,7 @@ class BaseRig:
         render_model_set = pm.sets(render_geo_list, n="render_model_set")
         proxy_model_set = pm.sets(proxy_geo_list, n="proxy_model_set")
         guide_model_set = pm.sets(guide_geo_list, n="guide_model_set")
-        model_set = pm.sets(
-            [render_model_set, proxy_model_set, guide_model_set], n="model_set"
-        )
+        model_set = pm.sets([render_model_set, proxy_model_set, guide_model_set], n="model_set")
 
         # Joints
         body_joint_set = pm.sets(joint_list, n="body_joint_set")
@@ -321,9 +313,7 @@ class BaseRig:
                 pm.parentConstraint("R_Eye_eye_aim_at_ctrl", "AimEye_R", mo=True)
 
             # Hide specified controls if they exist
-            hide_ctrl_list = [
-                ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)
-            ]
+            hide_ctrl_list = [ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)]
             if hide_ctrl_list:
                 pm.hide(hide_ctrl_list)
 
@@ -346,9 +336,7 @@ class BaseRig:
                 "Base_main_ctrl.worldMatrix", "MainAndHeadScaleMultiplyDivide.input1"
             ):
                 decompose_matrix = pm.shadingNode("decomposeMatrix", asUtility=True)
-                pm.connectAttr(
-                    "Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True
-                )
+                pm.connectAttr("Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True)
                 pm.connectAttr(
                     decompose_matrix.outputScale,
                     "MainAndHeadScaleMultiplyDivide.input1",

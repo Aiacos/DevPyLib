@@ -65,7 +65,6 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         else:
             layout.setMargin(5)
 
-
         frame_width = self.style().pixelMetric(QtWidgets.QStyle.PM_DefaultFrameWidth)
         button_size = self.button.sizeHint()
 
@@ -73,9 +72,7 @@ class SearchLineEdit(QtWidgets.QLineEdit):
             "QLineEdit {padding-right: %dpx; }" % (button_size.width() + frame_width + 1)
         )
         self.setMinimumSize(
-            max(
-                self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 3
-            ),
+            max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 3),
             max(
                 self.minimumSizeHint().height(),
                 button_size.height() + frame_width * 2 + 3,
@@ -364,9 +361,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 class MainMenu(QtWidgets.QWidget):
     """Main menu widget to display the library in Maya."""
 
-    def __init__(
-        self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True
-    ):
+    def __init__(self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True):
         """Initialize the MainMenu.
 
         Args:
@@ -435,7 +430,7 @@ class MainMenu(QtWidgets.QWidget):
 
     def __del__(self):
         """Clean up resources when the object is deleted."""
-        if hasattr(self, 'lib_menu') and self.lib_menu is not None:
+        if hasattr(self, "lib_menu") and self.lib_menu is not None:
             self.lib_menu.deleteLater()
 
 

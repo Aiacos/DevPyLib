@@ -33,11 +33,11 @@ def set_workspace_to_filepath(file_path=None, debug=True):
         debug (bool): If True, print the current workspace to the console.
     """
     if file_path is None:
-        file_path = '/'.join(cmd.file(q=True, sn=True).split('/')[:-1]) + '/'
+        file_path = "/".join(cmd.file(q=True, sn=True).split("/")[:-1]) + "/"
     pm.workspace(file_path, openWorkspace=True)
     if debug:
         get_current_workspace(debug)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     set_workspace_to_filepath()

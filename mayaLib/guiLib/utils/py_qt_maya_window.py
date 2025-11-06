@@ -55,6 +55,7 @@ class PyQtMayaWindow(QtWidgets.QMainWindow):
         >>> window = MyWindow()
         >>> window.show()
     """
+
     def __init__(self, parent=None, unique_handle="PyQtWindow"):
         """Initialize PyQtMayaWindow.
 

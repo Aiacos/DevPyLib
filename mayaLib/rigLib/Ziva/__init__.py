@@ -7,5 +7,5 @@ Maya 2022+ only.
 
 import pymel.core as pm
 
-if pm.about(version=True) == '2022':
+if pm.about(version=True) == "2022":
     from . import ziva_attachments_tools, ziva_fiber_tools, ziva_tools

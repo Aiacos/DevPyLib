@@ -98,6 +98,7 @@ class PaintDeformer:
         >>> painter.replace([1.0, 0.5, 0.0], value=0.5)
         >>> painter.smooth(smooth_iteration=3)
     """
+
     def __init__(self, geo, channel):
         """Initialize the PaintDeformer tool on a specific geometry and channel.
 
@@ -331,9 +332,7 @@ def wrap_deformer(wrapped_objs, wrapper_obj):
     pm.select(wrapped_objs)
     pm.select(wrapper_obj, add=1)
     # Call the mel command to create a wrap deformer
-    deformer_node = mel.eval(
-        'doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }'
-    )
+    deformer_node = mel.eval('doWrapArgList "7" { "1","0","1", "2", "1", "1", "0", "0" }')
     return pm.ls(deformer_node)[0]
 
 
@@ -501,9 +500,7 @@ def tension_map(obj):
     # Get the original geometry of the mesh
     shape_orig = pm.ls(str(shape.name()) + "Orig")[-1]
     # Get the deformed geometry of the mesh
-    shape_input = pm.listConnections(
-        shape.inMesh, source=True, destination=False, plugs=True
-    )[-1]
+    shape_input = pm.listConnections(shape.inMesh, source=True, destination=False, plugs=True)[-1]
 
     # Create Tension Map node
     tensionmap_node = pm.createNode("tensionMap")
@@ -541,7 +538,7 @@ def save_deformer_weights():
         wt_data = {}
         for deformer in pm.findDeformers(geo):
             wt_data[str(deformer)] = pm.getAttr(deformer + ".weightList")
-        with wt_file.open("w", encoding='utf-8'):
+        with wt_file.open("w", encoding="utf-8"):
             pass
             # json.dump(wtData, f, indent=4)
 

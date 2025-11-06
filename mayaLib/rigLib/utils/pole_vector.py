@@ -4,7 +4,7 @@ Provides the PoleVector class for automatically creating and positioning
 pole vector locators for IK handles based on joint chain geometry.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -24,6 +24,7 @@ class PoleVector:
         >>> pv = PoleVector('arm_IK')
         >>> pv_loc, pv_grp = pv.get_pole_vector()
     """
+
     def __init__(self, ik_handle):
         """Initialize pole vector setup for an IK handle.
 
@@ -49,13 +50,15 @@ class PoleVector:
         ik_handle_name = ik_handle.name()
         sel_joints = ik_handle.getJointList()
         pm.select(sel_joints[-1])
-        pm.pickWalk(d='down')
+        pm.pickWalk(d="down")
         new_joints = pm.ls(sl=True)
         sel_joints.append(new_joints[0])
 
         # Create a locator and group it twice
-        pole_vector_locator = pm.spaceLocator(n=ik_handle_name + '_PV' + '_LOC')
-        pole_vector_group = pm.group(pole_vector_locator, n=ik_handle_name + '_PV' + '_LOC' + '_GRP')
+        pole_vector_locator = pm.spaceLocator(n=ik_handle_name + "_PV" + "_LOC")
+        pole_vector_group = pm.group(
+            pole_vector_locator, n=ik_handle_name + "_PV" + "_LOC" + "_GRP"
+        )
 
         # Point constrain it between the three joints
         point_constraint = pm.pointConstraint(sel_joints, pole_vector_group)
@@ -78,7 +81,7 @@ class PoleVector:
         # Put all three joints in a variable based on a selected ik_handle
         sel_joints = ik_handle.getJointList()
         pm.select(sel_joints[-1])
-        pm.pickWalk(d='down')
+        pm.pickWalk(d="down")
         new_joints = pm.ls(sl=True)
         sel_joints.append(new_joints[0])
         loc0 = pm.spaceLocator()

@@ -22,9 +22,9 @@ import maya.OpenMaya as om
 
 K_PLUGIN_NODE_NAME = "tensionMap"
 ORIG_ATTR_NAME = "orig"
-DEFORMED_ATTR_NAME = 'deform'
-K_PLUGIN_NODE_CLASSIFY = 'utility/general'
-K_PLUGIN_NODE_ID = om2.MTypeId( 0x86018 )
+DEFORMED_ATTR_NAME = "deform"
+K_PLUGIN_NODE_CLASSIFY = "utility/general"
+K_PLUGIN_NODE_ID = om2.MTypeId(0x86018)
 
 
 def maya_use_new_api():
@@ -35,7 +35,8 @@ def maya_use_new_api():
     """
     pass
 
-class TensionMap( om2.MPxNode ):
+
+class TensionMap(om2.MPxNode):
     """Maya plugin node for visualizing mesh deformation tension via vertex colors.
 
     Compares original and deformed mesh geometry to calculate edge length changes,
@@ -63,15 +64,14 @@ class TensionMap( om2.MPxNode ):
     orig_edge_len_array = []
     deformed_edge_len_array = []
 
-
-    def __init__( self ):
+    def __init__(self):
         """Initialize TensionMap node.
 
         Calls parent class constructor to set up MPxNode.
         """
-        om2.MPxNode.__init__( self )
+        om2.MPxNode.__init__(self)
 
-    def initialize_ramp( self, parent_node, ramp_obj, index, position, value, interpolation ):
+    def initialize_ramp(self, parent_node, ramp_obj, index, position, value, interpolation):
         """Initialize a color ramp attribute with a specific value and position.
 
         Args:
@@ -82,7 +82,7 @@ class TensionMap( om2.MPxNode ):
             value (list): RGB color value as [r, g, b].
             interpolation (int): Interpolation type (1 for linear).
         """
-        ramp_plug = om2.MPlug( parent_node, ramp_obj )
+        ramp_plug = om2.MPlug(parent_node, ramp_obj)
         element_plug = ramp_plug.elementByLogicalIndex(index)
         position_plug = element_plug.child(0)
         position_plug.setFloat(position)
@@ -94,7 +94,7 @@ class TensionMap( om2.MPxNode ):
         interp_plug = element_plug.child(2)
         interp_plug.setInt(interpolation)
 
-    def postConstructor( self ):  # noqa: N802
+    def postConstructor(self):  # noqa: N802
         """Initialize color ramp with green-black-red gradient.
 
         Sets up the default color ramp for tension visualization:
@@ -102,11 +102,17 @@ class TensionMap( om2.MPxNode ):
         - Black at 0.5 (neutral)
         - Red at 1.0 (stretching)
         """
-        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 0, 0.0, om2.MColor( (0, 1, 0, 1) ), 1 )
-        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor( (0, 0, 0, 1) ), 1 )
-        self.initialize_ramp( self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor( (1, 0, 0, 1) ), 1 )
+        self.initialize_ramp(
+            self.thisMObject(), self.a_color_ramp, 0, 0.0, om2.MColor((0, 1, 0, 1)), 1
+        )
+        self.initialize_ramp(
+            self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor((0, 0, 0, 1)), 1
+        )
+        self.initialize_ramp(
+            self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor((1, 0, 0, 1)), 1
+        )
 
-    def setDependentsDirty( self, dirty_plug, affected_plugs ):  # noqa: N802
+    def setDependentsDirty(self, dirty_plug, affected_plugs):  # noqa: N802
         """Mark geometry plugs dirty when input meshes change.
 
         Args:
@@ -123,7 +129,7 @@ class TensionMap( om2.MPxNode ):
         else:
             self.is_orig_dirty = False
 
-    def compute( self, plug, data ):
+    def compute(self, plug, data):
         """Main compute method for tension map visualization.
 
         Calculates edge length changes between original and deformed meshes,
@@ -135,41 +141,44 @@ class TensionMap( om2.MPxNode ):
         """
         if plug == self.a_out_shape:
             this_obj = self.thisMObject()
-            orig_handle = data.inputValue( self.a_orig_shape )
-            deformed_handle = data.inputValue( self.a_deformed_shape )
-            out_handle = data.outputValue( self.a_out_shape )
-            color_attribute = om2.MRampAttribute( this_obj, self.a_color_ramp )
+            orig_handle = data.inputValue(self.a_orig_shape)
+            deformed_handle = data.inputValue(self.a_deformed_shape)
+            out_handle = data.outputValue(self.a_out_shape)
+            color_attribute = om2.MRampAttribute(this_obj, self.a_color_ramp)
 
             if self.is_orig_dirty:
-                self.orig_edge_len_array = self.get_edge_len( orig_handle )
+                self.orig_edge_len_array = self.get_edge_len(orig_handle)
             if self.is_deformed_dirty:
-                self.deformed_edge_len_array = self.get_edge_len( deformed_handle )
+                self.deformed_edge_len_array = self.get_edge_len(deformed_handle)
 
-            out_handle.copy( deformed_handle )
-            out_handle.setMObject( deformed_handle.asMesh() )
+            out_handle.copy(deformed_handle)
+            out_handle.setMObject(deformed_handle.asMesh())
 
             out_mesh = out_handle.asMesh()
-            mesh_fn = om2.MFnMesh( out_mesh )
+            mesh_fn = om2.MFnMesh(out_mesh)
             num_verts = mesh_fn.numVertices
             vert_colors = om2.MColorArray()
             vert_ids = om2.MIntArray()
-            vert_colors.setLength( num_verts )
-            vert_ids.setLength( num_verts )
+            vert_colors.setLength(num_verts)
+            vert_ids.setLength(num_verts)
 
             for i in range(num_verts):
                 delta = 0
                 vert_color = om2.MColor()
                 if len(self.orig_edge_len_array) == len(self.deformed_edge_len_array):
-                    delta = ( ( self.orig_edge_len_array[i] - self.deformed_edge_len_array[i] ) / self.orig_edge_len_array[i] ) + 0.5
+                    delta = (
+                        (self.orig_edge_len_array[i] - self.deformed_edge_len_array[i])
+                        / self.orig_edge_len_array[i]
+                    ) + 0.5
                 else:
                     delta = 0.5
                 vert_color = color_attribute.getValueAtPosition(delta)
-                vert_colors.__setitem__(i, vert_color )
+                vert_colors.__setitem__(i, vert_color)
                 vert_ids.__setitem__(i, i)
-            mesh_fn.setVertexColors( vert_colors, vert_ids )
-        data.setClean( plug )
+            mesh_fn.setVertexColors(vert_colors, vert_ids)
+        data.setClean(plug)
 
-    def get_edge_len( self, mesh_handle ):
+    def get_edge_len(self, mesh_handle):
         """Calculate average edge length for each vertex.
 
         Args:
@@ -181,19 +190,19 @@ class TensionMap( om2.MPxNode ):
         edge_len_array = []
 
         mesh_obj = mesh_handle.asMesh()
-        edge_iter = om2.MItMeshEdge( mesh_obj )
-        vert_iter = om2.MItMeshVertex( mesh_obj )
+        edge_iter = om2.MItMeshEdge(mesh_obj)
+        vert_iter = om2.MItMeshVertex(mesh_obj)
         while not vert_iter.isDone():
             length_sum = 0.0
             connected_edges = om2.MIntArray()
             connected_edges = vert_iter.getConnectedEdges()
-            for i in range( connected_edges.__len__() ):
-                edge_iter.setIndex( connected_edges[i] )
+            for i in range(connected_edges.__len__()):
+                edge_iter.setIndex(connected_edges[i])
                 length = edge_iter.length(om2.MSpace.kWorld)
                 length_sum += length * 1.0
 
             length_sum = length_sum / connected_edges.__len__()
-            edge_len_array.append( length_sum )
+            edge_len_array.append(length_sum)
             vert_iter.next()
         return edge_len_array
 
@@ -214,28 +223,30 @@ def initialize():
     """
     t_attr = om2.MFnTypedAttribute()
 
-    TensionMap.a_orig_shape = t_attr.create( ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh )
+    TensionMap.a_orig_shape = t_attr.create(ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh)
     t_attr.storable = True
 
-    TensionMap.a_deformed_shape = t_attr.create( DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, om2.MFnMeshData.kMesh )
+    TensionMap.a_deformed_shape = t_attr.create(
+        DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, om2.MFnMeshData.kMesh
+    )
     t_attr.storable = True
 
-    TensionMap.a_out_shape = t_attr.create( "out", "out", om2.MFnMeshData.kMesh )
+    TensionMap.a_out_shape = t_attr.create("out", "out", om2.MFnMeshData.kMesh)
     t_attr.writable = False
     t_attr.storable = False
 
     TensionMap.a_color_ramp = om2.MRampAttribute().createColorRamp("color", "color")
-    TensionMap.addAttribute( TensionMap.a_orig_shape )
-    TensionMap.addAttribute( TensionMap.a_deformed_shape )
-    TensionMap.addAttribute( TensionMap.a_out_shape )
-    TensionMap.addAttribute( TensionMap.a_color_ramp )
-    TensionMap.attributeAffects( TensionMap.a_orig_shape, TensionMap.a_out_shape )
-    TensionMap.attributeAffects( TensionMap.a_deformed_shape, TensionMap.a_out_shape )
-    TensionMap.attributeAffects( TensionMap.a_color_ramp, TensionMap.a_out_shape )
+    TensionMap.addAttribute(TensionMap.a_orig_shape)
+    TensionMap.addAttribute(TensionMap.a_deformed_shape)
+    TensionMap.addAttribute(TensionMap.a_out_shape)
+    TensionMap.addAttribute(TensionMap.a_color_ramp)
+    TensionMap.attributeAffects(TensionMap.a_orig_shape, TensionMap.a_out_shape)
+    TensionMap.attributeAffects(TensionMap.a_deformed_shape, TensionMap.a_out_shape)
+    TensionMap.attributeAffects(TensionMap.a_color_ramp, TensionMap.a_out_shape)
 
 
 # AE template that put the main attributes into the main attribute section
-#@staticmethod
+# @staticmethod
 def ae_template_string(node_name):
     """Generate Attribute Editor template MEL code for TensionMap node.
 
@@ -245,22 +256,22 @@ def ae_template_string(node_name):
     Returns:
         str: MEL procedure code for the Attribute Editor template.
     """
-    templ_str = ''
-    templ_str += f'global proc AE{node_name}Template(string $nodeName)\n'
-    templ_str += '{\n'
-    templ_str += 'editorTemplate -beginScrollLayout;\n'
+    templ_str = ""
+    templ_str += f"global proc AE{node_name}Template(string $nodeName)\n"
+    templ_str += "{\n"
+    templ_str += "editorTemplate -beginScrollLayout;\n"
     templ_str += '    editorTemplate -beginLayout "Color Remaping" -collapse 0;\n'
     templ_str += '        AEaddRampControl( $nodeName + ".color" );\n'
-    templ_str += '    editorTemplate -endLayout;\n'
+    templ_str += "    editorTemplate -endLayout;\n"
 
-    templ_str += 'editorTemplate -addExtraControls; // add any other attributes\n'
-    templ_str += 'editorTemplate -endScrollLayout;\n'
-    templ_str += '}\n'
+    templ_str += "editorTemplate -addExtraControls; // add any other attributes\n"
+    templ_str += "editorTemplate -endScrollLayout;\n"
+    templ_str += "}\n"
 
     return templ_str
 
 
-def initialize_plugin( mobject ):
+def initialize_plugin(mobject):
     """Register the TensionMap plugin with Maya.
 
     Args:
@@ -269,12 +280,12 @@ def initialize_plugin( mobject ):
     Raises:
         RuntimeError: If node registration fails.
     """
-    mplugin = om2.MFnPlugin( mobject )
+    mplugin = om2.MFnPlugin(mobject)
     try:
-        mplugin.registerNode( K_PLUGIN_NODE_NAME, K_PLUGIN_NODE_ID, node_creator, initialize )
-        om.MGlobal.executeCommand( ae_template_string( K_PLUGIN_NODE_NAME ) )
+        mplugin.registerNode(K_PLUGIN_NODE_NAME, K_PLUGIN_NODE_ID, node_creator, initialize)
+        om.MGlobal.executeCommand(ae_template_string(K_PLUGIN_NODE_NAME))
     except RuntimeError:
-        sys.stderr.write( "Failed to register node: " + K_PLUGIN_NODE_NAME )
+        sys.stderr.write("Failed to register node: " + K_PLUGIN_NODE_NAME)
         raise
 
 
@@ -287,12 +298,13 @@ def uninitialize_plugin(mobject):
     Raises:
         RuntimeError: If node deregistration fails.
     """
-    mplugin = om2.MFnPlugin( mobject )
+    mplugin = om2.MFnPlugin(mobject)
     try:
-        mplugin.deregisterNode( K_PLUGIN_NODE_ID )
+        mplugin.deregisterNode(K_PLUGIN_NODE_ID)
     except RuntimeError:
-        sys.stderr.write( 'Failed to deregister node: ' + K_PLUGIN_NODE_NAME )
+        sys.stderr.write("Failed to deregister node: " + K_PLUGIN_NODE_NAME)
         raise
+
 
 # Maya plugin entry points (must use exact names)
 initializePlugin = initialize_plugin  # noqa: N816

@@ -1,4 +1,3 @@
-
 """Spline IK chain builder utilities."""
 
 # pylint: disable=invalid-name
@@ -13,20 +12,20 @@ import pymel.core as pm
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.utils import control, deform, dynamic, name, parameter_resolution
 
-__all__ = ['IKChain']
+__all__ = ["IKChain"]
 
 
 def _as_curve_node(curve: str | pm.PyNode) -> pm.PyNode:
     """Return the curve PyNode, ensuring the object exists."""
     nodes = pm.ls(curve)
     if not nodes:
-        raise ValueError('Provided curve does not exist.')
+        raise ValueError("Provided curve does not exist.")
     return nodes[0]
 
 
 def _duplicate_curve(curve: pm.PyNode, name_suffix: str) -> pm.PyNode:
     """Return a duplicate of the provided curve with suffix applied."""
-    duplicated = pm.duplicate(curve, n=f'{curve}_copy')[0]
+    duplicated = pm.duplicate(curve, n=f"{curve}_copy")[0]
     return pm.rename(duplicated, name_suffix)
 
 
@@ -50,35 +49,43 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         chain_joints = parameter_resolution.resolve_required(
             chain_joints,
             legacy_kwargs,
-            ('chainJoints',),
-            'chain_joints',
+            ("chainJoints",),
+            "chain_joints",
         )
-        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'tail'))
-        rig_scale = float(parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0))
-        do_dynamic = bool(parameter_resolution.resolve_optional(do_dynamic, legacy_kwargs, ('doDynamic',), False))
+        prefix = cast(
+            str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ("prefix",), "tail")
+        )
+        rig_scale = float(
+            parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ("rigScale",), 1.0)
+        )
+        do_dynamic = bool(
+            parameter_resolution.resolve_optional(do_dynamic, legacy_kwargs, ("doDynamic",), False)
+        )
         smallest_scale_percent = float(
             parameter_resolution.resolve_optional(
                 smallest_scale_percent,
                 legacy_kwargs,
-                ('smallestScalePercent',),
+                ("smallestScalePercent",),
                 0.1,
             )
         )
         fk_parenting = bool(
-            parameter_resolution.resolve_optional(fk_parenting, legacy_kwargs, ('fkParenting',), True)
+            parameter_resolution.resolve_optional(
+                fk_parenting, legacy_kwargs, ("fkParenting",), True
+            )
         )
-        base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
+        base_rig = parameter_resolution.resolve_optional(
+            base_rig, legacy_kwargs, ("baseRig",), None
+        )
 
         if legacy_kwargs:
-            raise ValueError(
-                f'Unexpected arguments for IKChain: {tuple(legacy_kwargs.keys())}'
-            )
+            raise ValueError(f"Unexpected arguments for IKChain: {tuple(legacy_kwargs.keys())}")
 
         self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
 
         joint_nodes = pm.ls(chain_joints)
         if len(joint_nodes) < 2:
-            raise ValueError('chain_joints must contain at least two joints.')
+            raise ValueError("chain_joints must contain at least two joints.")
 
         collision_point = len(joint_nodes)
 
@@ -87,20 +94,20 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             _,
             chain_curve,
         ) = pm.ikHandle(
-            n=f'{prefix}_IKH',
-            sol='ikSplineSolver',
+            n=f"{prefix}_IKH",
+            sol="ikSplineSolver",
             sj=joint_nodes[0],
             ee=joint_nodes[-1],
             createCurve=True,
             numSpans=collision_point,
         )
-        chain_curve = pm.rename(chain_curve, f'{prefix}_CRV')
-        control_curve = pm.duplicate(chain_curve, n=f'{prefix}Ctrl_CRV')[0]
+        chain_curve = pm.rename(chain_curve, f"{prefix}_CRV")
+        control_curve = pm.duplicate(chain_curve, n=f"{prefix}Ctrl_CRV")[0]
 
-        chain_curve_cvs = pm.ls(f'{control_curve}.cv[*]', fl=True)
+        chain_curve_cvs = pm.ls(f"{control_curve}.cv[*]", fl=True)
         clusters = []
         for index, cv in enumerate(chain_curve_cvs, start=1):
-            cluster = pm.cluster(cv, n=f'{prefix}Cluster{index}')[1]
+            cluster = pm.cluster(cv, n=f"{prefix}Cluster{index}")[1]
             clusters.append(cluster)
         pm.hide(clusters)
 
@@ -108,7 +115,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         pm.parent(control_curve, self.rig_module.parts_no_trans_group)
 
         self.base_attach_group = pm.group(
-            n=f'{prefix}BaseAttach_GRP',
+            n=f"{prefix}BaseAttach_GRP",
             em=True,
             p=self.rig_module.parts_group,
         )
@@ -121,11 +128,11 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         for index, cluster in enumerate(clusters):
             ctrl_scale = rig_scale * main_ctrl_scale * (1.0 - (index * control_scale_increment))
             ctrl = control.Control(
-                prefix=f'{prefix}{index + 1}',
+                prefix=f"{prefix}{index + 1}",
                 translate_to=cluster,
                 scale=ctrl_scale,
                 parent=self.rig_module.controls_group,
-                shape='sphere',
+                shape="sphere",
             )
             chain_controls.append(ctrl)
 
@@ -141,12 +148,12 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         pm.hide(chain_ik)
         pm.parent(chain_ik, self.rig_module.parts_no_trans_group)
 
-        twist_attr = 'twist'
+        twist_attr = "twist"
         if not chain_controls[-1].C.hasAttr(twist_attr):
             pm.addAttr(chain_controls[-1].C, ln=twist_attr, k=True)
         pm.connectAttr(
-            f'{chain_controls[-1].C}.{twist_attr}',
-            f'{chain_ik}.twist',
+            f"{chain_controls[-1].C}.{twist_attr}",
+            f"{chain_ik}.twist",
         )
 
         self.chain_curve = chain_curve
@@ -163,20 +170,20 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             deform.blend_shape_deformer(
                 self.dyn_curve.get_input_curve(),
                 [self.control_curve],
-                node_name=f'{prefix}BlendShape',
+                node_name=f"{prefix}BlendShape",
                 front_of_chain=True,
             )
             deform.blend_shape_deformer(
                 self.chain_curve,
                 [self.dyn_curve.get_output_curve()],
-                node_name=f'{prefix}BlendShape',
+                node_name=f"{prefix}BlendShape",
                 front_of_chain=True,
             )
         else:
             deform.blend_shape_deformer(
                 self.chain_curve,
                 [self.control_curve],
-                node_name=f'{prefix}BlendShape',
+                node_name=f"{prefix}BlendShape",
                 front_of_chain=True,
             )
 
@@ -185,8 +192,8 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
     def get_module_dict(self) -> dict[str, Any]:
         """Return rig module bookkeeping data."""
         return {
-            'module': self.rig_module,
-            'base_attach_grp': self.base_attach_group,
+            "module": self.rig_module,
+            "base_attach_grp": self.base_attach_group,
         }
 
     def make_dynamic(  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -209,4 +216,4 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
 
 
 if __name__ == "__main__":
-    raise SystemExit('Invoke within Maya to construct IK chains.')
+    raise SystemExit("Invoke within Maya to construct IK chains.")

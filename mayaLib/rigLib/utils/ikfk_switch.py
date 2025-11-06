@@ -22,6 +22,7 @@ def _get_single_output(node, **kwargs):
 
 class IKFKSwitch:
     """Manage snapping and connections between IK and FK controls for a chain."""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(
@@ -40,25 +41,25 @@ class IKFKSwitch:
         self.ik_handle = pm.PyNode(ik_handle)
         self.simple_ik = simple_ik
 
-        self.shoulder_joint = pm.listConnections(self.ik_handle, type='joint')[0]
-        self.elbow_joint = _get_single_output(self.shoulder_joint, type='joint')
+        self.shoulder_joint = pm.listConnections(self.ik_handle, type="joint")[0]
+        self.elbow_joint = _get_single_output(self.shoulder_joint, type="joint")
 
         if forearm_mid_joint:
-            self.forearm_joint = _get_single_output(self.elbow_joint, type='joint')
-            self.wrist_joint = _get_single_output(self.forearm_joint, type='joint')
+            self.forearm_joint = _get_single_output(self.elbow_joint, type="joint")
+            self.wrist_joint = _get_single_output(self.forearm_joint, type="joint")
         else:
             self.forearm_joint = None
-            self.wrist_joint = _get_single_output(self.elbow_joint, type='joint')
+            self.wrist_joint = _get_single_output(self.elbow_joint, type="joint")
 
         self.shoulder_fk_ctrl = self._extract_ctrl(self.shoulder_joint)
         self.elbow_fk_ctrl = self._extract_ctrl(self.elbow_joint)
         self.wrist_fk_ctrl = self._extract_ctrl(self.wrist_joint)
 
         if simple_ik:
-            ik_constraint = pm.listConnections(self.ik_handle, type='constraint')[0]
+            ik_constraint = pm.listConnections(self.ik_handle, type="constraint")[0]
             pole_constraint = pm.listConnections(
                 self.ik_handle,
-                type='poleVectorConstraint',
+                type="poleVectorConstraint",
                 et=True,
             )[0]
             self.ik_ctrl = util.get_driver_driven_from_constraint(ik_constraint)[0][0]
@@ -67,11 +68,11 @@ class IKFKSwitch:
             peel_heel_grp = self.ik_handle.getParent()
             tippy_toe_grp = peel_heel_grp.getParent()
             move_grp = tippy_toe_grp.getParent()
-            ik_constraint = pm.listConnections(move_grp, type='constraint')[0]
+            ik_constraint = pm.listConnections(move_grp, type="constraint")[0]
 
             pole_constraint = pm.listConnections(
                 self.ik_handle,
-                type='poleVectorConstraint',
+                type="poleVectorConstraint",
                 et=True,
             )[0]
             pole_vector_loc = util.get_driver_driven_from_constraint(pole_constraint)[0][0]
@@ -82,7 +83,7 @@ class IKFKSwitch:
                 pole_vector_constraint,
             )[0][0]
 
-        reverse_node = self.ik_handle.inputs(scn=True, type='reverse')[0]
+        reverse_node = self.ik_handle.inputs(scn=True, type="reverse")[0]
         driver_loc = reverse_node.inputs(scn=True, plugs=True)[0]
 
         self.reverse_node = reverse_node
@@ -92,7 +93,7 @@ class IKFKSwitch:
     @staticmethod
     def _extract_ctrl(joint):
         """Retrieve the driving control for a joint based on its constraint."""
-        orient_constraint = joint.outputs(type='constraint')[0]
+        orient_constraint = joint.outputs(type="constraint")[0]
         return util.get_driver_driven_from_constraint(orient_constraint)[0][0]
 
     def snap_to_ik(self) -> None:
@@ -114,11 +115,11 @@ class IKFKSwitch:
         if blend == 0:
             pm.setAttr(self.driver_loc, 0)
             self.snap_to_fk()
-            pm.displayInfo('Snap FK CTRL to IK')
+            pm.displayInfo("Snap FK CTRL to IK")
         elif blend == 1:
             pm.setAttr(self.driver_loc, 0)
             self.snap_to_ik()
-            pm.displayInfo('Snap IK CTRL to FK')
+            pm.displayInfo("Snap IK CTRL to FK")
 
         self.reconnect()
 
@@ -145,36 +146,36 @@ def install_ikfk(ik_nodes: Sequence) -> None:
     util_definition = inspect.getsource(util.get_driver_driven_from_constraint)
 
     commands: list[str] = [
-        'import pymel.core as pm',
+        "import pymel.core as pm",
         util_definition,
-        class_definition.replace('util.', ''),
+        class_definition.replace("util.", ""),
     ]
 
     if ik_list:
-        node_args = ','.join(f"'{node}'" for node in ik_list)
-        commands.append(f'ik_list = pm.ls({node_args})')
+        node_args = ",".join(f"'{node}'" for node in ik_list)
+        commands.append(f"ik_list = pm.ls({node_args})")
     else:
-        commands.append('ik_list = []')
+        commands.append("ik_list = []")
 
     commands.extend(
         [
-            'ik_instances = [IKFKSwitch(ik) for ik in ik_list]',
-            'ik_script_jobs = [item.add_script_job() for item in ik_instances]',
+            "ik_instances = [IKFKSwitch(ik) for ik in ik_list]",
+            "ik_script_jobs = [item.add_script_job() for item in ik_instances]",
         ],
     )
 
     pm.scriptNode(
         st=2,
-        bs='\n'.join(commands),
-        n='switch_IKFK',
-        stp='python',
+        bs="\n".join(commands),
+        n="switch_IKFK",
+        stp="python",
     )
-    pm.displayInfo('Installed IK/FK switch script node.')
+    pm.displayInfo("Installed IK/FK switch script node.")
 
 
 def _demo() -> None:
     """Quick smoke test when executed as a script."""
-    ik_list = pm.ls('l_shoulder1_IKH', 'r_shoulder1_IKH', 'l_hip1_IKH', 'r_hip1_IKH')
+    ik_list = pm.ls("l_shoulder1_IKH", "r_shoulder1_IKH", "l_hip1_IKH", "r_hip1_IKH")
     switches = [IKFKSwitch(ik) for ik in ik_list]
     jobs = [switch.add_script_job() for switch in switches]
     pm.displayInfo(str(jobs))

@@ -32,7 +32,7 @@ TRANSLATION_DICT = {
     "Zposition": "translateZ",
     "Xrotation": "rotateX",
     "Yrotation": "rotateY",
-    "Zrotation": "rotateZ"
+    "Zrotation": "rotateZ",
 }
 
 
@@ -118,11 +118,13 @@ class BVHImporterDialog:
         mc.text("Options")
         mc.separator()
 
-        mc.rowColumnLayout(numberOfColumns=2,
-                           columnWidth=[(1, 80), (2, 150)],
-                           cal=[(1, "right"), (2, "center")],
-                           cs=[(1, 5), (2, 5)],
-                           rs=[(1, 5), (2, 5)])
+        mc.rowColumnLayout(
+            numberOfColumns=2,
+            columnWidth=[(1, 80), (2, 150)],
+            cal=[(1, "right"), (2, "center")],
+            cs=[(1, 5), (2, 5)],
+            rs=[(1, 5), (2, 5)],
+        )
 
         mc.text("Rig scale")
         self._scale_field = mc.floatField(minValue=0.01, maxValue=2, value=1)
@@ -130,12 +132,12 @@ class BVHImporterDialog:
         self._frame_field = mc.intField(minValue=0)
         mc.text("Rotation Order")
         self._rotation_order = mc.optionMenu()
-        mc.menuItem(label='XYZ')
-        mc.menuItem(label='YZX')
-        mc.menuItem(label='ZXY')
-        mc.menuItem(label='XZY')
-        mc.menuItem(label='YXZ')
-        mc.menuItem(label='ZYX')
+        mc.menuItem(label="XYZ")
+        mc.menuItem(label="YZX")
+        mc.menuItem(label="ZXY")
+        mc.menuItem(label="XZY")
+        mc.menuItem(label="YXZ")
+        mc.menuItem(label="ZYX")
 
         mc.setParent("..")
         mc.separator()
@@ -145,10 +147,12 @@ class BVHImporterDialog:
         mc.text("(Select the hips)")
         mc.separator()
 
-        mc.rowColumnLayout(numberOfColumns=2,
-                           columnWidth=[(1, 150), (2, 80)],
-                           cs=[(1, 5), (2, 5)],
-                           rs=[(1, 5), (2, 5)])
+        mc.rowColumnLayout(
+            numberOfColumns=2,
+            columnWidth=[(1, 150), (2, 80)],
+            cs=[(1, 5), (2, 5)],
+            rs=[(1, 5), (2, 5)],
+        )
 
         self._textfield = mc.textField(editable=False)
         mc.button("Select/Clear", c=self._on_select_root)
@@ -194,7 +198,7 @@ class BVHImporterDialog:
         frame = mc.intField(self._frame_field, q=True, value=True)
         rot_order = mc.optionMenu(self._rotation_order, q=True, select=True) - 1
 
-        with open(self._filename, encoding='utf-8') as f:
+        with open(self._filename, encoding="utf-8") as f:
             # Check to see if the file is valid (sort of)
             if not next(f).startswith("HIERARCHY"):
                 mc.error("No valid .bvh file selected.")
@@ -272,8 +276,9 @@ class BVHImporterDialog:
                         if mc.objExists(my_parent._full_path()):
                             jnt = pm.PyNode(my_parent._full_path())
                             jnt.rotateOrder.set(rot_order)
-                            jnt.translate.set([float(offset[1]), float(offset[2]),
-                                             float(offset[3])])
+                            jnt.translate.set(
+                                [float(offset[1]), float(offset[2]), float(offset[3])]
+                            )
                             continue
 
                         # Build the joint and set its properties
@@ -303,10 +308,8 @@ class BVHImporterDialog:
                         # Set the values to channels
                         for x in range(0, len(data) - 1):
                             if self._debug:
-                                print(f"Set Attribute: {self._channels[x]} "
-                                      f"{float(data[x])}")
-                            mc.setKeyframe(self._channels[x], time=frame,
-                                         value=float(data[x]))
+                                print(f"Set Attribute: {self._channels[x]} {float(data[x])}")
+                            mc.setKeyframe(self._channels[x], time=frame, value=float(data[x]))
 
                         frame = frame + 1
 

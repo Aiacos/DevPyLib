@@ -23,7 +23,7 @@ def mirror_geo(geo_list):
     mirror_geo_list = []
     for geo in geo_list:
         # Create a duplicate of the geometry with the opposite side name
-        geo_name = str(geo.name()).replace('L_', 'R_') + '_mirror'
+        geo_name = str(geo.name()).replace("L_", "R_") + "_mirror"
         duplicate_geo = pm.duplicate(geo, n=geo_name)[-1]
         pm.parent(duplicate_geo, w=True)
         mirror_geo_list.append(duplicate_geo)
@@ -40,9 +40,9 @@ def mirror_geo(geo_list):
     # Iterate over the mirrored geometries and blendShape them with the original
     for geo in mirror_geo_list:
         # Get the name of the original geometry
-        mirror_geo_name = str(geo.name()).replace('_mirror', '')
+        mirror_geo_name = str(geo.name()).replace("_mirror", "")
         # BlendShape the original geometry with the mirrored one
-        deform.blend_shape_deformer(mirror_geo_name, [geo], mirror_geo_name + '_tmp_BS')
+        deform.blend_shape_deformer(mirror_geo_name, [geo], mirror_geo_name + "_tmp_BS")
         # Delete the history of the original geometry
         common.delete_history(mirror_geo_name)
 

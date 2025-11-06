@@ -61,11 +61,17 @@ def fix_face_with_more_than_4_sides(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def fix_concave_faces(geo, query=True):
@@ -80,11 +86,17 @@ def fix_concave_faces(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def fix_face_with_holes(geo, query=True):
@@ -99,11 +111,17 @@ def fix_face_with_holes(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def fix_non_planar_faces(geo, query=True):
@@ -118,11 +136,17 @@ def fix_non_planar_faces(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def remove_lamina_faces(geo, query=True):
@@ -137,11 +161,17 @@ def remove_lamina_faces(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '
+            )
+        )
 
 
 def remove_nonmanifold_geometry(geo, query=True):
@@ -158,11 +188,17 @@ def remove_nonmanifold_geometry(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
+            )
+        )
 
 
 def remove_edges_with_zero_length(geo, query=True):
@@ -179,11 +215,17 @@ def remove_edges_with_zero_length(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def remove_faces_with_zero_geometry_area(geo, query=True):
@@ -201,11 +243,17 @@ def remove_faces_with_zero_geometry_area(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def remove_faces_with_zero_map_area(geo, query=True):
@@ -222,11 +270,17 @@ def remove_faces_with_zero_map_area(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'
+            )
+        )
 
 
 def remove_invalid_components(geo, query=True):
@@ -243,11 +297,17 @@ def remove_invalid_components(geo, query=True):
     """
     pm.select(geo)
     if query:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'
+            )
+        )
     else:
-        return pm.ls(mel.eval(
-            'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'))
+        return pm.ls(
+            mel.eval(
+                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'
+            )
+        )
 
 
 class ModelFix:
@@ -267,6 +327,7 @@ class ModelFix:
         check_faces_with_zero_map_area (list): List of faces with zero map area.
         check_invalid_components (list): List of invalid components.
     """
+
     def __init__(self, geo, check=True):
         """Initialize the ModelFix object.
 
@@ -280,28 +341,36 @@ class ModelFix:
         merge_duplicated_vertex(self.geo)
 
         if check:
-            self.check_face_with_more_than_4_sides = fix_face_with_more_than_4_sides(self.geo, query=True)
+            self.check_face_with_more_than_4_sides = fix_face_with_more_than_4_sides(
+                self.geo, query=True
+            )
             self.check_concave_faces = fix_concave_faces(self.geo, query=True)
             self.check_face_with_holes = fix_face_with_holes(self.geo, query=True)
             self.check_non_planar_faces = fix_non_planar_faces(self.geo, query=True)
             self.check_lamina_faces = remove_lamina_faces(self.geo, query=True)
             self.check_nonmanifold_geometry = remove_nonmanifold_geometry(self.geo, query=True)
             self.check_edges_with_zero_lenght = remove_edges_with_zero_length(self.geo, query=True)
-            self.check_faces_with_zero_geometry_area = remove_faces_with_zero_geometry_area(self.geo, query=True)
-            self.check_faces_with_zero_map_area = remove_faces_with_zero_map_area(self.geo, query=True)
+            self.check_faces_with_zero_geometry_area = remove_faces_with_zero_geometry_area(
+                self.geo, query=True
+            )
+            self.check_faces_with_zero_map_area = remove_faces_with_zero_map_area(
+                self.geo, query=True
+            )
             self.check_invalid_components = remove_invalid_components(self.geo, query=True)
 
-    def auto_fix(self,
-                face_with_more_than_4_sides=False,
-                concave_faces=True,
-                face_with_holes=True,
-                non_planar_faces=False,
-                lamina_faces=True,
-                nonmanifold_geometry=True,
-                edges_with_zero_lenght=True,
-                faces_with_zero_geometry_area=True,
-                faces_with_zero_map_area=False,
-                invalid_components=True):
+    def auto_fix(
+        self,
+        face_with_more_than_4_sides=False,
+        concave_faces=True,
+        face_with_holes=True,
+        non_planar_faces=False,
+        lamina_faces=True,
+        nonmanifold_geometry=True,
+        edges_with_zero_lenght=True,
+        faces_with_zero_geometry_area=True,
+        faces_with_zero_map_area=False,
+        invalid_components=True,
+    ):
         """Auto fix the model based on the given options.
 
         Args:

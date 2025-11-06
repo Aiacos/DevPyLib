@@ -126,9 +126,7 @@ class ZivaBase:
         self.rig_type = rig_type
         self.rig_grp = pm.group(n=character + "_" + rig_type + "_rig_grp", em=True)
         self.z_solver = (
-            pm.ls(type="zSolverTransform")[-1]
-            if len(pm.ls(type="zSolverTransform")) > 0
-            else None
+            pm.ls(type="zSolverTransform")[-1] if len(pm.ls(type="zSolverTransform")) > 0 else None
         )
 
         if self.z_solver:
@@ -157,9 +155,7 @@ class ZivaBase:
         Args:
             file_name (str, optional): The name of the file to save.
         """
-        workspace_dir = (
-            Path(pm.workspace(q=True, dir=True, rd=True)) / "scenes" / "zBuilder"
-        )
+        workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / "scenes" / "zBuilder"
         workspace_dir.mkdir(parents=True, exist_ok=True)
 
         pm.select(self.z_solver)
@@ -170,12 +166,7 @@ class ZivaBase:
             z.write(file_name)
         else:
             file_name = (
-                str(workspace_dir)
-                + "/"
-                + self.character_name
-                + "_"
-                + self.rig_type
-                + ".zBuilder"
+                str(workspace_dir) + "/" + self.character_name + "_" + self.rig_type + ".zBuilder"
             )
             z.write(file_name)
 
@@ -185,9 +176,7 @@ class ZivaBase:
         Args:
             file_name (str, optional): The name of the file to load.
         """
-        workspace_dir = (
-            Path(pm.workspace(q=True, dir=True, rd=True)) / "scenes" / "zBuilder"
-        )
+        workspace_dir = Path(pm.workspace(q=True, dir=True, rd=True)) / "scenes" / "zBuilder"
         workspace_dir.mkdir(parents=True, exist_ok=True)
 
         z = zva.Ziva()
@@ -196,12 +185,7 @@ class ZivaBase:
             z.retrieve_from_file(file_name)
         else:
             file_name = (
-                str(workspace_dir)
-                + "/"
-                + self.character_name
-                + "_"
-                + self.rig_type
-                + ".zBuilder"
+                str(workspace_dir) + "/" + self.character_name + "_" + self.rig_type + ".zBuilder"
             )
             z.retrieve_from_file(file_name)
 
@@ -301,9 +285,7 @@ class ZivaMuscle(ZivaBase):
         self.z_out_grp = pm.group(self.z_muscle_combined, n="zOut_grp")
 
         # CleanUp
-        super().__init__(
-            character, rig_type="muscle", solver_scale=solver_scale, use_gpu=use_gpu
-        )
+        super().__init__(character, rig_type="muscle", solver_scale=solver_scale, use_gpu=use_gpu)
         self.clean_muscle()
 
     def clean_muscle(self):
@@ -322,9 +304,7 @@ class ZivaMuscle(ZivaBase):
         """
         for geo1 in self.muscles:
             for geo2 in self.muscles:
-                intersecting_geos = pm.ls(
-                    tool.ziva_check_intersection(geo1, geo2), o=True
-                )
+                intersecting_geos = pm.ls(tool.ziva_check_intersection(geo1, geo2), o=True)
                 if len(intersecting_geos) == 2:
                     attachment.add_attachment(
                         intersecting_geos[0],
@@ -425,16 +405,14 @@ class ZivaSkin(ZivaBase):
                 )
 
             for fascia_geo, fat_geo in zip(self.fascia_list, self.fat_list, strict=False):
-                attachment.add_attachment(
-                    fascia_geo, fat_geo, value=attachment_radius, fixed=True
-                )
+                attachment.add_attachment(fascia_geo, fat_geo, value=attachment_radius, fixed=True)
 
         # Wrap geo
         wrap_geo_list = []
         for fat_geo, skin_geo in zip(self.fat_list, self.skin_list, strict=False):
-            wrap_geo = pm.duplicate(
-                skin_geo, n=str(skin_geo.name()).replace("_geo", "wrap_msh")
-            )[-1]
+            wrap_geo = pm.duplicate(skin_geo, n=str(skin_geo.name()).replace("_geo", "wrap_msh"))[
+                -1
+            ]
             deform.wrap_deformer(wrap_geo, fat_geo)
             deform.blend_shape_deformer(
                 skin_geo, [wrap_geo], str(skin_geo.name()).replace("_geo", "_wrap_BS")

@@ -25,9 +25,7 @@ class UsdExportMetersSettings:
         self.core = core
         self.version = "v1.0.0"
 
-        self.core.registerCallback(
-            "preMayaUSDExport", self.preMayaUSDExport, plugin=self
-        )
+        self.core.registerCallback("preMayaUSDExport", self.preMayaUSDExport, plugin=self)
 
     def preMayaUSDExport(self, origin, options, output_path):
         """Callback that is called before USD export.

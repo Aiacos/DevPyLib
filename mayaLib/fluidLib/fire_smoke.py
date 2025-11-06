@@ -113,10 +113,14 @@ class FireSmoke(BaseFluid):
         self.fluid_container.incandescence[0].incandescence_Color.set(0, 0, 0, type="double3")
 
         self.fluid_container.incandescence[1].incandescence_Position.set(0.815)
-        self.fluid_container.incandescence[1].incandescence_Color.set(0.896, 0.201495, 0, type="double3")
+        self.fluid_container.incandescence[1].incandescence_Color.set(
+            0.896, 0.201495, 0, type="double3"
+        )
 
         self.fluid_container.incandescence[2].incandescence_Position.set(1)
-        self.fluid_container.incandescence[2].incandescence_Color.set(2.5, 1.666667, 0.5, type="double3")
+        self.fluid_container.incandescence[2].incandescence_Color.set(
+            2.5, 1.666667, 0.5, type="double3"
+        )
 
         self.fluid_container.incandescenceInputBias.set(0.9)
 

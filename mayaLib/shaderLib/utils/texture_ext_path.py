@@ -4,7 +4,7 @@ Provides utilities for managing external texture file paths and
 resolving texture references.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -34,7 +34,7 @@ def change_extension(filename, new_extension):
     Returns:
         str: The modified filename.
     """
-    (prefix, sep, suffix) = filename.rpartition('.')
+    (prefix, sep, suffix) = filename.rpartition(".")
     return prefix + new_extension
 
 

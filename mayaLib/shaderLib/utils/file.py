@@ -4,7 +4,7 @@ Provides functions for managing texture file paths, UDIM sequences,
 and texture file organization.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import contextlib
 import os
@@ -24,21 +24,21 @@ class TextureFile:  # ToDo: move in util?
         """
         self.path = path
         self.filename = filename
-        self.mesh = ''
-        self.texture_set = ''
-        self.channel = ''
-        self.ext = ''
-        self.udim = '<UDIM>'
+        self.mesh = ""
+        self.texture_set = ""
+        self.channel = ""
+        self.ext = ""
+        self.udim = "<UDIM>"
 
         try:
             self._partition()
         except (ValueError, IndexError):
-            print('No matching pattern for texture')
+            print("No matching pattern for texture")
 
     def _partition(self):
         """Split the filename into mesh, texture_set, channel and extension."""
-        name, self.texture_set, self.ext = self.filename.split('.')
-        self.mesh, sep, self.channel = name.rpartition('_')
+        name, self.texture_set, self.ext = self.filename.split(".")
+        self.mesh, sep, self.channel = name.rpartition("_")
         # dict = {'channel': path}
         # self.texture_list.append()
 
@@ -61,7 +61,9 @@ class TextureFile:  # ToDo: move in util?
 class TextureFileManager:
     """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set."""
 
-    def __init__(self, dirname=pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/', ext='exr'):
+    def __init__(
+        self, dirname=pm.workspace(q=True, dir=True, rd=True) + "/sourceimages/", ext="exr"
+    ):
         """Initialize the TextureFileManager object.
 
         Args:
@@ -101,7 +103,7 @@ class TextureFileManager:
             tex = TextureFile(self.path, tex_name)
             geo_dict[tex.mesh] = {}
             if tex.texture_set.isdigit():
-                material_dict['UDIM'] = {}
+                material_dict["UDIM"] = {}
             else:
                 material_dict[tex.texture_set] = {}
             channel_dict[tex.channel] = {}
@@ -114,23 +116,22 @@ class TextureFileManager:
             d[geo_key] = {}
             for textureset_key in list(material_dict.keys()):
                 if textureset_key.isdigit():
-                    d[geo_key]['UDIM'] = {}
+                    d[geo_key]["UDIM"] = {}
                 else:
                     d[geo_key][textureset_key] = {}
                 for channel_key in list(channel_dict.keys()):
                     d[geo_key][textureset_key][channel_key] = {}
 
         for texture in self.tex_list:
-
             if texture.texture_set.isdigit():
-                d[texture.mesh]['UDIM'][texture.channel] = texture.filename
+                d[texture.mesh]["UDIM"][texture.channel] = texture.filename
             else:
                 d[texture.mesh][texture.texture_set][texture.channel] = texture.filename
 
         # clean up dict
         for geo_key in list(geo_dict.keys()):
             for textureset_key in list(material_dict.keys()):
-                if d[geo_key][textureset_key]['Diffuse'] == {}:
+                if d[geo_key][textureset_key]["Diffuse"] == {}:
                     with contextlib.suppress(KeyError):
                         d[geo_key].pop(textureset_key)
         return d
@@ -141,6 +142,6 @@ class TextureFileManager:
 
 
 if __name__ == "__main__":
-    path = 'testPath'
+    path = "testPath"
     test_dict = TextureFileManager()  # PATH
     print(test_dict.texture_dict)

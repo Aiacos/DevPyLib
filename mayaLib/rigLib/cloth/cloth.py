@@ -34,9 +34,7 @@ class Cloth:
             collision_geo_list (list): List of geometry to act as collision targets.
         """
         self.cloth_system_grp = pm.group(n="ClothSystem_grp", em=True)
-        self.cloth_geo_grp = pm.group(
-            n="cloth_geo_grp", em=True, p=self.cloth_system_grp
-        )
+        self.cloth_geo_grp = pm.group(n="cloth_geo_grp", em=True, p=self.cloth_system_grp)
 
         self.cloth_data_list, self.nucleus = self.create_ncloth(geo_list)
 

@@ -4,7 +4,7 @@ Provides tools for managing Python library paths, module imports,
 and cross-platform DevPyLib installation in Maya environments.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import os
 import os.path
@@ -26,6 +26,7 @@ import pymel.core as pm
 
 # Global variable for download progress tracking
 start_time = 0.0
+
 
 # import installCmd
 def build_install_cmd(lib_dir, lib_name, port):
@@ -102,6 +103,7 @@ class InstallLibrary:
         >>> installer.install_from_git()
         >>> installer.install_in_maya_user_setup()
     """
+
     def __init__(self, dev_mode=False, parent=None, lib_dir=None):
         """Initialize the InstallLibrary.
 
@@ -122,12 +124,12 @@ class InstallLibrary:
             libName (str): Name of the library.
             libDir (pathlib.Path): Path to the library installation.
         """
-        self.lib_url = 'https://github.com/Aiacos/DevPyLib/archive/master.zip'
+        self.lib_url = "https://github.com/Aiacos/DevPyLib/archive/master.zip"
         self.home_user = pathlib.Path.home()
 
         # Cross-platform Maya script paths
-        self.port = ':4434'
-        self.lib_name = 'mayaLib'
+        self.port = ":4434"
+        self.lib_name = "mayaLib"
 
         # Detect platform and set appropriate paths
         current_platform = platform.system()
@@ -143,7 +145,9 @@ class InstallLibrary:
 
         elif current_platform == "Darwin":  # macOS
             # macOS: ~/Library/Preferences/Autodesk/maya/scripts
-            self.maya_script_path = self.home_user / "Library" / "Preferences" / "Autodesk" / "maya" / "scripts"
+            self.maya_script_path = (
+                self.home_user / "Library" / "Preferences" / "Autodesk" / "maya" / "scripts"
+            )
             self.workspace_path = self.home_user / "Documents" / "workspace"
 
         elif current_platform == "Windows":
@@ -155,14 +159,14 @@ class InstallLibrary:
             self.maya_script_path = self.home_user / "Documents" / "maya" / "scripts"
             self.workspace_path = self.home_user / "Documents" / "workspace"
 
-        self.lib_dir = self.workspace_path / 'DevPyLib'
+        self.lib_dir = self.workspace_path / "DevPyLib"
 
         if lib_dir:
             self.lib_dir = lib_dir
 
         self.dev_mode = dev_mode
 
-    def install_from_git(self, git_url='https://github.com/Aiacos/DevPyLib'):
+    def install_from_git(self, git_url="https://github.com/Aiacos/DevPyLib"):
         """Install the library by cloning the git repository.
 
         Args:
@@ -187,7 +191,7 @@ class InstallLibrary:
             bool: True if successful, False if not.
         """
         try:
-            print('Pulling: ', self.lib_dir)
+            print("Pulling: ", self.lib_dir)
             repo = git.Repo(self.lib_dir)
             repo.remotes.origin.pull()
             print("Pull Complete")
@@ -218,7 +222,15 @@ class InstallLibrary:
                 maya_env_path = self.home_user / "Documents" / "maya" / maya_version / "Maya.env"
         elif current_platform == "Darwin":  # macOS
             # macOS: ~/Library/Preferences/Autodesk/maya/<version>/Maya.env
-            maya_env_path = self.home_user / "Library" / "Preferences" / "Autodesk" / "maya" / maya_version / "Maya.env"
+            maya_env_path = (
+                self.home_user
+                / "Library"
+                / "Preferences"
+                / "Autodesk"
+                / "maya"
+                / maya_version
+                / "Maya.env"
+            )
         else:  # Windows
             # Windows: %USERPROFILE%\Documents\maya\<version>\Maya.env
             maya_env_path = self.home_user / "Documents" / "maya" / maya_version / "Maya.env"
@@ -228,7 +240,7 @@ class InstallLibrary:
 
         try:
             if os.path.exists(maya_env_path):
-                with open(maya_env_path, encoding='utf-8') as f:
+                with open(maya_env_path, encoding="utf-8") as f:
                     lines = f.readlines()
                     if maya_app_dir in lines:
                         print("string " + maya_app_dir + " already present in Maya.env")
@@ -245,7 +257,7 @@ class InstallLibrary:
 
         try:
             if os.path.exists(maya_env_path):
-                with open(maya_env_path, 'a', encoding='utf-8') as f:
+                with open(maya_env_path, "a", encoding="utf-8") as f:
                     f.write(maya_app_dir + "\n")
                     f.write(python_path + "\n")
                 return True
@@ -267,7 +279,7 @@ class InstallLibrary:
             self.lib_dir (str): The development path if dev_path is provided.
             self.install_command (str): The installation command constructed based on the library directory, name, and port.
         """
-        self.dev_mode = dev_path != ''
+        self.dev_mode = dev_path != ""
 
         if dev_path:
             self.lib_dir = dev_path
@@ -289,17 +301,17 @@ class InstallLibrary:
 
         """
         user_setup_path = self.maya_script_path
-        file_name = 'userSetup.py'
+        file_name = "userSetup.py"
         file_path = pathlib.Path(user_setup_path) / file_name
         if user_setup_path.is_dir():
             if file_path.exists():
-                with file_path.open('a', encoding='utf-8') as handle:
-                    handle.write('\n')
+                with file_path.open("a", encoding="utf-8") as handle:
+                    handle.write("\n")
                     handle.write(self.install_command)
             else:
-                file_path.write_text(self.install_command, encoding='utf-8')
+                file_path.write_text(self.install_command, encoding="utf-8")
         else:
-            print('ERROR: Directory not exist!')
+            print("ERROR: Directory not exist!")
 
     def install(self):
         """Install the library by performing the following actions:
@@ -340,11 +352,11 @@ class InstallLibrary:
             None
         """
         user_setup_path = self.maya_script_path
-        file_name = 'userSetup.py'
+        file_name = "userSetup.py"
         file_path = pathlib.Path(user_setup_path) / file_name
         if user_setup_path.is_dir() and file_path.exists():
-            script = file_path.read_text(encoding='utf-8')
-            file_path.write_text(script.replace(self.install_command, ''), encoding='utf-8')
+            script = file_path.read_text(encoding="utf-8")
+            file_path.write_text(script.replace(self.install_command, ""), encoding="utf-8")
 
         self.delete()
 
@@ -368,11 +380,13 @@ class InstallLibrary:
         progress_size = int(count * block_size)
         speed = int(progress_size / (1024 * duration))
         percent = int(count * block_size * 100 / total_size)
-        sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed\n" %
-                         (percent, progress_size / (1024 * 1024), speed, duration))
+        sys.stdout.write(
+            "\r...%d%%, %d MB, %d KB/s, %d seconds passed\n"
+            % (percent, progress_size / (1024 * 1024), speed, duration)
+        )
         sys.stdout.flush()
 
-    def download(self, zip_filename='master.zip'):
+    def download(self, zip_filename="master.zip"):
         """Download the library from the given URL.
 
         This method will download the library to the given path, unzip it,
@@ -386,7 +400,7 @@ class InstallLibrary:
         """
         download_dir = pathlib.Path(self.maya_script_path)
         zip_path = download_dir / zip_filename
-        extracted_dir = download_dir / 'DevPyLib-master'
+        extracted_dir = download_dir / "DevPyLib-master"
 
         # Remove existing directory if present
         if extracted_dir.exists():
@@ -406,7 +420,7 @@ class InstallLibrary:
 
         # Unzip using zipfile module (cross-platform)
         try:
-            with zipfile.ZipFile(str(zip_path), 'r') as zip_ref:
+            with zipfile.ZipFile(str(zip_path), "r") as zip_ref:
                 zip_ref.extractall(str(download_dir))
             print(f"Extracted to: {download_dir}")
         except (OSError, zipfile.BadZipFile) as e:
@@ -431,7 +445,7 @@ class InstallLibrary:
         Returns:
             None
         """
-        delete_dir = pathlib.Path(self.maya_script_path) / 'DevPyLib-master'
+        delete_dir = pathlib.Path(self.maya_script_path) / "DevPyLib-master"
 
         if delete_dir.exists():
             try:

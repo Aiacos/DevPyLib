@@ -63,8 +63,8 @@ class Explosion(BaseFluid):
         pm.setKeyframe(self.fluid_emitter, attribute="fluidDensityEmission", time=1, value=8)
         pm.setKeyframe(self.fluid_emitter, attribute="fluidDensityEmission", time=6, value=0)
 
-        pm.setKeyframe(self.fluid_emitter, attribute='fluidFuelEmission', time=1, value=5)
-        pm.setKeyframe(self.fluid_emitter, attribute='fluidFuelEmission', time=6, value=0)
+        pm.setKeyframe(self.fluid_emitter, attribute="fluidFuelEmission", time=1, value=5)
+        pm.setKeyframe(self.fluid_emitter, attribute="fluidFuelEmission", time=6, value=0)
 
         self.fluid_emitter.turbulence.set(6)
         self.fluid_emitter.turbulenceSpeed.set(0.25)
@@ -82,17 +82,17 @@ class Explosion(BaseFluid):
     def set_velocity(self):
         """Set the velocity properties for the explosion."""
         # self.fluid_container.velocitySwirl.set(6) # al frame 1
-        pm.setKeyframe(self.fluid_container, attribute='velocitySwirl', time=1, value=6)
+        pm.setKeyframe(self.fluid_container, attribute="velocitySwirl", time=1, value=6)
         # self.fluid_container.velocitySwirl.set(2.5) # al frame 50
-        pm.setKeyframe(self.fluid_container, attribute='velocitySwirl', time=50, value=2.5)
+        pm.setKeyframe(self.fluid_container, attribute="velocitySwirl", time=50, value=2.5)
         self.fluid_container.velocityNoise.set(1)
 
     def set_turbulence(self):
         """Set the turbulence properties for the explosion."""
         # self.fluid_container.turbulenceStrength.set(3.5) # al frame 1
-        pm.setKeyframe(self.fluid_container, attribute='turbulenceStrength', time=1, value=3.5)
+        pm.setKeyframe(self.fluid_container, attribute="turbulenceStrength", time=1, value=3.5)
         # self.fluid_container.turbulenceStrength.set(0.1) # al frame 6
-        pm.setKeyframe(self.fluid_container, attribute='turbulenceStrength', time=6, value=0.1)
+        pm.setKeyframe(self.fluid_container, attribute="turbulenceStrength", time=6, value=0.1)
         self.fluid_container.turbulenceFrequency.set(0.5)
         self.fluid_container.turbulenceSpeed.set(0.5)
 
@@ -101,16 +101,16 @@ class Explosion(BaseFluid):
         self.fluid_container.temperatureScale.set(2.5)
 
         # self.fluid_container.buoyancy.set(1) # frame 1
-        pm.setKeyframe(self.fluid_container, attribute='buoyancy', time=1, value=1)
+        pm.setKeyframe(self.fluid_container, attribute="buoyancy", time=1, value=1)
         # self.fluid_container.buoyancy.set(125) #frame 10
-        pm.setKeyframe(self.fluid_container, attribute='buoyancy', time=10, value=125)
+        pm.setKeyframe(self.fluid_container, attribute="buoyancy", time=10, value=125)
 
         # self.fluid_container.temperaturePressure.set(0)# frame 1
-        pm.setKeyframe(self.fluid_container, attribute='temperaturePressure', time=1, value=0)
+        pm.setKeyframe(self.fluid_container, attribute="temperaturePressure", time=1, value=0)
         # self.fluid_container.temperaturePressure.set(6)# frame 3
-        pm.setKeyframe(self.fluid_container, attribute='temperaturePressure', time=3, value=6)
+        pm.setKeyframe(self.fluid_container, attribute="temperaturePressure", time=3, value=6)
         # self.fluid_container.temperaturePressure.set(0)# temperaturePressure 6
-        pm.setKeyframe(self.fluid_container, attribute='temperaturePressure', time=6, value=0)
+        pm.setKeyframe(self.fluid_container, attribute="temperaturePressure", time=6, value=0)
         self.fluid_container.temperaturePressureThreshold.set(0.5)
 
         self.fluid_container.temperatureDissipation.set(1)
@@ -145,15 +145,21 @@ class Explosion(BaseFluid):
         self.fluid_container.incandescence[0].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[1].incandescence_Position.set(0.1)
-        self.fluid_container.incandescence[1].incandescence_Color.set(0.143961, 0.0139806, 0.00832706, type="double3")
+        self.fluid_container.incandescence[1].incandescence_Color.set(
+            0.143961, 0.0139806, 0.00832706, type="double3"
+        )
         self.fluid_container.incandescence[1].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[2].incandescence_Position.set(0.2)
-        self.fluid_container.incandescence[2].incandescence_Color.set(0.896, 0.201495, 0, type="double3")
+        self.fluid_container.incandescence[2].incandescence_Color.set(
+            0.896, 0.201495, 0, type="double3"
+        )
         self.fluid_container.incandescence[2].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[3].incandescence_Position.set(0.5)
-        self.fluid_container.incandescence[3].incandescence_Color.set(2.5, 1.666667, 0.5, type="double3")
+        self.fluid_container.incandescence[3].incandescence_Color.set(
+            2.5, 1.666667, 0.5, type="double3"
+        )
         self.fluid_container.incandescence[3].incandescence_Interp.set(3)
 
         self.fluid_container.incandescence[4].incandescence_Position.set(1)

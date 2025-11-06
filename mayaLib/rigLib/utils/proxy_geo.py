@@ -5,7 +5,7 @@ a skinned mesh by duplicating and removing faces based on skin weights,
 useful for creating fast/medium/slow display hierarchy levels.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -25,7 +25,7 @@ def invert_selection(shape, faces):
     Returns:
         list: Selected face components (inverse of input faces)
     """
-    pm.select(shape + '.f[*]')
+    pm.select(shape + ".f[*]")
     pm.select(faces, deselect=True)
     # mel.eval('InvertSelection;')
     return pm.ls(sl=True)
@@ -48,6 +48,7 @@ class ProxyGeo:
         >>> proxy_meshes = proxy.get_proxy_geo_list()
         >>> fast_group = proxy.get_fast_geo_group()
     """
+
     def __init__(self, geo, do_parent_cnst=True, threshold=0.45):
         """Create per-joint proxy geometry from a skinned mesh.
 
@@ -69,14 +70,14 @@ class ProxyGeo:
             >>> proxy_meshes = proxy.get_proxy_geo_list()
         """
         self.proxy_geo_list = []
-        pivot_locator = pm.spaceLocator(n='pivotGeo_LOC')
+        pivot_locator = pm.spaceLocator(n="pivotGeo_LOC")
         # Create proxy geo Group
-        self.shape_grp = pm.group(n='fastGeo_GRP', em=True)
+        self.shape_grp = pm.group(n="fastGeo_GRP", em=True)
 
         # Get Shape and skin from Object
         skin_cluster = skin.find_related_skin_cluster(geo)
         if not skin_cluster:
-            print('Missing SkinCluster')
+            print("Missing SkinCluster")
         else:
             self.skin = skin_cluster
 
@@ -113,7 +114,7 @@ class ProxyGeo:
         :return: Mesh Shape for the Control
         """
         dupli_obj = pm.duplicate(obj)
-        pm.rename(dupli_obj, name.remove_suffix(joint) + '_PRX')
+        pm.rename(dupli_obj, name.remove_suffix(joint) + "_PRX")
 
         return dupli_obj[0], dupli_obj[0].getShape()
 
@@ -131,9 +132,9 @@ class ProxyGeo:
         verts = []
         skincluster = skin.find_related_skin_cluster(new_shape)
         for x in range(pm.polyEvaluate(new_shape, v=1)):
-            v = pm.skinPercent(skincluster, '%s.vtx[%d]' % (new_shape, x), transform=joint, q=1)
+            v = pm.skinPercent(skincluster, "%s.vtx[%d]" % (new_shape, x), transform=joint, q=1)
             if v > threshold:
-                verts.append('%s.vtx[%d]' % (new_shape, x))
+                verts.append("%s.vtx[%d]" % (new_shape, x))
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)

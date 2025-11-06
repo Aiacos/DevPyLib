@@ -10,14 +10,14 @@ import pymel.core as pm
 
 from mayaLib.rigLib.utils import flexiplane, name, util
 
-__all__ = ['StretchyIKChain']
+__all__ = ["StretchyIKChain"]
 
 
 def _ensure_node(target: Any) -> pm.PyNode:
     """Return the first PyNode for ``target`` or raise ``ValueError``."""
     nodes = pm.ls(target)
     if not nodes:
-        raise ValueError(f'Node {target!r} does not exist.')
+        raise ValueError(f"Node {target!r} does not exist.")
     return nodes[0]
 
 
@@ -28,14 +28,14 @@ def _build_distance_nodes(
 ) -> tuple[pm.PyNode, pm.PyNode, pm.PyNode, pm.PyNode]:
     """Create a distance dimension measuring the span of the IK chain."""
     distance_shape = pm.distanceDimension(
-        sp=joints[0].getTranslation(space='world'),
-        ep=joints[-1].getTranslation(space='world'),
+        sp=joints[0].getTranslation(space="world"),
+        ep=joints[-1].getTranslation(space="world"),
     )
     distance_transform = distance_shape.getParent()
 
     locators = pm.listConnections(distance_shape, s=True)
-    start_loc = pm.rename(locators[0], f'{prefix}DistanceStart_LOC')
-    end_loc = pm.rename(locators[1], f'{prefix}DistanceEnd_LOC')
+    start_loc = pm.rename(locators[0], f"{prefix}DistanceStart_LOC")
+    end_loc = pm.rename(locators[1], f"{prefix}DistanceEnd_LOC")
 
     pm.pointConstraint(joints[0], start_loc)
     pm.pointConstraint(ik_ctrl, end_loc)
@@ -71,7 +71,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
 
         prefix = name.remove_suffix(ik_handle_node.name())
         joint_list = pm.ikHandle(ik_handle_node, jointList=True, q=True)
-        end_joint = pm.listRelatives(joint_list[-1], c=True, type='joint')
+        end_joint = pm.listRelatives(joint_list[-1], c=True, type="joint")
         if end_joint:
             joint_list.append(end_joint[0])
         joint_nodes = [pm.PyNode(joint) for joint in joint_list]
@@ -83,9 +83,9 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         )
 
         multiply_divide = pm.shadingNode(
-            'multiplyDivide',
+            "multiplyDivide",
             asUtility=True,
-            n=f'{prefix}_multiplyDivide',
+            n=f"{prefix}_multiplyDivide",
         )
         multiply_divide.operation.set(2)
         pm.connectAttr(distance_shape.distance, multiply_divide.input1X, f=True)
@@ -95,7 +95,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
             total_distance += util.get_distance(start, end)
         multiply_divide.input2X.set(total_distance if total_distance else 1.0)
 
-        condition_node = pm.shadingNode('condition', asUtility=True, n=f'{prefix}_condition')
+        condition_node = pm.shadingNode("condition", asUtility=True, n=f"{prefix}_condition")
         condition_node.operation.set(2)
         pm.connectAttr(distance_shape.distance, condition_node.firstTerm, f=True)
         pm.connectAttr(multiply_divide.input2X, condition_node.secondTerm, f=True)
@@ -104,7 +104,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         for joint in joint_nodes[:-1]:
             pm.connectAttr(condition_node.outColorR, joint.scaleX, f=True)
 
-        stretchy_group = pm.group(start_loc, end_loc, distance_transform, n=f'{prefix}Stretchy_GRP')
+        stretchy_group = pm.group(start_loc, end_loc, distance_transform, n=f"{prefix}Stretchy_GRP")
         stretchy_group.visibility.set(0)
 
         self.ik_handle = ik_handle_node
@@ -126,7 +126,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
     def do_flexy_plane(self, prefix: str, stretchy: int = 1) -> None:
         """Add flexi-plane controls along the chain."""
         for index, joint in enumerate(self.joint_list[:-1]):
-            flex = flexiplane.Flexiplane(f'{prefix}{index}')
+            flex = flexiplane.Flexiplane(f"{prefix}{index}")
             global_ctrl, ctrl_a, ctrl_b, _ = flex.get_controls()
             pm.pointConstraint([joint, self.joint_list[index + 1]], global_ctrl)
             pm.parentConstraint(joint, ctrl_a)
@@ -135,5 +135,5 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
             pm.parent(flex.get_top_group(), self.stretchy_group)
 
 
-if __name__ == '__main__':
-    raise SystemExit('Invoke within Maya to construct stretchy IK chains.')
+if __name__ == "__main__":
+    raise SystemExit("Invoke within Maya to construct stretchy IK chains.")

@@ -186,9 +186,7 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
         print("select a skinned object")
 
     new_transform = OpenMaya.MFnTransform(node)
-    if not new_transform.childCount() or not new_transform.child(0).hasFn(
-        OpenMaya.MFn.kMesh
-    ):
+    if not new_transform.childCount() or not new_transform.child(0).hasFn(OpenMaya.MFn.kMesh):
         print("select a skinned object..")
 
     mesh = new_transform.child(0)
@@ -388,9 +386,9 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
                 index = inf + i * len(all_exist_in_maya)
                 old_weights = old_weight_doubles[all_exist_in_maya[inf] + len(maya_joints) * i]
 
-                weight_doubles[index] = weight_doubles[index] * soft_weights[
-                    i
-                ] + old_weights * (1.0 - soft_weights[i])
+                weight_doubles[index] = weight_doubles[index] * soft_weights[i] + old_weights * (
+                    1.0 - soft_weights[i]
+                )
 
     # SET WEIGHTS
     #
@@ -404,9 +402,7 @@ def b_load_vertex_skin_values(input_file, ignore_joint_locks):
     # print 'weight_doubles before: ', weight_doubles
 
     print("setting weights...")
-    fn_skin_cluster.setWeights(
-        b_skin_path, vtx_components, all_joints_indices, weight_doubles, 0
-    )
+    fn_skin_cluster.setWeights(b_skin_path, vtx_components, all_joints_indices, weight_doubles, 0)
 
     # select the vertices
     #
@@ -528,9 +524,7 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
             weights_string = " ".join(
                 [
                     "0" if x == 0 else str(x)
-                    for n, x in enumerate(
-                        weight_array[i * inf_count : (i + 1) * inf_count]
-                    )
+                    for n, x in enumerate(weight_array[i * inf_count : (i + 1) * inf_count])
                     if weight_check_array[n]
                 ]
             )
@@ -555,7 +549,6 @@ def b_save_skin_values(input_file):
     time_before = time.time()
 
     with open(input_file, "w", encoding="utf-8") as output:
-
         selection = OpenMaya.MSelectionList()
         OpenMaya.MGlobal.getActiveSelectionList(selection)
 
@@ -567,10 +560,8 @@ def b_save_skin_values(input_file):
             iterate.getDagPath(node, component)
             if not node.hasFn(OpenMaya.MFn.kTransform):
                 print(
-
-                        OpenMaya.MFnDagNode(node).name()
-                        + " is not a Transform node (need to select transform node of polyMesh)"
-
+                    OpenMaya.MFnDagNode(node).name()
+                    + " is not a Transform node (need to select transform node of polyMesh)"
                 )
             else:
                 object_name = OpenMaya.MFnDagNode(node).name()
@@ -595,9 +586,7 @@ def b_save_skin_values(input_file):
                             output.write(object_name + "\n")
 
                             for k in range(influents_count):
-                                joint_tokens = str(influence_array[k].fullPathName()).split(
-                                    "|"
-                                )
+                                joint_tokens = str(influence_array[k].fullPathName()).split("|")
                                 joint_tokens = joint_tokens[len(joint_tokens) - 1].split(":")
                                 output.write(joint_tokens[len(joint_tokens) - 1] + "\n")
 
@@ -605,9 +594,7 @@ def b_save_skin_values(input_file):
 
                             fn_vtx_comp = OpenMaya.MFnSingleIndexedComponent()
                             vtx_components = OpenMaya.MObject()
-                            vtx_components = fn_vtx_comp.create(
-                                OpenMaya.MFn.kMeshVertComponent
-                            )
+                            vtx_components = fn_vtx_comp.create(OpenMaya.MFn.kMeshVertComponent)
 
                             vertex_count = OpenMaya.MFnMesh(b_skin_path).numVertices()
                             for i in range(vertex_count):
@@ -667,9 +654,7 @@ def b_skin_object(object_name, file_joints, weights):
         joint_here = False
         it = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kJoint)
         while not it.isDone():
-            scene_joint_tokens = str(OpenMaya.MFnDagNode(it.item()).fullPathName()).split(
-                "|"
-            )
+            scene_joint_tokens = str(OpenMaya.MFnDagNode(it.item()).fullPathName()).split("|")
             if str(file_joints[joint_index]) == str(
                 scene_joint_tokens[len(scene_joint_tokens) - 1]
             ):
@@ -858,7 +843,6 @@ def b_load_skin_values(load_on_selection, input_file):
         return
 
     with open(input_file, encoding="utf-8") as input_stream:
-
         file_position = 0
         while True:
             line = input_stream.readline()
@@ -922,6 +906,7 @@ def get_soft_selection():
         dag_path.pop()  # Grab the parent of the shape node
         node = dag_path.fullPathName()
         fn_comp = OpenMaya.MFnSingleIndexedComponent(component)
+
         def get_weight(index):
             if fn_comp.hasWeights():
                 return fn_comp.weight(index).influence()

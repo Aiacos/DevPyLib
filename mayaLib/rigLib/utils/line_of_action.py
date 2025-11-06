@@ -239,9 +239,7 @@ def get_closest_point_and_uv(
     closest_polygon_ptr = closest_polygon_util.asIntPtr()
 
     # Compute the closest point on the mesh (in world space).
-    mesh_fn.getClosestPoint(
-        query, closest_point, OpenMaya.MSpace.kWorld, closest_polygon_ptr
-    )
+    mesh_fn.getClosestPoint(query, closest_point, OpenMaya.MSpace.kWorld, closest_polygon_ptr)
     closest_polygon = OpenMaya.MScriptUtil.getInt(closest_polygon_ptr)
 
     # Prepare MScriptUtil objects for retrieving U and V values.
@@ -259,9 +257,7 @@ def get_closest_point_and_uv(
         polygon_average_point += OpenMaya.MVector(mesh_points[vertex_index])
     if polygon_vertices_count > 0:
         polygon_average_point /= polygon_vertices_count
-    mesh_fn.getClosestPoint(
-        polygon_average_point, closest_point, OpenMaya.MSpace.kWorld
-    )
+    mesh_fn.getClosestPoint(polygon_average_point, closest_point, OpenMaya.MSpace.kWorld)
     mesh_fn.getUVAtPoint(closest_point, uv_point, OpenMaya.MSpace.kWorld)
 
     u = OpenMaya.MScriptUtil.getFloat2ArrayItem(uv_point, 0, 0)
@@ -434,19 +430,13 @@ def find_extremal_vertices(
 
             # Check if the intersection point lies within the bounding limits for the other axes.
             if axis == 0:
-                if (min_y - eps <= p_y <= max_y + eps) and (
-                    min_z - eps <= p_z <= max_z + eps
-                ):
+                if (min_y - eps <= p_y <= max_y + eps) and (min_z - eps <= p_z <= max_z + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
             elif axis == 1:
-                if (min_x - eps <= p_x <= max_x + eps) and (
-                    min_z - eps <= p_z <= max_z + eps
-                ):
+                if (min_x - eps <= p_x <= max_x + eps) and (min_z - eps <= p_z <= max_z + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
             else:  # axis == 2
-                if (min_x - eps <= p_x <= max_x + eps) and (
-                    min_y - eps <= p_y <= max_y + eps
-                ):
+                if (min_x - eps <= p_x <= max_x + eps) and (min_y - eps <= p_y <= max_y + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
 
     # Ensure we found at least two intersections.
@@ -594,9 +584,7 @@ def create_line_of_action(
     fibers_dir = main_axis_info[1]
 
     # Find the extremal vertices along the main axis.
-    extremal_vertices_data = find_extremal_vertices(
-        vertices, fibers_centroid, fibers_dir
-    )
+    extremal_vertices_data = find_extremal_vertices(vertices, fibers_centroid, fibers_dir)
 
     # Extract start and end points.
     start_point = extremal_vertices_data["start_point"]
@@ -611,9 +599,7 @@ def create_line_of_action(
     _, locator_start = create_rivet_at_point(
         skeleton_geo, start_point, rivet_start_name, space_scale
     )
-    _, locator_end = create_rivet_at_point(
-        skeleton_geo, end_point, rivet_end_name, space_scale
-    )
+    _, locator_end = create_rivet_at_point(skeleton_geo, end_point, rivet_end_name, space_scale)
 
     # Create a curve between the locators in world space.
     cv_name = f"{str(geo).replace('_geo', '')}{name_suffix}"

@@ -4,7 +4,7 @@ Provides the AiStandardSurface class for creating and configuring Arnold
 aiStandardSurface shaders with textures and properties.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 from mayaLib.shaderLib.base.shader_base import ShaderBase
 
@@ -12,7 +12,15 @@ from mayaLib.shaderLib.base.shader_base import ShaderBase
 class AiStandardSurface(ShaderBase):
     """Class for creating an aiStandardSurface shader."""
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='aiStandardSurface', standard=True, shading_engine=None):
+    def __init__(
+        self,
+        shader_name,
+        folder,
+        shader_textures,
+        shader_type="aiStandardSurface",
+        standard=True,
+        shading_engine=None,
+    ):
         """Initializes an aiStandardSurface shader.
 
         Args:
@@ -24,7 +32,14 @@ class AiStandardSurface(ShaderBase):
             shading_engine: Shading engine to use. Default is None.
         """
         # Initialize the base class
-        ShaderBase.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
+        ShaderBase.__init__(
+            self,
+            shader_name,
+            folder,
+            shader_textures,
+            shader_type=shader_type,
+            shading_engine=shading_engine,
+        )
         self.shader = ShaderBase.get_shader(self)
 
         self.folder = folder

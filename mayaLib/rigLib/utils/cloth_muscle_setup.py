@@ -10,6 +10,7 @@ from . import dynamic
 
 class ClothMuscle:
     """Helper that wires nCloth systems for muscle simulations."""
+
     def __init__(self, geo_list, collision_geo_list):
         """Initialise the cloth system and setup colliders.
 
@@ -17,14 +18,14 @@ class ClothMuscle:
             geo_list: Iterable of meshes to convert to nCloth.
             collision_geo_list: Meshes to turn into nRigid colliders.
         """
-        self.cloth_system_grp = pm.group(n='ClothSystem_grp', em=True)
-        self.cloth_geo_grp = pm.group(n='cloth_geo_grp', em=True, p=self.cloth_system_grp)
+        self.cloth_system_grp = pm.group(n="ClothSystem_grp", em=True)
+        self.cloth_geo_grp = pm.group(n="cloth_geo_grp", em=True, p=self.cloth_system_grp)
 
         self.cloth_data_list, self.nucleus = self.create_ncloth(geo_list)
         self.cloth_shape_list = [entry[3] for entry in self.cloth_data_list]
 
         # setup Nucleus
-        pm.rename(self.nucleus, 'clothSystem_nucleus')
+        pm.rename(self.nucleus, "clothSystem_nucleus")
         pm.parent(self.nucleus, self.cloth_system_grp)
 
         # self.nucleus.enable.set(0)
@@ -85,20 +86,20 @@ class ClothMuscle:
             grow_selection: Number of grow iterations for the vertex selection.
         """
         geo = pm.listConnections(cloth_node.inputMesh, s=True)[0]
-        print(('PAINT: ', geo))
+        print(("PAINT: ", geo))
 
         # paint middle
         pm.select(geo)
-        mel.eval('changeSelectMode -component;')
-        mel.eval('SelectAll;')
-        mel.eval('polySelectConstraint -pp 3;')
+        mel.eval("changeSelectMode -component;")
+        mel.eval("SelectAll;")
+        mel.eval("polySelectConstraint -pp 3;")
         pm.ls(sl=True)
         # mel.eval('polySelectContraint -dis;')
 
         for _ in range(grow_selection):
-            mel.eval('select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;')
+            mel.eval("select `ls -sl`;PolySelectTraverse 1;select `ls -sl`;")
 
-        mel.eval('invertSelection;')
+        mel.eval("invertSelection;")
 
         vtx_list = pm.ls(sl=True)
 
@@ -159,7 +160,7 @@ class ClothMuscle:
         vertex_select_list = []
         for vertex in vertices:
             try:
-                vertex_select_list.append(f'{geo}.vtx[{vertex}]')
+                vertex_select_list.append(f"{geo}.vtx[{vertex}]")
             except RuntimeError as exc:
                 pm.warning(f"Skip vertex {vertex}: {exc}")
 
@@ -209,4 +210,4 @@ class ClothMuscle:
 
 
 if __name__ == "__main__":
-    raise SystemExit('Run inside Maya to use cloth muscle utilities.')
+    raise SystemExit("Run inside Maya to use cloth muscle utilities.")

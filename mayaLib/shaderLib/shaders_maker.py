@@ -4,7 +4,7 @@ Provides tools for automatically creating shaders from organized
 texture file hierarchies with naming conventions.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import pymel.core as pm
 
@@ -28,8 +28,13 @@ class ShadersManager:
         >>> manager = ShadersManager(path='/project/sourceimages/', ext='exr')
         >>> # Automatically creates and assigns shaders for all texture sets
     """
-    def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr',
-                 auto_assing_shader=True):
+
+    def __init__(
+        self,
+        path=str(pm.workspace(q=True, dir=True, rd=True) + "sourceimages/"),
+        ext="exr",
+        auto_assing_shader=True,
+    ):
         """Initialize the ShadersManager class.
 
         Args:
@@ -43,7 +48,7 @@ class ShadersManager:
         Also handles texture file format conversion based on the active renderer.
         """
         # See active Renderer
-        self.render_engine = pm.ls('defaultRenderGlobals')[0].currentRenderer.get()
+        self.render_engine = pm.ls("defaultRenderGlobals")[0].currentRenderer.get()
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)
         self.texture_dict = self.file_manager.texture_dict
 
@@ -51,11 +56,13 @@ class ShadersManager:
         for geo_key in list(self.texture_dict.keys()):
             # check if is UDIM or, for all texture set
             for texture_set in list(self.texture_dict[geo_key].keys()):
-                if texture_set == 'UDIM':
+                if texture_set == "UDIM":
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    current_shader = shader.TextureShader(texture_path=self.file_manager.path,
-                                                         geo_name=geo_key,
-                                                         textureset_dict=textureset_dict)
+                    current_shader = shader.TextureShader(
+                        texture_path=self.file_manager.path,
+                        geo_name=geo_key,
+                        textureset_dict=textureset_dict,
+                    )
 
                     if auto_assing_shader:
                         current_shader.get_shader().assign_shader(geo_key)
@@ -63,20 +70,24 @@ class ShadersManager:
                     break
                 else:
                     textureset_dict = self.texture_dict[geo_key][texture_set]
-                    current_shader = shader.TextureShader(texture_path=self.file_manager.path,
-                                                         geo_name=texture_set,
-                                                         textureset_dict=textureset_dict)
+                    current_shader = shader.TextureShader(
+                        texture_path=self.file_manager.path,
+                        geo_name=texture_set,
+                        textureset_dict=textureset_dict,
+                    )
 
                     if auto_assing_shader:
                         current_shader.get_shader().assign_shader(geo_key)
 
         # set tx or tex file format
-        if self.render_engine == 'arnold':
+        if self.render_engine == "arnold":
             # for arnold should be default, conversion is done by Maya
             # texture_ext_path.replace_ext(ext='.tx')
             pass
-        elif self.render_engine == 'renderman':
-            texture_ext_path.replace_ext(ext='.tex', file_name_attribute='.filename', file_type='PxrTexture')
+        elif self.render_engine == "renderman":
+            texture_ext_path.replace_ext(
+                ext=".tex", file_name_attribute=".filename", file_type="PxrTexture"
+            )
 
 
 if __name__ == "__main__":

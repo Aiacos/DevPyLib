@@ -13,6 +13,7 @@ Args:
 Returns:
     None
 """
+
 import pymel.core as pm
 
 
@@ -43,7 +44,7 @@ def mesh_direct_connection(source, destination):
     # pm.disconnectAttr(source.outMesh, destination.inMesh)
 
     # If there are any original connections, reconnect them
-    if (len(in_back_up) > 0):
+    if len(in_back_up) > 0:
         # pass
         pm.connectAttr(in_back_up[0], destination.inMesh, f=True)
 

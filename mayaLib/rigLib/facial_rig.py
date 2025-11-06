@@ -4,7 +4,7 @@ Provides tools for creating facial rig setups using curves with
 locators and joints distributed along their length for facial animation.
 """
 
-__author__ = 'Lorenzo Argentieri'
+__author__ = "Lorenzo Argentieri"
 
 import maya.cmds as cmds
 
@@ -19,6 +19,7 @@ spacing = 1.0 / (points_number - 1)
 
 
 ## Main --wip
+
 
 def delete_connection(plug):
     """Delete connection from a plug (equivalent of MEL CBdeleteConnection).
@@ -39,7 +40,9 @@ def delete_connection(plug):
             cmds.delete(plug, icn=True)
 
 
-def path_mode(path, follow=False, sphere_size=0.1, offset_active=False, loc_size=0.1, joint_radius=0.1):
+def path_mode(
+    path, follow=False, sphere_size=0.1, offset_active=False, loc_size=0.1, joint_radius=0.1
+):
     """Create locators and joints distributed along a curve path.
 
     Args:
@@ -60,22 +63,22 @@ def path_mode(path, follow=False, sphere_size=0.1, offset_active=False, loc_size
     for p in range(0, points_number):
         # place locator
         locator = cmds.spaceLocator(n=name_builder_locator + str(p + 1))
-        cmds.setAttr(locator[0] + '.localScaleX', loc_size)
-        cmds.setAttr(locator[0] + '.localScaleY', loc_size)
-        cmds.setAttr(locator[0] + '.localScaleZ', loc_size)
+        cmds.setAttr(locator[0] + ".localScaleX", loc_size)
+        cmds.setAttr(locator[0] + ".localScaleY", loc_size)
+        cmds.setAttr(locator[0] + ".localScaleZ", loc_size)
         motion_path = cmds.pathAnimation(locator[0], c=path, f=follow)
-        delete_connection(motion_path + '.u')
-        cmds.setAttr(motion_path + '.uValue', spacing * p)
+        delete_connection(motion_path + ".u")
+        cmds.setAttr(motion_path + ".uValue", spacing * p)
         locator_list.append(locator[0])
         # place joint
         # - crea joint con il nome
         # - imparentalo al locator e freza le trasfmormazioni
         if offset_active:
             joint_offset = cmds.joint(n=name_builder_offset, r=joint_radius)
-            cmds.setAttr(joint_offset + '.radius', joint_radius)
+            cmds.setAttr(joint_offset + ".radius", joint_radius)
         # - altro joint (con nome) imparentato al primo sempre freezato (o duplica il primo)
         joint = cmds.joint(n=name_builder_joint, r=joint_radius)
-        cmds.setAttr(joint + '.radius', joint_radius)
+        cmds.setAttr(joint + ".radius", joint_radius)
         # - crea sfera e imparenta il nodo di shape al secondo joint
         sphere_obj = cmds.sphere(r=sphere_size, axis=(0, 1, 0))  # color based on L/R
         sphere_shape = cmds.listRelatives(sphere_obj, children=True, shapes=True)
@@ -89,7 +92,7 @@ if __name__ == "__main__":
     for cv in curve:
         # print(cv)
         loc_list.extend(path_mode(cv))
-    cmds.group(loc_list, n='locator_grp')
+    cmds.group(loc_list, n="locator_grp")
 
     ## --ToDo
 

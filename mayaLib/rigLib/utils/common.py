@@ -19,9 +19,7 @@ def center_pivot(obj, target_pivot=None):
     if target_pivot is None:
         pm.xform(obj, cp=1)
     else:
-        pivot_translate = pm.xform(
-            target_pivot, q=True, ws=True, rotatePivot=True
-        )
+        pivot_translate = pm.xform(target_pivot, q=True, ws=True, rotatePivot=True)
         pm.xform(obj, ws=True, pivots=pivot_translate)
 
 
@@ -82,16 +80,12 @@ def set_driven_key(driver, driver_value_list, driven, driven_value_list, cv_type
 
 def delete_unknown_nodes():
     """Delete unknown/unknownDag/unknownTransform nodes in the scene."""
-    unknown_list = pm.ls(
-        mel.eval("ls -type unknown -type unknownDag -type unknownTransform")
-    )
+    unknown_list = pm.ls(mel.eval("ls -type unknown -type unknownDag -type unknownTransform"))
     while unknown_list:
         for node in unknown_list:
             pm.lockNode(node, lock=False)
             pm.delete(node)
-        unknown_list = pm.ls(
-            mel.eval("ls -type unknown -type unknownDag -type unknownTransform")
-        )
+        unknown_list = pm.ls(mel.eval("ls -type unknown -type unknownDag -type unknownTransform"))
 
 
 def remove_shape_deformed():
