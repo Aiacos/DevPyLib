@@ -30,6 +30,9 @@
 -- This is the LEAST INVASIVE method - no global config changes needed!
 -- ============================================================================
 
+---@diagnostic disable: undefined-global
+-- vim is provided by Neovim runtime, not undefined
+
 -- Detect mayapy path
 local function detect_mayapy()
     -- Try detection script
