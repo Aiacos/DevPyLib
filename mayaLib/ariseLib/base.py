@@ -220,6 +220,8 @@ class BaseRig:
         Args:
             name (str): Name of the selection set.
             members (list): List of objects to add to the set.
+            parent (str | None): Optional parent set to add this set to.
+                If None and main_set exists, uses main_set. Defaults to None.
 
         Returns:
             PyNode: The created or existing object set.
@@ -358,12 +360,8 @@ class BaseRig:
 
         This function sets up the character for HumanIK, using the character's
         name as the name of the HumanIK character. It also sets the T-pose of
-        the character if enabled.
-
-        Args:
-            auto_t_pose (bool): Whether to go to T-pose after initialization.
+        the character if enabled (via self.auto_t_pose attribute).
         """
-
         # Define the control lists for the arms
         l_arms_ctrl_list = [
             "L_Arm_base_ctrl",
@@ -401,7 +399,6 @@ class BaseRig:
         Returns:
             None
         """
-
         object_skincluster_dict = {}
         skin_cluster_list = pm.ls(type="skinCluster")
         for skin_cluster in skin_cluster_list:
