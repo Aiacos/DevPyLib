@@ -169,7 +169,7 @@ def build_fk_controls(  # pylint: disable=too-many-locals
 
     for finger_root in pm.ls(top_finger_joints):
         finger_chain_controls: list[control.Control] = []
-        for joint_name in joint.listHierarchy(finger_root, withEndJoints=False):
+        for joint_name in joint.list_hierarchy(finger_root, include_end_joints=False):
             prefix = name.remove_suffix(joint_name)
             parent = (
                 finger_fk_offset
@@ -309,9 +309,9 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
             )[0]
         else:
             finger_joint = metacarpal
-        finger_end_joint = joint.listHierarchy(
+        finger_end_joint = joint.list_hierarchy(
             metacarpal,
-            withEndJoints=True,
+            include_end_joints=True,
         )[-1]
         top_finger_joint_list.append(finger_joint)
         end_finger_joint_list.append(finger_end_joint)

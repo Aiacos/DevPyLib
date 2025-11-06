@@ -463,32 +463,32 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
 
         if self.do_stretchy:
             stretchy_ik_chain.StretchyIKChain(
-                self.l_arm_rig.getMainLimbIK(),
-                self.l_arm_rig.getMainIKControl().getControl(),
-                doFlexyplane=self.do_flexyplane,
+                self.l_arm_rig.get_main_limb_ik(),
+                self.l_arm_rig.get_main_ik_control().get_control(),
+                do_flexyplane=self.do_flexyplane,
             )
             stretchy_ik_chain.StretchyIKChain(
-                self.r_arm_rig.getMainLimbIK(),
-                self.r_arm_rig.getMainIKControl().getControl(),
-                doFlexyplane=self.do_flexyplane,
+                self.r_arm_rig.get_main_limb_ik(),
+                self.r_arm_rig.get_main_ik_control().get_control(),
+                do_flexyplane=self.do_flexyplane,
             )
             stretchy_ik_chain.StretchyIKChain(
-                self.l_leg_rig.getMainLimbIK(),
-                self.l_leg_rig.getMainIKControl().getControl(),
-                doFlexyplane=self.do_flexyplane,
+                self.l_leg_rig.get_main_limb_ik(),
+                self.l_leg_rig.get_main_ik_control().get_control(),
+                do_flexyplane=self.do_flexyplane,
             )
             stretchy_ik_chain.StretchyIKChain(
-                self.r_leg_rig.getMainLimbIK(),
-                self.r_leg_rig.getMainIKControl().getControl(),
-                doFlexyplane=self.do_flexyplane,
+                self.r_leg_rig.get_main_limb_ik(),
+                self.r_leg_rig.get_main_ik_control().get_control(),
+                do_flexyplane=self.do_flexyplane,
             )
 
         ikfk_switch.installIKFK(
             [
-                self.l_arm_rig.getMainLimbIK(),
-                self.r_arm_rig.getMainLimbIK(),
-                self.l_leg_rig.getMainLimbIK(),
-                self.r_leg_rig.getMainLimbIK(),
+                self.l_arm_rig.get_main_limb_ik(),
+                self.r_arm_rig.get_main_limb_ik(),
+                self.l_leg_rig.get_main_limb_ik(),
+                self.r_leg_rig.get_main_limb_ik(),
             ]
         )
 

@@ -160,14 +160,14 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
                 clusters,
             )
             deform.blend_shape_deformer(
-                self.dyn_curve.getInputCurve(),
+                self.dyn_curve.get_input_curve(),
                 [self.control_curve],
                 node_name=f'{prefix}BlendShape',
                 front_of_chain=True,
             )
             deform.blend_shape_deformer(
                 self.chain_curve,
-                [self.dyn_curve.getOutputCurve()],
+                [self.dyn_curve.get_output_curve()],
                 node_name=f'{prefix}BlendShape',
                 front_of_chain=True,
             )

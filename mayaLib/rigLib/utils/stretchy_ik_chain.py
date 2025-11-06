@@ -132,7 +132,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
             pm.parentConstraint(joint, ctrl_a)
             pm.parentConstraint(self.joint_list[index + 1], ctrl_b)
             global_ctrl.enable.set(stretchy)
-            pm.parent(flex.getTopGrp(), self.stretchy_group)
+            pm.parent(flex.get_top_group(), self.stretchy_group)
 
 
 if __name__ == '__main__':

@@ -142,7 +142,7 @@ class Cloth(object):
         vtx_list = pm.ls(sl=True)
 
         # Paint the input attract weights of the cloth node
-        dynamic.clothPaintInputAttract(cloth_node, vtx_list, 0.4, smoothIteration=3)
+        dynamic.paint_cloth_input_attract(cloth_node, vtx_list, 0.4, smooth_iterations=3)
 
     def update_settings(self):
         """

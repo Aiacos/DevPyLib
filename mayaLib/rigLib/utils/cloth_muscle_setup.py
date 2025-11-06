@@ -102,7 +102,7 @@ class ClothMuscle:
 
         vtx_list = pm.ls(sl=True)
 
-        dynamic.clothPaintInputAttract(cloth_node, vtx_list, 0.4, smoothIteration=3)
+        dynamic.paint_cloth_input_attract(cloth_node, vtx_list, 0.4, smooth_iterations=3)
 
     def update_settings(self):
         """Apply default cloth solver settings.
