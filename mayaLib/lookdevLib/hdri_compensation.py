@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """HDRI exposure compensation utilities.
 
 Provides tools for adjusting HDRI intensity and exposure
-for consistent lighting.
+for consistent lighting across Arnold and RenderMan.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 

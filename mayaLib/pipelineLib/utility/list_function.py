@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Function discovery and introspection utilities.
 
-Provides tools for discovering available functions in modules
-for dynamic UI generation.
+Provides tools for discovering available functions and classes in modules
+for dynamic UI generation via the StructureManager class.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 

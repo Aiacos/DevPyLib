@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """File and texture path utilities.
 
 Provides functions for managing texture file paths, UDIM sequences,
 and texture file organization.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import os
 

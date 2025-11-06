@@ -1,10 +1,10 @@
-__author__ = "Lorenzo Argentieri"
-
 """Explosion fluid effect preset.
 
 Provides the Explosion class for creating explosion simulations with
 rapid expansion and dissipation properties.
 """
+
+__author__ = "Lorenzo Argentieri"
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid

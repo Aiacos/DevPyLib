@@ -1,10 +1,11 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Abstract base class for shader creation.
 
 Defines the interface for shader creation across different render engines
-with common material property methods.
+with common material property methods. Includes ShaderBase and
+UsdPreviewSurface classes.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 

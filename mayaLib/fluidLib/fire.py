@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Fire fluid effect preset.
 
 Provides the Fire class for creating fire simulations with appropriate
 container, emitter, and shading settings.
 """
+
+__author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid

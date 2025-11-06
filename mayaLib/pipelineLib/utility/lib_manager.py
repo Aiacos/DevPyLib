@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Library and module management utilities.
 
-Provides tools for managing Python library paths and module
-imports in Maya.
+Provides tools for managing Python library paths, module imports,
+and cross-platform DevPyLib installation in Maya environments.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import os
 import os.path

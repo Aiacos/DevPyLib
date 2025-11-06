@@ -1,10 +1,10 @@
-__author__ = "Lorenzo Argentieri"
-
 """Qt and Maya window integration utilities.
 
 Provides functions for getting Maya main window and integrating
 Qt widgets with Maya's UI system.
 """
+
+__author__ = "Lorenzo Argentieri"
 
 import maya.OpenMayaUI as OpenMayaUI
 

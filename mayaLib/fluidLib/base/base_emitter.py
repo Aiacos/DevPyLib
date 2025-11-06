@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Base fluid emitter configuration class.
 
 Provides the FlEmitter class for creating and configuring fluid emitters
 with volume and emission properties.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 

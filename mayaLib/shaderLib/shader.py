@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """High-level shader creation interface.
 
-Provides simplified functions for creating shaders with automatic
-texture setup and material property configuration.
+Provides simplified classes for creating shaders with automatic
+texture setup and material property configuration across multiple renderers.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import glob
 import os

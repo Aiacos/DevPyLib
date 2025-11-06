@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Batch shader creation from texture directories.
 
 Provides tools for automatically creating shaders from organized
 texture file hierarchies with naming conventions.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 

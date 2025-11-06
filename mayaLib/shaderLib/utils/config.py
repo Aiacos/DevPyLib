@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Shader configuration and settings.
 
 Provides configuration constants and settings for shader creation
 workflows.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 DIFFUSE = 'Diffuse'
 BACKLIGHT = 'Backlight'

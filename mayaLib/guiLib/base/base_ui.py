@@ -1,10 +1,10 @@
-__author__ = "Lorenzo Argentieri"
-
 """Introspective UI generator for Maya functions.
 
 Provides the FunctionUI class that automatically generates Qt widgets
 from function signatures using Python's inspect module for dynamic UIs.
 """
+
+__author__ = "Lorenzo Argentieri"
 
 import ast
 import inspect

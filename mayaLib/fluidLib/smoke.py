@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
+"""Smoke fluid effect presets.
 
-"""Smoke fluid effect preset.
-
-Provides the Smoke class for creating smoke simulations with appropriate
-container, emitter, and shading settings.
+Provides WispySmoke and ThickSmoke classes for creating smoke simulations
+with appropriate container, emitter, and shading settings.
 """
+
+__author__ = 'Lorenzo Argentieri'
 import pymel.core as pm
 
 from mayaLib.fluidLib.base.base_fluid import BaseFluid

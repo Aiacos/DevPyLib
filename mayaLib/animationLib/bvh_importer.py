@@ -1,34 +1,16 @@
-#
-# BVH Importer script for Maya.
-#
-# Importer for .bvh files (BioVision Hierachy files).
-# BVH is a common ascii motion capture data format containing skeletal and motion data.
-#
-# <license>
-# BVH Importer script for Maya.
-# Copyright (C) 2012  Jeroen Hoolmans
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# </license>
+"""BVH motion capture file importer for Maya.
+
+Importer for .bvh files (BioVision Hierarchy files).
+BVH is a common ASCII motion capture data format containing skeletal
+and motion data. Provides utilities for importing BVH motion capture
+data onto Maya skeletons with UI dialog and retargeting support.
+
+License:
+    GNU General Public License v3.0 or later.
+    Copyright (C) 2012 Jeroen Hoolmans.
+"""
 
 __author__ = "Jeroen Hoolmans"
-
-"""BVH motion capture file importer.
-
-Provides utilities for importing BVH motion capture data
-onto Maya skeletons.
-"""
 
 __copyright__ = "Copyright 2012, Jeroen Hoolmans"
 __credits__ = ["Jeroen Hoolmans"]

@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Maya menu creation utilities.
 
 Provides tools for creating and managing Maya menus with
 dynamic content.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import maya
 import pymel.core as pm

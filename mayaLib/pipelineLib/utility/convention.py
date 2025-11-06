@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Asset naming convention utilities.
 
 Provides functions for enforcing and validating studio asset
 naming conventions.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 class Convention():
     """Class to manage naming conventions of Maya assets

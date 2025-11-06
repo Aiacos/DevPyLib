@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Arnold shader creation utilities.
 
-Provides the ArnoldShader class for creating and configuring Arnold
+Provides the AiStandardSurface class for creating and configuring Arnold
 aiStandardSurface shaders with textures and properties.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 from mayaLib.shaderLib.base.shader_base import ShaderBase
 

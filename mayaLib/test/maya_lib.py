@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """MayaLib plugin registration example.
 
 Demonstrates creating a simple Maya plugin command for
 the DevPyLib library.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import sys
 

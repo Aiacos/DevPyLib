@@ -1,10 +1,10 @@
-__author__ = "Lorenzo Argentieri"
-
 """Main menu system for DevPyLib tools.
 
 Provides the MainMenu class that creates dynamic menus with
 automatic function discovery and UI generation.
 """
+
+__author__ = "Lorenzo Argentieri"
 
 import importlib
 import os

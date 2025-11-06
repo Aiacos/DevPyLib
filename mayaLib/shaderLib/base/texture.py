@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Texture node creation and management utilities.
 
 Provides utilities for creating and connecting Maya texture nodes including
-file textures, place2dTexture, and color correction nodes.
+file textures, place2dTexture, and PxrTexture nodes for different renderers.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import glob
 import os

@@ -1,10 +1,10 @@
-__author__ = "Lorenzo Argentieri"
-
 """Base fluid system combining containers and emitters.
 
 Provides the BaseFluid class that composes FluidContainer and FlEmitter
 to create complete fluid simulation setups.
 """
+
+__author__ = "Lorenzo Argentieri"
 
 import maya.mel as mel
 import pymel.core as pm

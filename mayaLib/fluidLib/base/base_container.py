@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Base fluid container configuration class.
 
 Provides the FluidContainer class for creating and configuring Maya 3D
 fluid containers with emission and render properties.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import maya.mel as mel
 import pymel.core as pm

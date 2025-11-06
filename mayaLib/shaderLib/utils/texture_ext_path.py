@@ -1,10 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
-
 """Texture external path management.
 
 Provides utilities for managing external texture file paths and
 resolving texture references.
 """
+
+__author__ = 'Lorenzo Argentieri'
 
 import pymel.core as pm
 
