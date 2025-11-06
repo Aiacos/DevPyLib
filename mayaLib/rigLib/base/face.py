@@ -39,7 +39,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         head_joint: str | None = None,
         points_number: int | None = None,
         scale: float | None = None,
-        base_rig: module.Module | None = None,
+        base_rig: module.Base | None = None,
         **legacy_kwargs: Any,
     ) -> None:
         """Initialise the facial rig builder."""

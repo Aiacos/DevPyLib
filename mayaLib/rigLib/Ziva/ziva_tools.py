@@ -5,9 +5,12 @@ Utilities for Ziva dynamics
 import maya.mel as mel
 import pymel.core as pm
 
-if pm.about(version=True) == '2022':
+try:
     import zBuilder.builders.ziva as zva
     import zBuilder.commands as zva_cmds
+except ImportError:
+    zva = None  # type: ignore[assignment]
+    zva_cmds = None  # type: ignore[assignment]
 
 
 def z_poly_combine(geos):

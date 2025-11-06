@@ -216,7 +216,7 @@ def build_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional
         shape='sphere',
     )
 
-    spaces.spaces(
+    spaces.create_space_switch(
         [body_attach_group, auto_elbow_ctrl],
         ['body', 'control'],
         pole_vector_ctrl.get_offset_grp(),
@@ -575,7 +575,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         do_smart_foot_roll: bool | None = None,
         prefix: str | None = None,
         rig_scale: float | None = None,
-        base_rig: module.Module | None = None,
+        base_rig: module.Base | None = None,
         **legacy_kwargs: Any,
     ) -> None:
         """Initialise the limb rig builder."""
@@ -625,7 +625,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
             ('doSmartFootRool',),
             True,
         )
-        rig_scale = parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0)
+        rig_scale = cast(float, parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0))
         base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
 
         if legacy_kwargs:
@@ -633,8 +633,8 @@ class Limb:  # pylint: disable=too-many-instance-attributes
                 f'Unexpected arguments for Limb: {tuple(legacy_kwargs.keys())}'
             )
 
-        limb_joints = list(limb_joints)
-        top_finger_joints = list(top_finger_joints)
+        limb_joints = list(cast(Sequence[str], limb_joints))
+        top_finger_joints = list(cast(Sequence[str], top_finger_joints))
         if not limb_joints:
             raise ValueError('limb_joints must contain at least one joint.')
 
@@ -1077,7 +1077,7 @@ class Arm(Limb):
         do_ik: bool = True,
         prefix: str | None = None,
         rig_scale: float = 1.0,
-        base_rig: module.Module | None = None,
+        base_rig: module.Base | None = None,
         **legacy_kwargs: Any,
     ) -> None:
         """Initialise the arm rig builder."""

@@ -9,8 +9,10 @@ from pathlib import Path
 import maya.mel as mel
 import pymel.core as pm
 
-if pm.about(version=True) == "2022":
+try:
     import zBuilder.builders.ziva as zva
+except ImportError:
+    zva = None  # type: ignore[assignment]
 
 from mayaLib.rigLib.utils import deform
 from mayaLib.rigLib.utils import util as util
