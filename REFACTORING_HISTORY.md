@@ -12,10 +12,10 @@
 Complete refactoring achieving 100% PEP 8 compliance with snake_case naming conventions across 28,000+ lines of code, including full docstring coverage.
 
 ### Key Achievements
-- **1,899 total violations eliminated** (100% compliance)
+- **1,904 total violations eliminated** (100% compliance)
 - **278 legacy aliases removed**
 - **54 ruff code quality issues fixed**
-- **97 runtime errors fixed** (52 attribute naming + 45 function/method calls)
+- **102 runtime errors fixed** (52 attribute naming + 50 function/method/parameter calls)
 - **0 critical bugs remaining**
 - **328+ docstrings added** (125 initial + 25 module + 178 function/method/class)
 - **42-global anti-pattern eliminated**
@@ -272,12 +272,12 @@ API compatibility:      PASS ✅
 - **Added 178 function/method/class docstrings (D101/D102/D103) - 100% coverage achieved**
   - 5 production code docstrings (bifrost_util_nodes.py, stage_builder.py, tension_map.py, set_muscle_weight.py)
   - 173 test/ directory docstrings across 6 files (facial3.py: 148, object_along_curve.py: 16, rope.py: 14, collision_deformer.py: 7, maya_lib.py: 5, ng_batch_save_load.py: 2)
-- **Fixed 97 runtime errors from incomplete Session 1-7 refactoring**:
-  - 45 camelCase function/method calls → snake_case (skin, joint, attributes, common, dynamic, Flexiplane, DynamicCurve modules)
+- **Fixed 102 runtime errors from incomplete Session 1-7 refactoring**:
+  - 50 camelCase function/method/parameter calls → snake_case (skin, joint, attributes, common, dynamic, Flexiplane, DynamicCurve, Module modules)
   - 52 attribute naming errors (partsNoTransGrp, controlsGrp, etc. → snake_case)
   - 3 invalid Control() parameters removed (obj_bbox)
 - Documented remaining issues: 102 intentional F401 in __init__.py, 32 acceptable C901 complexity
-- Modified: 61 files total (10 ruff fixes + 25 module docs + 11 function/method docs + 9 initial runtime fixes + 6 additional runtime fixes)
+- Modified: 66 files total (10 ruff fixes + 25 module docs + 11 function/method docs + 9 initial runtime fixes + 6 additional runtime fixes + 5 parameter fixes)
 
 ### Session 8 Commits
 1. `Docs: Add detailed test structure guide - test organization explained` ✅ (256e469)
@@ -289,12 +289,14 @@ API compatibility:      PASS ✅
 7. `Fix: Resolve attribute and method naming errors in core rig modules (5 errors)` ✅ (47cbe10) [REFACTORING_HISTORY.md update]
 8. `Fix: Correct method calls in main_menu, limb, ik_chain, stretchy_ik_chain, dynamic (5 errors)` ✅ (d4c63ba)
 9. `Fix: Correct 23 runtime errors from incomplete refactoring` ✅ (0090229)
+10. `Docs: Update refactoring history with 23 additional runtime error fixes` ✅ (d0da1a3)
+11. `Fix: Correct parameter naming - baseRig/baseObj to snake_case (5 errors)` ✅ (dc294b2)
 
-### Runtime Errors Fixed (97 total)
+### Runtime Errors Fixed (102 total)
 
 **Critical Issues**: These errors would have caused `AttributeError` or `TypeError` exceptions at runtime when the refactored code was executed in Maya.
 
-#### Function/Method Call Errors (45 fixes):
+#### Function/Method/Parameter Call Errors (50 fixes):
 - **skin module** (6 fixes):
   - `skin.findRelatedSkinCluster()` → `skin.find_related_skin_cluster()` (4x)
   - `skin.copyBind()` → `skin.copy_bind()` (1x)
@@ -330,10 +332,14 @@ API compatibility:      PASS ✅
 - **StretchyIKChain class** (2 fixes - parameter naming):
   - `StretchyIKChain(..., doFlexyplane=)` → `StretchyIKChain(..., do_flexyplane=)` (4x)
   - Also includes parameter rename: `smoothIteration=` → `smooth_iterations=` (2x)
+- **DynamicCurve class** (1 fix - parameter naming):
+  - `DynamicCurve(..., baseRig=)` → `DynamicCurve(..., base_rig=)` (1x) [CRITICAL - no legacy support]
+- **Module class** (4 fixes - parameter naming):
+  - `Module(..., baseObj=)` → `Module(..., base_obj=)` (4x) [has legacy support but deprecated]
 - **FootRoll class** (1 fix):
   - `foot_roll.get_ik_finger_list()` method call verified (was already correct)
 
-**Files affected**: face.py, rig.py, proxy_geo.py, pxr_control.py, limb.py, ziva_util.py, cloth.py, cloth_muscle_setup.py, ik_chain.py, stretchy_ik_chain.py, dynamic.py, main_menu.py
+**Files affected**: face.py, rig.py, proxy_geo.py, pxr_control.py, limb.py, neck.py, spine.py, ziva_util.py, cloth.py, cloth_muscle_setup.py, ik_chain.py, stretchy_ik_chain.py, dynamic.py, main_menu.py
 
 #### Module Attribute Errors (52 fixes):
 - **Invalid parameter** (3 fixes):
