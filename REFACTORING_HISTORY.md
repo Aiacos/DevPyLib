@@ -267,8 +267,8 @@ API compatibility:      PASS ✅
 - Modified: 10 files
 
 ### Session 8 Commits
-1. `Docs: Add detailed test structure guide - test organization explained` ✅
-2. `Style: Fix ruff violations - whitespace, imports, duplicates (29 issues)` (Pending)
+1. `Docs: Add detailed test structure guide - test organization explained` ✅ (256e469)
+2. `Style: Fix ruff violations - whitespace, imports, duplicates (29 issues)` ✅ (efd3ea0)
 
 ---
 
