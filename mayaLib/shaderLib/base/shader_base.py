@@ -314,8 +314,7 @@ class UsdPreviewSurface(ShaderBase):
 
     def __init__(self, shader_name, folder, shader_textures, shader_type='usdPreviewSurface', standard=True, shading_engine=None):
         # init base class
-        """
-        Initializes an usdPreviewSurface shader.
+        """Initializes an usdPreviewSurface shader.
 
         Args:
             shader_name (str): Name of the geometry or texture set.
@@ -339,8 +338,7 @@ class UsdPreviewSurface(ShaderBase):
 
 
     def connect_textures(self, textures):
-        """
-        Connects a list of textures to the shader.
+        """Connects a list of textures to the shader.
 
         Args:
             textures (list): List of texture paths
@@ -376,8 +374,7 @@ class UsdPreviewSurface(ShaderBase):
                 self.connect_displace(self.shader_name, tex)
 
     def connect_normal(self, texture, slot_name, colorspace=False):
-        """
-        Connects a normal map texture to a shader slot.
+        """Connects a normal map texture to a shader slot.
 
         Args:
             texture (str): The texture file path.

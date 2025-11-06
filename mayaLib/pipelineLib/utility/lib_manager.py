@@ -24,6 +24,8 @@ from textwrap import dedent
 import git
 import pymel.core as pm
 
+# Global variable for download progress tracking
+start_time = 0.0
 
 # import installCmd
 def build_install_cmd(lib_dir, lib_name, port):
@@ -101,8 +103,7 @@ class InstallLibrary:
         >>> installer.install_in_maya_user_setup()
     """
     def __init__(self, dev_mode=False, parent=None, lib_dir=None):
-        """
-        Initialize the InstallLibrary.
+        """Initialize the InstallLibrary.
 
         Args:
             dev_mode (bool, optional): Install in development mode. Defaults to False.
@@ -163,8 +164,7 @@ class InstallLibrary:
         self.dev_mode = dev_mode
 
     def install_from_git(self, git_url='https://github.com/Aiacos/DevPyLib'):
-        """
-        Install the library by cloning the git repository.
+        """Install the library by cloning the git repository.
 
         Args:
             git_url (str, optional): The git repository URL. Defaults to 'https://github.com/Aiacos/DevPyLib'.
@@ -183,8 +183,7 @@ class InstallLibrary:
             return False
 
     def pull_from_git(self):
-        """
-        Pull the latest changes from the git repository.
+        """Pull the latest changes from the git repository.
 
         Returns:
             bool: True if successful, False if not.
@@ -200,8 +199,7 @@ class InstallLibrary:
             return False
 
     def copy_to_maya_env(self):
-        """
-        Copy the library paths to the Maya environment file (Maya.env) for the current user.
+        """Copy the library paths to the Maya environment file (Maya.env) for the current user.
 
         This function ensures that the specified library directory is added to the Maya environment
         by checking if the entries for `MAYA_APP_DIR` and `PYTHONPATH` are already present in the
@@ -262,8 +260,7 @@ class InstallLibrary:
             return False
 
     def update_dev_mode(self, dev_path=False):
-        """
-        Update the development mode settings for the library.
+        """Update the development mode settings for the library.
 
         Args:
             dev_path (str, optional): The development path to set. Defaults to False.
@@ -282,8 +279,7 @@ class InstallLibrary:
         self.install_command = build_install_cmd(self.lib_dir, self.lib_name, self.port)
 
     def install_in_maya_user_setup(self):
-        """
-        Install the library in Maya user setup.
+        """Install the library in Maya user setup.
 
         This method writes the installation command into Maya user setup file.
         If the file does not exist, it creates a new one.
@@ -310,8 +306,7 @@ class InstallLibrary:
             print('ERROR: Directory not exist!')
 
     def install(self):
-        """
-        Install the library by performing the following actions:
+        """Install the library by performing the following actions:
 
         1. Uninstall any existing installation.
         2. Download the library if not in development mode.
@@ -337,8 +332,7 @@ class InstallLibrary:
         # pip.main(['install', 'numpy'])
 
     def uninstall(self):
-        """
-        Uninstall the library by performing the following actions:
+        """Uninstall the library by performing the following actions:
 
         1. Remove the line in the Maya user setup script
            that imports the library.
@@ -361,8 +355,7 @@ class InstallLibrary:
         self.delete()
 
     def reporthook(self, count, block_size, total_size):
-        """
-        Report hook for urlretrieve that prints the percentage of the
+        """Report hook for urlretrieve that prints the percentage of the
         file downloaded to the console.
 
         Args:
@@ -386,8 +379,7 @@ class InstallLibrary:
         sys.stdout.flush()
 
     def download(self, zip_filename='master.zip'):
-        """
-        Download the library from the given URL.
+        """Download the library from the given URL.
 
         This method will download the library to the given path, unzip it,
         and then remove the zip file. Cross-platform implementation using zipfile.
@@ -436,8 +428,7 @@ class InstallLibrary:
             print(f"Error removing zip file: {e}")
 
     def delete(self):
-        """
-        Delete the DevPyLib-master directory from the Maya script path.
+        """Delete the DevPyLib-master directory from the Maya script path.
 
         Cross-platform implementation using shutil.
 

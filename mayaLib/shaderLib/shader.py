@@ -42,8 +42,7 @@ class TextureShader():
         >>> shader = ts.get_shader()
     """
     def __init__(self, texture_path, geo_name, textureset_dict, single_place_node=True):
-        """
-        Initialize the class.
+        """Initialize the class.
 
         Args:
             texture_path (str): Path to the texture files.
@@ -64,8 +63,7 @@ class TextureShader():
             print('No valid active render engine')
 
     def build_ai_standard(self, texture_path, geo_name, textureset_dict, single_place_node=True):
-        """
-        Build an aiStandardSurface shader and connect it with all associated textures.
+        """Build an aiStandardSurface shader and connect it with all associated textures.
 
         Args:
             texture_path (str): Path to the texture files.
@@ -90,8 +88,7 @@ class TextureShader():
         return AiStandardSurface(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def build_pxr_disney_bsdf(self, texture_path, geo_name, textureset_dict, pxr_texture_node=True, single_place_node=True):
-        """
-        Build a PxrDisneyBSDF shader and connect it with all associated textures.
+        """Build a PxrDisneyBSDF shader and connect it with all associated textures.
 
         Args:
             texture_path (str): Path to the texture files.
@@ -111,8 +108,7 @@ class TextureShader():
         return PxrDisneyBSDF(shader_name=geo_name, file_node_dict=self.filenode_dict)
 
     def get_shader(self):
-        """
-        Get the shader created by the Shader class.
+        """Get the shader created by the Shader class.
 
         Returns:
             shader (pm.nt.Shader): The shader created by the Shader class.
@@ -134,8 +130,7 @@ class BuildAllShaders(object):
         >>> # Automatically creates shaders for all texture sets found
     """
     def __init__(self, folder):
-        """
-        Initialize the BuildAllShaders class.
+        """Initialize the BuildAllShaders class.
 
         Args:
             folder (str): Path to the directory containing texture files.
@@ -158,8 +153,7 @@ class ConvertShaders(object):
             'usd', '3delight', and 'renderman'.
     """
     def __init__(self, to_shader_type):
-        """
-        Initialize ConvertShaders class
+        """Initialize ConvertShaders class
 
         Args:
             to_shader_type (str): Type of shader to create. Options are 'standard',
@@ -213,8 +207,7 @@ class ConvertShaders(object):
 
 
     def get_materials_in_scene(self):
-        """
-        Yields all materials in the scene by iterating over all ShadingEngines and
+        """Yields all materials in the scene by iterating over all ShadingEngines and
         checking if they have a material connected to them.
 
         Returns:
@@ -228,8 +221,7 @@ class ConvertShaders(object):
                     yield material
 
     def get_main_texture(self, shader):
-        """
-        Retrieves the main texture path and list of texture filenames connected to a shader.
+        """Retrieves the main texture path and list of texture filenames connected to a shader.
 
         Args:
             shader (pm.nt.Shader): The shader node from which to extract texture information.
@@ -264,8 +256,7 @@ class ConvertShaders(object):
             return '', []
 
     def search_texture(self, path, texture_list):
-        """
-        Searches for textures in a given path that match the name of the last
+        """Searches for textures in a given path that match the name of the last
         texture in the given list.
 
         Args:
@@ -289,8 +280,7 @@ class ConvertShaders(object):
             return []
 
     def reconnect_filenode(self, shader, new_shader):
-        """
-        Reconnects file nodes of a shader to a new shader. It checks all sockets of the shader
+        """Reconnects file nodes of a shader to a new shader. It checks all sockets of the shader
         and if they are connected, it connects them to the new shader's sockets with the same name.
 
         Parameters:
@@ -356,13 +346,11 @@ class ConvertShaders(object):
 
 
 class ShaderFromJson(object):
-    """
-    Create file Reading JSON File
+    """Create file Reading JSON File
     """
 
     def __init__(self, json_filepath, to_shader_type):
-        """
-        Initialize the ShaderFromJson class.
+        """Initialize the ShaderFromJson class.
 
         Args:
             json_filepath (str): Path to the JSON file containing shader data.

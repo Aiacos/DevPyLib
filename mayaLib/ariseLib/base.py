@@ -12,8 +12,7 @@ from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 class BaseRig:
-    """
-    A base class for rigging operations in Maya.
+    """A base class for rigging operations in Maya.
 
     This class provides methods for setting up display layers, connecting controls,
     and managing rig components like HumanIK and facial rigs.

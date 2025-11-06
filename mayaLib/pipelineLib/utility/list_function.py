@@ -19,14 +19,12 @@ import mayaLib as mLib
 
 
 class StructureManager():
-    """
-    Manage Lib Structure
+    """Manage Lib Structure
     """
     # root_package = ''
 
     def __init__(self, lib):
-        """
-        Initialize the class with the root package
+        """Initialize the class with the root package
         """
         self.root_package = lib
         self.struct_lib = {}
@@ -82,8 +80,7 @@ class StructureManager():
         # func()
 
     def dict_merge(self, dct, merge_dct):
-        """
-        Recursively merges two dictionaries.
+        """Recursively merges two dictionaries.
 
         If both dictionaries have a key with dictionary values, the function
         will recursively merge those dictionary values. Otherwise, the value
@@ -177,8 +174,7 @@ class StructureManager():
         return module_list
 
     def get_all_class(self, module_str):
-        """
-        Return a list of all classes in the given module.
+        """Return a list of all classes in the given module.
 
         Args:
             module_str (str): The name of the module to inspect.
@@ -208,8 +204,7 @@ class StructureManager():
         return method_list
 
     def get_all_function(self, module_str):
-        """
-        Return a list of all functions in the given module.
+        """Return a list of all functions in the given module.
 
         Args:
             module_str (str): The name of the module to inspect.
@@ -232,8 +227,7 @@ class StructureManager():
             return ''
 
     def explore_package(self, module_name):
-        """
-        Explore the given package and return a list of all sub packages
+        """Explore the given package and return a list of all sub packages
         """
         package_list = []
         if ('licenseRegister' not in module_name) and ('fix_loa_connection' not in module_name):
@@ -250,8 +244,7 @@ class StructureManager():
         return package_list
 
     def nested_dict_iter(self, dictionary):
-        """
-        Iterate the nested dictionary and print the values
+        """Iterate the nested dictionary and print the values
         """
         for k, v in dictionary.items():
             if isinstance(v, dict):

@@ -14,8 +14,7 @@ import mayaLib.fluidLib.base.base_emitter
 
 
 class BaseFluid(object):
-    """
-    Class for creating and managing a fluid container and emitter.
+    """Class for creating and managing a fluid container and emitter.
 
     Attributes:
         fluid_shape (pymel.core.nodetypes.Fluid): The Fluid Shape Node.
@@ -24,8 +23,7 @@ class BaseFluid(object):
     """
 
     def __init__(self, fluid_name="", base_res=32, emit_obj=None):
-        """
-        Initializes the fluid container and emitter.
+        """Initializes the fluid container and emitter.
 
         Args:
             fluid_name (str): The name of the fluid.
@@ -51,8 +49,7 @@ class BaseFluid(object):
         self.setup_fluid_shape(base_res)
 
     def get_fluid_shape(self):
-        """
-        Returns the fluid shape node.
+        """Returns the fluid shape node.
 
         Returns:
             pymel.core.nodetypes.Fluid: The fluid shape node.
@@ -60,8 +57,7 @@ class BaseFluid(object):
         return self.fluid_shape
 
     def get_fluid_emitter(self):
-        """
-        Returns the fluid emitter node.
+        """Returns the fluid emitter node.
 
         Returns:
             pymel.core.nodetypes.FluidEmitter: The fluid emitter node.
@@ -69,8 +65,7 @@ class BaseFluid(object):
         return self.fluid_emit
 
     def setup_fluid_shape(self, base_res=32):
-        """
-        Sets up the fluid shape node.
+        """Sets up the fluid shape node.
 
         Args:
             base_res (int): The base resolution of the fluid.
@@ -97,14 +92,12 @@ class BaseFluid(object):
         self.fluid_shape.selfShadowing.set(1)
 
     def setup_emitter(self):
-        """
-        Sets up the fluid emitter node.
+        """Sets up the fluid emitter node.
         """
         pass
 
     def old_creator(self, fluid_name):
-        """
-        Legacy method for creating a fluid emitter.
+        """Legacy method for creating a fluid emitter.
 
         Args:
             fluid_name (str): The name of the fluid.

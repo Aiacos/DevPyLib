@@ -10,8 +10,7 @@ USD_PURPOSES = {"render", "proxy", "guide", "default"}
 
 
 def ensure_string_attr(node, attr_name):
-    """
-    Ensure a string attribute exists on a Maya node.
+    """Ensure a string attribute exists on a Maya node.
 
     Args:
         node (pm.PyNode): The node to add the attribute to.
@@ -24,8 +23,7 @@ def ensure_string_attr(node, attr_name):
 
 
 def ensure_bool_attr(node, attr_name, default=False):
-    """
-    Ensure a boolean attribute exists on a Maya node.
+    """Ensure a boolean attribute exists on a Maya node.
 
     Args:
         node (pm.PyNode): The node to add the attribute to.

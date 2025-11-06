@@ -44,8 +44,7 @@ FILE_EXT = '.data'
 PACK_EXT = '.list'
 
 def maya_main_window():
-    """
-        Return the Maya main window widget as a Python object
+    """Return the Maya main window widget as a Python object
         """
     main_window_ptr = omui.MQtUtil.mainWindow()
     pythonVersion = sys.version_info.major
@@ -3613,8 +3612,7 @@ def getCurrentWeights(skin_cls, dag_path, components):
 
 
 def encode_data_to_attr(node, attr_name, data):
-    """
-        Dump data into a string attriubte
+    """Dump data into a string attriubte
         Args:
                 node (pm.nt.DagNode): node to get data
                 attr_name (str):  name of attribute
@@ -3629,8 +3627,7 @@ def encode_data_to_attr(node, attr_name, data):
 
 
 def decode_data_from_attr(node, attr_name):
-    """
-        Return data from string attriute
+    """Return data from string attriute
         Args:
                 node (pm.nt.DagNode): node to get data
                 attr_name (str):  name of attribute
@@ -3644,8 +3641,7 @@ def decode_data_from_attr(node, attr_name):
 
 
 def detach_bind_joints():
-    """
-        Detach bind joints from rig.
+    """Detach bind joints from rig.
         Adds a custom compound attribute (connected_nodes) to what the node was connected to
         """
     SKIN_JNT_GRP = '*facialRig_skinJnt_grp'
@@ -3707,8 +3703,7 @@ def attach_bind_joints():
 
 
 def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2, left_prefix='left', right_prefix='right', center_prefix='center', suffix=''):
-    """
-        Given a list of pm.nt.Transforms and a search name, rename objects based on the
+    """Given a list of pm.nt.Transforms and a search name, rename objects based on the
         X axis world position in order starting from lowest(0) to highest position(nth)
         The center tolerance is used to test if an object is close enough to the center origin
         to be named 'center'

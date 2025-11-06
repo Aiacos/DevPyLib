@@ -31,8 +31,7 @@ def invert_selection(shape, faces):
 
 
 class PxrStyleCtrl():
-    """
-    Create Geometry control like PIXAR
+    """Create Geometry control like PIXAR
     """
 
     def __init__(self, obj, delete_old_shape_grp=True):
@@ -97,9 +96,7 @@ class PxrStyleCtrl():
         print('DONE!')
 
     def duplicate_source_mesh(self, obj, ctrl):
-        """
-
-        :param obj:
+        """:param obj:
         :param ctrl:
         :return: Mesh Shape for the Control
         """

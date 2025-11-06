@@ -10,16 +10,14 @@ import pymel.core as pm
 
 
 class FlEmitter():
-    """
-    Emitter Class
+    """Emitter Class
 
     Attributes:
         emitter (list): A list containing the emitter object
     """
 
     def __init__(self, name='', obj=None):
-        """
-        Initializes an emitter object
+        """Initializes an emitter object
 
         Args:
             name (str): The name of the emitter, defaults to ''
@@ -39,8 +37,7 @@ class FlEmitter():
         self.emitter = pm.ls(emitter)
 
     def get_emitter(self):
-        """
-        Returns the emitter object
+        """Returns the emitter object
 
         Returns:
             list: A list containing the emitter object

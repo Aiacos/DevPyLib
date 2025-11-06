@@ -12,8 +12,7 @@ from mayaLib.fluidLib.utility import density_color, math_function
 
 
 class Fire(BaseFluid):
-    """
-    Fire Preset
+    """Fire Preset
     """
 
     def __init__(self, fluid_name='', base_res=32, emit_obj=None):
@@ -106,8 +105,7 @@ class Fire(BaseFluid):
         self.fluid_container.opacityInputBias.set(0.35)
 
     def opacity_graph(self, sampling=20):
-        """
-        Create an opacity graph for the fire.
+        """Create an opacity graph for the fire.
 
         The opacity graph is a simple curve that goes from 0 to 1 and then
         comes back to 0. It is used to fade out the fire at the end of its

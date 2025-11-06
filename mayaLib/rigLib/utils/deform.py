@@ -17,8 +17,7 @@ from maya import mel
 
 
 def remove_shape_deformed():
-    """
-    Remove the suffix "Deformed" from all deformed geometry shape nodes.
+    """Remove the suffix "Deformed" from all deformed geometry shape nodes.
     """
     # Get all deformed geometry shape nodes
     shape_deformed_node_list = pm.ls("*ShapeDeformed", "*:*ShapeDeformed")
@@ -31,8 +30,7 @@ def remove_shape_deformed():
 
 
 def reorder_deformer(node, geo_list, search_type="skincluster"):
-    """
-    Reorder deformers on a list of geometry.
+    """Reorder deformers on a list of geometry.
 
     Args:
         node (PyNode): The deformer node to reorder.
@@ -48,8 +46,7 @@ def reorder_deformer(node, geo_list, search_type="skincluster"):
 
 
 def paint_deformer_weights(channel, vtx_list, value, smooth_iteration=1):
-    """
-    Paint deformer weights on selected vertices.
+    """Paint deformer weights on selected vertices.
 
     Args:
         channel (str): Channel to paint weights on.
@@ -221,8 +218,7 @@ class PaintDeformer(object):
 
 
 def add_meshes_to_deformer(obj_list, deformer):
-    """
-    Adds the given list of objects to the given deformer.
+    """Adds the given list of objects to the given deformer.
 
     Args:
         obj_list (list): List of objects (meshes) to add to the deformer.
@@ -236,8 +232,7 @@ def add_meshes_to_deformer(obj_list, deformer):
 
 
 def add_meshes_to_wrap(obj_list, wrap_target):
-    """
-    Adds the specified list of objects to a wrap deformer with the given wrap target.
+    """Adds the specified list of objects to a wrap deformer with the given wrap target.
 
     This function selects the wrap target and the provided list of objects,
     and then executes a MEL command to add the objects as influences to the
@@ -260,8 +255,7 @@ def add_meshes_to_wrap(obj_list, wrap_target):
 
 
 def create_proximity_wrap(source, target_list):
-    """
-    Creates a proximity with the given source and target transforms.
+    """Creates a proximity with the given source and target transforms.
 
     Args:
         source (pm.nodetypes.Transform): Transform with skinned mesh that will drive given target.
@@ -294,8 +288,7 @@ def blend_shape_deformer(
     default_value=None,
     front_of_chain=False,
 ):
-    """
-    Create a blendshape deformer using the given parameters.
+    """Create a blendshape deformer using the given parameters.
 
     Args:
         base: The base object.
@@ -325,8 +318,7 @@ def blend_shape_deformer(
 
 
 def wrap_deformer(wrapped_objs, wrapper_obj):
-    """
-    Create a wrap deformer.
+    """Create a wrap deformer.
 
     Select all wrapped objects and the wrapper object.
     Then call the mel command to create a wrap deformer.
@@ -367,8 +359,7 @@ def delta_mush_deformer(geo, smoothing_iterations=10, smoothing_step=0.5):
 
 
 def shrink_wrap_deformer(wrapped_obj, wrapper_obj):
-    """
-    Apply Shrink Wrap Deformer to wrapped object. The deformer will deform the wrapped object
+    """Apply Shrink Wrap Deformer to wrapped object. The deformer will deform the wrapped object
     to match the shape of the wrapper object.
 
     Args:
@@ -483,8 +474,7 @@ def mesh_collision(deformer, deformed):
 
 
 def tension_map(obj):
-    """
-    Create a Tension Map node to relax the input geometry of a mesh.
+    """Create a Tension Map node to relax the input geometry of a mesh.
 
     The Tension Map node is connected to the original geometry of the mesh
     and the deformed geometry of the mesh. The output of the node is then
@@ -565,8 +555,7 @@ def load_deformer_weights(
     project_path=Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1])),
     skin_weights_dir="weights/deformer",
 ):
-    """
-    load deformer weights for character geometry objects
+    """load deformer weights for character geometry objects
     """
     # check folder
     directory = project_path / skin_weights_dir
@@ -592,8 +581,7 @@ def load_deformer_weights(
 
 
 def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
-    """
-    Inverts the shape of an object.
+    """Inverts the shape of an object.
 
     This function will load the "invertShape" plugin if it is not already loaded.
     It will then use the invertShape command to invert the shape of the given
@@ -639,8 +627,7 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
 def generate_new_blendshspae(
     original, blendhspae_original_list, blendhspae_target, bs_name="reconstruction_BS"
 ):
-    """
-    Function to generate a new blendshape that combines the original shape with the
+    """Function to generate a new blendshape that combines the original shape with the
     other shapes in the blendhspae_original_list.
 
     Args:

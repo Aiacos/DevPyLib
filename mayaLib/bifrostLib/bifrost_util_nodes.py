@@ -25,8 +25,7 @@ pass
 
 def file_type_manager(bifrost_shape, create_stage_node):
     # Create Nodes
-    """
-    Creates a compound which sets the file format of the USD stage depending on the file extension.
+    """Creates a compound which sets the file format of the USD stage depending on the file extension.
 
     Args:
         bifrost_shape (str): The shape of the Bifrost graph.
@@ -60,8 +59,7 @@ def file_type_manager(bifrost_shape, create_stage_node):
     return type_manager_compund
 
 def add_custom_layer_data(bifrost_shape, data, custom_layer_data_node, product=''):
-    """
-    Adds a set of custom data to a Bifrost graph node.
+    """Adds a set of custom data to a Bifrost graph node.
 
     Args:
         bifrost_shape (str): The shape of the Bifrost graph.
@@ -87,8 +85,7 @@ def add_custom_layer_data(bifrost_shape, data, custom_layer_data_node, product='
     return custom_layer_data_compound
 
 def set_stage_property(bifrost_shape, key, value='', source=None):
-    """
-    Sets a property on a Bifrost graph node by creating and connecting
+    """Sets a property on a Bifrost graph node by creating and connecting
     nodes as needed.
 
     Args:
@@ -138,8 +135,7 @@ def set_stage_property(bifrost_shape, key, value='', source=None):
 
 # Build Name with frame number
 def build_name(bifrost_shape, time_node, product='', extension_format='usdc', skip_frame=False):
-    """
-    Build a compound which creates a string from a base name and a frame number.
+    """Build a compound which creates a string from a base name and a frame number.
 
     Args:
         bifrost_shape (str): The shape of the bifrost graph.
@@ -194,8 +190,7 @@ def build_name(bifrost_shape, time_node, product='', extension_format='usdc', sk
 
 # Build Reference / Payload Compound
 def build_referece_peyload(bifrost_shape, layer_name='Reference_layer', is_payload="0", use_variant=False, use_reference=True):
-    """
-    Create a reference or payload compound node based on the input parameters.
+    """Create a reference or payload compound node based on the input parameters.
 
     Args:
         bifrost_shape (str): The Bifrost shape name.
@@ -316,8 +311,7 @@ def build_referece_peyload(bifrost_shape, layer_name='Reference_layer', is_paylo
 
     # Create compound
 def build_preview_compound(bifrost_shape, working_layer_name='WORKING_MODELING', placeholder='PLACEHOLDER'):
-    """
-    Builds a compound which creates a new USD stage and adds a new layer
+    """Builds a compound which creates a new USD stage and adds a new layer
     to it. The layer is named after the incoming step and is set as the
     root of the stage. The stage is then sent to the cache.
 

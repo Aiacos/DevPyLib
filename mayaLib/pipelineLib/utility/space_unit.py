@@ -1,5 +1,4 @@
-"""
-# query scene unit:
+"""# query scene unit:
 maya_query_unit = cmds.currentUnit(query=True, linear=True)
 # Result: 'cm'
 

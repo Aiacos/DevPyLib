@@ -66,10 +66,10 @@ class QuadPatcherState:
     dup_faces_to_hide: List = field(default_factory=list)
 
     # Sets
-    dup_edges_set: str = None
-    side_b_remove_set: str = None
-    side_c_remove_set: str = None
-    face_mode_edge_components_orig_set: str = None
+    dup_edges_set: str | None = None
+    side_b_remove_set: str | None = None
+    side_c_remove_set: str | None = None
+    face_mode_edge_components_orig_set: str | None = None
 
     # Deformer nodes
     relax_nodes: List = field(default_factory=list)
@@ -108,8 +108,7 @@ def _reset_state():
 
 
 def face_checker(_unused_arg=None):
-    """
-    Checks the selected faces in Maya for various conditions:
+    """Checks the selected faces in Maya for various conditions:
 
     1. Ensures faces are selected.
     2. Checks that no face is adjacent to a border edge.
@@ -145,8 +144,7 @@ def face_checker(_unused_arg=None):
 
 
 def edge_checker(_unused_arg=None):
-    """
-    Checks the selected edges in Maya for various conditions:
+    """Checks the selected edges in Maya for various conditions:
 
     1. Ensures edges are selected.
     2. Verifies that the complete edge border is selected.
@@ -642,8 +640,7 @@ def divide_slider(_unused_arg=None):
 
 
 def relax_slider(_unused_arg=None):
-    """
-    Adjust the relaxation iterations for each node in relax_nodes based on the slider value.
+    """Adjust the relaxation iterations for each node in relax_nodes based on the slider value.
 
     This function retrieves the current value from the "relaxSlider" integer slider group
     and sets the "iterations" attribute of each node in the relax_nodes list to this value.
@@ -1011,8 +1008,7 @@ def face_mode_init(_unused_arg=None):
 
 
 def extrude_slider(_unused_arg=None):
-    """
-    Adjust the number of extrusions for the extrusion mode.
+    """Adjust the number of extrusions for the extrusion mode.
 
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.

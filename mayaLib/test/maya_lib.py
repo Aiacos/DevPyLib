@@ -14,8 +14,7 @@ import mayaLib.guiLib.main_menu as mm
 
 
 def maya_useNewAPI():
-    """
-    The presence of this function tells Maya that the plugin produces, and
+    """The presence of this function tells Maya that the plugin produces, and
     expects to be passed, objects created using the Maya Python API 2.0.
     """
     pass

@@ -61,8 +61,7 @@ class TextureFileManager(object):
     """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set"""
 
     def __init__(self, dirname=pm.workspace(q=True, dir=True, rd=True) + '/sourceimages/', ext='exr'):
-        """
-        Initialize the TextureFileManager object.
+        """Initialize the TextureFileManager object.
 
         Args:
             dirname (str): Directory path. Defaults to the 'sourceimages' directory in the current workspace.

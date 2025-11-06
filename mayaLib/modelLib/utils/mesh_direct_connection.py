@@ -1,5 +1,4 @@
-"""
-Directly connect two meshes together without using an intermediate mesh.
+"""Directly connect two meshes together without using an intermediate mesh.
 
 This is useful when you want to directly connect a mesh to another mesh
 without having to create a new mesh in between.
@@ -18,8 +17,7 @@ import pymel.core as pm
 
 
 def mesh_direct_connection(source, destination):
-    """
-    Connects the outMesh attribute of the source mesh directly to the inMesh attribute
+    """Connects the outMesh attribute of the source mesh directly to the inMesh attribute
     of the destination mesh, bypassing any intermediate meshes.
 
     This function is useful for directly connecting one mesh to another without creating

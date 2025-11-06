@@ -1,5 +1,4 @@
-"""
-Fire with Smoke Preset
+"""Fire with Smoke Preset
 
 This class is a preset for creating fire with smoke simulations
 """
@@ -11,15 +10,13 @@ from mayaLib.fluidLib.base.ramp_utils import setup_repart_opacity_ramp
 
 
 class FireSmoke(BaseFluid):
-    """
-    Fire with Smoke Preset
+    """Fire with Smoke Preset
 
     This class is a preset for creating fire with smoke simulations
     """
 
     def __init__(self, fluid_name="", base_res=32, emit_obj=None):
-        """
-        Fire with Smoke Preset
+        """Fire with Smoke Preset
 
         Args:
             fluid_name (str): The name of the fluid.
@@ -49,8 +46,7 @@ class FireSmoke(BaseFluid):
         self.set_shading()
 
     def set_density(self):
-        """
-        Set the density parameters.
+        """Set the density parameters.
         """
         # Set the density dissipation to 1.
         self.fluid_container.densityDissipation.set(1)
@@ -62,15 +58,13 @@ class FireSmoke(BaseFluid):
         self.fluid_container.densityGradientForce.set(15)
 
     def set_velocity(self):
-        """
-        Set the velocity parameters.
+        """Set the velocity parameters.
         """
         # Set the velocity swirl to 6.
         self.fluid_container.velocitySwirl.set(6)
 
     def set_turbulence(self):
-        """
-        Set the turbulence parameters.
+        """Set the turbulence parameters.
         """
         # Set the turbulence strength to 0.025.
         self.fluid_container.turbulenceStrength.set(0.025)
@@ -80,8 +74,7 @@ class FireSmoke(BaseFluid):
         self.fluid_container.turbulenceSpeed.set(0.65)
 
     def set_temperature(self):
-        """
-        Set the temperature parameters.
+        """Set the temperature parameters.
         """
         # Set the temperature scale to 2.5.
         self.fluid_container.temperatureScale.set(2.5)
@@ -95,8 +88,7 @@ class FireSmoke(BaseFluid):
         self.fluid_container.temperatureTurbulence.set(1)
 
     def set_fuel(self):
-        """
-        Set the fuel parameters.
+        """Set the fuel parameters.
         """
         # Set the reaction speed to 1.
         self.fluid_container.reactionSpeed.set(1)
@@ -106,8 +98,7 @@ class FireSmoke(BaseFluid):
         self.fluid_container.lightReleased.set(1)
 
     def set_shading(self):
-        """
-        Set the shading parameters.
+        """Set the shading parameters.
         """
         # Set the transparency to 0.5.
         self.fluid_container.transparency.set(0.5, 0.5, 0.5, type="double3")

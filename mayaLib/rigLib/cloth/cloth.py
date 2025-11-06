@@ -53,8 +53,7 @@ class Cloth(object):
         # deform.deltaMushDeformer(sim_geo_list)
 
     def create_ncloth(self, geo_list):
-        """
-        Create nCloth for each geometry in the provided list.
+        """Create nCloth for each geometry in the provided list.
 
         Args:
             geo_list (list): List of geometries to convert to nCloth.
@@ -83,8 +82,7 @@ class Cloth(object):
         return cloth_data_list, nucleus
 
     def collision_setup(self, collision_geo_list):
-        """
-        Set up colliders for the provided geometries.
+        """Set up colliders for the provided geometries.
 
         Args:
             collision_geo_list (list): List of geometries to set up as collision targets.
@@ -104,8 +102,7 @@ class Cloth(object):
         return collision_data_list
 
     def paint_input_attract(self, cloth_node, grow_selection=5):
-        """
-        Paint the input attract weights of the provided cloth node.
+        """Paint the input attract weights of the provided cloth node.
 
         This method selects the geometry connected to the cloth node,
         selects all its edges, grows the selection by a specified amount,
@@ -145,8 +142,7 @@ class Cloth(object):
         dynamic.paint_cloth_input_attract(cloth_node, vtx_list, 0.4, smooth_iterations=3)
 
     def update_settings(self):
-        """
-        Update the settings of the cloth node.
+        """Update the settings of the cloth node.
 
         This method sets the collision, dynamic properties, quality settings,
         and solver settings of the cloth node.
@@ -183,8 +179,7 @@ class Cloth(object):
         self.nucleus.enable.set(1)
 
     def select_vtx(self, geo, vertices):
-        """
-        Selects a list of vertices on a given geometry.
+        """Selects a list of vertices on a given geometry.
 
         Args:
             geo (str): The name of the geometry to select vertices on.

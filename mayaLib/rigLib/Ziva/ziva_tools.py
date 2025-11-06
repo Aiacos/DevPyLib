@@ -1,5 +1,4 @@
-"""
-Utilities for Ziva dynamics
+"""Utilities for Ziva dynamics
 """
 
 import maya.mel as mel
@@ -14,8 +13,7 @@ except ImportError:
 
 
 def z_poly_combine(geos):
-    """
-    Combine multiple geometry objects into a single one using Ziva's command.
+    """Combine multiple geometry objects into a single one using Ziva's command.
 
     Args:
         geos (list): A list of geometry objects to combine.
@@ -30,8 +28,7 @@ def z_poly_combine(geos):
 
 
 def harmonic_warp(source, destination, transfer_geos, tet_size=1):
-    """
-    Warp a source geometry to a destination geometry using Ziva's harmonic warp
+    """Warp a source geometry to a destination geometry using Ziva's harmonic warp
     command.
 
     Args:
@@ -62,8 +59,7 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
 
 
 def bone_warp(source, destination, transfer_geos, tet_size=1):
-    """
-    Warp a source geometry to a destination geometry using Ziva's bone warp
+    """Warp a source geometry to a destination geometry using Ziva's bone warp
     command.
 
     Args:
@@ -92,8 +88,7 @@ def bone_warp(source, destination, transfer_geos, tet_size=1):
 
 
 def ziva_check_intersection(geo1, geo2):
-    """
-    Check for intersection between two geometry objects using Ziva's command.
+    """Check for intersection between two geometry objects using Ziva's command.
 
     Args:
         geo1 (str): The name of the first geometry object.
@@ -110,16 +105,14 @@ def ziva_check_intersection(geo1, geo2):
 
 # Rename
 def ziva_rename_all():
-    """
-    Rename all Ziva nodes in the scene.
+    """Rename all Ziva nodes in the scene.
     """
     zva_cmds.rename_ziva_nodes()
 
 
 # Mirror
 def ziva_mirror(from_side='L_', to_side='R_', suffix='_GEO'):
-    """
-    Mirror a Ziva setup from one side of the body to the other.
+    """Mirror a Ziva setup from one side of the body to the other.
 
     Args:
         from_side (str): The side of the body to copy from.

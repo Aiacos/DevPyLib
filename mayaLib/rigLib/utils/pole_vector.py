@@ -42,8 +42,7 @@ class PoleVector():
             self.pole_vector, self.pole_vector_grp = self.connect_pole_vector(ik_handle)
 
     def create_pv(self, ik_handle):
-        '''
-        Create a Locator in a correct plane to usa as Pole Vector
+        '''Create a Locator in a correct plane to usa as Pole Vector
         :param ik_handle: select an ik_handle
         :return: grupped locator
         '''
@@ -73,8 +72,7 @@ class PoleVector():
         return pole_vector_group
 
     def get_joint_distance(self, ik_handle):
-        '''
-        Return the length of ik_handle
+        '''Return the length of ik_handle
         :param ik_handle: select an ik_handle
         :return: Return the length of ik_handle
         '''

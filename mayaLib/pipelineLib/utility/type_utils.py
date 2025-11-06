@@ -1,5 +1,4 @@
-"""
-Utility functions to get all Maya objects of a given type
+"""Utility functions to get all Maya objects of a given type
 """
 
 __author__ = 'Lorenzo Argentieri'

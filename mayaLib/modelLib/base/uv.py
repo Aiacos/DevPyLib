@@ -27,8 +27,7 @@ class AutoUV():
 
     def __init__(self, geo_list=pm.ls(sl=True), map_res=1024, texel_density=16, auto_seam_angle=0,
                  auto_project=True, auto_seam=True, auto_cut_uv=True):
-        """
-        Initializes the AutoUV process for the given list of geometries.
+        """Initializes the AutoUV process for the given list of geometries.
 
         This method performs several UV operations on each geometry in the provided list.
         It can automatically fix non-manifold UVs, project UVs, create seams, unfold and optimize UVs,
@@ -87,8 +86,7 @@ class AutoUV():
         print('Auto UV Complete!')
 
     def check_uv_in_boundaries(self, shell):
-        """
-        Checks whether all UVs in the given shell are within the boundaries of the UV tile.
+        """Checks whether all UVs in the given shell are within the boundaries of the UV tile.
 
         Args:
             shell (str): The name of the shell to check.
@@ -121,8 +119,7 @@ class AutoUV():
         return True
 
     def check_uv_boundaries(self, shell):
-        """
-        Determines the UV tile boundaries for the given UV shell.
+        """Determines the UV tile boundaries for the given UV shell.
 
         This function calculates the UV tile boundaries by converting the shell
         into its corresponding UV vertices and then determining the minimum and
@@ -155,8 +152,7 @@ class AutoUV():
         return uv_tile_range
 
     def cut_uv_tile(self, shell):
-        """
-        Cuts the UV shell at the tile boundaries by selecting the UVs that fall within each tile and then
+        """Cuts the UV shell at the tile boundaries by selecting the UVs that fall within each tile and then
         calling the Maya command 'CreateUVShellAlongBorder' to create a new UV shell at the selected UVs.
 
         Args:
@@ -177,8 +173,7 @@ class AutoUV():
             # pm.polyMapCut(faces, ch=True)
 
     def recursive_cut_uv(self, geo):
-        """
-        Recursively cuts the UV shells of the given geometry at the tile boundaries
+        """Recursively cuts the UV shells of the given geometry at the tile boundaries
         until all UV shells are within the tile boundaries.
 
         Args:
@@ -191,8 +186,7 @@ class AutoUV():
                 # self.recursive_cut_uv(geo)
 
     def get_uv_shell(self, geo):
-        """
-        Get a list of UV shells for the given geometry. This function returns a list of strings, where each string is a list of faces that make up a UV shell.
+        """Get a list of UV shells for the given geometry. This function returns a list of strings, where each string is a list of faces that make up a UV shell.
 
         Args:
             geo (str): The name of the geometry to get the UV shells of.
@@ -209,8 +203,7 @@ class AutoUV():
         return shell_list
 
     def set_texel_density(self, geo, texel_density=10.24, map_res=1024):
-        """
-        Set the texel density of the given geometry.
+        """Set the texel density of the given geometry.
 
         Args:
             geo (str): The name of the geometry to set the texel density of.
@@ -222,8 +215,7 @@ class AutoUV():
         mel.eval(tex_set_texel_density)
 
     def uv_layout_no_scale(self, geo_list, u_count, v_count, map_res=1024, iteration=1):
-        """
-        Arranges the UV shells of the given geometries without scaling.
+        """Arranges the UV shells of the given geometries without scaling.
 
         This function uses Maya's u3dLayout command to layout the UV shells of the provided
         list of geometries. The layout is performed without scaling the shells, while allowing
@@ -243,8 +235,7 @@ class AutoUV():
                      tileMargin=0.001953125, layoutScaleMode=1, u=u_count, v=v_count, rst=90, rmn=0, rmx=360)
 
     def uv_layout_fast(self, geo):
-        """
-        Perform a fast UV layout on the given geometry.
+        """Perform a fast UV layout on the given geometry.
 
         This function uses Maya's u3dLayout command to quickly layout the UV shells of the
         provided geometry. The layout is performed without scaling the shells, while allowing
@@ -268,8 +259,7 @@ class AutoUV():
         pm.polyEditUV(shell_list, u=0.001, v=0.001)
 
     def final_layout_uv(self, geo_list, area=1):
-        """
-        Perform a final layout of the UVs for the given geometry list.
+        """Perform a final layout of the UVs for the given geometry list.
 
         This method first calculates the number of tiles needed to fit all the UV shells
         in the given geometry list, and then calls the `uvLayoutNoScale` method to layout
@@ -299,8 +289,7 @@ class AutoUV():
             pm.polyEditUV(bad_shell_list, u=0, v=v_count)
 
     def auto_seam_uv(self, geo, angle=0):
-        """
-        Automatically create seams for the given geometry based on the given angle.
+        """Automatically create seams for the given geometry based on the given angle.
 
         This method will call Maya's u3dAutoSeam command to create seams for the given geometry
         based on the given angle. If the command fails (for example, if the geometry has no UVs),
@@ -317,8 +306,7 @@ class AutoUV():
             pass
 
     def unfold_optimize_uv(self, geo, normalize_shell=False):
-        """
-        Unfold and optimize the UVs of the given geometry.
+        """Unfold and optimize the UVs of the given geometry.
 
         This method will call Maya's u3dUnfold command to unfold the UVs of the given geometry.
         The UVs are then optimized to reduce the number of UV islands and improve
@@ -336,8 +324,7 @@ class AutoUV():
                                    normalizeDirection=0)
 
     def fix_non_manifold_uv(self, geo):
-        """
-        Fix non-manifold UVs for the given geometry.
+        """Fix non-manifold UVs for the given geometry.
 
         This method will call Maya's polyCleanup command to fix non-manifold UVs
         for the given geometry. Non-manifold UVs are UVs that are not connected
@@ -355,8 +342,7 @@ class AutoUV():
 
 
 def transfer_uv(source, destination):
-    """
-    Transfer UVs from the source geometry to the destination geometry.
+    """Transfer UVs from the source geometry to the destination geometry.
 
     This function uses Maya's transferAttributes command to copy UVs from the
     source geometry to the destination geometry. The UVs are transferred in the
@@ -379,8 +365,7 @@ def transfer_uv(source, destination):
 
 
 def unwrella_unwrap_all(geo_list, keep_seam=True):
-    """
-    Unwrap UVs using the Unwrella plugin for a list of geometries.
+    """Unwrap UVs using the Unwrella plugin for a list of geometries.
 
     This function iterates over each geometry in the provided list and applies
     the Unwrella UV unwrapping technique. The unwrapping can either keep existing

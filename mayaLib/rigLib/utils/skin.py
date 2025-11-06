@@ -20,8 +20,7 @@ from mayaLib.utility import b_skin_saver
 
 
 def get_skincluster_object():
-    """
-    Selects and returns a list of objects with skin clusters.
+    """Selects and returns a list of objects with skin clusters.
 
     This function identifies all objects in the scene that have skin clusters,
     selects them, and returns a list of these objects.
@@ -41,8 +40,7 @@ def get_skincluster_object():
 
 
 def select_skin_cluster_object():
-    """
-    Selects and returns a list of objects with skin clusters.
+    """Selects and returns a list of objects with skin clusters.
 
     This function identifies all objects in the scene that have skin clusters,
     selects them, and returns a list of these objects.
@@ -100,8 +98,7 @@ def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
 
 
 def copy_bind(source, destination, sa="closestPoint", ia="closestJoint"):
-    """
-    Bind and copy skinCluster weights from the source mesh to the destination mesh.
+    """Bind and copy skinCluster weights from the source mesh to the destination mesh.
 
     Args:
         source (str): The name of the source mesh.
@@ -156,8 +153,7 @@ def copy_bind_selected(selection_list):
 
 
 def find_related_skin_cluster(geo):
-    """
-    Find the related skinCluster for the given geometry.
+    """Find the related skinCluster for the given geometry.
 
     Args:
         geo (str): The name of the geometry for which to find the skinCluster.
@@ -176,8 +172,7 @@ def find_related_skin_cluster(geo):
 
 
 def mirror_skincluster_to_opposite_object(source_obj, destination_object):
-    """
-    Mirror Skincluster to the opposite Object
+    """Mirror Skincluster to the opposite Object
     Args:
         source_obj (string): Source Geo
         destination_object (string):  Destination Geo
@@ -195,8 +190,7 @@ def mirror_skincluster_to_opposite_object(source_obj, destination_object):
 
 
 def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
-    """
-    Mirror Skincluster to opposite Object
+    """Mirror Skincluster to opposite Object
     Args:
         source_list (string[]): Objects list
         left_side (string): Left pattern
@@ -218,8 +212,7 @@ def save_skin_weights(
     sw_ext=".swt",
     do_directory=True,
 ):
-    """
-    save weights for character geometry objects
+    """save weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
         project_path (string): file path
@@ -259,8 +252,7 @@ def load_skin_weights(
     project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
     sw_ext=".swt",
 ):
-    """
-    load weights for character geometry objects
+    """load weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
         project_path (string): file path
@@ -288,8 +280,7 @@ def load_skin_weights(
 
 
 def ng_batch_export(geo_list, path):
-    """
-    Export skin weights for a list of geos to a directory.
+    """Export skin weights for a list of geos to a directory.
 
     Args:
         geo_list (list of str): List of geometry names to export.
@@ -311,8 +302,7 @@ def ng_batch_export(geo_list, path):
 
 
 def ng_batch_import(geo_list, path, influence_list=pm.ls("*_FS_jnt")):
-    """
-    Import skin weights for a list of geos from a directory.
+    """Import skin weights for a list of geos from a directory.
 
     Args:
         geo_list (list of str): List of geometry names to import.

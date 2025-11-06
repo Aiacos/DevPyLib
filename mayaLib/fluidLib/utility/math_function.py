@@ -10,8 +10,7 @@ import math
 
 
 def repart_function(x, lambda_val=15):
-    """
-    Repartition function.
+    """Repartition function.
 
     This function takes a value x and returns a value between 0 and 1.
     The function is defined as 1 - e^(-lx).
@@ -29,8 +28,7 @@ def repart_function(x, lambda_val=15):
 
 
 def laplace_distribution(x, beta=0.5, mu=0.5):
-    """
-    Laplace distribution function.
+    """Laplace distribution function.
 
     This function takes a value x and returns a value between 0 and 1.
     The function is defined as (1 / (2 * beta)) * e^(-|x - mu| / beta).
@@ -54,8 +52,7 @@ def laplace_distribution(x, beta=0.5, mu=0.5):
 
 
 def laplace_distribution2(x, beta=0.5, mu=5):
-    """
-    Laplace distribution function.
+    """Laplace distribution function.
 
     This function takes a value x and returns a value between 0 and 1.
     The function is defined as (1 / (2 * beta)) * e^(-|x - mu| / beta).

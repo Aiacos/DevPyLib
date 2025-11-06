@@ -37,8 +37,7 @@ TRANSLATION_DICT = {
 
 
 class TinyDAG(object):
-    """
-    # Small helper class to keep track of parents
+    """# Small helper class to keep track of parents
     """
 
     def __init__(self, obj, p_obj=None):
@@ -63,8 +62,7 @@ class TinyDAG(object):
 
 
 class BVHImporterDialog(object):
-    """
-    # Dialog class..
+    """# Dialog class..
     """
 
     def __init__(self, debug=False):

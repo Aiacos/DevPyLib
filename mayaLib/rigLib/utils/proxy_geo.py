@@ -108,9 +108,7 @@ class ProxyGeo():
             pm.delete(pivot_locator)
 
     def duplicate_source_mesh(self, obj, joint):
-        """
-
-        :param obj:
+        """:param obj:
         :param ctrl:
         :return: Mesh Shape for the Control
         """

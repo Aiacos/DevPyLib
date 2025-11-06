@@ -23,11 +23,11 @@ def detect_host_app_v2():
     return None
 
 
-def detect_host_app() -> str:
+def detect_host_app() -> str | None:
     """Detects which host application we are currently inside.
 
     Returns:
-        str: The name of the host application or None if not detected.
+        str | None: The name of the host application or None if not detected.
     """
     if importlib_util.find_spec("maya.cmds") is not None:
         return "Maya"

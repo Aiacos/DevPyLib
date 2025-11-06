@@ -10,8 +10,7 @@ from mayaLib.rigLib.utils import common, deform
 
 
 def mirror_geo(geo_list):
-    """
-    Mirror a list of geometries.
+    """Mirror a list of geometries.
 
     Args:
         geo_list: List of geometries to mirror.

@@ -1,5 +1,4 @@
-"""
-modelIssueFix.py
+"""modelIssueFix.py
 ================
 
 This module provides a class `ModelFix` that can be used to fix various issues
@@ -34,8 +33,7 @@ from mayaLib.rigLib.utils.util import list_objects_under_group, unlock_and_unhid
 
 
 def merge_duplicated_vertex(geo, threshold=0.001, only_2_vertex=False):
-    """
-    Merge duplicated vertex in a Maya node.
+    """Merge duplicated vertex in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to merge duplicated vertex.
@@ -50,8 +48,7 @@ def merge_duplicated_vertex(geo, threshold=0.001, only_2_vertex=False):
 
 
 def fix_face_with_more_than_4_sides(geo, query=True):
-    """
-    Fix faces with more than 4 sides in a Maya node.
+    """Fix faces with more than 4 sides in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to fix faces with more than 4 sides.
@@ -72,8 +69,7 @@ def fix_face_with_more_than_4_sides(geo, query=True):
 
 
 def fix_concave_faces(geo, query=True):
-    """
-    Fix concave faces in a Maya node.
+    """Fix concave faces in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to fix concave faces.
@@ -92,8 +88,7 @@ def fix_concave_faces(geo, query=True):
 
 
 def fix_face_with_holes(geo, query=True):
-    """
-    Fix faces with holes in a Maya node.
+    """Fix faces with holes in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to fix faces with holes.
@@ -112,8 +107,7 @@ def fix_face_with_holes(geo, query=True):
 
 
 def fix_non_planar_faces(geo, query=True):
-    """
-    Fix non-planar faces in a Maya node.
+    """Fix non-planar faces in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to fix non-planar faces.
@@ -132,8 +126,7 @@ def fix_non_planar_faces(geo, query=True):
 
 
 def remove_lamina_faces(geo, query=True):
-    """
-    Remove lamina faces in a Maya node.
+    """Remove lamina faces in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to remove lamina faces.
@@ -152,8 +145,7 @@ def remove_lamina_faces(geo, query=True):
 
 
 def remove_nonmanifold_geometry(geo, query=True):
-    """
-    Remove non-manifold geometry in a Maya node.
+    """Remove non-manifold geometry in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to remove non-manifold geometry.
@@ -174,8 +166,7 @@ def remove_nonmanifold_geometry(geo, query=True):
 
 
 def remove_edges_with_zero_length(geo, query=True):
-    """
-    Remove edges with zero length in a Maya node.
+    """Remove edges with zero length in a Maya node.
 
     Args:
         geo (str or PyNode): The Maya node to remove edges with zero length.

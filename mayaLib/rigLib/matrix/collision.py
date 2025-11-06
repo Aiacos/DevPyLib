@@ -33,8 +33,7 @@ class Collider(object):
         collision_mesh=None,
         target_mesh=None,
     ):
-        """
-        Initialize the collision system.
+        """Initialize the collision system.
 
         Args:
             module_name (str): The name of the module to be used for naming.

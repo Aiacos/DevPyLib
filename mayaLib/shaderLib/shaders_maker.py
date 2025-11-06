@@ -30,8 +30,7 @@ class ShadersManager():
     """
     def __init__(self, path=str(pm.workspace(q=True, dir=True, rd=True) + 'sourceimages/'), ext='exr',
                  auto_assing_shader=True):
-        """
-        Initialize the ShadersManager class.
+        """Initialize the ShadersManager class.
 
         Args:
             path (str): Directory path where textures are located. Defaults to the 'sourceimages' directory in the current workspace.

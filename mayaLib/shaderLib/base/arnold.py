@@ -10,13 +10,11 @@ from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
 class AiStandardSurface(ShaderBase):
-    """
-    Class for creating an aiStandardSurface shader.
+    """Class for creating an aiStandardSurface shader.
     """
 
     def __init__(self, shader_name, folder, shader_textures, shader_type='aiStandardSurface', standard=True, shading_engine=None):
-        """
-        Initializes an aiStandardSurface shader.
+        """Initializes an aiStandardSurface shader.
 
         Args:
             shader_name (str): Name of the geometry or texture set.

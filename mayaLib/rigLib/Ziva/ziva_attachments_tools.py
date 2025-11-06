@@ -9,8 +9,7 @@ import pymel.core as pm
 
 
 def ziva_fixed_attachment(stiffness=8):
-    """
-    Create a fixed Ziva attachment with specified stiffness.
+    """Create a fixed Ziva attachment with specified stiffness.
 
     Args:
         stiffness (int, optional): The stiffness exponent to set for the attachment. Default is 8.
@@ -25,8 +24,7 @@ def ziva_fixed_attachment(stiffness=8):
 
 
 def ziva_sliding_attachment(stiffness=8):
-    """
-    Create a sliding Ziva attachment with specified stiffness.
+    """Create a sliding Ziva attachment with specified stiffness.
 
     Args:
         stiffness (int, optional): The stiffness exponent to set for the attachment. Default is 8.
@@ -42,8 +40,7 @@ def ziva_sliding_attachment(stiffness=8):
 
 
 def paint_proximity(z_attachement, min_value=0.0001, max_value=1):
-    """
-    Paint a Ziva attachment based on proximity.
+    """Paint a Ziva attachment based on proximity.
 
     Args:
         zAttachement (pm.nt.DagNode): The Ziva attachment node to paint.
@@ -60,8 +57,7 @@ def paint_proximity(z_attachement, min_value=0.0001, max_value=1):
 
 
 def add_attachment(source, dest, value, fixed=True):
-    """
-    Create a Ziva attachment between the source and destination objects.
+    """Create a Ziva attachment between the source and destination objects.
 
     Args:
         source (pm.PyNode): The source object for the attachment.
