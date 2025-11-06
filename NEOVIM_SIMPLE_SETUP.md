@@ -17,11 +17,27 @@
 
 **Passo 1**: Abilita `exrc` in Neovim (una sola volta)
 
+**Per AstroNvim** (aggiungi a `~/.config/nvim/lua/user/options.lua`):
+
 ```lua
--- Aggiungi a ~/.config/nvim/init.lua
-vim.o.exrc = true          -- Abilita config locali
-vim.o.secure = true        -- Sicurezza (chiede conferma per .nvim.lua sconosciuti)
+return {
+  opt = {
+    exrc = true,  -- Abilita config locali (.nvim.lua)
+    -- NON usare secure = true (deprecato e non funziona per git repos)
+  },
+}
 ```
+
+**Per Neovim standard** (aggiungi a `~/.config/nvim/init.lua`):
+
+```lua
+vim.o.exrc = true  -- Abilita config locali
+-- NON usare secure = true (deprecato)
+```
+
+**🔒 Sicurezza**: Neovim 0.9.0+ ha protezione integrata! Ti chiederà automaticamente
+se fidarti del file `.nvim.lua` prima di eseguirlo. La vecchia opzione `secure = true`
+è deprecata e **non funziona** per repository git clonati (tutti i file sono tuoi).
 
 **Passo 2**: File `.nvim.lua` è già nel progetto! ✅
 
@@ -305,15 +321,15 @@ Riavvia Neovim → funziona automaticamente per DevPyLib!
 
 **Per la maggior parte degli utenti**: **Metodo 1 (.nvim.lua)**
 
-```lua
-# 1. Aggiungi a init.lua (una sola volta):
-vim.o.exrc = true
-vim.o.secure = true
+```bash
+# 1. Aggiungi a config Neovim (una sola volta):
+#    - AstroNvim: ~/.config/nvim/lua/user/options.lua → exrc = true
+#    - Neovim: ~/.config/nvim/init.lua → vim.o.exrc = true
 
 # 2. Apri file:
 nvim mayaLib/rigLib/base/module.py
 
-# 3. Conferma: y
+# 3. Neovim chiede: "Trust .nvim.lua?" → Premi 'y'
 
 # Fatto! ✅
 ```
@@ -372,9 +388,11 @@ Sì! Si complementano:
 -- Verifica exrc è abilitato
 :lua print(vim.o.exrc)  -- Deve essere true
 
--- Abilita manualmente
+-- Abilita manualmente (temporaneo)
 :set exrc
-:set secure
+
+-- Verifica versione Neovim (serve 0.9.0+)
+:version
 ```
 
 ### LSP usa ancora system Python
@@ -401,11 +419,64 @@ direnv allow
 
 ---
 
+## 🔒 Sicurezza exrc: Cosa è cambiato
+
+### ⚠️ Vecchio approccio (Vim/Neovim <0.9) - NON PIÙ SICURO
+
+```lua
+vim.o.exrc = true
+vim.o.secure = true  -- ❌ NON funziona per git repos!
+```
+
+**Problema**: L'opzione `secure` controlla solo se il file è "owned by you".
+Quando cloni un repository git, **tutti i file sono tuoi**, quindi `secure`
+non protegge da nulla! Un `.nvim.lua` malintenzionato si esegue comunque.
+
+### ✅ Nuovo approccio (Neovim 0.9.0+) - SICURO
+
+```lua
+vim.o.exrc = true  -- Basta questo!
+```
+
+**Protezione automatica**:
+- Neovim **chiede conferma** prima di eseguire `.nvim.lua` sconosciuti
+- Usa SHA256 hash per tracciare modifiche al file
+- Ri-chiede conferma se il file cambia
+- Database trust persistente in `stdpath('state')/trust`
+- Puoi vedere il contenuto del file prima di accettare
+
+**Esempio workflow**:
+```bash
+cd DevPyLib
+nvim mayaLib/rigLib/base/module.py
+
+# Neovim mostra:
+# ┌───────────────────────────────────────────┐
+# │ Trust .nvim.lua?                          │
+# │ /home/user/DevPyLib/.nvim.lua             │
+# │                                           │
+# │ [y]es [n]o [v]iew                         │
+# └───────────────────────────────────────────┘
+
+# Premi 'v' per vedere il contenuto
+# Premi 'y' per fidarti
+# Premi 'n' per rifiutare
+```
+
+### 📋 Riferimenti
+
+- [Neovim Issue #20911](https://github.com/neovim/neovim/issues/20911) - More secure exrc handling
+- [Neovim PR #20956](https://github.com/neovim/neovim/pull/20956) - Implementation of vim.secure.read()
+
+---
+
 ## 📚 Risorse
 
 - **exrc documentation**: `:help exrc` in Neovim
+- **vim.secure documentation**: `:help vim.secure` in Neovim 0.9+
 - **direnv website**: https://direnv.net/
 - **pyrightconfig schema**: https://github.com/microsoft/pyright/blob/main/docs/configuration.md
+- **AstroNvim config**: https://docs.astronvim.com/configuration/manage_user_config/
 
 ---
 

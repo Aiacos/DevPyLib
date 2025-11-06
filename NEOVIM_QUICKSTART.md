@@ -12,10 +12,18 @@
 
 **Step 1**: Abilita config locali in Neovim (una sola volta)
 
+**AstroNvim** (aggiungi a `~/.config/nvim/lua/user/options.lua`):
 ```lua
--- Aggiungi a ~/.config/nvim/init.lua
-vim.o.exrc = true
-vim.o.secure = true
+return {
+  opt = {
+    exrc = true,  -- Abilita .nvim.lua
+  },
+}
+```
+
+**Neovim standard** (aggiungi a `~/.config/nvim/init.lua`):
+```lua
+vim.o.exrc = true  -- NON usare secure = true (deprecato)
 ```
 
 **Step 2**: Apri un file Python in questo progetto
@@ -154,8 +162,14 @@ vim .nvim.lua
 
 " Se no, abilita:
 :set exrc
-:set secure
+
+" Verifica versione Neovim (serve 0.9.0+)
+:version
 ```
+
+**Nota sicurezza**: Neovim 0.9.0+ chiede automaticamente conferma prima
+di eseguire `.nvim.lua`. NON usare `secure = true` (deprecato e non funziona
+per repository git clonati).
 
 ### "LSP mostra ancora errori Maya"
 

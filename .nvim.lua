@@ -1,10 +1,29 @@
 -- ============================================================================
 -- DevPyLib Local Neovim Configuration
 --
--- This file is automatically loaded by Neovim when you open files in this
--- directory (if 'exrc' is enabled in your config).
+-- This file configures LSP to use Maya's Python interpreter (mayapy) for
+-- proper import resolution of maya.cmds, pymel.core, etc.
 --
--- To enable: Add `vim.o.exrc = true` to your init.lua
+-- REQUIREMENTS:
+--   - Neovim 0.9.0+ (has built-in secure .nvim.lua support)
+--   - basedpyright LSP server
+--   - exrc enabled in your config
+--
+-- SETUP FOR ASTRONVIM:
+--   Add to ~/.config/nvim/lua/user/options.lua:
+--
+--     return {
+--       opt = {
+--         exrc = true,  -- Enable .nvim.lua local config files
+--         -- DO NOT use secure = true (deprecated, doesn't work for git repos)
+--       },
+--     }
+--
+-- SECURITY:
+--   Neovim 0.9.0+ will prompt you to trust this file before executing it.
+--   This uses Neovim's built-in vim.secure trust database (automatic).
+--   The old 'secure' option is deprecated and doesn't protect against
+--   cloned repositories (all files are owned by you).
 --
 -- This is the LEAST INVASIVE method - no global config changes needed!
 -- ============================================================================
