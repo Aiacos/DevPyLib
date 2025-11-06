@@ -9,7 +9,7 @@ resolving texture references.
 import pymel.core as pm
 
 
-def replace_path(file_name, old_path, new_path):
+def _replace_path_string(file_name, old_path, new_path):
     """Replace a string in a filename with a new string.
 
     Args:
@@ -79,5 +79,5 @@ def replace_path(old_path, path, file_name_attribute, file_type):
     for f in file_list:
         # Get the name of the image attached to it
         texture_filename = pm.getAttr(f + file_name_attribute)
-        new_tex = replace_path(texture_filename, old_path, path)
+        new_tex = _replace_path_string(texture_filename, old_path, path)
         pm.setAttr(f + file_name_attribute, new_tex, type="string")

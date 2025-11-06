@@ -186,7 +186,6 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         return {
             'module': self.rig_module,
             'base_attach_grp': self.base_attach_group,
-            'base_attach_grp': self.base_attach_group,
         }
 
     def make_dynamic(  # pylint: disable=too-many-arguments,too-many-positional-arguments

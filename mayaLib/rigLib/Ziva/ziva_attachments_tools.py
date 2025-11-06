@@ -7,8 +7,6 @@ between tissues, bones, and muscles.
 import maya.mel as mel
 import pymel.core as pm
 
-from mayaLib.rigLib.utils.util import list_objects_under_group
-
 
 def ziva_fixed_attachment(stiffness=8):
     """

@@ -802,8 +802,6 @@ class Limb:  # pylint: disable=too-many-instance-attributes
             'module_obj': self.rig_module,
             'rig_module': self.rig_module,
             'base_attach_grp': self.base_attach_group,
-            'base_attach_grp': self.base_attach_group,
-            'body_attach_grp': self.body_attach_group,
             'body_attach_grp': self.body_attach_group,
         }
 

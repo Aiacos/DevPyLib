@@ -20,7 +20,7 @@ def mirror_geo(geo_list):
         None
     """
     geo_list = pm.ls(geo_list)
-    
+
     mirror_geo_list = []
     for geo in geo_list:
         # Create a duplicate of the geometry with the opposite side name
@@ -28,7 +28,7 @@ def mirror_geo(geo_list):
         duplicate_geo = pm.duplicate(geo, n=geo_name)[-1]
         pm.parent(duplicate_geo, w=True)
         mirror_geo_list.append(duplicate_geo)
-        
+
     # Create a group for the mirrored geometries
     duplicate_grp = pm.group(mirror_geo_list)
     # Mirror the group in the X axis
@@ -37,7 +37,7 @@ def mirror_geo(geo_list):
     common.freezeTranform(duplicate_grp)
     # Delete the history of the group
     common.deleteHistory(duplicate_grp)
-    
+
     # Iterate over the mirrored geometries and blendShape them with the original
     for geo in mirror_geo_list:
         # Get the name of the original geometry
@@ -46,6 +46,6 @@ def mirror_geo(geo_list):
         deform.blend_shape_deformer(mirror_geo_name, [geo], mirror_geo_name + '_tmp_BS')
         # Delete the history of the original geometry
         common.deleteHistory(mirror_geo_name)
-        
+
     # Delete the group
     pm.delete(duplicate_grp)

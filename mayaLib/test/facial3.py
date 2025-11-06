@@ -3220,8 +3220,8 @@ def exportSkin(file_path=None, objs=None, *args):
         if not skinCls:
             pm.displayWarning(obj.name() + ": Skipped because don't have Skin Cluster")
         else:
-            listDic = {'weights': {}, 'blendWeights': [], 'skinClsName': '', 
-               'objName': '', 
+            listDic = {'weights': {}, 'blendWeights': [], 'skinClsName': '',
+               'objName': '',
                'nameSpace': ''}
             listDic['objName'] = obj.name()
             listDic['nameSpace'] = obj.namespace()
@@ -3431,7 +3431,7 @@ def encode_data_to_attr(node, attr_name, data):
     """
         Dump data into a string attriubte
         Args:
-                node (pm.nt.DagNode): node to get data 
+                node (pm.nt.DagNode): node to get data
                 attr_name (str):  name of attribute
                 data (python object): python data object
         """
@@ -3447,7 +3447,7 @@ def decode_data_from_attr(node, attr_name):
     """
         Return data from string attriute
         Args:
-                node (pm.nt.DagNode): node to get data 
+                node (pm.nt.DagNode): node to get data
                 attr_name (str):  name of attribute
         Returns:
                 list or dict
@@ -3523,23 +3523,23 @@ def attach_bind_joints():
 
 def rename_transforms_by_position(transforms, search_name, center_tolerance=0.2, left_prefix='left', right_prefix='right', center_prefix='center', suffix=''):
     """
-        Given a list of pm.nt.Transforms and a search name, rename objects based on the 
+        Given a list of pm.nt.Transforms and a search name, rename objects based on the
         X axis world position in order starting from lowest(0) to highest position(nth)
         The center tolerance is used to test if an object is close enough to the center origin
         to be named 'center'
         Args:
-                transforms (list of pm.nt.Transforms): list of transforms to search and rename 
-                search_name (str): name to parse for and use and the main object name 
+                transforms (list of pm.nt.Transforms): list of transforms to search and rename
+                search_name (str): name to parse for and use and the main object name
                 center_tolerance (float): amount to use for determining how close the object is to the origin in X world space
                 left_prefix (str): left prefix name for the object
                 right_prefix (str): right prefix name for the object
                 center_prefix (str): center prefix name for the object
                 suffix (str): optional suffix name
-        
+
         Usage:
         all_joints = pm.ls(type=pm.nt.Joint)
         search_for = 'downLip'
-        renamed_joints = rename_transforms_by_position(all_joints, search_for, suffix='joint') 
+        renamed_joints = rename_transforms_by_position(all_joints, search_for, suffix='joint')
         Returns:
                 list of renamed pm.nt.Transforms
         """

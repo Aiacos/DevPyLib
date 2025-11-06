@@ -6,7 +6,6 @@ import pymel.core as pm
 from maya import mel
 
 from . import dynamic
-from .util import list_objects_under_group
 
 
 class ClothMuscle:
