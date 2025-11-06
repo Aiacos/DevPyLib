@@ -164,14 +164,14 @@ class Spine:
             cluster = pm.cluster(cv, n=f'{prefix}Cluster{index}')[1]
             clusters.append(cluster)
         pm.hide(clusters)
-        pm.parent(spine_curve, self.rig_module.partsNoTransGrp)
+        pm.parent(spine_curve, self.rig_module.parts_no_trans_group)
 
         self.body_control = control.Control(
             prefix=f'{prefix}Body',
             translate_to=body_locator_node,
             rotate_to=spine_joints[-1],
             scale=rig_scale * 4,
-            parent=self.rig_module.controlsGrp,
+            parent=self.rig_module.controls_group,
             shape='spine',
         )
         chest_control = control.Control(
@@ -213,7 +213,7 @@ class Spine:
         pm.orientConstraint(chest_control.C, spine_joints[-1], mo=True)
 
         pm.hide(spine_ik)
-        pm.parent(spine_ik, self.rig_module.partsNoTransGrp)
+        pm.parent(spine_ik, self.rig_module.parts_no_trans_group)
 
         pm.setAttr(f'{spine_ik}.dTwistControlEnable', 1)
         pm.setAttr(f'{spine_ik}.dWorldUpType', 4)

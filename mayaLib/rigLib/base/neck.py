@@ -83,17 +83,17 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             cluster = pm.cluster(cv, n=f'{prefix}Cluster{index}')[1]
             clusters.append(cluster)
         pm.hide(clusters)
-        pm.parent(neck_curve, self.rig_module.partsNoTransGrp)
+        pm.parent(neck_curve, self.rig_module.parts_no_trans_group)
 
         self.body_attach_group = pm.group(
             n=f'{prefix}BodyAttach_GRP',
             em=True,
-            p=self.rig_module.partsGrp,
+            p=self.rig_module.parts_group,
         )
         self.base_attach_group = pm.group(
             n=f'{prefix}BaseAttach_GRP',
             em=True,
-            p=self.rig_module.partsGrp,
+            p=self.rig_module.parts_group,
         )
 
         pm.delete(pm.pointConstraint(neck_joint_nodes[0], self.base_attach_group))
@@ -103,7 +103,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             translate_to=neck_joint_nodes[-1],
             rotate_to=head_joint_node,
             scale=rig_scale * 5,
-            parent=self.rig_module.controlsGrp,
+            parent=self.rig_module.controls_group,
             shape='head',
         )
         head_local_ctrl = control.Control(
@@ -120,7 +120,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             translate_to=clusters[2],
             rotate_to=neck_joint_nodes[2],
             scale=rig_scale * 4,
-            parent=self.rig_module.controlsGrp,
+            parent=self.rig_module.controls_group,
             shape='circleX',
             lock_channels=['r'],
         )
@@ -142,7 +142,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         pm.orientConstraint(head_local_ctrl.C, head_joint_node, mo=True)
 
         pm.hide(neck_ik)
-        pm.parent(neck_ik, self.rig_module.partsNoTransGrp)
+        pm.parent(neck_ik, self.rig_module.parts_no_trans_group)
 
         pm.setAttr(f'{neck_ik}.dTwistControlEnable', 1)
         pm.setAttr(f'{neck_ik}.dWorldUpType', 4)

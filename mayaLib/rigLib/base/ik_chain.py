@@ -103,13 +103,13 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             clusters.append(cluster)
         pm.hide(clusters)
 
-        pm.parent(chain_curve, self.rig_module.partsNoTransGrp)
-        pm.parent(control_curve, self.rig_module.partsNoTransGrp)
+        pm.parent(chain_curve, self.rig_module.parts_no_trans_group)
+        pm.parent(control_curve, self.rig_module.parts_no_trans_group)
 
         self.base_attach_group = pm.group(
             n=f'{prefix}BaseAttach_GRP',
             em=True,
-            p=self.rig_module.partsGrp,
+            p=self.rig_module.parts_group,
         )
         pm.delete(pm.pointConstraint(joint_nodes[0], self.base_attach_group))
 
@@ -123,7 +123,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
                 prefix=f'{prefix}{index + 1}',
                 translate_to=cluster,
                 scale=ctrl_scale,
-                parent=self.rig_module.controlsGrp,
+                parent=self.rig_module.controls_group,
                 shape='sphere',
             )
             chain_controls.append(ctrl)
@@ -138,7 +138,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         pm.parentConstraint(self.base_attach_group, chain_controls[0].Off, mo=True)
 
         pm.hide(chain_ik)
-        pm.parent(chain_ik, self.rig_module.partsNoTransGrp)
+        pm.parent(chain_ik, self.rig_module.parts_no_trans_group)
 
         twist_attr = 'twist'
         if not chain_controls[-1].C.hasAttr(twist_attr):
@@ -203,7 +203,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         pm.parent(dynamic_curve_base, w=True)
 
         dyn_curve = dynamic.DynamicCurve(dynamic_curve_base, prefix=prefix, baseRig=base_rig)
-        pm.parent(dyn_curve.getSystemGrp(), base_module.partsNoTransGrp)
+        pm.parent(dyn_curve.getSystemGrp(), base_module.parts_no_trans_group)
         return dyn_curve
 
 

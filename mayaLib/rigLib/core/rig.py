@@ -70,7 +70,7 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
             pm.importFile(build_scene_file_path)
 
         if go_to_t_pose:
-            joint.loadTPose(root_joint)
+            joint.load_t_pose(root_joint)
 
         self.proxy_geo_list = pm.ls('*_PRX')
         proxy_geo_instance = None
@@ -113,9 +113,9 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
             pm.parent(root_joint, self.base_module.joints_group)
 
         if load_skin_cluster:
-            joint.loadProjectionPose(root_joint)
+            joint.load_projection_pose(root_joint)
             geo_list = [geo.name() for geo in pm.ls('*_GEO')]
-            skin.loadSkinWeights(character_name, geo_list)
+            skin.load_skin_weights(character_name, geo_list)
 
         self.upgrade()
 
@@ -341,7 +341,7 @@ class HumanoidRig(BaseRig):  # pylint: disable=too-many-instance-attributes
         print('-- RIG HUMANOID --')
 
         if self.go_to_t_pose:
-            joint.loadTPose(self.root_joint)
+            joint.load_t_pose(self.root_joint)
 
         spine_joints = []
         if self.do_spine:

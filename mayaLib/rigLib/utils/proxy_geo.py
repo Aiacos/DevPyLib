@@ -74,7 +74,7 @@ class ProxyGeo():
         self.shape_grp = pm.group(n='fastGeo_GRP', em=True)
 
         # Get Shape and skin from Object
-        skin_cluster = skin.findRelatedSkinCluster(geo)
+        skin_cluster = skin.find_related_skin_cluster(geo)
         if not skin_cluster:
             print('Missing SkinCluster')
         else:
@@ -88,7 +88,7 @@ class ProxyGeo():
                 common.center_pivot(transform, pivot_locator)
 
                 # copy skinCluster
-                skin.copyBind(pm.ls(geo)[0], transform)
+                skin.copy_bind(pm.ls(geo)[0], transform)
 
                 # delete faces in the new shape based on selected joint
                 self.delete_vertex(joint=joint, new_shape=dupli_shape, threshold=threshold)
@@ -131,7 +131,7 @@ class ProxyGeo():
             threshold: Minimum skin weight (0-1) to keep vertices. Defaults to 0.45.
         """
         verts = []
-        skincluster = skin.findRelatedSkinCluster(new_shape)
+        skincluster = skin.find_related_skin_cluster(new_shape)
         for x in range(pm.polyEvaluate(new_shape, v=1)):
             v = pm.skinPercent(skincluster, '%s.vtx[%d]' % (new_shape, x), transform=joint, q=1)
             if v > threshold:

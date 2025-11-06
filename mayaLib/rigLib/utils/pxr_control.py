@@ -58,7 +58,7 @@ class PxrStyleCtrl():
         self.shape_grp.visibility.set(0)
 
         # Get Shape and skin from Object
-        skin_cluster = skin.findRelatedSkinCluster(obj)
+        skin_cluster = skin.find_related_skin_cluster(obj)
         if skin_cluster:
             self.skin = skin_cluster
         else:

@@ -168,7 +168,6 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             shape='circleX',
             do_offset=True,
             do_modify=True,
-            obj_bbox=attach_node,
         )
         self.halo_control.get_offset_grp().visibility.set(False)
         self.create_halo(attach_node, 1)
@@ -305,7 +304,6 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             shape='display',
             do_offset=True,
             do_modify=True,
-            obj_bbox=attach_node,
         )
 
         if attach_node:
@@ -332,7 +330,6 @@ class Base:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             shape='ikfk',
             do_offset=True,
             do_modify=True,
-            obj_bbox=attach_node,
         )
 
         if attach_node:

@@ -92,7 +92,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
 
         face_geo = pm.duplicate(skin_geo_node, n=f'{prefix}_GEO')[0]
         self.face_geo = face_geo
-        pm.parent(face_geo, self.rig_module.partsNoTransGrp)
+        pm.parent(face_geo, self.rig_module.parts_no_trans_group)
         deform.blend_shape_deformer(
             skin_geo_node,
             [face_geo],
@@ -105,14 +105,14 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         duplicated_joints.append(head_face_joint)
         for joint in duplicated_joints:
             pm.rename(joint, str(joint.name()).replace('_JNT1', 'Face_JNT'))
-        pm.parent(duplicated_joints[-1], self.rig_module.jointsGrp)
+        pm.parent(duplicated_joints[-1], self.rig_module.joints_group)
 
         pm.skinCluster(face_geo, head_face_joint)
-        face_skin_cluster = skin.findRelatedSkinCluster(face_geo)
+        face_skin_cluster = skin.find_related_skin_cluster(face_geo)
         pm.skinCluster(face_geo, edit=True, ai=curve_nodes, ug=True)
         face_skin_cluster.useComponents.set(1)
 
-        pm.parent(pm.ls('*_CRVBase'), self.rig_module.partsNoTransGrp)
+        pm.parent(pm.ls('*_CRVBase'), self.rig_module.parts_no_trans_group)
 
         full_locator_list: list[pm.PyNode] = []
         full_cluster_list: list[pm.PyNode] = []
@@ -145,7 +145,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
                 d=3,
                 tol=0.01,
             )
-            pm.parent(curve, self.rig_module.partsNoTransGrp)
+            pm.parent(curve, self.rig_module.parts_no_trans_group)
             locators = self.setup_curve(curve, points_number)
             full_locator_list.extend(locators)
 
@@ -159,7 +159,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         pm.group(
             full_cluster_list,
             n='faceCluster_GRP',
-            p=self.rig_module.partsNoTransGrp,
+            p=self.rig_module.parts_no_trans_group,
         )
 
         follicle_list = []
@@ -167,7 +167,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             ctrl = control.Control(
                 prefix=str(locator.name()).replace('_LOC', ''),
                 translate_to=locator,
-                parent=self.rig_module.controlsGrp,
+                parent=self.rig_module.controls_group,
                 shape='sphere',
                 do_modify=True,
                 scale=scale,
@@ -182,7 +182,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         pm.group(
             follicle_list,
             n='faceFollicle_GRP',
-            p=self.rig_module.partsNoTransGrp,
+            p=self.rig_module.parts_no_trans_group,
         )
 
     def setup_curve(  # pylint: disable=too-many-arguments
@@ -229,7 +229,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         pm.group(
             locators,
             n=f'{curve_name}Loc_GRP',
-            p=self.rig_module.partsNoTransGrp,
+            p=self.rig_module.parts_no_trans_group,
         )
         return locators
 

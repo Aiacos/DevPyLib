@@ -49,7 +49,7 @@ def build_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positio
         prefix=f'{prefix}Scapula',
         translate_to=scapula_joint,
         rotate_to=scapula_joint,
-        parent=rig_module.controlsGrp,
+        parent=rig_module.controls_group,
         shape='sphere',
         lock_channels=['ty', 'rx', 'rz', 's', 'v'],
         scale=rig_scale,
@@ -80,7 +80,7 @@ def build_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-ar
         prefix=f'{prefix}Clavicle',
         translate_to=scapula_joint,
         rotate_to=scapula_joint,
-        parent=rig_module.controlsGrp,
+        parent=rig_module.controls_group,
         shape='sphere',
         lock_channels=['t', 's', 'v'],
         scale=rig_scale,
@@ -121,7 +121,7 @@ def build_dynamic_scapula(limb_joints: Sequence[str], rig_module: module.Module)
     if not scapula_joint:
         return
     scapula_instance = scapula.Scapula(spine_joint, shoulder_joint, scapula_joint)
-    pm.parent(scapula_instance.getScapulaGrp(), rig_module.partsGrp)
+    pm.parent(scapula_instance.getScapulaGrp(), rig_module.parts_group)
 
 
 def build_fk_controls(  # pylint: disable=too-many-locals
@@ -139,7 +139,7 @@ def build_fk_controls(  # pylint: disable=too-many-locals
     for joint_name in limb_joints:
         prefix = name.remove_suffix(joint_name)
         parent = (
-            rig_module.controlsGrp
+            rig_module.controls_group
             if not limb_controls
             else limb_controls[-1].get_control()
         )
@@ -162,7 +162,7 @@ def build_fk_controls(  # pylint: disable=too-many-locals
     finger_fk_offset = pm.group(
         n='fingerFootFKOffset_GRP',
         em=True,
-        p=rig_module.controlsGrp,
+        p=rig_module.controls_group,
     )
     if limb_controls:
         pm.parentConstraint(limb_controls[-1].get_control(), finger_fk_offset, mo=True)
@@ -206,13 +206,13 @@ def build_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional
     prefix = name.remove_suffix(ik_handle)
     pole_vector_instance = pole_vector.PoleVector(ik_handle)
     pole_vector_locator, pole_vector_group = pole_vector_instance.get_pole_vector()
-    pm.parent(pole_vector_group, rig_module.partsNoTransGrp)
+    pm.parent(pole_vector_group, rig_module.parts_no_trans_group)
 
     pole_vector_ctrl = control.Control(
         prefix=f'{prefix}PV',
         translate_to=pole_vector_locator,
         scale=rig_scale,
-        parent=rig_module.controlsGrp,
+        parent=rig_module.controls_group,
         shape='sphere',
     )
 
@@ -246,7 +246,7 @@ def build_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional
         wn=[pole_vector_ctrl.get_control(), pole_vector_ctrl.get_control()],
         bs=True,
     )
-    pm.parent(pole_vector_curve, rig_module.controlsGrp)
+    pm.parent(pole_vector_curve, rig_module.controls_group)
     pm.setAttr(f'{pole_vector_curve}.template', 1)
     pm.setAttr(f'{pole_vector_curve}.it', 0)
 
@@ -277,7 +277,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         prefix=f'{prefix}IK',
         translate_to=limb_joints[2],
         rotate_to=limb_joints[2],
-        parent=rig_module.controlsGrp,
+        parent=rig_module.controls_group,
         shape='circleY',
         scale=rig_scale,
     )
@@ -288,7 +288,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
             sj=limb_joints[0],
             ee=limb_joints[2],
         )[0]
-        pm.parent(ik_handle, rig_module.partsNoTransGrp)
+        pm.parent(ik_handle, rig_module.parts_no_trans_group)
         pm.parentConstraint(main_ik_ctrl.get_control(), ik_handle, mo=True)
         hand_orient_constraint = pm.orientConstraint(
             main_ik_ctrl.get_control(),
@@ -324,7 +324,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         do_smart_foot_roll=smart_foot_roll,
     )
     foot_roll_group_list = foot_roll_instance.get_group_list()
-    pm.parent(foot_roll_group_list[-1], rig_module.partsNoTransGrp)
+    pm.parent(foot_roll_group_list[-1], rig_module.parts_no_trans_group)
 
     mid_finger_index = int(round(len(foot_roll_instance.get_ik_finger_list()) / 2.0)) - 1
     mid_finger_index = max(mid_finger_index, -1)
@@ -333,7 +333,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         prefix=f'{prefix}BallIK',
         translate_to=mid_finger_joint,
         rotate_to=mid_finger_joint,
-        parent=rig_module.controlsGrp,
+        parent=rig_module.controls_group,
         shape='circleZ',
         scale=rig_scale,
     )
@@ -372,7 +372,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
     front_roll_grp, back_roll_grp, inner_roll_grp, outer_roll_grp = foot_roll_group_list[3:-1]
 
     if smart_foot_roll and front_roll_grp and ball_roll_grp and inner_roll_grp and outer_roll_grp:
-        roll_attr = attributes.addFloatAttribute(
+        roll_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'roll',
             defaultValue=0,
@@ -380,13 +380,13 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
             minValue=-120,
             maxValue=120,
         )
-        bend_limit_attr = attributes.addFloatAttribute(
+        bend_limit_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'bendLimitAngle',
             defaultValue=45,
             keyable=False,
         )
-        straight_angle_attr = attributes.addFloatAttribute(
+        straight_angle_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'toeStraightAngle',
             defaultValue=70,
@@ -481,7 +481,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         pm.connectAttr(roll_attr, ball_roll_multiplier.input2X)
         pm.connectAttr(ball_roll_multiplier.outputX, ball_roll_grp.rotateX)
 
-        tilt_attr = attributes.addFloatAttribute(
+        tilt_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'tilt',
             defaultValue=0,
@@ -516,7 +516,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
                 [0, 0, 90],
             )
 
-        lean_attr = attributes.addFloatAttribute(
+        lean_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'lean',
             defaultValue=0,
@@ -526,7 +526,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         )
         pm.connectAttr(lean_attr, ball_roll_grp.rotateZ)
 
-        toe_spin_attr = attributes.addFloatAttribute(
+        toe_spin_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'toeSpin',
             defaultValue=0,
@@ -537,7 +537,7 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         pm.connectAttr(toe_spin_attr, tippy_toe_grp.rotateY)
         tippy_toe_grp.rotateOrder.set(2)
 
-        toe_wiggle_attr = attributes.addFloatAttribute(
+        toe_wiggle_attr = attributes.add_float_attribute(
             main_ik_ctrl.get_control(),
             'toeWiggle',
             defaultValue=0,
@@ -645,12 +645,12 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         body_attach_group = pm.group(
             n=f'{prefix}BodyAttach_GRP',
             em=True,
-            p=rig_module.partsGrp,
+            p=rig_module.parts_group,
         )
         base_attach_group = pm.group(
             n=f'{prefix}BaseAttach_GRP',
             em=True,
-            p=rig_module.partsGrp,
+            p=rig_module.parts_group,
         )
 
         self.rig_module = rig_module
