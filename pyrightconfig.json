@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DetachHead/basedpyright/main/packages/vscode-pyright/schemas/pyrightconfig.schema.json",
+  "include": [
+    "mayaLib",
+    "houdiniLib",
+    "blenderLib",
+    "prismLib"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/node_modules",
+    "**/.venv",
+    "**/.git",
+    "**/.*",
+    "build",
+    "dist"
+  ],
+  "pythonVersion": "3.10",
+  "pythonPlatform": "Linux",
+  "executionEnvironments": [
+    {
+      "root": "mayaLib",
+      "pythonVersion": "3.10",
+      "pythonPlatform": "Linux",
+      "extraPaths": [
+        "/usr/autodesk/maya2024/lib/python3.10/site-packages",
+        "/usr/autodesk/maya2024/lib/python310.zip",
+        "/usr/autodesk/maya2024/lib/python3.10"
+      ]
+    },
+    {
+      "root": "houdiniLib",
+      "pythonVersion": "3.10",
+      "pythonPlatform": "Linux",
+      "extraPaths": [
+        "/opt/hfs20.0/python/lib/python3.10/site-packages"
+      ]
+    }
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownParameterType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownArgumentType": false,
+  "reportOptionalMemberAccess": "warning",
+  "reportOptionalOperand": "warning",
+  "reportPossiblyUnboundVariable": "error",
+  "reportCallIssue": "error",
+  "reportUninitializedInstanceVariable": "warning",
+  "stubPath": "typings",
+  "venvPath": ".",
+  "venv": ".venv"
+}

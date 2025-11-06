@@ -1,0 +1,196 @@
+[project]
+name = "DevPyLib"
+version = "1.0.0"
+description = "Development Python Library for DCC applications (Maya, Houdini, Blender)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "DevPyLib Contributors"}
+]
+keywords = ["maya", "houdini", "blender", "vfx", "rigging", "animation", "pipeline"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "numpy",
+    "GitPython",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "basedpyright>=1.30.0",
+]
+
+maya = [
+    # Note: pymel and maya packages are provided by mayapy
+    # These are here for documentation purposes only
+]
+
+[project.urls]
+Homepage = "https://github.com/Aiacos/DevPyLib"
+Repository = "https://github.com/Aiacos/DevPyLib"
+Issues = "https://github.com/Aiacos/DevPyLib/issues"
+
+# ============================================================================
+# Pytest Configuration
+# ============================================================================
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["mayaLib/test", "tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+addopts = [
+    "-v",                    # Verbose output
+    "--tb=short",            # Short traceback format
+    "--strict-markers",      # Strict marker usage
+    "--color=yes",           # Colored output
+    "--code-highlight=yes",  # Syntax highlighting
+]
+
+# Test markers for organization
+markers = [
+    "unit: Unit tests (no Maya scene required, fast)",
+    "integration: Integration tests (requires Maya scene, slow)",
+    "gui: Tests requiring GUI (interactive, very slow)",
+    "slow: Slow tests (> 1 second)",
+    "maya: Tests requiring Maya environment",
+    "houdini: Tests requiring Houdini environment",
+    "blender: Tests requiring Blender environment",
+]
+
+# Coverage options
+[tool.coverage.run]
+source = ["mayaLib", "houdiniLib", "blenderLib"]
+omit = [
+    "*/test/*",
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/.*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# ============================================================================
+# Ruff Configuration (Linter + Formatter)
+# ============================================================================
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "build",
+    "dist",
+    "*.egg-info",
+]
+
+[tool.ruff.lint]
+# Enable rules: E (errors), F (pyflakes), W (warnings), I (isort), N (naming), D (docstrings)
+select = ["E", "F", "W", "I", "N", "D", "UP", "B", "C4", "SIM"]
+ignore = [
+    "D203",   # one-blank-line-before-class (conflicts with D211)
+    "D213",   # multi-line-summary-second-line (conflicts with D212)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "D104"]  # Unused imports OK in __init__, no docstring required
+"test_*.py" = ["D100", "D103"]    # No docstrings required in tests
+"*_test.py" = ["D100", "D103"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # Use Google-style docstrings
+
+[tool.ruff.lint.isort]
+known-first-party = ["mayaLib", "houdiniLib", "blenderLib", "prismLib"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+# ============================================================================
+# Basedpyright Configuration (Type Checker)
+# ============================================================================
+[tool.basedpyright]
+include = ["mayaLib", "houdiniLib", "blenderLib", "prismLib"]
+exclude = [
+    "**/__pycache__",
+    "**/node_modules",
+    "**/.venv",
+    "**/.git",
+]
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+
+# Suppress expected errors for DCC packages
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+
+# Enable important checks
+reportOptionalMemberAccess = "warning"
+reportOptionalOperand = "warning"
+reportPossiblyUnboundVariable = "error"
+reportCallIssue = "error"
+
+stubPath = "typings"
+venvPath = "."
+venv = ".venv"
+
+# ============================================================================
+# Mypy Configuration (Alternative Type Checker)
+# ============================================================================
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+# Per-module options
+[[tool.mypy.overrides]]
+module = "mayaLib.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pymel.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "maya.*"
+ignore_missing_imports = true
+
+# ============================================================================
+# Build System (for packaging, optional)
+# ============================================================================
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mayaLib", "houdiniLib", "blenderLib", "prismLib"]
