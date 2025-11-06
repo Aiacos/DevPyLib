@@ -167,7 +167,7 @@ class DynamicCurve:  # pylint: disable=too-many-instance-attributes
             self.dynamic_system_group = pm.ls(main_grp_name)[0]
 
         if base_rig:
-            pm.parent(self.dynamic_system_group, base_rig.rigGrp)
+            pm.parent(self.dynamic_system_group, base_rig.rig_group)
 
         (
             self.follicle_group,

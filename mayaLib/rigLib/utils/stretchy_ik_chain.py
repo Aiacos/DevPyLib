@@ -127,7 +127,7 @@ class StretchyIKChain:  # pylint: disable=too-few-public-methods,too-many-instan
         """Add flexi-plane controls along the chain."""
         for index, joint in enumerate(self.joint_list[:-1]):
             flex = flexiplane.Flexiplane(f'{prefix}{index}')
-            global_ctrl, ctrl_a, ctrl_b, _ = flex.getControls()
+            global_ctrl, ctrl_a, ctrl_b, _ = flex.get_controls()
             pm.pointConstraint([joint, self.joint_list[index + 1]], global_ctrl)
             pm.parentConstraint(joint, ctrl_a)
             pm.parentConstraint(self.joint_list[index + 1], ctrl_b)

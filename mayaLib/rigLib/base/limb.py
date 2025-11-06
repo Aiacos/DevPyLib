@@ -121,7 +121,7 @@ def build_dynamic_scapula(limb_joints: Sequence[str], rig_module: module.Module)
     if not scapula_joint:
         return
     scapula_instance = scapula.Scapula(spine_joint, shoulder_joint, scapula_joint)
-    pm.parent(scapula_instance.getScapulaGrp(), rig_module.parts_group)
+    pm.parent(scapula_instance.get_scapula_grp(), rig_module.parts_group)
 
 
 def build_fk_controls(  # pylint: disable=too-many-locals

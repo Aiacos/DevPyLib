@@ -196,7 +196,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         doc_text = []
         text_list = text.split("*")
-        for libstr in self.lib_structure.finalClassList:
+        for libstr in self.lib_structure.final_class_list:
             str_match = [True for match in text_list if match in libstr]
 
             if True in str_match:
