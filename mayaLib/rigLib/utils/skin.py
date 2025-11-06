@@ -173,9 +173,6 @@ def mirror_skincluster_to_opposite_object(source_obj, destination_object):
     Args:
         source_obj (string): Source Geo
         destination_object (string):  Destination Geo.
-
-    Returns:
-
     """
     geo_skincluster = find_related_skin_cluster(source_obj)
     r_geo_skincluster = find_related_skin_cluster(destination_object)
@@ -191,9 +188,6 @@ def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
         source_list (string[]): Objects list
         left_side (string): Left pattern
         r_side (string): Right Pattern.
-
-    Returns:
-
     """
     for geo in pm.ls(source_list):
         r_geo = pm.ls(str(geo.name()).replace("L_", "R_"))[-1]
@@ -213,9 +207,6 @@ def save_skin_weights(
         project_path (string): file path
         sw_ext (string): file extension
         do_directory (bool): create directory.
-
-    Returns:
-
     """
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
@@ -251,9 +242,6 @@ def load_skin_weights(
         geo_list (string[]): Objects list
         project_path (string): file path
         sw_ext (string): file extension.
-
-    Returns:
-
     """
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"

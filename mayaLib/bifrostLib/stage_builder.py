@@ -185,8 +185,9 @@ class USDCharacterBuild:
 
     def connect_output(self):
         """Connect bifrost output node
-        Returns:
 
+        Returns:
+            tuple: (id_array_node, layer_array_node) - Array nodes for ID and layer management.
         """
         id_array_node = bifrost.bf_create_node(
             self.bifrost_shape, "BifrostGraph,Core::Array,build_array"
@@ -225,9 +226,6 @@ class USDCharacterBuild:
         """Set Start Frame in the bifrost input
         Args:
             frame (float): start frame.
-
-        Returns:
-
         """
         cmds.setAttr(self.bifrost_shape + ".start_frame", frame)
 
@@ -235,9 +233,6 @@ class USDCharacterBuild:
         """Set End Frame in the bifrost input
         Args:
             frame (float): end frame.
-
-        Returns:
-
         """
         cmds.setAttr(self.bifrost_shape + ".end_frame", frame)
 
@@ -579,7 +574,7 @@ class USDCharacterBuild:
             mesh_name (string): Maya mesh name.
 
         Returns:
-
+            (string): Name of the created transform node.
         """
         # Add define_usd_transform
         define_usd_transform_node = bifrost.bf_create_node(
@@ -642,9 +637,6 @@ class USDCharacterBuild:
         """Add Mesh shape to bifrost and relative mesh prim definition
         Args:
             mesh_name (string): Maya mesh name.
-
-        Returns:
-
         """
         name_dict = self.get_name_dict(mesh_name)
 
@@ -669,9 +661,6 @@ class USDCharacterBuild:
         Args:
             obj (string): maya object to connect
             obj_node (string): prim to connect attribute.
-
-        Returns:
-
         """
         name_dict = self.get_name_dict(obj)
 
@@ -746,7 +735,7 @@ class USDCharacterBuild:
             mesh_name (string): Maya mesh name.
 
         Returns:
-
+            list: List of created bifrost node names (input mesh node, define mesh node, and recursive nodes).
         """
         # Manage names
         name_dict = self.get_name_dict(mesh_name)

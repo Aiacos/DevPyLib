@@ -291,9 +291,6 @@ def bf_sequence_port(bifrost_shape, node, source_port, destination_port):
         node (string): Compound Node name
         source_port (string): Name of the port
         destination_port (string): Name of the port.
-
-    Returns:
-
     """
     cmds.vnnCompound(
         bifrost_shape, node, setPortMetaDataValue=[destination_port, "statePort", source_port]
@@ -308,7 +305,7 @@ def bf_rename_node(bifrost_shape, node, name):
         name (string):  New Name.
 
     Returns:
-
+        (string): New node name.
     """
     cmds.vnnCompound(bifrost_shape, "/", renameNode=[node, name])
 
