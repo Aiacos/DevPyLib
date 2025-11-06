@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 import pymel.core as pm
 
@@ -52,7 +52,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
             ('chainJoints',),
             'chain_joints',
         )
-        prefix = parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'tail')
+        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'tail'))
         rig_scale = float(parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0))
         do_dynamic = bool(parameter_resolution.resolve_optional(do_dynamic, legacy_kwargs, ('doDynamic',), False))
         smallest_scale_percent = float(

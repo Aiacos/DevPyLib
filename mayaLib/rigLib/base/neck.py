@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 import pymel.core as pm
 
@@ -57,7 +57,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             ('headJnt',),
             'head_joint',
         )
-        prefix = parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'neck')
+        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'neck'))
         rig_scale = parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0)
         base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
 

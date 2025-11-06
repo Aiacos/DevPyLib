@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 import pymel.core as pm
 
@@ -100,7 +100,7 @@ class Spine:
             ('rootJnt',),
             spine_joints[0],
         )
-        prefix = parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'spine')
+        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'spine'))
         rig_scale = parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ('rigScale',), 1.0)
         base_rig = parameter_resolution.resolve_optional(base_rig, legacy_kwargs, ('baseRig',), None)
         body_locator = parameter_resolution.resolve_optional(

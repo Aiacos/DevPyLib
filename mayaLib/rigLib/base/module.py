@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Tuple
+from typing import Any, Tuple, cast
 
 import pymel.core as pm
 
@@ -354,7 +354,7 @@ class Module:  # pylint: disable=too-few-public-methods,too-many-instance-attrib
     ) -> None:
         """Initialise a module scaffold under the provided base rig."""
         legacy_kwargs = dict(legacy_kwargs)
-        prefix = _resolve_optional(prefix, legacy_kwargs, ('prefix',), 'new')
+        prefix = cast(str, _resolve_optional(prefix, legacy_kwargs, ('prefix',), 'new'))
         base_obj = _resolve_optional(base_obj, legacy_kwargs, ('baseObj',), None)
 
         if legacy_kwargs:

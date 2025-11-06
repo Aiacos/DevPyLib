@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterable
+from typing import Any, Iterable, cast
 
 import pymel.core as pm
 
@@ -56,7 +56,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
             ('skinGeo',),
             'skin_geo',
         )
-        prefix = parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'face')
+        prefix = cast(str, parameter_resolution.resolve_optional(prefix, legacy_kwargs, ('prefix',), 'face'))
         head_joint = parameter_resolution.resolve_optional(
             head_joint,
             legacy_kwargs,
