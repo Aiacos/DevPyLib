@@ -31,14 +31,14 @@ class ShadersManager:
 
     def __init__(
         self,
-        path=str(pm.workspace(q=True, dir=True, rd=True) + "sourceimages/"),
+        path=None,
         ext="exr",
         auto_assing_shader=True,
     ):
         """Initialize the ShadersManager class.
 
         Args:
-            path (str): Directory path where textures are located. Defaults to the 'sourceimages' directory in the current workspace.
+            path (str | None): Directory path where textures are located. Defaults to the 'sourceimages' directory in the current workspace.
             ext (str): File extension for texture files. Defaults to 'exr'.
             auto_assing_shader (bool): Flag to automatically assign shaders to geometry. Defaults to True.
 
@@ -47,6 +47,8 @@ class ShadersManager:
         Assigns shaders to the corresponding geometry if autoAssignShader is True.
         Also handles texture file format conversion based on the active renderer.
         """
+        if path is None:
+            path = str(pm.workspace(q=True, dir=True, rd=True) + "sourceimages/")
         # See active Renderer
         self.render_engine = pm.ls("defaultRenderGlobals")[0].currentRenderer.get()
         self.file_manager = file.TextureFileManager(dirname=path, ext=ext)

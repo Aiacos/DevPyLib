@@ -21,7 +21,7 @@ class TextureFolder:
     def __init__(
         self,
         folder=None,
-        workspace=pm.workspace(q=True, dir=True, rd=True),
+        workspace=None,
         sourceimages="sourceimages",
         scenes="scenes",
     ):
@@ -29,10 +29,12 @@ class TextureFolder:
 
         Args:
             folder (str): Custom folder path. Defaults to None.
-            workspace (str): Maya workspace directory. Defaults to current workspace directory.
+            workspace (str | None): Maya workspace directory. Defaults to current workspace directory.
             sourceimages (str): Name of the source images folder. Defaults to 'sourceimages'.
             scenes (str): Name of the scenes folder. Defaults to 'scenes'.
         """
+        if workspace is None:
+            workspace = pm.workspace(q=True, dir=True, rd=True)
         self.home = pathlib.Path.home()
         self.scenes_folder = self.home / workspace / scenes
 

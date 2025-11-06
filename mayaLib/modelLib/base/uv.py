@@ -27,7 +27,7 @@ class AutoUV:
 
     def __init__(
         self,
-        geo_list=pm.ls(sl=True),
+        geo_list=None,
         map_res=1024,
         texel_density=16,
         auto_seam_angle=0,
@@ -42,7 +42,7 @@ class AutoUV:
         set texel density, layout UVs, and cut UV boundaries based on the specified parameters.
 
         Args:
-            geo_list (list): A list of geometries to process. Defaults to the current selection in Maya.
+            geo_list (list | None): A list of geometries to process. Defaults to the current selection in Maya.
             map_res (int): The resolution for the texture map. Defaults to 1024.
             texel_density (float): The desired texel density for the UVs. Defaults to 16.
             auto_seam_angle (float): The angle threshold for automatic seam creation. Defaults to 0.
@@ -50,6 +50,8 @@ class AutoUV:
             auto_seam (bool): If True, creates seams automatically based on the angle. Defaults to True.
             auto_cut_uv (bool): If True, performs recursive cutting of UVs at boundaries. Defaults to True.
         """
+        if geo_list is None:
+            geo_list = pm.ls(sl=True)
         area = 0
         geo_list = pm.ls(geo_list)
         for geo in geo_list:

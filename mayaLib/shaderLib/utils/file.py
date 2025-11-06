@@ -61,15 +61,15 @@ class TextureFile:  # ToDo: move in util?
 class TextureFileManager:
     """Search all texture in source folder and place it in a dictionary sorted by geo, channel and texture_set."""
 
-    def __init__(
-        self, dirname=pm.workspace(q=True, dir=True, rd=True) + "/sourceimages/", ext="exr"
-    ):
+    def __init__(self, dirname=None, ext="exr"):
         """Initialize the TextureFileManager object.
 
         Args:
-            dirname (str): Directory path. Defaults to the 'sourceimages' directory in the current workspace.
+            dirname (str | None): Directory path. Defaults to the 'sourceimages' directory in the current workspace.
             ext (str): File extension to search for. Defaults to 'exr'.
         """
+        if dirname is None:
+            dirname = pm.workspace(q=True, dir=True, rd=True) + "/sourceimages/"
         self.ext = ext
         self.path = dirname
         self.file_list = self.search_in_directory(dirname, ext)

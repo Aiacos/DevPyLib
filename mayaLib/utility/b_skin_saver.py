@@ -131,16 +131,18 @@ from maya import OpenMaya, OpenMayaAnim, cmds, mel
 #         b_save_vertex_skin_values(str(self.vertices_file_line.text()), self.ignore_soft_selection_when_saving.isChecked())
 
 
-def b_find_skin_cluster(object_name, b_skin_path=OpenMaya.MDagPath()):
+def b_find_skin_cluster(object_name, b_skin_path=None):
     """Find skin cluster connected to a deformed object.
 
     Args:
         object_name (str): Name of the object to find skin cluster for.
-        b_skin_path (MDagPath): Optional path parameter (unused).
+        b_skin_path (MDagPath | None): Optional path parameter (unused).
 
     Returns:
         MObject or bool: Skin cluster node if found, False otherwise.
     """
+    if b_skin_path is None:
+        b_skin_path = OpenMaya.MDagPath()
     it = OpenMaya.MItDependencyNodes(OpenMaya.MFn.kSkinClusterFilter)
     while not it.isDone():
         fn_skin_cluster = OpenMayaAnim.MFnSkinCluster(it.item())

@@ -68,15 +68,17 @@ def disable_inherits_transform_on_skin_clusters():
         obj.inheritsTransform.set(0)
 
 
-def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
+def copy_skin_weight_between_mesh(selection=None):
     """Copy skin weight to mirrored mesh.
 
     Args:
-        selection (list, optional): A list of two PyNode objects. Defaults to pm.ls(sl=True).
+        selection (list | None): A list of two PyNode objects. Defaults to current selection.
 
     Returns:
         None
     """
+    if selection is None:
+        selection = pm.ls(sl=True)
     # Get the source and destination mesh from the selection
     source_mesh = selection[0]
     destination_mesh = selection[1]
@@ -197,17 +199,19 @@ def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
 
 def save_skin_weights(
     geo_list,
-    project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
+    project_path=None,
     sw_ext=".swt",
     do_directory=True,
 ):
     """Save weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
-        project_path (string): file path
+        project_path (string | None): file path
         sw_ext (string): file extension
         do_directory (bool): create directory.
     """
+    if project_path is None:
+        project_path = Path(cmds.file(q=True, sn=True)).parent.as_posix()
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
     if not directory.exists():
@@ -234,15 +238,17 @@ def save_skin_weights(
 
 def load_skin_weights(
     geo_list,
-    project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
+    project_path=None,
     sw_ext=".swt",
 ):
     """Load weights for character geometry objects
     Args:
         geo_list (string[]): Objects list
-        project_path (string): file path
+        project_path (string | None): file path
         sw_ext (string): file extension.
     """
+    if project_path is None:
+        project_path = Path(cmds.file(q=True, sn=True)).parent.as_posix()
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
     if not directory.exists():
@@ -281,15 +287,17 @@ def ng_batch_export(geo_list, path):
         ngst_api.export_json(str(geo.name()), file=str(output_file_name))
 
 
-def ng_batch_import(geo_list, path, influence_list=pm.ls("*_FS_jnt")):
+def ng_batch_import(geo_list, path, influence_list=None):
     """Import skin weights for a list of geos from a directory.
 
     Args:
         geo_list (list of str): List of geometry names to import.
         path (str): Directory path to import from. Will create the directory if it doesn't exist.
-        influence_list (list of str): List of influence names to bind to. Defaults to all joints ending in '_FS_jnt'.
+        influence_list (list | None): List of influence names to bind to. Defaults to all joints ending in '_FS_jnt'.
 
     """
+    if influence_list is None:
+        influence_list = pm.ls("*_FS_jnt")
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):

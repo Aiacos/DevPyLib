@@ -9,7 +9,7 @@ __author__ = "Lorenzo Argentieri"
 import pymel.core as pm
 
 
-def set_muscle_weight(selection=pm.ls("iControlMid*"), jiggle=0.2):
+def set_muscle_weight(selection=None, jiggle=0.2):
     """Set jiggle weight values on cMuscle control objects.
 
     Batch sets the jiggle attribute on cMuscle control objects, excluding
@@ -17,12 +17,14 @@ def set_muscle_weight(selection=pm.ls("iControlMid*"), jiggle=0.2):
     dynamic muscle simulation parameters.
 
     Args:
-        selection (list, optional): List of PyMEL nodes to process. Defaults to all 'iControlMid*' objects.
+        selection (list | None): List of PyMEL nodes to process. Defaults to all 'iControlMid*' objects.
         jiggle (float, optional): Jiggle weight value to set (0.0-1.0). Defaults to 0.2.
 
     Returns:
         None
     """
+    if selection is None:
+        selection = pm.ls("iControlMid*")
     for item in selection:
         if "_crossSection" not in item.name().encode("utf8"):
             if "Constraint" not in item.name().encode("utf8"):

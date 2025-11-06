@@ -545,10 +545,12 @@ def save_deformer_weights():
 
 def load_deformer_weights(
     geo_list,
-    project_path=Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1])),
+    project_path=None,
     skin_weights_dir="weights/deformer",
 ):
     """Load deformer weights for character geometry objects."""
+    if project_path is None:
+        project_path = Path("/".join(cmds.file(q=True, sn=True).split("/")[:-1]))
     # check folder
     directory = project_path / skin_weights_dir
     if not directory.exists():

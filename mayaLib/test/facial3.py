@@ -1011,7 +1011,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 cls.ui_instance.activateWindow()
                 cls.ui_instance.show(dockable=True)
 
-    def __init__(self, parent=maya_main_window()):
+    def __init__(self, parent=None):
+        if parent is None:
+            parent = maya_main_window()
         super().__init__(parent)
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.version = str(cmds.about(v=1))
