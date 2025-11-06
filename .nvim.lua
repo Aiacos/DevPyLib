@@ -10,14 +10,13 @@
 --   - exrc enabled in your config
 --
 -- SETUP FOR ASTRONVIM (Template v5):
---   Option 1: Edit ~/.config/nvim/lua/plugins/astrocore.lua
---     - Remove: if true then return {} end
---     - Add to opts.options.opt:
---         exrc = true,  -- Enable .nvim.lua local config files
+--   Edit ~/.config/nvim/lua/polish.lua
+--     1. Remove: if true then return end
+--     2. Add: vim.opt.exrc = true
 --
---   Option 2: Edit ~/.config/nvim/lua/polish.lua
---     - Remove: if true then return end
---     - Add: vim.opt.exrc = true
+-- SETUP FOR NEOVIM STANDARD:
+--   Add to ~/.config/nvim/init.lua:
+--     vim.opt.exrc = true
 --
 -- SECURITY:
 --   Neovim 0.9.0+ will prompt you to trust this file before executing it.

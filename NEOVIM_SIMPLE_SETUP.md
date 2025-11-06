@@ -17,39 +17,19 @@
 
 **Passo 1**: Abilita `exrc` in Neovim (una sola volta)
 
-**Per AstroNvim Template v5** (modifica `~/.config/nvim/lua/plugins/astrocore.lua`):
-
-1. Rimuovi la riga: `if true then return {} end`
-2. Aggiungi `exrc = true` nella sezione `options.opt`:
+**Per AstroNvim Template v5** (modifica `~/.config/nvim/lua/polish.lua`):
 
 ```lua
-return {
-  "AstroNvim/astrocore",
-  opts = {
-    options = {
-      opt = {
-        relativenumber = true,
-        number = true,
-        spell = false,
-        signcolumn = "yes",
-        wrap = false,
-        exrc = true,  -- <-- AGGIUNGI QUESTA RIGA
-      },
-    },
-  },
-}
+-- This will run last in the setup process.
+vim.opt.exrc = true  -- Abilita .nvim.lua local configs
 ```
 
-**Alternativa**: Usa `~/.config/nvim/lua/polish.lua`
-
-1. Rimuovi la riga: `if true then return end`
-2. Aggiungi: `vim.opt.exrc = true`
+**IMPORTANTE**: Rimuovi la riga `if true then return end` all'inizio del file!
 
 **Per Neovim standard** (aggiungi a `~/.config/nvim/init.lua`):
 
 ```lua
 vim.opt.exrc = true  -- Abilita config locali
--- NON usare secure = true (deprecato)
 ```
 
 **🔒 Sicurezza**: Neovim 0.9.0+ ha protezione integrata! Ti chiederà automaticamente
@@ -340,7 +320,7 @@ Riavvia Neovim → funziona automaticamente per DevPyLib!
 
 ```bash
 # 1. Aggiungi a config Neovim (una sola volta):
-#    - AstroNvim: ~/.config/nvim/lua/plugins/astrocore.lua → exrc = true (in opts.options.opt)
+#    - AstroNvim: ~/.config/nvim/lua/polish.lua → vim.opt.exrc = true
 #    - Neovim: ~/.config/nvim/init.lua → vim.opt.exrc = true
 
 # 2. Apri file:
@@ -484,6 +464,37 @@ nvim mayaLib/rigLib/base/module.py
 
 - [Neovim Issue #20911](https://github.com/neovim/neovim/issues/20911) - More secure exrc handling
 - [Neovim PR #20956](https://github.com/neovim/neovim/pull/20956) - Implementation of vim.secure.read()
+
+---
+
+## 📜 Note Storiche - Metodi Alternativi
+
+### Metodo astrocore.lua (Alternativa a polish.lua)
+
+Se preferisci configurare `exrc` tramite `astrocore.lua` invece di `polish.lua`:
+
+**File**: `~/.config/nvim/lua/plugins/astrocore.lua`
+
+1. Rimuovi la riga: `if true then return {} end`
+2. Aggiungi `exrc = true` nella sezione `options.opt`:
+
+```lua
+return {
+  "AstroNvim/astrocore",
+  opts = {
+    options = {
+      opt = {
+        relativenumber = true,
+        number = true,
+        exrc = true,  -- <-- AGGIUNGI QUESTA RIGA
+      },
+    },
+  },
+}
+```
+
+**Nota**: `polish.lua` è più semplice perché usa Lua puro (`vim.opt.exrc = true`),
+mentre `astrocore.lua` richiede la sintassi di configurazione AstroNvim.
 
 ---
 
