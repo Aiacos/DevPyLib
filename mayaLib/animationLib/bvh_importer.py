@@ -36,9 +36,8 @@ TRANSLATION_DICT = {
 }
 
 
-class TinyDAG(object):
-    """# Small helper class to keep track of parents
-    """
+class TinyDAG:
+    """Small helper class to keep track of parent hierarchy."""
 
     def __init__(self, obj, p_obj=None):
         """Initialize BVH node wrapper.
@@ -51,19 +50,18 @@ class TinyDAG(object):
         self.p_obj = p_obj
 
     def __str__(self):
-        # returns object name
+        """Return object name as string."""
         return str(self.obj)
 
     def _full_path(self):
-        # returns full object path
+        """Return full object path with parent hierarchy."""
         if self.p_obj is not None:
-            return "%s|%s" % (self.p_obj._full_path(), self.__str__())
+            return f"{self.p_obj._full_path()}|{self}"
         return str(self.obj)
 
 
-class BVHImporterDialog(object):
-    """# Dialog class..
-    """
+class BVHImporterDialog:
+    """Maya UI dialog for importing BVH motion capture files."""
 
     def __init__(self, debug=False):
         """Initialize BVH Importer dialog window.
@@ -82,7 +80,7 @@ class BVHImporterDialog(object):
         """
         # Don't use debug when importing more than 10 frames.. Otherwise it gets messy
         self._name = "bvhImportDialog"
-        self._title = "BVH Importer %s" % __version__
+        self._title = f"BVH Importer {__version__}"
 
         # UI related
         self._textfield = ""
@@ -198,14 +196,15 @@ class BVHImporterDialog(object):
 
         with open(self._filename, encoding='utf-8') as f:
             # Check to see if the file is valid (sort of)
-            if not f.next().startswith("HIERARCHY"):
+            if not next(f).startswith("HIERARCHY"):
                 mc.error("No valid .bvh file selected.")
                 return False
 
             if self._root_node is None:
-                # Create a group for the rig, easier to scale. (Freeze transform when ungrouping please..)
+                # Create a group for the rig, easier to scale.
+                # (Freeze transform when ungrouping please)
                 mocap_name = os.path.basename(self._filename)
-                grp = pm.group(em=True, name="_mocap_%s_grp" % mocap_name)
+                grp = pm.group(em=True, name=f"_mocap_{mocap_name}_grp")
                 grp.scale.set(rig_scale, rig_scale, rig_scale)
 
                 # The group is now the 'root'
@@ -252,10 +251,14 @@ class BVHImporterDialog(object):
                             print(chan)
 
                         # Append the channels that are animated
-                        for i in range(int(chan[1])):
-                            self._channels.append("%s.%s" % (my_parent._full_path(), TRANSLATION_DICT[chan[2 + i]]))
+                        if my_parent is not None:
+                            for i in range(int(chan[1])):
+                                parent_path = my_parent._full_path()
+                                attr = TRANSLATION_DICT[chan[2 + i]]
+                                channel = f"{parent_path}.{attr}"
+                                self._channels.append(channel)
 
-                    if "OFFSET" in line:
+                    if "OFFSET" in line and my_parent is not None:
                         offset = line.strip().split(" ")
                         if self._debug:
                             print(offset)
@@ -269,7 +272,8 @@ class BVHImporterDialog(object):
                         if mc.objExists(my_parent._full_path()):
                             jnt = pm.PyNode(my_parent._full_path())
                             jnt.rotateOrder.set(rot_order)
-                            jnt.translate.set([float(offset[1]), float(offset[2]), float(offset[3])])
+                            jnt.translate.set([float(offset[1]), float(offset[2]),
+                                             float(offset[3])])
                             continue
 
                         # Build the joint and set its properties
@@ -281,27 +285,28 @@ class BVHImporterDialog(object):
                         # Animate!
                         motion = True
 
-                    if self._debug:
-                        if my_parent is not None:
-                            print(("parent: %s" % my_parent._full_path()))
+                    if self._debug and my_parent is not None:
+                        print(f"parent: {my_parent._full_path()}")
 
                 else:
-                    # We don't really need to use Framecount and time(since Python handles file reads nicely)
+                    # We don't really need to use Framecount and time
+                    # (since Python handles file reads nicely)
                     if "Frame" not in line:
                         data = line.split(" ")
-                        if len(data) > 0:
-                            if data[0] == "":
-                                data.pop(0)
+                        if len(data) > 0 and data[0] == "":
+                            data.pop(0)
 
                         if self._debug:
                             print("Animating..")
-                            print("Data size: %d" % len(data))
-                            print("Channels size: %d" % len(self._channels))
+                            print(f"Data size: {len(data)}")
+                            print(f"Channels size: {len(self._channels)}")
                         # Set the values to channels
                         for x in range(0, len(data) - 1):
                             if self._debug:
-                                print("Set Attribute: %s %f" % (self._channels[x], float(data[x])))
-                            mc.setKeyframe(self._channels[x], time=frame, value=float(data[x]))
+                                print(f"Set Attribute: {self._channels[x]} "
+                                      f"{float(data[x])}")
+                            mc.setKeyframe(self._channels[x], time=frame,
+                                         value=float(data[x]))
 
                         frame = frame + 1
 
