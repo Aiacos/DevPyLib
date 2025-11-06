@@ -41,20 +41,20 @@ def ziva_sliding_attachment(stiffness=8):
     return z_attachment
 
 
-def paint_proximity(z_attachement, min=0.0001, max=1):
+def paint_proximity(z_attachement, min_value=0.0001, max_value=1):
     """
     Paint a Ziva attachment based on proximity.
 
     Args:
         zAttachement (pm.nt.DagNode): The Ziva attachment node to paint.
-        min (float, optional): The minimum proximity value. Default is 0.0001.
-        max (float, optional): The maximum proximity value. Default is 1.
+        min_value (float, optional): The minimum proximity value. Default is 0.0001.
+        max_value (float, optional): The maximum proximity value. Default is 1.
 
     Returns:
         None
     """
     pm.select(z_attachement)
-    mel.eval('zPaintAttachmentsByProximity -min ' + str(min) + ' -max ' + str(max) + ';')
+    mel.eval('zPaintAttachmentsByProximity -min ' + str(min_value) + ' -max ' + str(max_value) + ';')
 
 
 def add_attachment(source, dest, value, fixed=True):

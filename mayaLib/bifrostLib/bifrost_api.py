@@ -318,13 +318,13 @@ def bf_rename_node(bifrost_shape, node, name):
     return name
 
 
-def bf_set_node_property(bifrost_shape, node, property, value):
+def bf_set_node_property(bifrost_shape, node, property_name, value):
     """
     Set Property on a Bifrost node
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node name
-        property (string): Property name
+        property_name (string): Property name
         value (string[]): Values as list of string
 
     Returns:
@@ -334,7 +334,7 @@ def bf_set_node_property(bifrost_shape, node, property, value):
     if not node.startswith('/'):
         node = '/' + node
 
-    cmds.vnnNode(bifrost_shape, node, setPortDefaultValues=[property, value])
+    cmds.vnnNode(bifrost_shape, node, setPortDefaultValues=[property_name, value])
 
 
 def bf_auto_layout():

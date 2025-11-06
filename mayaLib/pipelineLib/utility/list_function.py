@@ -100,10 +100,10 @@ class StructureManager():
             else:
                 dct[k] = merge_dct[k]
 
-    def incapsulate_dict(self, dict, key):
+    def incapsulate_dict(self, dictionary, key):
         """ Incapsulate the dictionary into a new one with the given key
         """
-        return {key: dict}
+        return {key: dictionary}
 
     def get_struct_lib(self):
         """ Return the structure dictionary

@@ -1542,7 +1542,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def wffacialDuplicate(self):
         """Wffacialduplicate operation."""
         pm.displaySmoothness(pointsWire=4, polygonObject=1, pointsShaded=1, divisionsV=0, divisionsU=0)
-        object = pm.ls(sl=1)
+        selected_objects = pm.ls(sl=1)
         pm.select(cl=1)
         if pm.objExists('curve1'):
             pm.rename('curve1', 'curve1_temp_perseus')
@@ -1553,11 +1553,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         else:
             pm.group(em=1, n='facial_geo_grp')
             pm.select(cl=1)
-            for obj in object:
+            for obj in selected_objects:
                 pm.select(obj, r=1)
                 pm.parent(obj, 'facial_geo_grp')
 
-        pm.select(object[0], r=1)
+        pm.select(selected_objects[0], r=1)
         if not self.headGeo_wdg.edgeLoopToggle:
             self.EdgeLoopOn_fn()
 
@@ -1887,9 +1887,9 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.delete('adjustClustHandle')
         cmds.select('l_brows_jnt_*_skin', 'r_brows_jnt_*_skin', 'l_jaw_jnt_*_skin', 'r_jaw_jnt_*_skin', 'neck_jnt_*_skin', 'l_cheek_jnt_*_skin', 'r_cheek_jnt_*_skin', r=1)
         obj = cmds.ls(sl=1)
-        for object in obj:
-            cmds.setAttr(str(object) + '.overrideEnabled', 1)
-            cmds.setAttr(str(object) + '.overrideColor', 17)
+        for maya_object in obj:
+            cmds.setAttr(str(maya_object) + '.overrideEnabled', 1)
+            cmds.setAttr(str(maya_object) + '.overrideColor', 17)
 
         cmds.setAttr('all_facial_grp.overrideEnabled', 1)
         cmds.setAttr('all_facial_grp.overrideColor', 16)
@@ -2180,7 +2180,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.connectAttr(str(sel) + '.s', 'r_' + sel[2:size] + '.s')
             cmds.setAttr('r_' + sel[2:size] + '.overrideColor', 1)
 
-    def checkVarExists(self, new_list, invert, type):
+    def checkVarExists(self, new_list, invert, conversion_type):
         """Checkvarexists operation."""
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         if len(new_list) != 0:
@@ -2191,28 +2191,28 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 pm.select(headGeoName + '.vtx[*]', r=1)
                 pm.select(new_list, d=1)
             if len(new_list) != 1:
-                if type == 0:
+                if conversion_type == 0:
                     cmds.ConvertSelectionToVertices()
-                if type == 1:
+                if conversion_type == 1:
                     cmds.ConvertSelectionToVertices()
-                if type == 2:
+                if conversion_type == 2:
                     cmds.ConvertSelectionToVertices()
         else:
             pm.select(cl=1)
             print('The variable has not been assigned ')
 
-    def checkVarExistsB(self, new_list, new_list_b, invert, type):
+    def checkVarExistsB(self, new_list, new_list_b, invert, conversion_type):
         """Checkvarexistsb operation."""
         if len(new_list) != 0:
             pm.select(new_list, new_list_b, r=1)
             if invert == 1:
                 pm.mel.invertSelection()
             if len(new_list) != 1:
-                if type == 0:
+                if conversion_type == 0:
                     cmds.ConvertSelectionToContainedEdges()
-                if type == 1:
+                if conversion_type == 1:
                     cmds.ConvertSelectionToContainedEdges()
-                if type == 2:
+                if conversion_type == 2:
                     cmds.ConvertSelectionToContainedEdges()
         else:
             pm.select(cl=1)
@@ -2914,8 +2914,8 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
     def wfdefineExclusionSet(self):
         """Wfdefineexclusionset operation."""
         cmds.ConvertSelectionToVertices()
-        object = cmds.ls(fl=1, sl=1)
-        return object
+        selected_vertices = cmds.ls(fl=1, sl=1)
+        return selected_vertices
         cmds.select(cl=1)
         cmds.SelectToggleMode()
         pm.mel.toggleSelMode()
@@ -3473,14 +3473,14 @@ def prImpSkin(file_path=None, *args):
     fh = open(file_path, 'rb')
     listPack = pickle.load(fh)
     fh.close()
-    for list in listPack['objDDic']:
+    for obj_data in listPack['objDDic']:
         try:
             skinCluster = False
-            objName = list['objName']
+            objName = obj_data['objName']
             objNode = pm.PyNode(objName)
             try:
                 meshVertices = pm.polyEvaluate(objNode, vertex=True)
-                importedVertices = len(list['blendWeights'])
+                importedVertices = len(obj_data['blendWeights'])
                 if meshVertices != importedVertices:
                     pm.displayWarning('Vertex counts do not match. %d != %d' % (
                      meshVertices, importedVertices))
@@ -3492,10 +3492,10 @@ def prImpSkin(file_path=None, *args):
                 skinCluster = getSkinCluster(objNode)
             else:
                 try:
-                    joints = list['weights'].keys()
-                    skinCluster = pm.skinCluster(joints, objNode, tsb=True, nw=2, n=list['skinClsName'])
+                    joints = obj_data['weights'].keys()
+                    skinCluster = pm.skinCluster(joints, objNode, tsb=True, nw=2, n=obj_data['skinClsName'])
                 except Exception:
-                    notFound = list['weights'].keys()
+                    notFound = obj_data['weights'].keys()
                     sceneJoints = set([ pm.PyNode(x).name() for x in pm.ls(type='joint')
                                       ])
                     for j in notFound:
@@ -3506,7 +3506,7 @@ def prImpSkin(file_path=None, *args):
                     continue
 
             if skinCluster:
-                setlist(skinCluster, list)
+                setlist(skinCluster, obj_data)
                 print('%s skin data loaded.' % objName)
         except Exception:
             pm.displayWarning('Object: ' + objName + ' Skiped. Can NOT be found in the scene')

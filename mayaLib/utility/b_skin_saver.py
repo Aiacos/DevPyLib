@@ -916,10 +916,10 @@ def get_soft_selection():
     dag_path = OpenMaya.MDagPath()
     component = OpenMaya.MObject()
 
-    iter = OpenMaya.MItSelectionList(selection, OpenMaya.MFn.kMeshVertComponent)
+    selection_iter = OpenMaya.MItSelectionList(selection, OpenMaya.MFn.kMeshVertComponent)
     elements, weights = [], []
-    while not iter.isDone():
-        iter.getDagPath(dag_path, component)
+    while not selection_iter.isDone():
+        selection_iter.getDagPath(dag_path, component)
         dag_path.pop()  # Grab the parent of the shape node
         node = dag_path.fullPathName()
         fn_comp = OpenMaya.MFnSingleIndexedComponent(component)
@@ -931,6 +931,6 @@ def get_soft_selection():
         for i in range(fn_comp.elementCount()):
             elements.append("%s.vtx[%i]" % (node, fn_comp.element(i)))
             weights.append(get_weight(i))
-        next(iter)
+        next(selection_iter)
 
     return elements, weights

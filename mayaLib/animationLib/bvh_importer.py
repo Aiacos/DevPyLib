@@ -170,8 +170,8 @@ class BVHImporterDialog(object):
 
     def _on_select_file(self, e):
         # Without All Files it didn't work for some reason..
-        filter = "All Files (*.*);;Motion Capture (*.bvh)"
-        dialog = mc.fileDialog2(fileFilter=filter, dialogStyle=1, fm=1)
+        file_filter = "All Files (*.*);;Motion Capture (*.bvh)"
+        dialog = mc.fileDialog2(fileFilter=file_filter, dialogStyle=1, fm=1)
 
         if dialog is None:
             return
