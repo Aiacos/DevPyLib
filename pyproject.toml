@@ -115,12 +115,15 @@ select = ["E", "F", "W", "I", "N", "D", "UP", "B", "C4", "SIM"]
 ignore = [
     "D203",   # one-blank-line-before-class (conflicts with D211)
     "D213",   # multi-line-summary-second-line (conflicts with D212)
+    "N999",   # invalid-module-name (DevPyLib is valid project name)
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401", "D104"]  # Unused imports OK in __init__, no docstring required
+"__init__.py" = ["F401", "D104", "N999"]  # Unused imports OK, no docstring required, module name from project
 "test_*.py" = ["D100", "D103"]    # No docstrings required in tests
 "*_test.py" = ["D100", "D103"]
+"mayaLib/test/*" = ["N802", "N806", "N812", "N813", "N814", "N817"]  # Test files use legacy naming, Maya import conventions
+"**/plugin/*" = ["N802", "N812", "N813", "N814", "N817"]  # Maya plugins: camelCase required + Maya import conventions (om, OM, etc.)
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"  # Use Google-style docstrings

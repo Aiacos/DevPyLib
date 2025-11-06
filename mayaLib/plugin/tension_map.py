@@ -17,14 +17,14 @@ Attributes:
 
 import sys
 
-import maya.api.OpenMaya as om2
-import maya.OpenMaya as om
+import maya.api.OpenMaya as OM2
+import maya.OpenMaya as OM
 
 K_PLUGIN_NODE_NAME = "tensionMap"
 ORIG_ATTR_NAME = "orig"
 DEFORMED_ATTR_NAME = "deform"
 K_PLUGIN_NODE_CLASSIFY = "utility/general"
-K_PLUGIN_NODE_ID = om2.MTypeId(0x86018)
+K_PLUGIN_NODE_ID = OM2.MTypeId(0x86018)
 
 
 def maya_use_new_api():
@@ -36,7 +36,7 @@ def maya_use_new_api():
     pass
 
 
-class TensionMap(om2.MPxNode):
+class TensionMap(OM2.MPxNode):
     """Maya plugin node for visualizing mesh deformation tension via vertex colors.
 
     Compares original and deformed mesh geometry to calculate edge length changes,
@@ -54,10 +54,10 @@ class TensionMap(om2.MPxNode):
         Color ramp is automatically initialized with green (0.0), black (0.5), red (1.0).
     """
 
-    a_orig_shape = om2.MObject()
-    a_deformed_shape = om2.MObject()
-    a_out_shape = om2.MObject()
-    a_color_ramp = om2.MObject()
+    a_orig_shape = OM2.MObject()
+    a_deformed_shape = OM2.MObject()
+    a_out_shape = OM2.MObject()
+    a_color_ramp = OM2.MObject()
 
     is_deformed_dirty = True
     is_orig_dirty = True
@@ -69,7 +69,7 @@ class TensionMap(om2.MPxNode):
 
         Calls parent class constructor to set up MPxNode.
         """
-        om2.MPxNode.__init__(self)
+        OM2.MPxNode.__init__(self)
 
     def initialize_ramp(self, parent_node, ramp_obj, index, position, value, interpolation):
         """Initialize a color ramp attribute with a specific value and position.
@@ -82,7 +82,7 @@ class TensionMap(om2.MPxNode):
             value (list): RGB color value as [r, g, b].
             interpolation (int): Interpolation type (1 for linear).
         """
-        ramp_plug = om2.MPlug(parent_node, ramp_obj)
+        ramp_plug = OM2.MPlug(parent_node, ramp_obj)
         element_plug = ramp_plug.elementByLogicalIndex(index)
         position_plug = element_plug.child(0)
         position_plug.setFloat(position)
@@ -103,13 +103,13 @@ class TensionMap(om2.MPxNode):
         - Red at 1.0 (stretching)
         """
         self.initialize_ramp(
-            self.thisMObject(), self.a_color_ramp, 0, 0.0, om2.MColor((0, 1, 0, 1)), 1
+            self.thisMObject(), self.a_color_ramp, 0, 0.0, OM2.MColor((0, 1, 0, 1)), 1
         )
         self.initialize_ramp(
-            self.thisMObject(), self.a_color_ramp, 1, 0.5, om2.MColor((0, 0, 0, 1)), 1
+            self.thisMObject(), self.a_color_ramp, 1, 0.5, OM2.MColor((0, 0, 0, 1)), 1
         )
         self.initialize_ramp(
-            self.thisMObject(), self.a_color_ramp, 2, 1.0, om2.MColor((1, 0, 0, 1)), 1
+            self.thisMObject(), self.a_color_ramp, 2, 1.0, OM2.MColor((1, 0, 0, 1)), 1
         )
 
     def setDependentsDirty(self, dirty_plug, affected_plugs):  # noqa: N802
@@ -144,7 +144,7 @@ class TensionMap(om2.MPxNode):
             orig_handle = data.inputValue(self.a_orig_shape)
             deformed_handle = data.inputValue(self.a_deformed_shape)
             out_handle = data.outputValue(self.a_out_shape)
-            color_attribute = om2.MRampAttribute(this_obj, self.a_color_ramp)
+            color_attribute = OM2.MRampAttribute(this_obj, self.a_color_ramp)
 
             if self.is_orig_dirty:
                 self.orig_edge_len_array = self.get_edge_len(orig_handle)
@@ -155,16 +155,16 @@ class TensionMap(om2.MPxNode):
             out_handle.setMObject(deformed_handle.asMesh())
 
             out_mesh = out_handle.asMesh()
-            mesh_fn = om2.MFnMesh(out_mesh)
+            mesh_fn = OM2.MFnMesh(out_mesh)
             num_verts = mesh_fn.numVertices
-            vert_colors = om2.MColorArray()
-            vert_ids = om2.MIntArray()
+            vert_colors = OM2.MColorArray()
+            vert_ids = OM2.MIntArray()
             vert_colors.setLength(num_verts)
             vert_ids.setLength(num_verts)
 
             for i in range(num_verts):
                 delta = 0
-                vert_color = om2.MColor()
+                vert_color = OM2.MColor()
                 if len(self.orig_edge_len_array) == len(self.deformed_edge_len_array):
                     delta = (
                         (self.orig_edge_len_array[i] - self.deformed_edge_len_array[i])
@@ -190,15 +190,15 @@ class TensionMap(om2.MPxNode):
         edge_len_array = []
 
         mesh_obj = mesh_handle.asMesh()
-        edge_iter = om2.MItMeshEdge(mesh_obj)
-        vert_iter = om2.MItMeshVertex(mesh_obj)
+        edge_iter = OM2.MItMeshEdge(mesh_obj)
+        vert_iter = OM2.MItMeshVertex(mesh_obj)
         while not vert_iter.isDone():
             length_sum = 0.0
-            connected_edges = om2.MIntArray()
+            connected_edges = OM2.MIntArray()
             connected_edges = vert_iter.getConnectedEdges()
             for i in range(connected_edges.__len__()):
                 edge_iter.setIndex(connected_edges[i])
-                length = edge_iter.length(om2.MSpace.kWorld)
+                length = edge_iter.length(OM2.MSpace.kWorld)
                 length_sum += length * 1.0
 
             length_sum = length_sum / connected_edges.__len__()
@@ -221,21 +221,21 @@ def initialize():
 
     Creates and registers the input/output attributes for the node.
     """
-    t_attr = om2.MFnTypedAttribute()
+    t_attr = OM2.MFnTypedAttribute()
 
-    TensionMap.a_orig_shape = t_attr.create(ORIG_ATTR_NAME, ORIG_ATTR_NAME, om2.MFnMeshData.kMesh)
+    TensionMap.a_orig_shape = t_attr.create(ORIG_ATTR_NAME, ORIG_ATTR_NAME, OM2.MFnMeshData.kMesh)
     t_attr.storable = True
 
     TensionMap.a_deformed_shape = t_attr.create(
-        DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, om2.MFnMeshData.kMesh
+        DEFORMED_ATTR_NAME, DEFORMED_ATTR_NAME, OM2.MFnMeshData.kMesh
     )
     t_attr.storable = True
 
-    TensionMap.a_out_shape = t_attr.create("out", "out", om2.MFnMeshData.kMesh)
+    TensionMap.a_out_shape = t_attr.create("out", "out", OM2.MFnMeshData.kMesh)
     t_attr.writable = False
     t_attr.storable = False
 
-    TensionMap.a_color_ramp = om2.MRampAttribute().createColorRamp("color", "color")
+    TensionMap.a_color_ramp = OM2.MRampAttribute().createColorRamp("color", "color")
     TensionMap.addAttribute(TensionMap.a_orig_shape)
     TensionMap.addAttribute(TensionMap.a_deformed_shape)
     TensionMap.addAttribute(TensionMap.a_out_shape)
@@ -280,10 +280,10 @@ def initialize_plugin(mobject):
     Raises:
         RuntimeError: If node registration fails.
     """
-    mplugin = om2.MFnPlugin(mobject)
+    mplugin = OM2.MFnPlugin(mobject)
     try:
         mplugin.registerNode(K_PLUGIN_NODE_NAME, K_PLUGIN_NODE_ID, node_creator, initialize)
-        om.MGlobal.executeCommand(ae_template_string(K_PLUGIN_NODE_NAME))
+        OM.MGlobal.executeCommand(ae_template_string(K_PLUGIN_NODE_NAME))
     except RuntimeError:
         sys.stderr.write("Failed to register node: " + K_PLUGIN_NODE_NAME)
         raise
@@ -298,7 +298,7 @@ def uninitialize_plugin(mobject):
     Raises:
         RuntimeError: If node deregistration fails.
     """
-    mplugin = om2.MFnPlugin(mobject)
+    mplugin = OM2.MFnPlugin(mobject)
     try:
         mplugin.deregisterNode(K_PLUGIN_NODE_ID)
     except RuntimeError:

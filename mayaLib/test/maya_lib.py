@@ -8,7 +8,7 @@ __author__ = "Lorenzo Argentieri"
 
 import sys
 
-import maya.api.OpenMaya as om
+import maya.api.OpenMaya as OM
 
 import mayaLib.guiLib.main_menu as mm
 
@@ -21,14 +21,14 @@ def maya_useNewAPI():
 
 
 # command
-class MayaLibPlugin(om.MPxCommand):
+class MayaLibPlugin(OM.MPxCommand):
     """MayaLib plugin command for loading the DevPyLib main menu."""
 
     k_plugin_cmd_name = "MayaLib"
 
     def __init__(self):
         """Initialize the MayaLib plugin command."""
-        om.MPxCommand.__init__(self)
+        OM.MPxCommand.__init__(self)
 
     @staticmethod
     def cmdCreator():
@@ -47,7 +47,7 @@ def initializePlugin(plugin):
     Args:
         plugin: Maya plugin object to initialize.
     """
-    pluginFn = om.MFnPlugin(plugin, "Lorenzo Argentieri", "1.0")
+    pluginFn = OM.MFnPlugin(plugin, "Lorenzo Argentieri", "1.0")
     try:
         pluginFn.registerCommand(MayaLibPlugin.k_plugin_cmd_name, MayaLibPlugin.cmdCreator)
     except RuntimeError:
@@ -62,7 +62,7 @@ def uninitializePlugin(plugin):
     Args:
         plugin: Maya plugin object to uninitialize.
     """
-    pluginFn = om.MFnPlugin(plugin)
+    pluginFn = OM.MFnPlugin(plugin)
     try:
         pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
     except RuntimeError:

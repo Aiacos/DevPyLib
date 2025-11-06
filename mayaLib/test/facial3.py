@@ -23,14 +23,14 @@ import logging
 import maya.cmds as cmds
 import maya.mel as mel
 import maya.OpenMaya as OpenMaya
-import maya.OpenMayaUI as omui
+import maya.OpenMayaUI as OMUI
 import pymel.all as pm
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
 try:
-    import cPickle as pickle
+    import cPickle as Pickle
 except (ImportError, ModuleNotFoundError):
-    import _pickle as pickle
+    import _pickle as Pickle
 
 with contextlib.suppress(Exception):
     from past.builtins import basestring
@@ -44,7 +44,7 @@ PACK_EXT = ".list"
 
 def maya_main_window():
     """Return the Maya main window widget as a Python object."""
-    main_window_ptr = omui.MQtUtil.mainWindow()
+    main_window_ptr = OMUI.MQtUtil.mainWindow()
     pythonVersion = sys.version_info.major
     try:
         if pythonVersion == 2:
@@ -4064,7 +4064,7 @@ def exportSkin(file_path=None, objs=None, *args):
 
     if packDic["objs"]:
         fh = open(file_path, "wb")
-        pickle.dump(packDic, fh, pickle.HIGHEST_PROTOCOL)
+        Pickle.dump(packDic, fh, Pickle.HIGHEST_PROTOCOL)
         fh.close()
         return True
 
@@ -4134,7 +4134,7 @@ def prImpSkin(file_path=None, *args):
     if not isinstance(file_path, basestring):
         file_path = file_path[0]
     fh = open(file_path, "rb")
-    listPack = pickle.load(fh)
+    listPack = Pickle.load(fh)
     fh.close()
     for obj_data in listPack["objDDic"]:
         try:
@@ -4292,7 +4292,7 @@ def encode_data_to_attr(node, attr_name, data):
     """
     if not node.hasAttr(attr_name):
         node.addAttr(attr_name, dataType="string")
-    pickled_data = pickle.dumps(data)
+    pickled_data = Pickle.dumps(data)
     node.attr(attr_name).unlock()
     node.attr(attr_name).set(pickled_data)
     node.attr(attr_name).lock()
@@ -4309,7 +4309,7 @@ def decode_data_from_attr(node, attr_name):
     if not node.hasAttr(attr_name):
         raise pm.MayaAttributeError(f"Attribute does not exist:{attr_name}")
     data = str(node.attr(attr_name).get())
-    return pickle.loads(data)
+    return Pickle.loads(data)
 
 
 def detach_bind_joints():
