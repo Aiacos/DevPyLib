@@ -9,8 +9,7 @@ classname = "UsdExportMetersSettings"
 
 
 class UsdExportMetersSettings:
-    """
-    Class to customize USD export settings.
+    """Class to customize USD export settings.
 
     Attributes:
         core (prism_core): PrismCore instance.
@@ -18,8 +17,7 @@ class UsdExportMetersSettings:
     """
 
     def __init__(self, core):
-        """
-        Initialize the plugin.
+        """Initialize the plugin.
 
         Args:
             core (prism_core): PrismCore instance.
@@ -32,8 +30,7 @@ class UsdExportMetersSettings:
         )
 
     def preMayaUSDExport(self, origin, options, output_path):
-        """
-        Callback that is called before USD export.
+        """Callback that is called before USD export.
 
         This callback is used to customize the USD export settings based on the
         current Maya unit setting.
