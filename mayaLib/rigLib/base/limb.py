@@ -641,7 +641,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         if not prefix:
             prefix = name.remove_suffix(limb_joints[0])
 
-        rig_module = module.Module(prefix=prefix, baseObj=base_rig)
+        rig_module = module.Module(prefix=prefix, base_obj=base_rig)
         body_attach_group = pm.group(
             n=f'{prefix}BodyAttach_GRP',
             em=True,

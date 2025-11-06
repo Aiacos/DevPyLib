@@ -66,7 +66,7 @@ class Neck:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
                 f'Unexpected arguments for Neck: {tuple(legacy_kwargs.keys())}'
             )
 
-        self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
+        self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
 
         neck_joint_nodes = pm.ls(neck_joints)
         if not neck_joint_nodes:

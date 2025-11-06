@@ -127,7 +127,7 @@ class Spine:
                 f'Unexpected arguments for Spine: {tuple(legacy_kwargs.keys())}'
             )
 
-        self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
+        self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
         self.prefix = prefix
 
         body_locator_node = _as_pynode(body_locator)

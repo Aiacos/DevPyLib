@@ -202,7 +202,7 @@ class IKChain:  # pylint: disable=too-many-instance-attributes,too-few-public-me
         dynamic_curve_base = pm.duplicate(self.chain_curve, n=dynamic_curve_name)
         pm.parent(dynamic_curve_base, w=True)
 
-        dyn_curve = dynamic.DynamicCurve(dynamic_curve_base, prefix=prefix, baseRig=base_rig)
+        dyn_curve = dynamic.DynamicCurve(dynamic_curve_base, prefix=prefix, base_rig=base_rig)
         pm.parent(dyn_curve.get_system_group(), base_module.parts_no_trans_group)
         return dyn_curve
 

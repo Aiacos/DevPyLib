@@ -85,7 +85,7 @@ class Face:  # pylint: disable=too-many-instance-attributes,too-few-public-metho
         if points_number < 2:
             raise ValueError('points_number must be at least 2.')
 
-        self.rig_module = module.Module(prefix=prefix, baseObj=base_rig)
+        self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
 
         self.points_number = points_number
         self.spacing = 1.0 / (points_number - 1)
