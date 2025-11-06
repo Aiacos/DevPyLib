@@ -8,12 +8,13 @@ import pymel.core as pm
 
 
 def ak_rope():
-    """:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-      Script:     ak_rope                                                                         //
-      Version:    12.0                                                                            //
-      Date:       21.05.2013                                                                      //
-      Author:     Andrey Kanin                                                                    //
-    :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://"""
+    """Create rope rigging UI window.
+
+    Creates a UI window for configuring and creating rope rigs with
+    curve/bezier controls, twist, and surface options.
+
+    Script by Andrey Kanin, Version 12.0, Date: 21.05.2013.
+    """
 
     win = "ROPE"
     if pm.window(win, exists=1):
@@ -91,8 +92,10 @@ def ak_rope():
 
 
 def rp_curve():
-    """..............................................................................................//"""
+    """Create or convert curve for rope rigging.
 
+    Creates an EP curve tool or converts selected curve to nurbs.
+    """
     s = pm.ls(sl=1)
     if len(s) == 0:
         pm.EPCurveTool()
@@ -103,6 +106,10 @@ def rp_curve():
 
 
 def rp_bezier():
+    """Create or convert bezier curve for rope rigging.
+
+    Creates a bezier curve tool or converts selected curve to bezier.
+    """
     s = pm.ls(sl=1)
     if len(s) == 0:
         pm.CreateBezierCurveTool()
@@ -113,6 +120,11 @@ def rp_bezier():
 
 
 def rp_convert_curve(s):
+    """Convert between nurbs and bezier curve types.
+
+    Args:
+        s: List of curve transforms to convert.
+    """
     ss = pm.listRelatives(s[0], s=1)
     tss = str(pm.objectType(ss[0]))
     if pm.mel.gmatch(tss, "nurbsCurve"):
@@ -123,8 +135,13 @@ def rp_convert_curve(s):
 
 
 def rp_check(s):
-    """..............................................................................................//"""
+    """Validate selection for rope rigging.
 
+    Checks if selection is valid curve and not already rigged.
+
+    Args:
+        s: List of selected objects to validate.
+    """
     if pm.mel.gmatch(s[0], "*CT*"):
         pm.mel.error(" :( > this is not a rope curve")
 
@@ -147,8 +164,10 @@ def rp_check(s):
 
 
 def rp_del():
-    """..............................................................................................//"""
+    """Delete rope rig from selected curve.
 
+    Removes the rig group and unparents the original curve.
+    """
     s = pm.ls(sl=1)
     rp_check(s)
     if pm.objExists(s[0] + "_rig"):
@@ -157,8 +176,14 @@ def rp_del():
 
 
 def rp_info(s):
-    """..............................................................................................//"""
+    """Create curve info node for rope rigging.
 
+    Args:
+        s: List containing curve transform.
+
+    Returns:
+        str: Name of created curveInfo node.
+    """
     if pm.objExists(s[0] + "_info"):
         pm.delete(s[0] + "_info")
 
@@ -170,8 +195,15 @@ def rp_info(s):
 
 
 def rp_create_control(s, i):
-    """..............................................................................................//"""
+    """Create control circle for rope rigging.
 
+    Args:
+        s: List containing curve name.
+        i: Index number for control.
+
+    Returns:
+        list: Control transform and group names.
+    """
     ct = []
     cct = pm.circle(ch=0, nr=(1, 0, 0), r=1, d=3, n=(s[0] + "_" + str((i + 1)) + "_CT"))
     ct[0] = cct[0]
@@ -201,8 +233,10 @@ def rp_create_control(s, i):
 
 
 def rp_cr():
-    """..............................................................................................//"""
+    """Create rope rig on selected curve.
 
+    Main rigging function that creates joints, controls, and connections.
+    """
     ncj = int(pm.intField('NCJ', q=1, v=1))
     # > input data
     # > control joints
@@ -436,8 +470,10 @@ def rp_cr():
 
 
 def rp_mixTwist():
-    """..............................................................................................//"""
+    """Toggle between twist system types.
 
+    Toggles between node-based and vector-based twist systems.
+    """
     if pm.checkBoxGrp('MRL', q=1, v1=1):
         pm.checkBoxGrp('MRL', v1=0, e=1)
 
@@ -454,8 +490,10 @@ def rp_mixTwist():
 
 
 def rp_Twist():
-    """..............................................................................................//"""
+    """Apply twist and roll to rope rig.
 
+    Sets up advanced twist controls on spline IK handle.
+    """
     ncj = int(pm.intField('NCJ', q=1, v=1))
     # > control joints
     # > selection list
@@ -518,8 +556,10 @@ def rp_Twist():
 
 
 def rp_grip():
-    """..............................................................................................//"""
+    """Add grip controls to rope rig.
 
+    Creates movable grip controls that can slide along the rope.
+    """
     s = pm.ls(sl=1)
     if pm.mel.gmatch(s[0], "*_grip*"):
         ps = pm.listRelatives(s[0], p=1)
@@ -579,8 +619,10 @@ def rp_grip():
 
 
 def rp_surface():
-    """..............................................................................................//"""
+    """Convert rope rig to surface-based system.
 
+    Extrudes curve to surface and uses hair follicles for joint positioning.
+    """
     int(pm.intField('NCJ', q=1, v=1))
     # > control joints
     rn = float(pm.intField('NJ', q=1, v=1))

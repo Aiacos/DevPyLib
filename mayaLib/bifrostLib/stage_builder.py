@@ -265,6 +265,19 @@ class USDCharacterBuild(object):
         cmds.setAttr(self.bifrost_shape + ".end_frame", frame)
 
     def add_stage_custom_layer_data(self, data, product):
+        """Add custom layer data to the USD stage.
+
+        Creates a node that sets custom layer data on the USD stage and connects it
+        to the stage creation node. Uses add_custom_layer_data utility to populate
+        the custom data.
+
+        Args:
+            data (dict): Dictionary of custom data key-value pairs to add to the stage.
+            product (str): Product name used for naming the custom data compound.
+
+        Returns:
+            str: The name of the custom layer data node created.
+        """
         add_custom_layer_data_node = bifrost.bf_create_node(
             self.bifrost_shape, "BifrostGraph,USD::Stage,set_stage_custom_layer_data"
         )
@@ -288,6 +301,24 @@ class USDCharacterBuild(object):
         product_name="product",
         custom_layer_data=None,
     ):
+        """Add a USD product with deformed and undeformed geometry to the stage.
+
+        Creates a complete USD product pipeline including:
+        - USD stage creation with custom layer data
+        - Mesh prim definitions for deformed/undeformed geometry
+        - Payload and reference compounds for layer composition
+        - File name construction and saving logic
+        - Attribute blocking for unwanted data
+
+        Args:
+            deformed_geo_list (list, optional): List of Maya mesh names with deformation history.
+            undeformed_geo_list (list, optional): List of Maya mesh names without deformation.
+            product_name (str, optional): Name of the product for file naming and layer creation. Defaults to "product".
+            custom_layer_data (dict, optional): Custom metadata to add to the USD layer.
+
+        Returns:
+            None
+        """
         deformed_geo_list = deformed_geo_list or []
         undeformed_geo_list = undeformed_geo_list or []
         custom_layer_data = custom_layer_data or {}

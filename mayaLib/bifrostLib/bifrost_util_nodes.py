@@ -492,6 +492,20 @@ def build_preview_compound(bifrost_shape, working_layer_name='WORKING_MODELING',
 
 
 def get_data_from_layer(bifrost_shape, layer_node, product_name):
+    """Extract layer data from a USD layer node and create a data compound.
+
+    Creates a compound that extracts the layer identifier and file path from a USD layer,
+    splits the file path to get the name, and packages all data into a dictionary structure
+    with 'name' and 'path' keys.
+
+    Args:
+        bifrost_shape (str): The shape of the Bifrost graph.
+        layer_node (str): The USD layer node to extract data from.
+        product_name (str): The product name to use when creating the compound.
+
+    Returns:
+        str: The name of the compound created to hold the layer data.
+    """
     # Create Nodes
     get_layer_id_node = bifrost.bf_create_node(bifrost_shape, "BifrostGraph,USD::Layer,get_layer_identifier")
     layer_file_path_node = bifrost.bf_create_node(bifrost_shape, "BifrostGraph,USD::Layer,get_layer_file_path")

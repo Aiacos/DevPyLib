@@ -28,6 +28,11 @@ K_PLUGIN_NODE_ID = om2.MTypeId( 0x86018 )
 
 
 def maya_use_new_api():
+    """Marker function to indicate Maya Python API 2.0 usage.
+
+    This function must be present for Maya to load the plugin
+    using the API 2.0 interface.
+    """
     pass
 
 class TensionMap( om2.MPxNode ):

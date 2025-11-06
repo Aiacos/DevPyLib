@@ -30,6 +30,12 @@ def findRelatedSkinCluster(geo):
 
 
 def ng_batch_export(geo_list, path):
+    """Export ngSkinTools weights for multiple geometries.
+
+    Args:
+        geo_list: List of geometry objects to export weights from.
+        path: Directory path to save weight files.
+    """
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
@@ -44,6 +50,12 @@ def ng_batch_export(geo_list, path):
 
 
 def ng_batch_import(geo_list, path):
+    """Import ngSkinTools weights for multiple geometries.
+
+    Args:
+        geo_list: List of geometry objects to import weights to.
+        path: Directory path containing weight files.
+    """
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):

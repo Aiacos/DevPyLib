@@ -9,15 +9,30 @@ import maya.OpenMayaMPx as OpenMayaMPx
 
 
 class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
+    """Collision deformer node for mesh-based collision detection.
+
+    Deforms a mesh to prevent intersection with a collider mesh
+    using ray intersection and closest point calculations.
+    """
+
     k_plugin_node_id = OpenMaya.MTypeId(0x00000012)
     k_plugin_node_type_name = "collisionDeformer"
 
     def __init__(self):
+        """Initialize the collision deformer node."""
         OpenMayaMPx.MPxDeformerNode.__init__(self)
         self.accel_params = OpenMaya.MMeshIsectAccelParams()  # speeds up intersect calculation
         self.intersector = OpenMaya.MMeshIntersector()  # contains methods for efficiently finding the closest point to a mesh, required for collider
 
     def deform(self, block, geo_itr, matrix, index):
+        """Compute the deformation on the input mesh.
+
+        Args:
+            block: Data block containing attribute values.
+            geo_itr: Geometry iterator for the input mesh.
+            matrix: World matrix of the mesh.
+            index: Geometry index in the data block.
+        """
 
         # get ENVELOPE
         envelope = OpenMayaMPx.cvar.MPxGeometryFilter_envelope
@@ -122,6 +137,15 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
                 in_mesh_fn.setPoints(final_position_array, OpenMaya.MSpace.kWorld)
 
     def get_input_geom(self, block, index):
+        """Get the input geometry mesh from the data block.
+
+        Args:
+            block: Data block containing geometry data.
+            index: Geometry index to retrieve.
+
+        Returns:
+            MObject: Input mesh object.
+        """
         input_attr = OpenMayaMPx.cvar.MPxGeometryFilter_input
         input_geom_attr = OpenMayaMPx.cvar.MPxGeometryFilter_inputGeom
         input_handle = block.outputArrayValue(input_attr)
@@ -131,10 +155,16 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
 
 def creator():
+    """Create and return a new instance of the deformer node.
+
+    Returns:
+        MPxPtr: Pointer to new CollisionDeformer instance.
+    """
     return OpenMayaMPx.asMPxPtr(CollisionDeformer())
 
 
 def initialize():
+    """Initialize node attributes for the collision deformer."""
     g_attr = OpenMaya.MFnGenericAttribute()
     m_attr = OpenMaya.MFnMatrixAttribute()
     n_attr = OpenMaya.MFnNumericAttribute()
@@ -167,6 +197,11 @@ def initialize():
 
 
 def initializePlugin(obj):
+    """Initialize and register the collision deformer plugin.
+
+    Args:
+        obj: Maya plugin object.
+    """
     plugin = OpenMayaMPx.MFnPlugin(obj, 'Grover', '1.0', 'Any')
     try:
         plugin.registerNode('collisionDeformer', CollisionDeformer.k_plugin_node_id, creator, initialize,
@@ -176,6 +211,11 @@ def initializePlugin(obj):
 
 
 def uninitializePlugin(obj):
+    """Uninitialize and deregister the collision deformer plugin.
+
+    Args:
+        obj: Maya plugin object.
+    """
     plugin = OpenMayaMPx.MFnPlugin(obj)
     try:
         plugin.deregisterNode(CollisionDeformer.k_plugin_node_id)

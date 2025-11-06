@@ -61,6 +61,11 @@ def maya_main_window():
 
 
 def findMainName():
+    """Generate obfuscated license string for UI.
+
+    Returns:
+        str: Encoded license information string.
+    """
     prCheckTest1 = 'pm.mel.moveJointsMode(0)'
     prCheckTest2 = 'cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)'
     prCheckTest3 = 'cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)'
@@ -91,6 +96,11 @@ def findMainName():
 
 
 def findMainNameB():
+    """Generate alternate obfuscated license string for UI.
+
+    Returns:
+        str: Encoded short license information string.
+    """
     prCheckTest1 = 'pm.mel.moveJointsMode(0)'
     prCheckTest2 = 'cmds.aimConstraint(weight=1, upVector=(2, 1, 0),f=1)'
     prCheckTest3 = 'cmds.aimConstreint(weight=1, upVector=(0, 1, 0),h=0),r=0)'
@@ -122,8 +132,17 @@ def findMainNameB():
 
 
 class HeadGeoWidget(QtWidgets.QWidget):
+    """Widget for facial rig head geometry selection and configuration.
+
+    Provides UI for selecting head, eyes, teeth, tongue, and extra geometry.
+    """
 
     def __init__(self, parent=None):
+        """Initialize the head geometry widget.
+
+        Args:
+            parent: Parent Qt widget.
+        """
         super(HeadGeoWidget, self).__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
@@ -514,6 +533,7 @@ class HeadGeoWidget(QtWidgets.QWidget):
 
 
 class SettingsWidget(QtWidgets.QWidget):
+    """Widget for facial rig settings and configuration."""
 
     def __init__(self, parent=None):
         super(SettingsWidget, self).__init__(parent)
@@ -669,6 +689,11 @@ class SettingsWidget(QtWidgets.QWidget):
         layout.addWidget(self.perseusBLayoutGrp)
 
     def toggleGroup(self, ctrl):
+        """Toggle visibility of a control group.
+
+        Args:
+            ctrl: Control widget to toggle.
+        """
         state = ctrl.isChecked()
         if state:
             ctrl.setFixedHeight(ctrl.sizeHint().height())
@@ -677,6 +702,7 @@ class SettingsWidget(QtWidgets.QWidget):
 
 
 class SkinWidget(QtWidgets.QWidget):
+    """Widget for skin cluster setup and management."""
 
     def __init__(self, parent=None):
         super(SkinWidget, self).__init__(parent)
@@ -758,6 +784,7 @@ class SkinWidget(QtWidgets.QWidget):
 
 
 class CustomTabWidget(QtWidgets.QWidget):
+    """Custom tab widget for organizing facial rig UI panels."""
 
     def __init__(self):
         super(CustomTabWidget, self).__init__()
@@ -766,6 +793,7 @@ class CustomTabWidget(QtWidgets.QWidget):
         self.create_connections()
 
     def create_widgets(self):
+        """Create all child widgets for the tab widget."""
         self.tab_bar = QtWidgets.QTabBar()
         self.tab_bar.setObjectName('customTabBar')
         self.tab_bar.setStyleSheet('#customTabBar {background-color: #383838}')
@@ -774,6 +802,7 @@ class CustomTabWidget(QtWidgets.QWidget):
         self.stacked_wdg.setStyleSheet('#tabBarStackedWidget {border: 1px solid #2e2e2e}')
 
     def create_layout(self):
+        """Create and set the layout for the tab widget."""
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
@@ -781,14 +810,22 @@ class CustomTabWidget(QtWidgets.QWidget):
         main_layout.addWidget(self.stacked_wdg)
 
     def create_connections(self):
+        """Create signal/slot connections for the tab widget."""
         self.tab_bar.currentChanged.connect(self.stacked_wdg.setCurrentIndex)
 
     def addTab(self, widget, label):
+        """Add a new tab to the widget.
+
+        Args:
+            widget: Widget to add as tab content.
+            label: Tab label text.
+        """
         self.tab_bar.addTab(label)
         self.stacked_wdg.addWidget(widget)
 
 
 class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
+    """Facial rig PerseusUI class."""
     WINDOW_TITLE = 'Perseus UI'
     UI_NAME = 'PerseusUI'
     ui_instance = None
@@ -796,6 +833,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
     @classmethod
     def show_dialog(cls):
+        """Show the facial rig UI dialog.
+
+        Returns:
+            PerseusUI: The dialog instance.
+        """
         version = str(cmds.about(v=1))
         if version != '2017':
             if not cls.ui_instance:
@@ -831,16 +873,27 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def showEvent(self, e):
+        """Handle show event for the dialog.
+
+        Args:
+            e: Show event.
+        """
         super(PerseusUI, self).showEvent(e)
         if self.geometry:
             self.restoreGeometry(self.geometry)
 
     def closeEvent(self, e):
+        """Handle close event for the dialog.
+
+        Args:
+            e: Close event.
+        """
         if isinstance(self, PerseusUI):
             super(PerseusUI, self).closeEvent(e)
             self.geometry = self.saveGeometry()
 
     def create_widgets(self):
+        """Create all child widgets for the tab widget."""
         self.headGeo_wdg = HeadGeoWidget()
         self.settings_wdg = SettingsWidget()
         self.skin_wdg = SkinWidget()
@@ -850,11 +903,13 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.tab_widget.addTab(self.skin_wdg, 'Skin Tools')
 
     def create_layout(self):
+        """Create and set the layout for the tab widget."""
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
     def create_connections(self):
+        """Create signal/slot connections for the tab widget."""
         self.headGeo_wdg.geoBox.clicked.connect(self.LHeadGeoSelUI)
         self.headGeo_wdg.HeadGeoSelBut.clicked.connect(self.sl_headGeo_fn)
         self.headGeo_wdg.REyeGeo.clicked.connect(self.REyeGeoUI)
@@ -954,6 +1009,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.skin_wdg.attachSkinJntConnection.clicked.connect(attach_bind_joints)
 
     def sl_generateRig_fn(self):
+        """Generate facial rig from selected elements."""
         self.pre_generateRig_fn()
         response = pm.confirmDialog(title='Save Settings', cancelButton='No', defaultButton='Yes', button=[
          'Yes',
@@ -963,6 +1019,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.generateRig_fn()
 
     def pre_generateRig_fn(self):
+        """Pre-process and validate before generating rig."""
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
@@ -1001,6 +1058,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.perseus_dic['chkPrefix'] = chkPrefix
 
     def generateRig_fn(self):
+        """Generate the complete facial rig."""
         pythonVersion = sys.version_info.major
         if pythonVersion == 3:
             from perseus_main_2022 import perseusRigging_facialRig
@@ -1010,108 +1068,143 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         prFacialRig.checkCurveGuideExists(self.perseus_dic)
 
     def sl_headGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['LHeadGeoSel'], r=1)
 
     def sl_rEyeGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['REyeGeoSel'], r=1)
 
     def sl_lEyeGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['LEyeGeoSel'], r=1)
 
     def sl_topTeethGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['TopTeethGeoSel'], r=1)
 
     def sl_downTeethGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['DownTeethGeoSel'], r=1)
 
     def sl_tongueGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['TongueGeoSel'], r=1)
 
     def sl_extraGeo_fn(self):
+        """Store selected geometry in field."""
         cmds.select(self.perseus_dic['ExtraGeoSel'], r=1)
 
     def sl_rEyeLidMain_fn(self):
+        """Store selected main control in field."""
         self.checkVarExistsB(self.perseus_dic['RTopEyeEdgeSel'], self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
 
     def sl_lEyeLidMain_fn(self):
+        """Store selected main control in field."""
         self.checkVarExistsB(self.perseus_dic['LTopEyeEdgeSel'], self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
 
     def sl_lTopEyeEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['LTopEyeEdgeSel'], 0, 1)
 
     def sl_lDownEyeEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['LDownEyeEdgeSel'], 0, 1)
 
     def sl_rTopEyeEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['RTopEyeEdgeSel'], 0, 1)
 
     def sl_rDownEyeEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['RDownEyeEdgeSel'], 0, 1)
 
     def sl_rEyeLidOuter_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExistsB(self.perseus_dic['RTopEyeOuterEdgeSel'], self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lEyeLidOuter_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExistsB(self.perseus_dic['LTopEyeOuterEdgeSel'], self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lTopEyeOuterEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['LTopEyeOuterEdgeSel'], 0, 1)
 
     def sl_lDownEyeOuterEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['LDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_rTopEyeOuterEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['RTopEyeOuterEdgeSel'], 0, 1)
 
     def sl_rDownEyeOuterEdge_fn(self):
+        """Store selected edges in field."""
         self.checkVarExists(self.perseus_dic['RDownEyeOuterEdgeSel'], 0, 1)
 
     def sl_lipTopDown_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExistsB(self.perseus_dic['DownLipEdgeSel'], self.perseus_dic['TopLipEdgeSel'], 0, 1)
 
     def sl_lipTop_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['TopLipEdgeSel'], 0, 1)
 
     def sl_lipDown_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['DownLipEdgeSel'], 0, 1)
 
     def sl_tongueTopDown_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExistsB(self.perseus_dic['DownTongueEdgeSel'], self.perseus_dic['TopTongueEdgeSel'], 0, 1)
 
     def sl_tongueTop_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['TopTongueEdgeSel'], 0, 1)
 
     def sl_tongueDown_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['DownTongueEdgeSel'], 0, 1)
 
     def sl_noseEdges_fn(self):
+        """Select and store edge loop from Maya selection."""
         self.checkVarExists(self.perseus_dic['NoseEdgeSel'], 0, 1)
 
     def sl_noseUnderVrtx_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['NoseUnderVertexSel'], 0, 0)
 
     def sl_foreheadFace_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['ForeheadFaceSel'], 1, 2)
 
     def sl_backHeadNeck_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['BackHeadNeckFaceSel'], 0, 2)
 
     def sl_squashStretchFace_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['SquashStretchFaceSel'], 0, 2)
 
     def sl_LPupil_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['LPupilSel'], 0, 2)
 
     def sl_RPupil_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['RPupilSel'], 0, 2)
 
     def sl_LIris_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['LIrisSel'], 0, 2)
 
     def sl_RIris_fn(self):
+        """Store selected object from Maya selection."""
         self.checkVarExists(self.perseus_dic['RIrisSel'], 0, 2)
 
     def LHeadGeoSelUI(self):
+        """Lheadgeoselui operation."""
         LHeadGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(LHeadGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1121,6 +1214,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.geoField.setText(LHeadGeoSel)
 
     def REyeGeoUI(self):
+        """Reyegeoui operation."""
         REyeGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(REyeGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1130,6 +1224,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.REyeBox.setText(REyeGeoSel)
 
     def LEyeGeoUI(self):
+        """Leyegeoui operation."""
         LEyeGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(LEyeGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1139,6 +1234,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.LEyeBox.setText(LEyeGeoSel)
 
     def UpTeethGeoUI(self):
+        """Upteethgeoui operation."""
         TopTeethGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(TopTeethGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1148,6 +1244,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.UpTeethBox.setText(TopTeethGeoSel)
 
     def DownTeethGeoUI(self):
+        """Downteethgeoui operation."""
         DownTeethGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(DownTeethGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1157,6 +1254,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.DownTeethBox.setText(DownTeethGeoSel)
 
     def TongueGeoUI(self):
+        """Tonguegeoui operation."""
         TongueGeoSel = cmds.ls(sl=1)[0]
         chkNameSpace = int(len(TongueGeoSel.split(':')))
         if chkNameSpace > 1:
@@ -1166,6 +1264,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.TongueBox.setText(TongueGeoSel)
 
     def ExtraGeoUI(self):
+        """Extrageoui operation."""
         ExtraGeoSel = cmds.ls(sl=1)
         self.perseus_dic['ExtraGeoSel'] = ExtraGeoSel
         self.headGeo_wdg.ExtraBox.setText(str(ExtraGeoSel))
@@ -1173,6 +1272,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.parent(w=1)
 
     def REyeLidMainUI(self):
+        """Reyelidmainui operation."""
         RTopEyeEdgeSel = self.findEdgeUpDown(0)
         RDownEyeEdgeSel = self.findEdgeUpDown(1)
         cmds.select(RDownEyeEdgeSel[int(int(len(RDownEyeEdgeSel) / 2))], r=1)
@@ -1189,6 +1289,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkREyeLid.setChecked(True)
 
     def LEyeLidMainUI(self):
+        """Leyelidmainui operation."""
         LTopEyeEdgeSel = self.findEdgeUpDown(0)
         LDownEyeEdgeSel = self.findEdgeUpDown(1)
         cmds.select(LDownEyeEdgeSel[int(int(len(LDownEyeEdgeSel) / 2))], r=1)
@@ -1205,6 +1306,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkLEyeLid.setChecked(True)
 
     def REyeLidOuterUI(self):
+        """Reyelidouterui operation."""
         RTopEyeOuterEdgeSel = self.findEdgeUpDown(0)
         RDownEyeOuterEdgeSel = self.findEdgeUpDown(1)
         cmds.select(RDownEyeOuterEdgeSel[int(int(len(RDownEyeOuterEdgeSel) / 2))], r=1)
@@ -1221,6 +1323,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkREyeOuterLid.setChecked(True)
 
     def LEyeLidOuterUI(self):
+        """Leyelidouterui operation."""
         LTopEyeOuterEdgeSel = self.findEdgeUpDown(0)
         LDownEyeOuterEdgeSel = self.findEdgeUpDown(1)
         cmds.select(LDownEyeOuterEdgeSel[int(int(len(LDownEyeOuterEdgeSel) / 2))], r=1)
@@ -1237,38 +1340,47 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkLEyeOuterLid.setChecked(True)
 
     def LTopEyeEdgeSelUI(self):
+        """Ltopeyeedgeselui operation."""
         LTopEyeEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['LTopEyeEdgeSel'] = LTopEyeEdgeSel
 
     def LDownEyeEdgeSelUI(self):
+        """Ldowneyeedgeselui operation."""
         LDownEyeEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['LDownEyeEdgeSel'] = LDownEyeEdgeSel
 
     def RTopEyeEdgeSelUI(self):
+        """Rtopeyeedgeselui operation."""
         RTopEyeEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['RTopEyeEdgeSel'] = RTopEyeEdgeSel
 
     def RDownEyeEdgeSelUI(self):
+        """Rdowneyeedgeselui operation."""
         RDownEyeEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['RDownEyeEdgeSel'] = RDownEyeEdgeSel
 
     def LTopEyeOuterEdgeSelUI(self):
+        """Ltopeyeouteredgeselui operation."""
         LTopEyeOuterEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['LTopEyeOuterEdgeSel'] = LTopEyeOuterEdgeSel
 
     def LDownEyeOuterEdgeSelUI(self):
+        """Ldowneyeouteredgeselui operation."""
         LDownEyeOuterEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['LDownEyeOuterEdgeSel'] = LDownEyeOuterEdgeSel
 
     def RTopEyeOuterEdgeSelUI(self):
+        """Rtopeyeouteredgeselui operation."""
         RTopEyeOuterEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['RTopEyeOuterEdgeSel'] = RTopEyeOuterEdgeSel
 
     def RDownEyeOuterEdgeSelUI(self):
+        """Rdowneyeouteredgeselui operation."""
         RDownEyeOuterEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['RDownEyeOuterEdgeSel'] = RDownEyeOuterEdgeSel
 
     def LipEdgeUI(self):
+        """Lipedgeui operation."""
         TopLipEdgeSel = self.findEdgeUpDown(0)
         DownLipEdgeSel = self.findEdgeUpDown(1)
         cmds.select(DownLipEdgeSel[int(int(len(DownLipEdgeSel) / 2))], r=1)
@@ -1285,23 +1397,28 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkLip.setChecked(True)
 
     def TopLipEdgeSelUI(self):
+        """Toplipedgeselui operation."""
         TopLipEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['TopLipEdgeSel'] = TopLipEdgeSel
 
     def DownLipEdgeSelUI(self):
+        """Downlipedgeselui operation."""
         DownLipEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['DownLipEdgeSel'] = DownLipEdgeSel
 
     def TopTongueEdgeSelUI(self):
+        """Toptongueedgeselui operation."""
         TopTongueEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
 
     def DownTongueEdgeSelUI(self):
+        """Downtongueedgeselui operation."""
         DownTongueEdgeSel = cmds.ls(sl=1)
         self.perseus_dic['DownTongueEdgeSel'] = DownTongueEdgeSel
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def TongueEdgeUI(self):
+        """Tongueedgeui operation."""
         TopTongueEdgeSel = self.findEdgeUpDownTongue(0)
         DownTongueEdgeSel = self.findEdgeUpDownTongue(1)
         self.perseus_dic['TopTongueEdgeSel'] = TopTongueEdgeSel
@@ -1309,6 +1426,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkTonque.setChecked(True)
 
     def NoseEdgeUI(self):
+        """Noseedgeui operation."""
         cmds.ConvertSelectionToVertices()
         NoseEdgeSel = cmds.ls(fl=1, sl=1)
         cmds.ConvertSelectionToContainedEdges()
@@ -1316,12 +1434,14 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkNoseEdge.setChecked(True)
 
     def NoseUnderVrtxUI(self):
+        """Noseundervrtxui operation."""
         cmds.ConvertSelectionToVertices()
         NoseUnderVertexSel = cmds.ls(fl=1, sl=1)
         self.perseus_dic['NoseUnderVertexSel'] = NoseUnderVertexSel
         self.headGeo_wdg.chkNoseUnderVertex.setChecked(True)
 
     def ForeheadFaceSelUI(self):
+        """Foreheadfaceselui operation."""
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
@@ -1336,6 +1456,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.checkForeheadFace.setChecked(True)
 
     def BackHeadNeckFaceSelUI(self):
+        """Backheadneckfaceselui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1344,6 +1465,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkBackFace.setChecked(True)
 
     def SquashStretchFaceSelUI(self):
+        """Squashstretchfaceselui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1352,6 +1474,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.checkSquashStretchFace.setChecked(True)
 
     def LPupilUI(self):
+        """Lpupilui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1360,6 +1483,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkLPupil.setChecked(True)
 
     def RPupilUI(self):
+        """Rpupilui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1368,6 +1492,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkRPupil.setChecked(True)
 
     def LIrisUI(self):
+        """Lirisui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1376,6 +1501,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkLIris.setChecked(True)
 
     def RIrisUI(self):
+        """Ririsui operation."""
         cmds.ConvertSelectionToVertices()
         excludeJnt = cmds.ls(type='joint', sl=1)
         cmds.select(excludeJnt, d=1)
@@ -1384,6 +1510,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.chkRIris.setChecked(True)
 
     def EdgeLoopOn_fn(self):
+        """Edgeloopon operation."""
         if not self.headGeo_wdg.edgeLoopToggle:
             pm.mel.dR_selConstraintEdgeLoop()
             self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(self.headGeo_wdg.darkColorB)
@@ -1396,9 +1523,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             self.headGeo_wdg.edgeLoopToggle = False
 
     def EdgeLoopOff_fn(self):
+        """Edgeloopoff operation."""
         pm.mel.dR_selConstraintOff()
 
     def DuplicateUI(self):
+        """Duplicateui operation."""
         cmds.select(cl=1)
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         LEyeGeoSel = self.perseus_dic['LEyeGeoSel']
@@ -1411,6 +1540,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.headGeo_wdg.componentLayoutGrp.setChecked(True)
 
     def wffacialDuplicate(self):
+        """Wffacialduplicate operation."""
         pm.displaySmoothness(pointsWire=4, polygonObject=1, pointsShaded=1, divisionsV=0, divisionsU=0)
         object = pm.ls(sl=1)
         pm.select(cl=1)
@@ -1432,6 +1562,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             self.EdgeLoopOn_fn()
 
     def JawCurveUI(self):
+        """Jawcurveui operation."""
         status = True
         chkLEyeLid = int(self.headGeo_wdg.chkLEyeLid.isChecked())
         chkREyeLid = int(self.headGeo_wdg.chkREyeLid.isChecked())
@@ -1551,6 +1682,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def Adjustment_a(self, down_lip_edge_sel, top_lip_edge_sel):
+        """Adjustment a operation."""
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         pos1 = cmds.xform(top_lip_edge_sel[0], q=1, ws=1, t=1)
         pos2 = cmds.xform(top_lip_edge_sel[int(len(top_lip_edge_sel) / 4)], q=1, ws=1, t=1)
@@ -1856,9 +1988,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(cl=1)
 
     def FaceCurvesUI(self):
+        """Facecurvesui operation."""
         self.Adjustment_a2()
 
     def Adjustment_a2(self):
+        """Adjustment a2 operation."""
         cmds.setAttr('all_facial_grp.visibility', 1)
         cmds.setAttr('l_brows_grp.visibility', 1)
         cmds.setAttr('r_brows_grp.visibility', 1)
@@ -1877,6 +2011,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.mel.restoreLastPanelWithFocus()
 
     def projectCrv(self):
+        """Projectcrv operation."""
         cmds.undoInfo(openChunk=True)
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         headGeo = LHeadGeoSel
@@ -2022,6 +2157,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.undoInfo(closeChunk=True)
 
     def wflrRename(self):
+        """Wflrrename operation."""
         sels = pm.ls(sl=1)
         s = len(sels) - 1
         while s >= 0:
@@ -2035,6 +2171,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             s -= 1
 
     def wflrConnect(self):
+        """Wflrconnect operation."""
         sels = cmds.ls(transforms=1, sl=1)
         for sel in sels:
             size = len(sel)
@@ -2044,6 +2181,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.setAttr('r_' + sel[2:size] + '.overrideColor', 1)
 
     def checkVarExists(self, new_list, invert, type):
+        """Checkvarexists operation."""
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         if len(new_list) != 0:
             pm.select(new_list, r=1)
@@ -2064,6 +2202,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             print('The variable has not been assigned ')
 
     def checkVarExistsB(self, new_list, new_list_b, invert, type):
+        """Checkvarexistsb operation."""
         if len(new_list) != 0:
             pm.select(new_list, new_list_b, r=1)
             if invert == 1:
@@ -2080,6 +2219,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             print('The variable has not been assigned ')
 
     def findEdgeUpDown(self, up_down):
+        """Findedgeupdown operation."""
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         vertexList = ['']
         vertexList = []
@@ -2161,6 +2301,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return downVertex
 
     def wfFixEdgeLoopA(self, up_down):
+        """Wffixedgeloopa operation."""
         upDownSel = cmds.ls(fl=1, sl=1)
         if len(upDownSel) == 2:
             upDownSel = cmds.ls(fl=1, sl=1)
@@ -2178,6 +2319,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     cmds.select(upDownSel[1], r=1)
 
     def findEdgeUpDownTongue(self, up_down):
+        """Findedgeupdowntongue operation."""
         self.perseus_dic['LHeadGeoSel']
         vertexList = []
         edgeSel = cmds.ls(fl=1, sl=1)
@@ -2255,6 +2397,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return downVertex
 
     def FacialSave(self):
+        """Facialsave operation."""
         self.pre_generateRig_fn()
         LHeadGeoSel = self.perseus_dic['LHeadGeoSel']
         self.perseus_dic['skinJntSuffix']
@@ -2294,6 +2437,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.settings_wdg.chkSaveData.setChecked(1)
 
     def FacialLoad(self):
+        """Facialload operation."""
         self.headGeo_wdg.chkLEyeLid.setChecked(True)
         self.headGeo_wdg.chkREyeLid.setChecked(True)
         self.headGeo_wdg.chkREyeOuterLid.setChecked(True)
@@ -2313,6 +2457,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.select(cl=1)
 
     def FacialLoadUI(self):
+        """Facialloadui operation."""
         self.FacialResetUI()
         pm.mel.reflectionSetMode('none')
         fDialogLd = str(pm.fileDialog(dm='*.json'))
@@ -2373,6 +2518,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         mel.eval('print "Facial Data Setting has been loaded successfully.";')
 
     def FacialResetUI(self):
+        """Facialresetui operation."""
         self.perseus_dic = {}
         self.headGeo_wdg.chkExtra.setChecked(False)
         self.headGeo_wdg.chkLIris.setChecked(False)
@@ -2416,6 +2562,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         self.settings_wdg.progressText.setText('')
 
     def FacialLoadCtlShapesNoUI(self, ctrl_path, name_rig):
+        """Facialloadctlshapesnoui operation."""
         name = name_rig
         fDialogLd = ctrl_path
         if name_rig is not None:
@@ -2474,6 +2621,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def FacialLoadNoUI(self, json_path):
+        """Facialloadnoui operation."""
         pm.mel.reflectionSetMode('none')
         fDialogLd = json_path
         fDialogLdCurve = fDialogLd.replace('.json', '.ma')
@@ -2504,10 +2652,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         mel.eval('print "Facial Data Setting has been loaded successfully.";')
 
     def to_json(self, dictionary, filename):
+        """To json operation."""
         with open(filename, 'w') as (fp):
             json.dump(dictionary, fp, sort_keys=True, indent=4, ensure_ascii=False)
 
     def createMGPickerUI(self):
+        """Generate or create m g picker u i."""
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
@@ -2547,6 +2697,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             fout.close()
 
     def FacialSaveCtlShapes(self):
+        """Facialsavectlshapes operation."""
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
@@ -2621,6 +2772,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def FacialSaveCtlShapesNoUI(self, name):
+        """Facialsavectlshapesnoui operation."""
         chkPrefix = 0
         if name is None:
             chkPrefix = 1
@@ -2693,6 +2845,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def FacialLoadCtlShapes(self):
+        """Facialloadctlshapes operation."""
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
@@ -2754,10 +2907,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             cmds.select(cl=1)
 
     def defineExclusionUI(self):
+        """Defineexclusionui operation."""
         self.newExclusion = self.wfdefineExclusionSet()
         pm.selectMode(object=1)
 
     def wfdefineExclusionSet(self):
+        """Wfdefineexclusionset operation."""
         cmds.ConvertSelectionToVertices()
         object = cmds.ls(fl=1, sl=1)
         return object
@@ -2768,6 +2923,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.mel.dR_selTypeChanged('')
 
     def wfexcludeSystem(self):
+        """Wfexcludesystem operation."""
         name = self.headGeo_wdg.nameField.text()
         name = name.replace(' ', '')
         self.headGeo_wdg.nameField.setText(name)
@@ -2932,6 +3088,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return skinCluster
 
     def skinCopy(self, source_mesh=None, target_mesh=None, *args):
+        """Skincopy operation."""
         if not source_mesh or not target_mesh:
             if len(cmds.ls(sl=1)) >= 2:
                 source_mesh = pm.ls(sl=1)[0]
@@ -2956,6 +3113,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     pm.displayError('Source Mesh :' + source_mesh.name() + " Don't have skinCluster")
 
     def source_define(self):
+        """Source define operation."""
         base = cmds.ls(sl=1)
         mel.eval('PolySelectConvert 3;')
         self.SourceDestinationSel('source')
@@ -2963,6 +3121,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(base)
 
     def destination_define(self):
+        """Destination define operation."""
         base = cmds.ls(sl=1)
         mel.eval('PolySelectConvert 3;')
         self.SourceDestinationSel('destination')
@@ -2970,6 +3129,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(base)
 
     def SourceDestinationSel(self, sd_type):
+        """Sourcedestinationsel operation."""
         global destinationVertexLs
         global sourceVertexLs
         selectionList = pm.ls(sl=1, flatten=1)
@@ -2983,6 +3143,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                     sourceVertexLs = selectionList
 
     def copySkinGlobal(self):
+        """Copyskinglobal operation."""
         global destinationVertexLs
         global sourceVertexLs
         base = cmds.ls(sl=1)
@@ -2992,9 +3153,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(base)
 
     def hammerSkinGlobal(self):
+        """Hammerskinglobal operation."""
         pm.mel.weightHammerVerts()
 
     def copySkinMain(self):
+        """Copyskinmain operation."""
         self.settings_wdg.progress.setValue(0)
         sourceVer = sourceVertexLs
         destinationVer = destinationVertexLs
@@ -3021,10 +3184,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         return
 
     def copyPivotF(self, source, dist):
+        """Copypivotf operation."""
         pivotTranslate = cmds.xform(dist, q=True, ws=True, rotatePivot=True)
         cmds.xform(source, ws=True, pivots=pivotTranslate)
 
     def connectBlendShape(self):
+        """Connectblendshape operation."""
         objects = pm.ls(sl=1)
         objectTypeFace = pm.objectType(objects[0])
         if objectTypeFace != 'joint':
@@ -3039,6 +3204,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             pm.connectAttr(objects[0] + '.scale', objects[1] + '.scale')
 
     def connectBlendShapeB(self):
+        """Connectblendshapeb operation."""
         objects = pm.ls(sl=1)
         if len(objects) == 2:
             nameRefObj = pm.selected()[0].namespace()
@@ -3050,6 +3216,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             print('Please select source and target mesh to connect with BlendShape')
 
     def connectBlendShapeC(self):
+        """Connectblendshapec operation."""
         objects = pm.ls(sl=1)
         if len(objects) == 2:
             cmds.optionVar(fv=('exclusiveBind', 1), iv=[('autoWeightThreshold', 0), ('maxDistance', 0.01)])
@@ -3060,6 +3227,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             print('Please select source and target mesh to connect with BlendShape')
 
     def connectBlendShapeD(self):
+        """Connectblendshaped operation."""
         name = self.headGeo_wdg.nameField.text()
         chkPrefix = int(self.headGeo_wdg.chkPrefix.isChecked())
         if chkPrefix == 0:
@@ -3093,6 +3261,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
             i += 1
 
     def detachSkinJntConnection(self):
+        """Detachskinjntconnection operation."""
         currentSel = cmds.ls(sl=1)
         cmds.select(hi=1)
         cmds.select(currentSel, d=1)
@@ -3107,6 +3276,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(currentSel, r=1)
 
     def attachSkinJntConnection(self):
+        """Attachskinjntconnection operation."""
         currentSel = cmds.ls(sl=1)
         cmds.select(hi=1)
         cmds.select(currentSel, d=1)
@@ -3121,6 +3291,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         cmds.select(currentSel, r=1)
 
     def SaveFacialSkinSet(self):
+        """Savefacialskinset operation."""
         global jntsFaceInf
         FirstObj = pm.selected()[0]
         orig = str(pm.selected()[0])
@@ -3134,6 +3305,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         pm.select(FirstObj, r=1)
 
     def TransferFacialSkinSet(self):
+        """Transferfacialskinset operation."""
         SecondObj = pm.selected()
         if pm.objExists('setB_Perseus'):
             pm.select('setB_Perseus', r=1, ne=1)
@@ -3157,6 +3329,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
 
 
 def prExportSkin():
+    """Prexportskin operation."""
     newSel = pm.selected()
     if len(newSel) == 0:
         pm.displayWarning('Please Select Some Objects')
@@ -3165,6 +3338,7 @@ def prExportSkin():
 
 
 def prSkinExp(pack_path=None, objs=None, *args):
+    """Prskinexp operation."""
     if not objs:
         if pm.selected():
             objs = pm.selected()
@@ -3200,6 +3374,7 @@ def prSkinExp(pack_path=None, objs=None, *args):
 
 
 def exportSkin(file_path=None, objs=None, *args):
+    """Exportskin operation."""
     if not objs:
         if pm.selected():
             objs = pm.selected()
@@ -3272,6 +3447,7 @@ def getSkinCluster(obj):
 
 
 def prImpSkinAll(file_path=None, *args):
+    """Primpskinall operation."""
     if not file_path:
         startDir = cmds.workspace(q=True, rootDirectory=True)
         file_path = cmds.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data list (*%s)' % PACK_EXT)
@@ -3286,6 +3462,7 @@ def prImpSkinAll(file_path=None, *args):
 
 
 def prImpSkin(file_path=None, *args):
+    """Primpskin operation."""
     if not file_path:
         startDir = pm.workspace(q=True, rootDirectory=True)
         file_path = pm.fileDialog2(dialogStyle=2, fileMode=1, startingDirectory=startDir, fileFilter='data data (*%s)' % FILE_EXT)
@@ -3336,6 +3513,7 @@ def prImpSkin(file_path=None, *args):
 
 
 def setlist(skin_cls, list_dic):
+    """Setlist operation."""
     dagPath, components = getGeometryComponents(skin_cls)
     setInfluenceWeights(skin_cls, dagPath, components, list_dic)
     setBlendWeights(skin_cls, dagPath, components, list_dic)
@@ -3344,6 +3522,7 @@ def setlist(skin_cls, list_dic):
 
 
 def getGeometryComponents(skin_cls):
+    """Getgeometrycomponents operation."""
     fnSet = OpenMaya.MFnSet(skin_cls.__apimfn__().deformerSet())
     members = OpenMaya.MSelectionList()
     fnSet.getMembers(members, False)
@@ -3354,6 +3533,7 @@ def getGeometryComponents(skin_cls):
 
 
 def setInfluenceWeights(skin_cls, dag_path, components, list_dic):
+    """Setinfluenceweights operation."""
     import pymel.all as pm
     unusedImports = []
     weights = getCurrentWeights(skin_cls, dag_path, components)
@@ -3381,6 +3561,7 @@ def setInfluenceWeights(skin_cls, dag_path, components, list_dic):
 
 
 def setBlendWeights(skin_cls, dag_path, components, list_dic):
+    """Setblendweights operation."""
     blendWeights = OpenMaya.MDoubleArray(len(list_dic['blendWeights']))
     for i, w in enumerate(list_dic['blendWeights']):
         blendWeights.set(w, i)
@@ -3389,6 +3570,7 @@ def setBlendWeights(skin_cls, dag_path, components, list_dic):
 
 
 def collectlist(skin_cls, list_dic):
+    """Collectlist operation."""
     dagPath, components = getGeometryComponents(skin_cls)
     collectInfluenceWeights(skin_cls, dagPath, components, list_dic)
     collectBlendWeights(skin_cls, dagPath, components, list_dic)
@@ -3399,6 +3581,7 @@ def collectlist(skin_cls, list_dic):
 
 
 def collectInfluenceWeights(skin_cls, dag_path, components, list_dic):
+    """Collectinfluenceweights operation."""
     import pymel.all as pm
     weights = getCurrentWeights(skin_cls, dag_path, components)
     influencePaths = OpenMaya.MDagPathArray()
@@ -3413,12 +3596,14 @@ def collectInfluenceWeights(skin_cls, dag_path, components, list_dic):
 
 
 def collectBlendWeights(skin_cls, dag_path, components, list_dic):
+    """Collectblendweights operation."""
     weights = OpenMaya.MDoubleArray()
     skin_cls.__apimfn__().getBlendWeights(dag_path, components, weights)
     list_dic['blendWeights'] = [ weights[i] for i in range(weights.length()) ]
 
 
 def getCurrentWeights(skin_cls, dag_path, components):
+    """Getcurrentweights operation."""
     weights = OpenMaya.MDoubleArray()
     util = OpenMaya.MScriptUtil()
     util.createFromInt(0)

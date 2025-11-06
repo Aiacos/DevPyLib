@@ -23,21 +23,31 @@ def maya_useNewAPI():
 
 # command
 class MayaLibPlugin(om.MPxCommand):
+    """MayaLib plugin command for loading the DevPyLib main menu."""
+
     k_plugin_cmd_name = 'MayaLib'
 
     def __init__(self):
+        """Initialize the MayaLib plugin command."""
         om.MPxCommand.__init__(self)
 
     @staticmethod
     def cmdCreator():
+        """Create and return a new instance of the command."""
         return MayaLibPlugin()
 
     def doIt(self, args):
+        """Execute the command by launching the MainMenu."""
         mm.MainMenu()
 
 
 # Initialize the plug-in
 def initializePlugin(plugin):
+    """Initialize the MayaLib plugin.
+
+    Args:
+        plugin: Maya plugin object to initialize.
+    """
     pluginFn = om.MFnPlugin(plugin, 'Lorenzo Argentieri', '1.0')
     try:
         pluginFn.registerCommand(
@@ -52,6 +62,11 @@ def initializePlugin(plugin):
 
 # Uninitialize the plug-in
 def uninitializePlugin(plugin):
+    """Uninitialize the MayaLib plugin.
+
+    Args:
+        plugin: Maya plugin object to uninitialize.
+    """
     pluginFn = om.MFnPlugin(plugin)
     try:
         pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
