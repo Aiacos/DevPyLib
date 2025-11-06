@@ -34,9 +34,9 @@ def mirror_geo(geo_list):
     # Mirror the group in the X axis
     duplicate_grp.scaleX.set(-1)
     # Freeze the transformation of the group
-    common.freezeTranform(duplicate_grp)
+    common.freeze_transform(duplicate_grp)
     # Delete the history of the group
-    common.deleteHistory(duplicate_grp)
+    common.delete_history(duplicate_grp)
 
     # Iterate over the mirrored geometries and blendShape them with the original
     for geo in mirror_geo_list:
@@ -45,7 +45,7 @@ def mirror_geo(geo_list):
         # BlendShape the original geometry with the mirrored one
         deform.blend_shape_deformer(mirror_geo_name, [geo], mirror_geo_name + '_tmp_BS')
         # Delete the history of the original geometry
-        common.deleteHistory(mirror_geo_name)
+        common.delete_history(mirror_geo_name)
 
     # Delete the group
     pm.delete(duplicate_grp)

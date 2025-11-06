@@ -85,7 +85,7 @@ class ProxyGeo():
             for joint in influnces:
                 # duplicate mesh for a control
                 transform, dupli_shape = self.duplicate_source_mesh(obj=geo, joint=joint)
-                common.centerPivot(transform, pivot_locator)
+                common.center_pivot(transform, pivot_locator)
 
                 # copy skinCluster
                 skin.copyBind(pm.ls(geo)[0], transform)
@@ -94,7 +94,7 @@ class ProxyGeo():
                 self.delete_vertex(joint=joint, new_shape=dupli_shape, threshold=threshold)
 
                 # delete non deformer history
-                common.deleteHistory(dupli_shape)
+                common.delete_history(dupli_shape)
 
                 # parent under proxy group
                 pm.parent(transform, self.shape_grp)

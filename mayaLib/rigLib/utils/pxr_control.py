@@ -84,7 +84,7 @@ class PxrStyleCtrl():
                 self.delete_vertex(joint=joint, new_shape=ctrl_shape)
 
                 # delete non deformer history
-                common.deleteNonDeformerHistory(ctrl_shape)
+                common.delete_non_deformer_history(ctrl_shape)
 
                 # prevent chidlren selection hilight
                 shape = ctrl[0].getShape()
