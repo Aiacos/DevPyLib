@@ -185,7 +185,7 @@ class ShaderBase:
             if channel.lower() in self.gloss_name_list:
                 self.connect_noncolor(tex, self.roughness)
             if channel.replace("-OGL", "").lower() in self.normal_name_list:
-                self.connect_normal(tex)
+                self.connect_normal(tex, self.normal)
             if channel.lower() in self.trasmission_name_list:
                 self.connect_noncolor(tex, self.trasmission)
             if channel.lower() in self.displacement_name_list:
