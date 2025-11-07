@@ -27,7 +27,8 @@ class Scapula:
     """
 
     def __init__(self, spine_jnt, shoulder_jnt, scapula_shoulder_jnt):
-        """Create scapula IK
+        """Create scapula IK.
+
         :param spine_jnt: str
         :param shoulder_jnt: str
         :param scapula_shoulder_jnt: str.

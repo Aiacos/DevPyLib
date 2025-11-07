@@ -95,9 +95,14 @@ class PxrStyleCtrl:
         print("DONE!")
 
     def duplicate_source_mesh(self, obj, ctrl):
-        """:param obj:
-        :param ctrl:
-        :return: Mesh Shape for the Control
+        """Duplicate source mesh and return shape node for control.
+
+        Args:
+            obj: Source mesh to duplicate
+            ctrl: Control to name the duplicate after
+
+        Returns:
+            tuple: (Transform node, Shape node) of duplicated mesh
         """
         dupli_obj = pm.duplicate(obj)
         pm.rename(dupli_obj, ctrl[0].name())
@@ -147,9 +152,9 @@ class PxrStyleCtrl:
         """
         verts = []
         for x in range(pm.polyEvaluate(new_shape, v=1)):
-            v = pm.skinPercent(self.skin, "%s.vtx[%d]" % (new_shape, x), transform=joint, q=1)
+            v = pm.skinPercent(self.skin, f"{new_shape}.vtx[{x}]", transform=joint, q=1)
             if v > threshold:
-                verts.append("%s.vtx[%d]" % (new_shape, x))
+                verts.append(f"{new_shape}.vtx[{x}]")
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)

@@ -48,15 +48,17 @@ class USDCharacterBuild:
         connect_output=True,
         debug=False,
     ):
-        """Constructor
+        """Constructor.
+
         Args:
             geo_list (string[]): list of geos
             name (string): name of the bifrost graph
             root_node (string): default top search group
             save_usd_file (string): filename to save
             file_ext (string): USD file extension
-            connect_output (bool):
-            debug (bool):
+            single_usd (bool): whether to use a single USD stage or multiple stages.
+            connect_output (bool): whether to connect bifrost output ports.
+            debug (bool): whether to keep debug windows open.
         """
         self.file_ext = file_ext
         self.single_usd = single_usd
@@ -121,9 +123,10 @@ class USDCharacterBuild:
                     break
 
     def get_name_dict(self, full_path):
-        """Return Long Name and Short Name of objects in a dict
+        """Return Long Name and Short Name of objects in a dict.
+
         Args:
-            long_name (string): long name.
+            full_path (string): full path of the Maya object.
 
         Returns:
             (dict)
@@ -140,7 +143,8 @@ class USDCharacterBuild:
         return name_dict
 
     def create_bifrost_graph(self, name="usd"):
-        """Create bifrost Graph
+        """Create bifrost Graph.
+
         Args:
             name (string): Name of the Graph.
 
@@ -155,21 +159,24 @@ class USDCharacterBuild:
         return bifrost_shape, bifrost_transform
 
     def get_maya_usd_stage_shape(self):
-        """Get Maya USD Stage Shape
+        """Get Maya USD Stage Shape.
+
         Returns:
             (string): USD Stage shape node.
         """
         return self.maya_usd_stage
 
     def get_maya_usd_stage(self):
-        """Get Maya USD Stage Transform
+        """Get Maya USD Stage Transform.
+
         Returns:
             (string): USD Stage node.
         """
         return cmds.listRelatives(self.maya_usd_stage, p=True)[-1]
 
     def get_bifrost_transform(self):
-        """Get Maya bifrost transform
+        """Get Maya bifrost transform.
+
         Returns:
             (string): Maya bifrost transform.
 
@@ -177,14 +184,15 @@ class USDCharacterBuild:
         return self.bifrost_transform
 
     def get_bifrost_shape(self):
-        """Get Maya bifrost transform
+        """Get Maya bifrost transform.
+
         Returns:
             (string): Maya bifrost shape.
         """
         return self.bifrost_shape
 
     def connect_output(self):
-        """Connect bifrost output node
+        """Connect bifrost output node.
 
         Returns:
             tuple: (id_array_node, layer_array_node) - Array nodes for ID and layer management.
@@ -223,14 +231,16 @@ class USDCharacterBuild:
         return id_array_node, layer_array_node
 
     def set_start_frame(self, frame):
-        """Set Start Frame in the bifrost input
+        """Set Start Frame in the bifrost input.
+
         Args:
             frame (float): start frame.
         """
         cmds.setAttr(self.bifrost_shape + ".start_frame", frame)
 
     def set_end_frame(self, frame):
-        """Set End Frame in the bifrost input
+        """Set End Frame in the bifrost input.
+
         Args:
             frame (float): end frame.
         """
@@ -447,7 +457,8 @@ class USDCharacterBuild:
         bifrost.bf_connect(self.bifrost_shape, product_compound + "." + "layer", array_layer_output)
 
     def create_default_usd_stage(self, product, data):
-        """Create default Bifrost USD stage
+        """Create default Bifrost USD stage.
+
         Returns:
             (string): bifrost Add to Stage node name
             (string): bifrost Time node name
@@ -529,10 +540,12 @@ class USDCharacterBuild:
         )
 
     def create_prim(self, name_dict, prim_type="Xform", specifier_over=False):
-        """Create bifrost prim from Maya object
+        """Create bifrost prim from Maya object.
+
         Args:
-            obj (string): Maya object name
+            name_dict (dict): dictionary containing Maya object names and paths.
             prim_type (string): type of the prim.
+            specifier_over (bool): whether to set prim specifier to Over.
 
         Returns:
             (string): bifrost node name of the prim
@@ -569,7 +582,8 @@ class USDCharacterBuild:
         return node
 
     def add_undeformed_mesh_transform(self, mesh_name):
-        """Add Mesh shape to bifrost and relative mesh prim definition
+        """Add Mesh shape to bifrost and relative mesh prim definition.
+
         Args:
             mesh_name (string): Maya mesh name.
 
@@ -634,7 +648,8 @@ class USDCharacterBuild:
         return node_name
 
     def add_undeformed_mesh(self, mesh_name):
-        """Add Mesh shape to bifrost and relative mesh prim definition
+        """Add Mesh shape to bifrost and relative mesh prim definition.
+
         Args:
             mesh_name (string): Maya mesh name.
         """
@@ -657,7 +672,8 @@ class USDCharacterBuild:
         self.recursive_build_usd_graph(name_dict, define_mesh_node)
 
     def add_xform(self, obj, obj_node=None):
-        """Add xfrom attribute to a Mesh or Prim defintion
+        """Add xfrom attribute to a Mesh or Prim defintion.
+
         Args:
             obj (string): maya object to connect
             obj_node (string): prim to connect attribute.
@@ -730,9 +746,11 @@ class USDCharacterBuild:
             )
 
     def add_mesh(self, mesh_name, add_to_stage_node):
-        """Add Mesh shape to bifrost and relative mesh prim definition
+        """Add Mesh shape to bifrost and relative mesh prim definition.
+
         Args:
             mesh_name (string): Maya mesh name.
+            add_to_stage_node (string): bifrost node name for adding to USD stage.
 
         Returns:
             list: List of created bifrost node names (input mesh node, define mesh node, and recursive nodes).
@@ -775,10 +793,12 @@ class USDCharacterBuild:
         return node_list
 
     def recursive_build_usd_graph(self, obj_data, node, add_to_stage_node):
-        """Recursive build and connect Prims
+        """Recursive build and connect Prims.
+
         Args:
             obj_data (dict): current Maya object, contains 'long_name' and 'short_name'
             node (string): current Bifrost prim node.
+            add_to_stage_node (string): bifrost node name for adding to USD stage.
 
         Returns:
             None
@@ -903,7 +923,8 @@ class USDCharacterBuild:
                     return None
 
     def add_block_attribute(self, attr_name, node_name="", prim_path="", parent=""):
-        """Add Block attribute
+        """Add Block attribute.
+
         Args:
             attr_name (string): attribute name
             node_name (string): node name
@@ -939,7 +960,8 @@ class USDCharacterBuild:
         # "|rig_grp|test_bifrostGraph|test_bifrostGraphShape" "/block_attribute1.out_stage" "/save_usd_stage.stage";
 
     def create_block_loop(self, add_to_stage_node, set_stage_time_code_node):
-        """Create the iterator to block same attribute on multiple prim
+        """Create the iterator to block same attribute on multiple prim.
+
         Returns:
             (string): iterator node.
 

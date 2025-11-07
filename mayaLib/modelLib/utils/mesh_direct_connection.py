@@ -18,10 +18,11 @@ import pymel.core as pm
 
 
 def mesh_direct_connection(source, destination):
-    """Connects the outMesh attribute of the source mesh directly to the inMesh attribute
-    of the destination mesh, bypassing any intermediate meshes.
+    """Connect source mesh outMesh to destination mesh inMesh attribute.
 
-    This function is useful for directly connecting one mesh to another without creating
+    This function directly connects the outMesh attribute of the source mesh to the
+    inMesh attribute of the destination mesh, bypassing any intermediate meshes.
+    It is useful for directly connecting one mesh to another without creating
     a new mesh in between. It first backs up any existing connections to the destination's
     inMesh attribute. After making the direct connection, it restores any original connections
     if they exist.

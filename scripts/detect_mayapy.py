@@ -33,34 +33,34 @@ class MayaInstallation(NamedTuple):
 def find_maya_installations_linux() -> list[MayaInstallation]:
     """Find Maya installations on Linux."""
     installations = []
-    base_path = Path('/usr/autodesk')
+    base_path = Path("/usr/autodesk")
 
     if not base_path.exists():
         return installations
 
-    for maya_dir in sorted(base_path.glob('maya*'), reverse=True):
-        mayapy = maya_dir / 'bin' / 'mayapy'
+    for maya_dir in sorted(base_path.glob("maya*"), reverse=True):
+        mayapy = maya_dir / "bin" / "mayapy"
         if mayapy.exists() and os.access(mayapy, os.X_OK):
             try:
                 # Get Python version from mayapy
                 result = subprocess.run(
-                    [str(mayapy), '--version'],
+                    [str(mayapy), "--version"],
                     capture_output=True,
                     text=True,
                     timeout=5,
                     check=False,
                 )
-                python_version = result.stderr.strip() if result.stderr else 'Unknown'
+                python_version = result.stderr.strip() if result.stderr else "Unknown"
 
                 # Find site-packages
                 site_packages_candidates = [
-                    maya_dir / 'lib' / 'python3.10' / 'site-packages',
-                    maya_dir / 'lib' / 'python3.9' / 'site-packages',
-                    maya_dir / 'lib' / 'python3.11' / 'site-packages',
+                    maya_dir / "lib" / "python3.10" / "site-packages",
+                    maya_dir / "lib" / "python3.9" / "site-packages",
+                    maya_dir / "lib" / "python3.11" / "site-packages",
                 ]
                 site_packages = next(
                     (p for p in site_packages_candidates if p.exists()),
-                    maya_dir / 'lib',
+                    maya_dir / "lib",
                 )
 
                 installations.append(
@@ -80,31 +80,47 @@ def find_maya_installations_linux() -> list[MayaInstallation]:
 def find_maya_installations_macos() -> list[MayaInstallation]:
     """Find Maya installations on macOS."""
     installations = []
-    base_path = Path('/Applications/Autodesk')
+    base_path = Path("/Applications/Autodesk")
 
     if not base_path.exists():
         return installations
 
-    for maya_dir in sorted(base_path.glob('maya*/Maya.app'), reverse=True):
-        mayapy = maya_dir / 'Contents' / 'bin' / 'mayapy'
+    for maya_dir in sorted(base_path.glob("maya*/Maya.app"), reverse=True):
+        mayapy = maya_dir / "Contents" / "bin" / "mayapy"
         if mayapy.exists() and os.access(mayapy, os.X_OK):
             try:
                 result = subprocess.run(
-                    [str(mayapy), '--version'],
+                    [str(mayapy), "--version"],
                     capture_output=True,
                     text=True,
                     timeout=5,
                     check=False,
                 )
-                python_version = result.stderr.strip() if result.stderr else 'Unknown'
+                python_version = result.stderr.strip() if result.stderr else "Unknown"
 
                 site_packages_candidates = [
-                    maya_dir / 'Contents' / 'Frameworks' / 'Python.framework' / 'Versions' / '3.10' / 'lib' / 'python3.10' / 'site-packages',
-                    maya_dir / 'Contents' / 'Frameworks' / 'Python.framework' / 'Versions' / '3.9' / 'lib' / 'python3.9' / 'site-packages',
+                    maya_dir
+                    / "Contents"
+                    / "Frameworks"
+                    / "Python.framework"
+                    / "Versions"
+                    / "3.10"
+                    / "lib"
+                    / "python3.10"
+                    / "site-packages",
+                    maya_dir
+                    / "Contents"
+                    / "Frameworks"
+                    / "Python.framework"
+                    / "Versions"
+                    / "3.9"
+                    / "lib"
+                    / "python3.9"
+                    / "site-packages",
                 ]
                 site_packages = next(
                     (p for p in site_packages_candidates if p.exists()),
-                    maya_dir / 'Contents' / 'Frameworks',
+                    maya_dir / "Contents" / "Frameworks",
                 )
 
                 installations.append(
@@ -125,35 +141,35 @@ def find_maya_installations_windows() -> list[MayaInstallation]:
     """Find Maya installations on Windows."""
     installations = []
     base_paths = [
-        Path('C:/Program Files/Autodesk'),
-        Path('C:/Program Files (x86)/Autodesk'),
+        Path("C:/Program Files/Autodesk"),
+        Path("C:/Program Files (x86)/Autodesk"),
     ]
 
     for base_path in base_paths:
         if not base_path.exists():
             continue
 
-        for maya_dir in sorted(base_path.glob('Maya*'), reverse=True):
-            mayapy = maya_dir / 'bin' / 'mayapy.exe'
+        for maya_dir in sorted(base_path.glob("Maya*"), reverse=True):
+            mayapy = maya_dir / "bin" / "mayapy.exe"
             if mayapy.exists():
                 try:
                     result = subprocess.run(
-                        [str(mayapy), '--version'],
+                        [str(mayapy), "--version"],
                         capture_output=True,
                         text=True,
                         timeout=5,
                         check=False,
                     )
-                    python_version = result.stderr.strip() if result.stderr else 'Unknown'
+                    python_version = result.stderr.strip() if result.stderr else "Unknown"
 
                     site_packages_candidates = [
-                        maya_dir / 'Python' / 'Lib' / 'site-packages',
-                        maya_dir / 'Python310' / 'Lib' / 'site-packages',
-                        maya_dir / 'Python39' / 'Lib' / 'site-packages',
+                        maya_dir / "Python" / "Lib" / "site-packages",
+                        maya_dir / "Python310" / "Lib" / "site-packages",
+                        maya_dir / "Python39" / "Lib" / "site-packages",
                     ]
                     site_packages = next(
                         (p for p in site_packages_candidates if p.exists()),
-                        maya_dir / 'Python',
+                        maya_dir / "Python",
                     )
 
                     installations.append(
@@ -174,11 +190,11 @@ def find_maya_installations() -> list[MayaInstallation]:
     """Find all Maya installations on the system."""
     system = platform.system()
 
-    if system == 'Linux':
+    if system == "Linux":
         return find_maya_installations_linux()
-    elif system == 'Darwin':  # macOS
+    elif system == "Darwin":  # macOS
         return find_maya_installations_macos()
-    elif system == 'Windows':
+    elif system == "Windows":
         return find_maya_installations_windows()
     else:
         return []
@@ -194,28 +210,26 @@ def main() -> int:
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description='Detect mayapy installation for LSP and testing'
+    parser = argparse.ArgumentParser(description="Detect mayapy installation for LSP and testing")
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Print Maya version and Python version",
     )
     parser.add_argument(
-        '--version',
-        action='store_true',
-        help='Print Maya version and Python version',
+        "--site-packages",
+        action="store_true",
+        help="Print site-packages path",
     )
     parser.add_argument(
-        '--site-packages',
-        action='store_true',
-        help='Print site-packages path',
+        "--all-versions",
+        action="store_true",
+        help="List all Maya installations",
     )
     parser.add_argument(
-        '--all-versions',
-        action='store_true',
-        help='List all Maya installations',
-    )
-    parser.add_argument(
-        '--json',
-        action='store_true',
-        help='Output in JSON format',
+        "--json",
+        action="store_true",
+        help="Output in JSON format",
     )
 
     args = parser.parse_args()
@@ -223,7 +237,7 @@ def main() -> int:
     installations = find_maya_installations()
 
     if not installations:
-        print('ERROR: No Maya installation found', file=sys.stderr)
+        print("ERROR: No Maya installation found", file=sys.stderr)
         return 1
 
     latest = installations[0]
@@ -234,33 +248,33 @@ def main() -> int:
 
             data = [
                 {
-                    'version': inst.version,
-                    'mayapy': str(inst.mayapy_path),
-                    'python': inst.python_version,
-                    'site_packages': str(inst.site_packages),
+                    "version": inst.version,
+                    "mayapy": str(inst.mayapy_path),
+                    "python": inst.python_version,
+                    "site_packages": str(inst.site_packages),
                 }
                 for inst in installations
             ]
             print(json.dumps(data, indent=2))
         else:
-            print('Found Maya installations:')
+            print("Found Maya installations:")
             for inst in installations:
-                print(f'\n{inst.version}:')
-                print(f'  mayapy: {inst.mayapy_path}')
-                print(f'  Python: {inst.python_version}')
-                print(f'  site-packages: {inst.site_packages}')
+                print(f"\n{inst.version}:")
+                print(f"  mayapy: {inst.mayapy_path}")
+                print(f"  Python: {inst.python_version}")
+                print(f"  site-packages: {inst.site_packages}")
     elif args.version:
-        print(f'{latest.version} ({latest.python_version})')
+        print(f"{latest.version} ({latest.python_version})")
     elif args.site_packages:
         print(latest.site_packages)
     elif args.json:
         import json
 
         data = {
-            'version': latest.version,
-            'mayapy': str(latest.mayapy_path),
-            'python': latest.python_version,
-            'site_packages': str(latest.site_packages),
+            "version": latest.version,
+            "mayapy": str(latest.mayapy_path),
+            "python": latest.python_version,
+            "site_packages": str(latest.site_packages),
         }
         print(json.dumps(data, indent=2))
     else:
@@ -270,5 +284,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

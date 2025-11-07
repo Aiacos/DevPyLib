@@ -314,7 +314,7 @@ class InstallLibrary:
             print("ERROR: Directory not exist!")
 
     def install(self):
-        """Install the library by performing the following actions:
+        """Install the library by performing the following actions.
 
         1. Uninstall any existing installation.
         2. Download the library if not in development mode.
@@ -339,7 +339,7 @@ class InstallLibrary:
         # pip.main(['install', 'numpy'])
 
     def uninstall(self):
-        """Uninstall the library by performing the following actions:
+        """Uninstall the library by performing the following actions.
 
         1. Remove the line in the Maya user setup script
            that imports the library.
@@ -361,8 +361,7 @@ class InstallLibrary:
         self.delete()
 
     def reporthook(self, count, block_size, total_size):
-        """Report hook for urlretrieve that prints the percentage of the
-        file downloaded to the console.
+        """Report hook for urlretrieve that prints the percentage of the file downloaded to the console.
 
         Args:
             count (int): The number of blocks transferred so far.
@@ -381,8 +380,7 @@ class InstallLibrary:
         speed = int(progress_size / (1024 * duration))
         percent = int(count * block_size * 100 / total_size)
         sys.stdout.write(
-            "\r...%d%%, %d MB, %d KB/s, %d seconds passed\n"
-            % (percent, progress_size / (1024 * 1024), speed, duration)
+            f"\r...{percent}%, {progress_size / (1024 * 1024)} MB, {speed} KB/s, {duration} seconds passed\n"
         )
         sys.stdout.flush()
 

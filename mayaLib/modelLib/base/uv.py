@@ -162,8 +162,10 @@ class AutoUV:
         return uv_tile_range
 
     def cut_uv_tile(self, shell):
-        """Cuts the UV shell at the tile boundaries by selecting the UVs that fall within each tile and then
-        calling the Maya command 'CreateUVShellAlongBorder' to create a new UV shell at the selected UVs.
+        """Cuts the UV shell at the tile boundaries.
+
+        Selects the UVs that fall within each tile and then calls the Maya command
+        'CreateUVShellAlongBorder' to create a new UV shell at the selected UVs.
 
         Args:
             shell (str): The name of the UV shell to cut at the tile boundaries.
@@ -183,8 +185,10 @@ class AutoUV:
             # pm.polyMapCut(faces, ch=True)
 
     def recursive_cut_uv(self, geo):
-        """Recursively cuts the UV shells of the given geometry at the tile boundaries
-        until all UV shells are within the tile boundaries.
+        """Recursively cuts the UV shells of the given geometry at tile boundaries.
+
+        Cuts the UV shells of the given geometry at the tile boundaries until all
+        UV shells are within the tile boundaries.
 
         Args:
             geo (str): The name of the geometry to cut the UV shells of.

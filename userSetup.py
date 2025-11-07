@@ -1,3 +1,10 @@
+"""Maya userSetup script for DevPyLib initialization.
+
+Automatically loads DevPyLib library on Maya startup, handles dependency
+installation, opens command port for external connections, and creates
+the main menu interface.
+"""
+
 import importlib
 import subprocess
 import sys
@@ -16,8 +23,7 @@ except ImportError:
 
 
 def git_pull_gitpython(repo_path: str | Path, branch: str = "master") -> None:
-    """
-    Pulls the specified branch from a remote Git repository, using the GitPython library.
+    """Pulls the specified branch from a remote Git repository, using the GitPython library.
 
     Args:
         repo_path (str | Path): The path to the local Git repository.
@@ -46,8 +52,7 @@ def git_pull_gitpython(repo_path: str | Path, branch: str = "master") -> None:
 
 
 def install_requirements(requirements_dir):
-    """
-    Installs the Python packages listed in the requirements.txt file located in the specified directory.
+    """Installs the Python packages listed in the requirements.txt file located in the specified directory.
 
     Args:
         requirements_dir (str | Path): The directory path where the requirements.txt file is located.
@@ -87,15 +92,15 @@ def install_requirements(requirements_dir):
 
 # Auto-detect DevPyLib directory based on this file's location
 # This allows the library to work from any location without hardcoded paths
-libDir = Path(__file__).parent.resolve().as_posix()
+lib_dir = Path(__file__).parent.resolve().as_posix()
 port = "4434"
-libName = "mayaLib"
+lib_name = "mayaLib"
 
-print(f"DevPyLib detected at: {libDir}")
+print(f"DevPyLib detected at: {lib_dir}")
 
-install_requirements(libDir)
+install_requirements(lib_dir)
 # Uncomment to enable auto-pull from git on Maya startup
-# git_pull_gitpython(libDir, branch="master")
+# git_pull_gitpython(lib_dir, branch="master")
 
 # Open Maya command port for external connections
 try:
@@ -106,24 +111,24 @@ except RuntimeError as e:
     print(f"Could not open command port {port}: {e}")
 
 # Add DevPyLib to Python path and import mayaLib
-if libDir not in sys.path:
-    sys.path.append(libDir)
-    print(f"Added {libDir} to sys.path")
+if lib_dir not in sys.path:
+    sys.path.append(lib_dir)
+    print(f"Added {lib_dir} to sys.path")
 
 try:
-    if libName in sys.modules:
+    if lib_name in sys.modules:
         # Reload if already imported
-        importlib.reload(sys.modules[libName])
-        print(f"Reloaded {libName}")
+        importlib.reload(sys.modules[lib_name])
+        print(f"Reloaded {lib_name}")
     else:
         # First import
-        __import__(libName)
-        print(f"Imported {libName}")
+        __import__(lib_name)
+        print(f"Imported {lib_name}")
 except ImportError as e:
-    print(f"Error importing {libName}: {e}")
+    print(f"Error importing {lib_name}: {e}")
 
 # Create main menu (deferred to ensure Maya UI is ready)
-command = f"import mayaLib.guiLib.main_menu as mm; libmenu = mm.MainMenu('{libDir}')"
+command = f"import mayaLib.guiLib.main_menu as mm; libmenu = mm.MainMenu('{lib_dir}')"
 cmds.evalDeferred(command, lowestPriority=True)
 
 print("DevPyLib setup complete!")

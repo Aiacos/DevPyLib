@@ -135,14 +135,11 @@ class FunctionUI(QtWidgets.QWidget):
         self.setFocus()
 
     def fill_with_selected(self):
-        """Fills the line edit associated with the button with the names of the
-        selected objects in Maya.
+        """Fill the line edit with selected Maya object names.
 
-        When a button is clicked, this method is called. It gets the button that
-        was clicked, gets the index of the button in the list of buttons, and
-        then gets the line edit associated with that button. It then gets the
-        selected objects in Maya and sets the text of the line edit to a comma
-        separated string of the names of the selected objects.
+        When a button is clicked, this method gets the button that was clicked,
+        finds the corresponding line edit, and populates it with a comma-separated
+        string of the currently selected objects in Maya.
         """
         # Get the button that was clicked
         button = self.sender()

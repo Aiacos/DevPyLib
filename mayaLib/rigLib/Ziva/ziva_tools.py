@@ -27,8 +27,7 @@ def z_poly_combine(geos):
 
 
 def harmonic_warp(source, destination, transfer_geos, tet_size=1):
-    """Warp a source geometry to a destination geometry using Ziva's harmonic warp
-    command.
+    """Warp a source geometry to a destination geometry using Ziva's harmonic warp command.
 
     Args:
         source (str): The name of the source geometry.
@@ -38,6 +37,7 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
         tet_size (int): The size of the tetrahedral mesh.
 
     Returns:
+
         The resulting harmonic warp node.
     """
     source_string = str(pm.ls(source)[-1].name())
@@ -66,8 +66,7 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
 
 
 def bone_warp(source, destination, transfer_geos, tet_size=1):
-    """Warp a source geometry to a destination geometry using Ziva's bone warp
-    command.
+    """Warp a source geometry to a destination geometry using Ziva's bone warp command.
 
     Args:
         source (str): The name of the source geometry.
@@ -77,6 +76,7 @@ def bone_warp(source, destination, transfer_geos, tet_size=1):
         tet_size (int): The size of the tetrahedral mesh.
 
     Returns:
+
         The resulting bone warp node.
     """
     source_string = str(pm.ls(source)[-1].name())

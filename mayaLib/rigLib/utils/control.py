@@ -92,6 +92,10 @@ class Control:
                 n=f"{prefix}_CTRL", ch=False, normal=circle_normal, radius=scale
             )[0]
 
+        # Initialize modify and offset groups
+        ctrl_modify = None
+        ctrl_offset = None
+
         if do_modify:
             ctrl_modify = pm.group(n=f"{prefix}Modify_GRP", em=1)
             pm.parent(ctrl_object, ctrl_modify)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-Cross-platform converter script for DevPyLib texture tools.
+"""Cross-platform converter script for DevPyLib texture tools.
 
 This script automatically detects its location and runs texture_tools.py
 without requiring hardcoded paths.
@@ -31,8 +30,7 @@ def main():
     # Run texture_tools.py with any arguments passed to this script
     try:
         result = subprocess.run(
-            [sys.executable, str(texture_tools_path)] + sys.argv[1:],
-            check=True
+            [sys.executable, str(texture_tools_path)] + sys.argv[1:], check=True
         )
         sys.exit(result.returncode)
     except subprocess.CalledProcessError as e:

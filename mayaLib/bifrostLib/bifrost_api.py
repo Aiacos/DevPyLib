@@ -10,7 +10,8 @@ import maya.mel as mel
 
 ## USD Utility
 def get_maya_usd_stage(stage_name="mayaUsdProxy1"):
-    """Get Stage node from a Maya scene
+    """Get Stage node from a Maya scene.
+
     Args:
         stage_name (string): Name of the Stage.
 
@@ -25,7 +26,8 @@ def get_maya_usd_stage(stage_name="mayaUsdProxy1"):
 
 
 def set_maya_usd_stage_shareable(stage_shape, default_value=True):
-    """Set Maya Stage Sharable
+    """Set Maya Stage Sharable.
+
     Args:
         stage_shape (string): Stage shape node name
         default_value (bool): Default value to set.
@@ -39,7 +41,8 @@ def set_maya_usd_stage_shareable(stage_shape, default_value=True):
 
 ## Bifrost low level
 def create_bifrost_graph(name=""):
-    """Create Maya Bifrost Graph
+    """Create Maya Bifrost Graph.
+
     Args:
         name (string): Name of Maya Bifrost node.
 
@@ -57,7 +60,8 @@ def create_bifrost_graph(name=""):
 
 
 def create_bifrost_maya_shape(name="bifrost_geo"):
-    """Create Maya Transform and Shape to connect to Bifrost output
+    """Create Maya Transform and Shape to connect to Bifrost output.
+
     Args:
         name (string): Geo Name.
 
@@ -72,7 +76,8 @@ def create_bifrost_maya_shape(name="bifrost_geo"):
 
 
 def create_bifrost_geo_to_maya_node():
-    """Create conversion node from Bifrost to Maya shape
+    """Create conversion node from Bifrost to Maya shape.
+
     Returns:
         (string): Bifrost to Maya Geo Node.
 
@@ -83,7 +88,8 @@ def create_bifrost_geo_to_maya_node():
 
 
 def bf_create_node(bifrost_shape, node, parent="/"):
-    """Create Bifrost Graph Node
+    """Create Bifrost Graph Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node to create in the format "BifrostGraph,<category>::<sub_category>,<node_name>" ex:"BifrostGraph,USD::Stage,create_usd_stage"
@@ -99,7 +105,8 @@ def bf_create_node(bifrost_shape, node, parent="/"):
 
 
 def bf_get_port_type(bifrost_shape, node, port_name):
-    """Get Bifrost Graph node Type
+    """Get Bifrost Graph node Type.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node to query
@@ -115,12 +122,14 @@ def bf_get_port_type(bifrost_shape, node, port_name):
 
 
 def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, list_port_children=""):
-    """List all ports on a Bifrost Graph Node
+    """List all ports on a Bifrost Graph Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node to query
         input_port (bool): Flag to enable listing input ports
-        output_port (bool): Flag to enable listing output ports.
+        output_port (bool): Flag to enable listing output ports
+        list_port_children (string): Port children filter to list specific port subsets.
 
     Returns:
         (string[]): list of port as string
@@ -151,12 +160,14 @@ def bf_list_all_port(bifrost_shape, node, input_port=True, output_port=True, lis
 
 
 def bf_add_input_port(bifrost_shape, node, port_name, port_type, port_children=""):
-    """Add input port to Bifrost Graph Node
+    """Add input port to Bifrost Graph Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node to add port to
         port_name (string): Name of the port
-        port_type (string): Type of the port in the format "BifrostUsd::Stage".
+        port_type (string): Type of the port in the format "BifrostUsd::Stage"
+        port_children (string): Port children filter for nested port structures.
 
     Returns:
         None
@@ -186,12 +197,14 @@ def bf_add_input_port(bifrost_shape, node, port_name, port_type, port_children="
 
 
 def bf_add_output_port(bifrost_shape, node, port_name, port_type, port_children=""):
-    """Add output port to Bifrost Graph Node
+    """Add output port to Bifrost Graph Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node to add port to
         port_name (string): Name of the port
-        port_type (string): Type of the port in the format "BifrostUsd::Stage".
+        port_type (string): Type of the port in the format "BifrostUsd::Stage"
+        port_children (string): Port children filter for nested port structures.
 
     Returns:
         None
@@ -221,7 +234,8 @@ def bf_add_output_port(bifrost_shape, node, port_name, port_type, port_children=
 
 
 def bf_connect(bifrost_shape, source_port, destination_port):
-    """Connect to nodes on the specified ports
+    """Connect to nodes on the specified ports.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         source_port (string): Node and Port name in the format "node.port"
@@ -244,7 +258,8 @@ def bf_connect(bifrost_shape, source_port, destination_port):
 def bf_create_compound(
     bifrost_shape, compound_node_list=None, compound_name="compound", parent="/"
 ):
-    """Create Bifrost Graph Compound node from specified nodes
+    """Create Bifrost Graph Compound node from specified nodes.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         compound_node_list (string[]): List of nodes to include in the Compound
@@ -268,7 +283,8 @@ def bf_create_compound(
 
 
 def bf_feedback_port(bifrost_shape, node, source_port, destination_port):
-    """Enable Feedback between ports inside a Compound
+    """Enable Feedback between ports inside a Compound.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Compound Node name
@@ -285,7 +301,8 @@ def bf_feedback_port(bifrost_shape, node, source_port, destination_port):
 
 
 def bf_sequence_port(bifrost_shape, node, source_port, destination_port):
-    """Enable Sequence between ports inside a Loop
+    """Enable Sequence between ports inside a Loop.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Compound Node name
@@ -298,7 +315,8 @@ def bf_sequence_port(bifrost_shape, node, source_port, destination_port):
 
 
 def bf_rename_node(bifrost_shape, node, name):
-    """Rename Bifrost Node
+    """Rename Bifrost Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Compound Node
@@ -313,7 +331,8 @@ def bf_rename_node(bifrost_shape, node, name):
 
 
 def bf_set_node_property(bifrost_shape, node, property_name, value):
-    """Set Property on a Bifrost node
+    """Set Property on a Bifrost node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Node name
@@ -331,7 +350,8 @@ def bf_set_node_property(bifrost_shape, node, property_name, value):
 
 
 def bf_auto_layout():
-    """Layout Bifrost Graph nodes
+    """Layout Bifrost Graph nodes.
+
     Returns:
         None.
 
@@ -340,11 +360,13 @@ def bf_auto_layout():
 
 
 def bf_add_mesh(bifrost_shape, geo, parent="/", connect_out_mesh=False):
-    """Add mesh to Bifrost Graph
+    """Add mesh to Bifrost Graph.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         geo (string): Geo name
-        parent (string): Parent node.
+        parent (string): Parent node
+        connect_out_mesh (bool): Flag to connect the mesh's outMesh attribute to existing connections.
 
     Returns:
         (string): Bifrost input mesh node
@@ -381,7 +403,8 @@ def bf_add_mesh(bifrost_shape, geo, parent="/", connect_out_mesh=False):
 
 
 def bf_get_node_type(bifrost_shape, node):
-    """Get Type from a Bifrost Node
+    """Get Type from a Bifrost Node.
+
     Args:
         bifrost_shape (string): Bifrost Graph Shape
         node (string): Name of the node.
@@ -397,7 +420,8 @@ def bf_get_node_type(bifrost_shape, node):
 
 ## Bifrost Deformer Connection
 def connect_bifrostwgt_to_deformerwgt(bifrost_wgt_attribute, deformer_wgt_attribute):
-    """Connect Bifrost Maya Node weight output to a deformer Attribute
+    """Connect Bifrost Maya Node weight output to a deformer Attribute.
+
     Args:
         bifrost_wgt_attribute (string): Node and Port in the format "bifrost_node.attribute"
         deformer_wgt_attribute (string): Node and Port in the format "deformer.attribute".
@@ -410,7 +434,8 @@ def connect_bifrostwgt_to_deformerwgt(bifrost_wgt_attribute, deformer_wgt_attrib
 
 
 def connect_bifrost_attribute_to_blendshape(bifrost_node, blendshape_targhet):
-    """Connect Bifrost Maya Node weight attribute to a blendshape deformer
+    """Connect Bifrost Maya Node weight attribute to a blendshape deformer.
+
     Args:
         bifrost_node (string): Maya Bifrost Node
         blendshape_targhet (string): Blendshape deformer targhet.

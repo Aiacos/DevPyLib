@@ -184,8 +184,8 @@ class TextureFileNode:
             path (str): Path to the texture file.
             name (str): Name of the texture file.
             single_place_node: Place node for texture.
-            gammaCorrect (bool): Apply gamma correction. Defaults to True.
-            alphaIsLuminance (bool): Use alpha as luminance. Defaults to True.
+            gamma_correct (bool): Apply gamma correction. Defaults to True.
+            alpha_is_luminance (bool): Use alpha as luminance. Defaults to True.
 
         Returns:
             node: File node object.

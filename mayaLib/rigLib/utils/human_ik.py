@@ -1323,7 +1323,9 @@ class HumanIK:
         mel.eval("hikCreateCustomRig( hikGetCurrentCharacter() );")
 
     def add_remove_custom_rig_mapping(self):
-        """hikCustomRigAddRemoveMapping("R", `iconTextCheckBox - q - v hikCustomRigRotateButton` );
+        """Add or remove custom rig mapping configuration.
+
+        hikCustomRigAddRemoveMapping("R", `iconTextCheckBox - q - v hikCustomRigRotateButton` );
 
         import maya.app.hik.retargeter as r
         temporary = r.HIKRetargeter.createDefaultMapping(

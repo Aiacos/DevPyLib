@@ -43,7 +43,7 @@ def paint_proximity(z_attachement, min_value=0.0001, max_value=1):
     """Paint a Ziva attachment based on proximity.
 
     Args:
-        zAttachement (pm.nt.DagNode): The Ziva attachment node to paint.
+        z_attachement (pm.nt.DagNode): The Ziva attachment node to paint.
         min_value (float, optional): The minimum proximity value. Default is 0.0001.
         max_value (float, optional): The maximum proximity value. Default is 1.
 

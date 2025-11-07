@@ -29,6 +29,16 @@ def detect_host_app() -> str:
 
 
 def main(core, filepath, version_up, comment, publish, details):
+    """Execute pre-export actions before Prism State Manager export.
+
+    Args:
+        core: Prism core object with project configuration.
+        filepath: Path where the export will be saved.
+        version_up: Whether to increment version number.
+        comment: Export comment string.
+        publish: Whether this is a publish operation.
+        details: Additional export details dictionary.
+    """
     print(core.projectName)
     print(filepath)
     print(version_up)

@@ -65,12 +65,11 @@ def matrix_mult_vector(matrix, vector):
 
 
 def compute_principal_eigenvector(input_matrix, max_iterations=1000, tolerance=1e-9):
-    """Computes the principal eigenvector of a square matrix using the
-    power iteration method. The principal eigen vector is the direction
-    of maximum variance in the data represented by the matrix. It corresponds
-    to the largest eigenvalue of the covariance matrix and it is the principal
-    component of PCA.
+    """Compute principal eigenvector using power iteration method (PCA).
 
+    Finds the direction of maximum variance in the data by iteratively applying
+    the matrix and normalizing. Corresponds to the largest eigenvalue of the
+    covariance matrix (first principal component).
 
     Args:
         input_matrix (list): A square matrix represented as a list of lists.
@@ -108,6 +107,7 @@ def compute_principal_eigenvector(input_matrix, max_iterations=1000, tolerance=1
 
 def compute_covariance_matrix(centered_points):
     """Compute the covariance matrix from the centered points.
+
     Uses the sample covariance (dividing by n-1). The covariance
     matrix is a square matrix where the element at (i, j) represents
     the covariance between the i-th and j-th dimensions. It describes
@@ -139,11 +139,12 @@ def compute_covariance_matrix(centered_points):
 
 
 def compute_main_axis(points):
-    """Given a list of points as a list or tuple of coordinates,
-    compute the main axis of the set of points using PCA.
-    PCA (Principal Component Analysis) is a linear dimensionality
-    reduction technique that allows to find the main axis of a set
-    of points. The main axis is the direction of maximum variance
+    """Compute the main axis of a set of points using PCA.
+
+    Given a list of points as a list or tuple of coordinates, compute the main
+    axis of the set of points using PCA (Principal Component Analysis). PCA is
+    a linear dimensionality reduction technique that allows to find the main
+    axis of a set of points. The main axis is the direction of maximum variance
     in the data.
 
     Args:
@@ -208,8 +209,10 @@ def get_closest_point_and_uv(
     mesh,
     query_point,
 ):  # pylint: disable=too-many-locals
-    """Uses maya.OpenMaya to find the closest point on the mesh to
-    target_point and retrieves the corresponding UV coordinates.
+    """Find the closest point on a mesh and retrieve corresponding UV coordinates.
+
+    Uses maya.OpenMaya to find the closest point on the mesh to target_point and
+    retrieves the corresponding UV coordinates.
 
     Args:
         mesh (str): The name of the mesh.
@@ -349,9 +352,11 @@ def find_extremal_vertices(
     centroid,
     direction,
 ):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-    """Find the two vertices of a mesh that are extremal in the direction
-    of the main axis. The two vertices are the closest to the end points
-    of the line defined by the centroid and the direction vector.
+    """Find extremal vertices along the main axis of a mesh.
+
+    Find the two vertices of a mesh that are extremal in the direction of the
+    main axis. The two vertices are the closest to the end points of the line
+    defined by the centroid and the direction vector.
 
     This is done by intersecting a parametric line (along the main axis) with
     the mesh's axis-aligned bounding box (AABB), determining the entry and exit
@@ -480,8 +485,10 @@ def find_extremal_vertices(
 
 
 def get_name_from_geo(geo_name, object_name):
-    """Generates a name for the object based on the geometry name and the object type.
-    If the geometry name ends with "GEO" or "geo", it is removed before concatenation.
+    """Generate a name for the object based on geometry name and object type.
+
+    If the geometry name ends with "GEO" or "geo", it is removed before
+    concatenation.
 
     Args:
         geo_name (str): The name of the geometry.
@@ -502,9 +509,10 @@ def get_name_from_geo(geo_name, object_name):
 
 
 def create_rivet_at_point(mesh, target_point, rivet_base_name, space_scale=1.0):
-    """Creates a rivet-based rivet on the given mesh at the point closest
-    to target_point. The rivet is positioned based on UV coordinates computed
-    via maya.OpenMaya, so the resulting locator will follow the mesh as it deforms.
+    """Create a rivet on a mesh at the point closest to target_point.
+
+    The rivet is positioned based on UV coordinates computed via maya.OpenMaya,
+    so the resulting locator will follow the mesh as it deforms.
 
     Args:
         mesh (str): The name of the mesh (e.g., "mummy_geo").
@@ -558,7 +566,7 @@ def create_line_of_action(
     name_suffix="_loa_crv",
     space_scale=1.0,
 ):  # pylint: disable=too-many-locals
-    """Create a line of action curve between two extremal points on a geometry.
+    """Create a line of action curve between extremal points on geometry.
 
     This function computes the main axis of a given geometry and identifies two
     extremal vertices along that axis. It then creates a rivet and locator at

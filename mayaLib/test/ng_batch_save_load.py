@@ -15,7 +15,8 @@ from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 def findRelatedSkinCluster(geo):
-    """Find related skincluster of geo
+    """Find related skincluster of geo.
+
     :param geo: str
     :return: str.
     """

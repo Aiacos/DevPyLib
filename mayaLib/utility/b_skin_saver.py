@@ -1,14 +1,10 @@
-"""=====================================================================
-    Tool for saving and loading skinWeights in Maya.
+"""Maya skin weights save/load utility.
 
-    (c) 2013 - 2016 by Thomas Bittner
-    thomasbittner@hotmail.de
+High-performance tool for exporting and importing skinCluster weights, supporting
+both full object weights and per-vertex soft selection weights.
 
-    source the file and then run: showUI()
-
-
-=====================================================================
-
+Author: Thomas Bittner (thomasbittner@hotmail.de)
+Copyright: 2013-2016
 """
 
 import time
@@ -530,7 +526,7 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
                     if weight_check_array[n]
                 ]
             )
-            weight_array_string = "%d:%s%s" % (vert_id, soft_weight, weights_string)
+            weight_array_string = f"{vert_id}:{soft_weight}{weights_string}"
 
             output.write(weight_array_string + "\n")
             counter += 1
@@ -909,13 +905,13 @@ def get_soft_selection():
         node = dag_path.fullPathName()
         fn_comp = OpenMaya.MFnSingleIndexedComponent(component)
 
-        def get_weight(index):
-            if fn_comp.hasWeights():
-                return fn_comp.weight(index).influence()
+        def get_weight(index, comp=fn_comp):
+            if comp.hasWeights():
+                return comp.weight(index).influence()
             return 1.0
 
         for i in range(fn_comp.elementCount()):
-            elements.append("%s.vtx[%i]" % (node, fn_comp.element(i)))
+            elements.append(f"{node}.vtx[{fn_comp.element(i)}]")
             weights.append(get_weight(i))
         next(selection_iter)
 

@@ -97,8 +97,7 @@ def add_custom_layer_data(bifrost_shape, data, custom_layer_data_node, product="
 
 
 def set_stage_property(bifrost_shape, key, value="", source=None):
-    """Sets a property on a Bifrost graph node by creating and connecting
-    nodes as needed.
+    """Sets a property on a Bifrost graph node by creating and connecting nodes as needed.
 
     Args:
         bifrost_shape (str): The shape of the Bifrost graph.
@@ -116,6 +115,7 @@ def set_stage_property(bifrost_shape, key, value="", source=None):
         bifrost_shape, "BifrostGraph,Core::Object,set_property"
     )
     key_value_node = bifrost.bf_create_node(bifrost_shape, "BifrostGraph,Core::Constants,string")
+    value_value_node = None
 
     if value != "" and value != source:
         if isinstance(value, int):
@@ -294,6 +294,7 @@ def build_referece_peyload(
             bifrost_shape, "BifrostGraph,USD::Stage,send_stage_to_cache", compound
         )
 
+        variant_selector_node = None
         if use_variant:
             variant_selector_node = bifrost.bf_create_node(
                 bifrost_shape, "BifrostGraph,USD::VariantSet,define_usd_variant_set", compound
@@ -467,11 +468,13 @@ def build_referece_peyload(
 def build_preview_compound(
     bifrost_shape, working_layer_name="WORKING_MODELING", placeholder="PLACEHOLDER"
 ):
-    """Builds a compound which creates a new USD stage and adds a new layer
-    to it. The layer is named after the incoming step and is set as the
-    root of the stage. The stage is then sent to the cache.
+    """Builds a compound which creates a new USD stage and adds a new layer to it.
+
+    The layer is named after the incoming step and is set as the root of the stage.
+    The stage is then sent to the cache.
 
     The compound takes three inputs:
+
     - sublayers: an array of USD layers
     - file: a string representing the file path of the incoming USD file
     - step: a string representing the current step

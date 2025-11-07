@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-"""****************************************************************************
-*** quad_patcher.py
-***
-*** version: 1.0
-*** Scripted in Maya 2020
-*** Tested in Maya 2020 and 2022
-***
-****************************************************************************.
+"""Interactive quad mesh patching tool for Maya.
+
+Provides a UI-driven workflow for patching holes in quad meshes with clean topology.
+Uses edge loops and polyBridge to create quad-flow patches that match surrounding geometry.
+
+Version: 1.0
+Compatibility: Maya 2020+
 """
 
 import random
@@ -109,7 +108,7 @@ def _reset_state():
 
 
 def face_checker(_unused_arg=None):
-    """Checks the selected faces in Maya for various conditions:
+    """Check the selected faces in Maya for various conditions.
 
     1. Ensures faces are selected.
     2. Checks that no face is adjacent to a border edge.
@@ -145,7 +144,7 @@ def face_checker(_unused_arg=None):
 
 
 def edge_checker(_unused_arg=None):
-    """Checks the selected edges in Maya for various conditions:
+    """Check the selected edges in Maya for various conditions.
 
     1. Ensures edges are selected.
     2. Verifies that the complete edge border is selected.
@@ -174,8 +173,10 @@ def edge_checker(_unused_arg=None):
 
 
 def quad_patch_init(_unused_arg=None):
-    """Initializes the quad patching process by duplicating the selected object,
-    creating edge bridges, and setting up the UI components.
+    """Initialize quad patching process on selected mesh.
+
+    Duplicates the selected object, creates edge bridges for each border,
+    and configures the UI for interactive patching.
 
     Args:
         _unused_arg: Unused callback parameter required by Maya UI callbacks.

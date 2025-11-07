@@ -679,6 +679,11 @@ class SettingsWidget(QtWidgets.QWidget):
     """Widget for facial rig settings and configuration."""
 
     def __init__(self, parent=None):
+        """Initialize SettingsWidget.
+
+        Args:
+            parent: Parent Qt widget.
+        """
         super().__init__(parent)
         self.font = QtG.QFont()
         self.font.setPointSize(10)
@@ -848,6 +853,11 @@ class SkinWidget(QtWidgets.QWidget):
     """Widget for skin cluster setup and management."""
 
     def __init__(self, parent=None):
+        """Initialize SkinWidget.
+
+        Args:
+            parent: Parent Qt widget.
+        """
         super().__init__(parent)
         self.progressColor = "background-color:rgb(76,50,50);color : white;"
         self.prExportSkin = QtWidgets.QPushButton("Export Skin")
@@ -940,6 +950,7 @@ class CustomTabWidget(QtWidgets.QWidget):
     """Custom tab widget for organizing facial rig UI panels."""
 
     def __init__(self):
+        """Initialize CustomTabWidget with settings, skin, and exclude tabs."""
         super().__init__()
         self.create_widgets()
         self.create_layout()
@@ -1012,6 +1023,11 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 cls.ui_instance.show(dockable=True)
 
     def __init__(self, parent=None):
+        """Initialize PerseusUI main dialog window.
+
+        Args:
+            parent: Parent Qt widget, defaults to Maya main window if None.
+        """
         if parent is None:
             parent = maya_main_window()
         super().__init__(parent)
@@ -3677,14 +3693,16 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 infJooints = cmds.ls(sl=1)
                 for objs in infJooints:
                     "-tv " + str(objs) + " 0 "
-                    pm.catch(lambda: pm.skinPercent(SkCluster, verListSkin, tv=(objs, 0)))
+                    pm.catch(lambda vs=verListSkin, o=objs: pm.skinPercent(SkCluster, vs, tv=(o, 0)))
 
             pm.select(objects, r=1)
 
     def getSkinCluster(self, obj):
-        """Get the skincluster of a given object
+        """Get the skincluster of a given object.
+
         Arguments:
                 obj (dagNode): The object to get skincluster
+
         Returns:
                 pyNode: The skin cluster pynode object.
         """
@@ -4055,13 +4073,8 @@ def exportSkin(file_path=None, objs=None, *args):
             packDic["objs"].append(obj.name())
             packDic["objDDic"].append(listDic)
             pm.displayInfo(
-                "%s (%d influences, %d points) %s"
-                % (
-                    skinCls.name(),
-                    len(listDic["weights"].keys()),
-                    len(listDic["blendWeights"]),
-                    obj.name(),
-                )
+                f"{skinCls.name()} ({len(listDic['weights'].keys())} influences, "
+                f"{len(listDic['blendWeights'])} points) {obj.name()}"
             )
 
     if packDic["objs"]:
@@ -4072,9 +4085,11 @@ def exportSkin(file_path=None, objs=None, *args):
 
 
 def getSkinCluster(obj):
-    """Get the skincluster of a given object
+    """Get the skincluster of a given object.
+
     Arguments:
             obj (dagNode): The object to get skincluster
+
     Returns:
             pyNode: The skin cluster pynode object.
     """
@@ -4148,7 +4163,7 @@ def prImpSkin(file_path=None, *args):
                 importedVertices = len(obj_data["blendWeights"])
                 if meshVertices != importedVertices:
                     pm.displayWarning(
-                        "Vertex counts do not match. %d != %d" % (meshVertices, importedVertices)
+                        f"Vertex counts do not match. {meshVertices} != {importedVertices}"
                     )
                     continue
             except Exception:
@@ -4286,7 +4301,8 @@ def getCurrentWeights(skin_cls, dag_path, components):
 
 
 def encode_data_to_attr(node, attr_name, data):
-    """Dump data into a string attriubte
+    """Dump data into a string attriubte.
+
     Args:
             node (pm.nt.DagNode): node to get data
             attr_name (str):  name of attribute
@@ -4301,7 +4317,8 @@ def encode_data_to_attr(node, attr_name, data):
 
 
 def decode_data_from_attr(node, attr_name):
-    """Return data from string attriute
+    """Return data from string attriute.
+
     Args:
             node (pm.nt.DagNode): node to get data
             attr_name (str):  name of attribute
@@ -4316,6 +4333,7 @@ def decode_data_from_attr(node, attr_name):
 
 def detach_bind_joints():
     """Detach bind joints from rig.
+
     Adds a custom compound attribute (connected_nodes) to what the node was connected to.
     """
     SKIN_JNT_GRP = "*facialRig_skinJnt_grp"
@@ -4385,10 +4403,11 @@ def rename_transforms_by_position(
     center_prefix="center",
     suffix="",
 ):
-    """Given a list of pm.nt.Transforms and a search name, rename objects based on the
-    X axis world position in order starting from lowest(0) to highest position(nth)
+    """Given a list of pm.nt.Transforms and a search name, rename objects based on the X axis world position in order starting from lowest(0) to highest position(nth).
+
     The center tolerance is used to test if an object is close enough to the center origin
     to be named 'center'
+
     Args:
             transforms (list of pm.nt.Transforms): list of transforms to search and rename
             search_name (str): name to parse for and use and the main object name

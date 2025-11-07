@@ -69,7 +69,7 @@ class SearchLineEdit(QtWidgets.QLineEdit):
         button_size = self.button.sizeHint()
 
         self.setStyleSheet(
-            "QLineEdit {padding-right: %dpx; }" % (button_size.width() + frame_width + 1)
+            f"QLineEdit {{padding-right: {button_size.width() + frame_width + 1}px; }}"
         )
         self.setMinimumSize(
             max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 3),
@@ -368,6 +368,7 @@ class MainMenu(QtWidgets.QWidget):
             lib_path (str): Path to the library.
             menu_name (str, optional): Name of the menu. Defaults to 'MayaLib'.
             parent (QWidget, optional): Parent widget. Defaults to None.
+            auto_update_on_load (bool, optional): Update library on load. Defaults to True.
         """
         super().__init__(parent)
 

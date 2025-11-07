@@ -171,7 +171,8 @@ def find_related_skin_cluster(geo):
 
 
 def mirror_skincluster_to_opposite_object(source_obj, destination_object):
-    """Mirror Skincluster to the opposite Object
+    """Mirror Skincluster to the opposite Object.
+
     Args:
         source_obj (string): Source Geo
         destination_object (string):  Destination Geo.
@@ -185,7 +186,8 @@ def mirror_skincluster_to_opposite_object(source_obj, destination_object):
 
 
 def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
-    """Mirror Skincluster to opposite Object
+    """Mirror Skincluster to opposite Object.
+
     Args:
         source_list (string[]): Objects list
         left_side (string): Left pattern
@@ -203,7 +205,8 @@ def save_skin_weights(
     sw_ext=".swt",
     do_directory=True,
 ):
-    """Save weights for character geometry objects
+    """Save weights for character geometry objects.
+
     Args:
         geo_list (string[]): Objects list
         project_path (string | None): file path
@@ -241,7 +244,8 @@ def load_skin_weights(
     project_path=None,
     sw_ext=".swt",
 ):
-    """Load weights for character geometry objects
+    """Load weights for character geometry objects.
+
     Args:
         geo_list (string[]): Objects list
         project_path (string | None): file path

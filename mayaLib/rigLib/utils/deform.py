@@ -257,7 +257,7 @@ def create_proximity_wrap(source, target_list):
 
     Args:
         source (pm.nodetypes.Transform): Transform with skinned mesh that will drive given target.
-        target (pm.nodetypes.Transform): Transform with mesh shape that will be driven by given source.
+        target_list (list): List of transforms with mesh shapes that will be driven by given source.
 
     Returns:
         (pm.nodetypes.ProximityWrap): Proximity wrap node created.
@@ -355,8 +355,10 @@ def delta_mush_deformer(geo, smoothing_iterations=10, smoothing_step=0.5):
 
 
 def shrink_wrap_deformer(wrapped_obj, wrapper_obj):
-    """Apply Shrink Wrap Deformer to wrapped object. The deformer will deform the wrapped object
-    to match the shape of the wrapper object.
+    """Apply Shrink Wrap Deformer to wrapped object.
+
+    The deformer will deform the wrapped object to match the shape of the
+    wrapper object.
 
     Args:
         wrapped_obj: The object to be wrapped.
@@ -621,8 +623,10 @@ def invert_shape(original_shape, targhet_shape, suffix="invertShape_"):
 def generate_new_blendshspae(
     original, blendhspae_original_list, blendhspae_target, bs_name="reconstruction_BS"
 ):
-    """Function to generate a new blendshape that combines the original shape with the
-    other shapes in the blendhspae_original_list.
+    """Generate a new blendshape combining the original shape with other shapes.
+
+    Combines the original shape with the other shapes in the
+    blendhspae_original_list.
 
     Args:
         original (str or pm.PyNode): The original shape node.

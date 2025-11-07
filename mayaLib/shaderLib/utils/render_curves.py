@@ -1,5 +1,7 @@
-"""Functions to add a sweep mesh to a list of curves, paint effects
-to a list of curves and add a surface shader to the resulting geometry.
+"""Curve rendering utilities for Maya.
+
+Provides functions to convert curves into renderable geometry using sweep meshes
+or Paint Effects, and apply surface shaders to the resulting mesh.
 """
 
 import maya.mel as mel

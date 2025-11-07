@@ -1,504 +1,375 @@
-"""modelIssueFix.py.
-================
+"""Maya model issue detection and automatic fixing utilities.
 
-This module provides a class `ModelFix` that can be used to fix various issues
-with a Maya model. The class takes a Maya node as an argument and provides methods
-to fix issues such as faces with more than 4 sides, concave faces, faces with
-holes, non-planar faces, lamina faces, non-manifold geometry, edges with zero
-length, faces with zero geometry area, faces with zero map area, and invalid
-components.
-
-The class also provides a method to check if a model has any of these issues and
-to get the list of components that have the issue.
-
-The module also provides some functions to fix the issues.
+Provides the ModelFix class for detecting and fixing common mesh topology issues
+including: faces with >4 sides, concave/non-planar faces, holes, lamina faces,
+non-manifold geometry, zero-length edges, zero-area faces/UVs, and invalid components.
 
 Example:
--------
+    Fix all issues on selected geometry::
 
-.. code-block:: python
+        import mayaLib.modelLib.base.model_issue_fix as model_issue_fix
 
-    import mayaLib.modelLib.base.model_issue_fix as model_issue_fix
-
-    geo = pm.ls(sl=True)[0]
-    modelFix = model_issue_fix.ModelFix(geo)
-    modelFix.autoFix()
-
+        geo = pm.ls(sl=True)[0]
+        modelFix = model_issue_fix.ModelFix(geo)
+        modelFix.autoFix()
 """
 
 import maya.mel as mel
 import pymel.core as pm
 
-from mayaLib.rigLib.utils.util import list_objects_under_group, unlock_and_unhide_all
+from mayaLib.rigLib.utils.util import reload_module
+
+reload_module("mayaLib.rigLib.utils.util")
 
 
-def merge_duplicated_vertex(geo, threshold=0.001, only_2_vertex=False):
-    """Merge duplicated vertex in a Maya node.
-
-    Args:
-        geo (str or PyNode): The Maya node to merge duplicated vertex.
-        threshold (float): The maximum distance between two vertices to be
-            considered the same vertex. Defaults to 0.001.
-        only_2_vertex (bool): If True, only merge two vertices. Defaults to False.
-
-    Returns:
-        None
-    """
-    pm.polyMergeVertex(geo, am=only_2_vertex, ch=False, distance=threshold)
-
-
-def fix_face_with_more_than_4_sides(geo, query=True):
-    """Fix faces with more than 4 sides in a Maya node.
+def check_modelissue(geo, issue_type):
+    """Check if geometry has specific topology issues.
 
     Args:
-        geo (str or PyNode): The Maya node to fix faces with more than 4 sides.
-        query (bool): If True, return the list of faces with more than 4 sides.
-            Defaults to True.
+        geo (pm.nt.Transform): Geometry to check.
+        issue_type (str): Type of issue to check for (e.g. 'faces with more than 4 sides').
 
     Returns:
-        list or None: The list of faces with more than 4 sides if query is True,
-            None otherwise.
+        bool: True if geometry has the specified issue, False otherwise.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+    if pm.polyInfo(geo, nmv=True):
+        return True
+    if pm.polyInfo(geo, nme=True):
+        return True
+    if pm.polyInfo(geo, lf=True):
+        return True
+    if pm.polyInfo(geo, nv=True):
+        return True
+    if pm.polyInfo(geo, bc=True):
+        return True
+
+
+def get_model_issue_components(geo, issue_type):
+    """Get list of components with the specified issue.
+
+    Args:
+        geo (str): Geometry to check.
+        issue_type (str): Issue type to query.
+
+    Returns:
+        list: Component list matching the issue type.
+    """
+    if issue_type == "faceWith>4Sides":
+        component_list = pm.polyInfo(geo, faceToVertex=True, laminaFaces=True)
+    elif issue_type == "concaveFaces":
+        component_list = pm.polyInfo(geo, nonManifoldVertices=True)
+    elif issue_type == "facesWithHoles":
+        component_list = pm.polyInfo(geo, nonManifoldEdges=True)
+    elif issue_type == "nonPlanarFaces":
+        component_list = pm.polyInfo(geo, invalidVertices=True)
+    elif issue_type == "laminaFaces":
+        component_list = pm.polyInfo(geo, laminaFaces=True)
+    elif issue_type == "nonManifoldGeometry":
+        component_list = pm.polyInfo(geo, boundaryEdges=True)
+    elif issue_type == "edgesWithZeroLength":
+        component_list = pm.polyInfo(geo, invalidEdges=True)
+    elif issue_type == "facesWithZeroGeometryArea":
+        component_list = pm.polyInfo(geo, invalidFaces=True)
+    elif issue_type == "facesWithZeroMapArea":
+        component_list = pm.polyInfo(geo, invalidUVs=True)
+    elif issue_type == "invalidComponents":
+        component_list = pm.polyInfo(geo, invalidComponents=True)
+
+    return component_list
+
+
+def fix_face_with_more_than_4_sides(geo):
+    """Fix faces with more than 4 sides on geometry.
+
+    Args:
+        geo (str): Geometry to fix.
+
+    Returns:
+        bool: True if successfully fixed, False if no issues found.
+    """
+    component_list = pm.polyInfo(geo, faceToVertex=True, laminaFaces=True)
+    if component_list:
+        pm.polyQuad(geo, a=40, kgb=1, ktb=1, khe=1, ws=1)
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def fix_concave_faces(geo, query=True):
-    """Fix concave faces in a Maya node.
+def fix_concave_faces(geo):
+    """Fix concave faces on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to fix concave faces.
-        query (bool): If True, return the list of concave faces. Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of concave faces if query is True, None otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, nonManifoldVertices=True)
+    if component_list:
+        pm.polyTriangulate(geo)
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"1\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def fix_face_with_holes(geo, query=True):
-    """Fix faces with holes in a Maya node.
+def fix_faces_with_holes(geo):
+    """Fix faces with holes on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to fix faces with holes.
-        query (bool): If True, return the list of faces with holes. Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of faces with holes if query is True, None otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, nonManifoldEdges=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"1\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def fix_non_planar_faces(geo, query=True):
-    """Fix non-planar faces in a Maya node.
+def fix_non_planar_faces(geo):
+    """Fix non-planar faces on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to fix non-planar faces.
-        query (bool): If True, return the list of non-planar faces. Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of non-planar faces if query is True, None otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, invalidVertices=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"1\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def remove_lamina_faces(geo, query=True):
-    """Remove lamina faces in a Maya node.
+def fix_lamina_faces(geo):
+    """Fix lamina faces on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove lamina faces.
-        query (bool): If True, return the list of lamina faces. Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of lamina faces if query is True, None otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '
-            )
+    component_list = pm.polyInfo(geo, laminaFaces=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"1\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" }; '
-            )
-        )
+        return False
 
 
-def remove_nonmanifold_geometry(geo, query=True):
-    """Remove non-manifold geometry in a Maya node.
+def fix_non_manifold_geometry(geo):
+    """Fix non-manifold geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove non-manifold geometry.
-        query (bool): If True, return the list of non-manifold geometry.
-            Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of non-manifold geometry if query is True, None
-            otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, boundaryEdges=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","1","0","0" };'
-            )
-        )
+        return False
 
 
-def remove_edges_with_zero_length(geo, query=True):
-    """Remove edges with zero length in a Maya node.
+def fix_edges_with_zero_length(geo):
+    """Fix edges with zero length on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove edges with zero length.
-        query (bool): If True, return the list of edges with zero length.
-            Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of edges with zero length if query is True, None
-            otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, invalidEdges=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"1\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def remove_faces_with_zero_geometry_area(geo, query=True):
-    """Remove faces with zero geometry area in a Maya node.
+def fix_faces_with_zero_geometry_area(geo):
+    """Fix faces with zero geometry area on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove faces with zero geometry
-            area.
-        query (bool): If True, return the list of faces with zero geometry area.
-            Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of faces with zero geometry area if query is True,
-            None otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, invalidFaces=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"1\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def remove_faces_with_zero_map_area(geo, query=True):
-    """Remove faces with zero map area in a Maya node.
+def fix_faces_with_zero_map_area(geo):
+    """Fix faces with zero UV map area on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove faces with zero map area.
-        query (bool): If True, return the list of faces with zero map area.
-            Defaults to True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of faces with zero map area if query is True, None
-            otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'
-            )
+    component_list = pm.polyInfo(geo, invalidUVs=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"1\",\"-1\",\"0\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'
-            )
-        )
+        return False
 
 
-def remove_invalid_components(geo, query=True):
-    """Remove invalid components in a Maya node.
+def fix_invalid_components(geo):
+    """Fix invalid components on geometry.
 
     Args:
-        geo (str or PyNode): The Maya node to remove invalid components.
-        query (bool): If True, return the list of invalid components. Defaults to
-            True.
+        geo (str): Geometry to fix.
 
     Returns:
-        list or None: The list of invalid components if query is True, None
-            otherwise.
+        bool: True if successfully fixed, False if no issues found.
     """
-    pm.select(geo)
-    if query:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","2","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'
-            )
+    component_list = pm.polyInfo(geo, invalidComponents=True)
+    if component_list:
+        pm.select(component_list)
+        mel.eval(
+            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"1\",\"0\" };"
         )
+        return True
     else:
-        return pm.ls(
-            mel.eval(
-                'polyCleanupArgList 4 { "0","1","0","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","1" };'
-            )
-        )
+        return False
 
 
 class ModelFix:
-    """Class to fix common modeling issues in Maya.
+    """Maya model topology issue detection and automatic fixing.
+
+    Provides methods to detect and fix common mesh topology problems including
+    non-quad faces, concave faces, lamina faces, non-manifold geometry, and
+    zero-area/zero-length components.
 
     Attributes:
-        geo (str or PyNode): The Maya node to fix modeling issues.
-        check_face_with_more_than_4_sides (list): List of faces with more than 4 sides.
-        check_concave_faces (list): List of concave faces.
-        check_face_with_holes (list): List of faces with holes.
-        check_non_planar_faces (list): List of non-planar faces.
-        check_lamina_faces (list): List of lamina faces.
-        check_nonmanifold_geometry (list): List of non-manifold geometry.
-        check_edges_with_zero_lenght (list): List of edges with zero length.
-        check_faces_with_zero_geometry_area (list): List of faces with zero geometry
-            area.
-        check_faces_with_zero_map_area (list): List of faces with zero map area.
-        check_invalid_components (list): List of invalid components.
+        geo (str): Geometry transform node name.
+        shape (str): Geometry shape node name.
     """
 
-    def __init__(self, geo, check=True):
-        """Initialize the ModelFix object.
+    def __init__(self, geo=None):
+        """Initialize ModelFix with geometry to check/fix.
 
         Args:
-            geo (str or PyNode): The Maya node to fix modeling issues.
-            check (bool): If True, run the checks. Defaults to True.
+            geo: Geometry transform node, defaults to first selected object.
         """
-        self.geo = pm.ls(geo)[0]
+        if geo is None:
+            geo = pm.ls(sl=True)[0]
+        self.geo = geo
+        self.shape = geo.getShape()
 
-        unlock_and_unhide_all(self.geo)
-        merge_duplicated_vertex(self.geo)
+    def auto_fix(self):
+        """Automatically fix all detected topology issues on geometry."""
+        self.face_with_more_than_4_sides()
+        self.concave_faces()
+        self.faces_with_holes()
+        self.non_planar_faces()
+        self.lamina_faces()
+        self.non_manifold_geometry()
+        self.edges_with_zero_length()
+        self.faces_with_zero_geometry_area()
+        self.faces_with_zero_map_area()
+        self.invalid_components()
 
-        if check:
-            self.check_face_with_more_than_4_sides = fix_face_with_more_than_4_sides(
-                self.geo, query=True
-            )
-            self.check_concave_faces = fix_concave_faces(self.geo, query=True)
-            self.check_face_with_holes = fix_face_with_holes(self.geo, query=True)
-            self.check_non_planar_faces = fix_non_planar_faces(self.geo, query=True)
-            self.check_lamina_faces = remove_lamina_faces(self.geo, query=True)
-            self.check_nonmanifold_geometry = remove_nonmanifold_geometry(self.geo, query=True)
-            self.check_edges_with_zero_lenght = remove_edges_with_zero_length(self.geo, query=True)
-            self.check_faces_with_zero_geometry_area = remove_faces_with_zero_geometry_area(
-                self.geo, query=True
-            )
-            self.check_faces_with_zero_map_area = remove_faces_with_zero_map_area(
-                self.geo, query=True
-            )
-            self.check_invalid_components = remove_invalid_components(self.geo, query=True)
-
-    def auto_fix(
-        self,
-        face_with_more_than_4_sides=False,
-        concave_faces=True,
-        face_with_holes=True,
-        non_planar_faces=False,
-        lamina_faces=True,
-        nonmanifold_geometry=True,
-        edges_with_zero_lenght=True,
-        faces_with_zero_geometry_area=True,
-        faces_with_zero_map_area=False,
-        invalid_components=True,
-    ):
-        """Auto fix the model based on the given options.
+    def check(self, issue):
+        """Check if geometry has a specific topology issue.
 
         Args:
-            face_with_more_than_4_sides (bool): If True, fix faces with more than 4 sides.
-            concave_faces (bool): If True, fix concave faces.
-            face_with_holes (bool): If True, fix faces with holes.
-            non_planar_faces (bool): If True, fix non planar faces.
-            lamina_faces (bool): If True, remove lamina faces.
-            nonmanifold_geometry (bool): If True, remove non-manifold geometry.
-            edges_with_zero_lenght (bool): If True, remove edges with zero length.
-            faces_with_zero_geometry_area (bool): If True, remove faces with zero geometry area.
-            faces_with_zero_map_area (bool): If True, remove faces with zero map area.
-            invalid_components (bool): If True, remove invalid components.
+            issue (str): Issue type to check.
+
+        Returns:
+            bool: True if issue exists, False otherwise.
         """
-        if face_with_more_than_4_sides:
-            self.fix_face_with_more_than_4_sides()
-        if concave_faces:
-            self.fix_concave_faces()
-        if face_with_holes:
-            self.fix_face_with_holes()
-        if non_planar_faces:
-            self.fix_non_planar_faces()
+        return check_modelissue(self.geo, issue)
 
-        if lamina_faces:
-            self.remove_lamina_faces()
-        if nonmanifold_geometry:
-            self.remove_nonmanifold_geometry()
-        if edges_with_zero_lenght:
-            self.remove_edges_with_zero_length()
-        if faces_with_zero_geometry_area:
-            self.remove_faces_with_zero_geometry_area()
-        if faces_with_zero_map_area:
-            self.remove_faces_with_zero_map_area()
-        if invalid_components:
-            self.remove_invalid_components()
+    def get_components(self, issue):
+        """Get component list for a specific topology issue.
 
-        self.finalize()
+        Args:
+            issue (str): Issue type to query.
 
-    def fix_face_with_more_than_4_sides(self):
-        """Fix faces with more than 4 sides."""
-        fix_face_with_more_than_4_sides(self.geo, query=False)
+        Returns:
+            list: Component list matching the issue.
+        """
+        return get_model_issue_components(self.geo, issue)
 
-    def fix_concave_faces(self):
-        """Fix concave faces."""
-        fix_concave_faces(self.geo, query=False)
+    def face_with_more_than_4_sides(self):
+        """Fix faces with more than 4 sides using poly quad operation."""
+        return fix_face_with_more_than_4_sides(self.geo)
 
-    def fix_face_with_holes(self):
-        """Fix faces with holes."""
-        fix_face_with_holes(self.geo, query=False)
+    def concave_faces(self):
+        """Fix concave faces by triangulation and cleanup."""
+        return fix_concave_faces(self.geo)
 
-    def fix_non_planar_faces(self):
-        """Fix non planar faces."""
-        fix_non_planar_faces(self.geo, query=False)
+    def faces_with_holes(self):
+        """Fix faces with holes using poly cleanup."""
+        return fix_faces_with_holes(self.geo)
 
-    def remove_lamina_faces(self):
-        """Remove lamina faces."""
-        remove_lamina_faces(self.geo, query=False)
+    def non_planar_faces(self):
+        """Fix non-planar faces using poly cleanup."""
+        return fix_non_planar_faces(self.geo)
 
-    def remove_nonmanifold_geometry(self):
-        """Remove non-manifold geometry."""
-        remove_nonmanifold_geometry(self.geo, query=False)
+    def lamina_faces(self):
+        """Fix lamina faces using poly cleanup."""
+        return fix_lamina_faces(self.geo)
 
-    def remove_edges_with_zero_length(self):
-        """Remove edges with zero length."""
-        remove_edges_with_zero_length(self.geo, query=False)
+    def non_manifold_geometry(self):
+        """Fix non-manifold geometry using poly cleanup."""
+        return fix_non_manifold_geometry(self.geo)
 
-    def remove_faces_with_zero_geometry_area(self):
-        """Remove faces with zero geometry area."""
-        remove_faces_with_zero_geometry_area(self.geo, query=False)
+    def edges_with_zero_length(self):
+        """Fix edges with zero length using poly cleanup."""
+        return fix_edges_with_zero_length(self.geo)
 
-    def remove_faces_with_zero_map_area(self):
-        """Remove faces with zero map area."""
-        remove_faces_with_zero_map_area(self.geo, query=False)
+    def faces_with_zero_geometry_area(self):
+        """Fix faces with zero geometry area using poly cleanup."""
+        return fix_faces_with_zero_geometry_area(self.geo)
 
-    def remove_invalid_components(self):
-        """Remove invalid components."""
-        remove_invalid_components(self.geo, query=False)
+    def faces_with_zero_map_area(self):
+        """Fix faces with zero UV map area using poly cleanup."""
+        return fix_faces_with_zero_map_area(self.geo)
 
-    def finalize(self):
-        """Finalize the model after fixing all the issues."""
-        pm.makeIdentity(self.geo, apply=True, t=1, r=1, s=1, n=0)
-        pm.delete(self.geo, ch=1)
-        pm.xform(self.geo, ws=True, pivots=[0, 0, 0])
-
-    def get_face_with_more_than_4_sides(self):
-        """Get the list of faces with more than 4 sides."""
-        return self.check_face_with_more_than_4_sides
-
-    def get_concave_faces(self):
-        """Get the list of concave faces."""
-        return self.check_concave_faces
-
-    def get_face_with_holes(self):
-        """Get the list of faces with holes."""
-        return self.check_face_with_holes
-
-    def get_non_planar_faces(self):
-        """Get the list of non planar faces."""
-        return self.check_non_planar_faces
-
-    def get_lamina_faces(self):
-        """Get the list of lamina faces."""
-        return self.check_lamina_faces
-
-    def get_nonmanifold_geometry(self):
-        """Get the list of non-manifold geometry."""
-        return self.check_nonmanifold_geometry
-
-    def get_edges_with_zero_length(self):
-        """Get the list of edges with zero length."""
-        return self.check_edges_with_zero_lenght
-
-    def get_faces_with_zero_geometry_area(self):
-        """Get the list of faces with zero geometry area."""
-        return self.check_faces_with_zero_geometry_area
-
-    def get_faces_with_zero_map_area(self):
-        """Get the list of faces with zero map area."""
-        return self.check_faces_with_zero_map_area
-
-    def get_invalid_components(self):
-        """Get the list of invalid components."""
-        return self.check_invalid_components
-
-
-if __name__ == "__main__":
-    geo_list = list_objects_under_group(pm.ls(sl=True)[0])
-    for geo in geo_list:
-        print(geo.name())
-        model_fix = ModelFix(geo)
-        model_fix.auto_fix()
+    def invalid_components(self):
+        """Fix invalid components using poly cleanup."""
+        return fix_invalid_components(self.geo)

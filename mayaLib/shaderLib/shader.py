@@ -217,8 +217,9 @@ class ConvertShaders:
         pm.mel.MLdeleteUnused()
 
     def get_materials_in_scene(self):
-        """Yields all materials in the scene by iterating over all ShadingEngines and
-        checking if they have a material connected to them.
+        """Yield all materials in the scene by iterating over ShadingEngines.
+
+        Checks if ShadingEngines have a material connected to them.
 
         Returns:
             generator: A generator of pm.nt.Shader objects.
@@ -264,7 +265,9 @@ class ConvertShaders:
             return "", []
 
     def search_texture(self, path, texture_list):
-        """Searches for textures in a given path that match the name of the last
+        """Search for textures matching the last texture in the list.
+
+        Searches in a given path for textures that match the name of the last
         texture in the given list.
 
         Args:
@@ -288,8 +291,10 @@ class ConvertShaders:
             return []
 
     def reconnect_filenode(self, shader, new_shader):
-        """Reconnects file nodes of a shader to a new shader. It checks all sockets of the shader
-        and if they are connected, it connects them to the new shader's sockets with the same name.
+        """Reconnect file nodes of a shader to a new shader.
+
+        Checks all sockets of the shader and if they are connected, connects them
+        to the new shader's sockets with the same name.
 
         Parameters:
             shader (pm.nt.Shader): The shader to copy the file nodes from.

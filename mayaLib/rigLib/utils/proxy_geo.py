@@ -109,9 +109,14 @@ class ProxyGeo:
             pm.delete(pivot_locator)
 
     def duplicate_source_mesh(self, obj, joint):
-        """:param obj:
-        :param ctrl:
-        :return: Mesh Shape for the Control
+        """Duplicate source mesh for per-joint proxy geometry.
+
+        Args:
+            obj: Source mesh to duplicate
+            joint: Joint for naming the duplicated mesh
+
+        Returns:
+            tuple: (Duplicated transform node, Shape node)
         """
         dupli_obj = pm.duplicate(obj)
         pm.rename(dupli_obj, name.remove_suffix(joint) + "_PRX")
@@ -132,9 +137,9 @@ class ProxyGeo:
         verts = []
         skincluster = skin.find_related_skin_cluster(new_shape)
         for x in range(pm.polyEvaluate(new_shape, v=1)):
-            v = pm.skinPercent(skincluster, "%s.vtx[%d]" % (new_shape, x), transform=joint, q=1)
+            v = pm.skinPercent(skincluster, f"{new_shape}.vtx[{x}]", transform=joint, q=1)
             if v > threshold:
-                verts.append("%s.vtx[%d]" % (new_shape, x))
+                verts.append(f"{new_shape}.vtx[{x}]")
         pm.select(verts)
 
         faces = pm.polyListComponentConversion(verts, fromVertex=True, toFace=True)

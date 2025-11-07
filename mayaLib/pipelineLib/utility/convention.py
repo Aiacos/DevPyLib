@@ -50,10 +50,10 @@ class Convention:
             grp (str): tag for group
             loc (str): tag for locator
             geo (str): tag for geometry
-            proxyGeo (str): tag for proxy geometry
+            proxy_geo (str): tag for proxy geometry
             cv (str): tag for curve
             joint (str): tag for joint
-            ikHandle (str): tag for IK handle
+            ik_handle (str): tag for IK handle
             control (str): tag for control
         """
         # general
