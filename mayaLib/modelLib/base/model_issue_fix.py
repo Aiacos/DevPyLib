@@ -17,10 +17,6 @@ Example:
 import maya.mel as mel
 import pymel.core as pm
 
-from mayaLib.rigLib.utils.util import reload_module
-
-reload_module("mayaLib.rigLib.utils.util")
-
 
 def check_modelissue(geo, issue_type):
     """Check if geometry has specific topology issues.
@@ -109,7 +105,7 @@ def fix_concave_faces(geo):
         pm.polyTriangulate(geo)
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"1\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","1","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -129,7 +125,7 @@ def fix_faces_with_holes(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"1\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","1","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -149,7 +145,7 @@ def fix_non_planar_faces(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"1\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","1","0","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -169,7 +165,7 @@ def fix_lamina_faces(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"1\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","1","0","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -189,7 +185,7 @@ def fix_non_manifold_geometry(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","0","1","1e-05","0","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -209,7 +205,7 @@ def fix_edges_with_zero_length(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"1\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","0","0","1e-05","1","1e-05","0","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -229,7 +225,7 @@ def fix_faces_with_zero_geometry_area(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"1\",\"1e-05\",\"0\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","0","0","1e-05","0","1e-05","1","1e-05","0","-1","0","0" };'
         )
         return True
     else:
@@ -249,7 +245,7 @@ def fix_faces_with_zero_map_area(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"1\",\"-1\",\"0\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","1","-1","0","0" };'
         )
         return True
     else:
@@ -269,7 +265,7 @@ def fix_invalid_components(geo):
     if component_list:
         pm.select(component_list)
         mel.eval(
-            "polyCleanupArgList 4 { \"0\",\"2\",\"1\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"1e-05\",\"0\",\"-1\",\"1\",\"0\" };"
+            'polyCleanupArgList 4 { "0","2","1","0","0","0","0","0","0","1e-05","0","1e-05","0","1e-05","0","-1","1","0" };'
         )
         return True
     else:
