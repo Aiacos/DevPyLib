@@ -5,21 +5,21 @@ import pymel.core as pm
 class CurvesFromEdge(object):
     def __init__(self, geo, edge, rebuild=True):
         self.geo = pm.ls(geo)[-1]
-        self.name = str(geo.name()).replace('_geo', '') + '_cv_0'
+        self.name = str(geo.name()).replace("_geo", "") + "_cv_0"
 
         if isinstance(edge, pm.MeshEdge):
             edge_list = self._poly_select_edge_loop(edge)
         elif isinstance(edge, list):
-            print('List: ', edge)
+            print("List: ", edge)
             if isinstance(edge[-1], pm.MeshEdge):
                 edge_list = pm.ls(edge)
             elif isinstance(edge[-1], int):
                 min_idx, max_idx = self._get_min_max_edge(edge)
                 edge_list = self._poly_select_edge_loop_path(min_idx, max_idx)
             else:
-                print('Not Valid Edge')
+                print("Not Valid Edge")
         else:
-            print('Not Valid Edge')
+            print("Not Valid Edge")
         """
         if edge_idx and not edge_loop:
             tmp_loop_idx = pm.polySelect(geo, edgeLoop=edge_idx)
@@ -54,23 +54,37 @@ class CurvesFromEdge(object):
 
     def _reverse_curve_direction(self, cv):
         deformer_node = pm.reverseCurve(cv, ch=True, rpo=True)
-        pm.rename(deformer_node, self.name + '_reverseCurve')
+        pm.rename(deformer_node, self.name + "_reverseCurve")
 
         return deformer_node
 
     def _rebuild_curve(self, cv):
-        deformer_node = \
-        pm.rebuildCurve(cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001)[-1]
-        pm.rename(deformer_node, self.name + '_rebuildCurve')
+        deformer_node = pm.rebuildCurve(
+            cv,
+            ch=True,
+            rpo=True,
+            rt=0,
+            end=1,
+            kr=0,
+            kcp=0,
+            kep=1,
+            kt=0,
+            s=4,
+            d=3,
+            tol=0.0001,
+        )[-1]
+        pm.rename(deformer_node, self.name + "_rebuildCurve")
 
         return deformer_node
 
     def poly_to_curve(self, edge_list):
         edge_list = pm.ls(edge_list)
         pm.select(edge_list)
-        cv, deformer = pm.ls(pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1, n=self.name))
+        cv, deformer = pm.ls(
+            pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1, n=self.name)
+        )
         self.name = str(cv.name())
-        pm.rename(deformer, self.name + '_polyEdgeToCurve')
+        pm.rename(deformer, self.name + "_polyEdgeToCurve")
 
         return cv, deformer
 
@@ -83,12 +97,10 @@ class CurvesFromEdge(object):
 
 class JointChainCurve(object):
     def __init__(self, pointsNumber=5):
-        #nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
-        #nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
+        # nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
+        # nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
 
         self.spacing = 1.0 / (pointsNumber - 1)
-
-
 
 
 def extract_feather_curves(geo, edge_idx_list):
@@ -104,10 +116,24 @@ def extract_feather_curves(geo, edge_idx_list):
         if i % 2:
             pm.reverseCurve(cv, ch=True, rpo=True)
 
-        pm.rebuildCurve(cv, ch=True, rpo=True, rt=0, end=1, kr=0, kcp=0, kep=1, kt=0, s=4, d=3, tol=0.0001)
+        pm.rebuildCurve(
+            cv,
+            ch=True,
+            rpo=True,
+            rt=0,
+            end=1,
+            kr=0,
+            kcp=0,
+            kep=1,
+            kt=0,
+            s=4,
+            d=3,
+            tol=0.0001,
+        )
         cv_list.append(cv)
 
     return cv_list
+
 
 ## Var ##
 
@@ -115,8 +141,58 @@ def extract_feather_curves(geo, edge_idx_list):
 curve = cmds.ls(sl=True)
 
 
-
 ## Main --wip
+class ObjectAlongCurve(object):
+    def __init__(self, path_crv, n_jnt=12, offset_driver=None):
+        self.path_crv = path_crv
+        self.n_jnts = n_jnt
+
+        self.path_crv_name = str(path_crv).replace("_crv", "")
+        # self.name_builder_locator = self.path_crv_name + "_loc"
+        # self.name_builder_joint = self.path_crv_name + "_jnt"
+
+        self.spacing = 1.0 / (n_jnt - 1)
+        self.joint_list, self.motionpath_list = self._build_jnts()
+        self.joint_list_grp = cmds.group(
+            self.joint_list[0], n=self.path_crv_name + "_jnts_grp", w=True
+        )
+
+        if offset_driver:
+            self._add_offset(offset_driver)
+
+    def _build_jnts(self):
+        joint_list = []
+        motionpath_list = []
+        for p in range(0, self.n_jnts):
+            jnt_name = f"{self.path_crv_name}_{str(p)}_jnt"
+            if p == 0:
+                joint = cmds.joint(n=jnt_name)
+                cmds.setAttr(jnt_name + ".inheritsTransform", 0)
+                motionPath = cmds.pathAnimation(joint, c=self.path_crv, f=True)
+                deleteConnection(motionPath + ".u")
+                cmds.setAttr(motionPath + ".uValue", 0)
+                joint_list.append(joint)
+                motionpath_list.append(motionPath)
+            else:
+                joint = cmds.joint(n=jnt_name)
+                cmds.setAttr(jnt_name + ".inheritsTransform", 0)
+                motionPath = cmds.pathAnimation(joint, c=self.path_crv, f=True)
+                deleteConnection(motionPath + ".u")
+                cmds.setAttr(motionPath + ".uValue", self.spacing * p)
+                joint_list.append(joint)
+                motionpath_list.append(motionPath)
+
+        return joint_list, motionpath_list
+
+    def _add_offset(self, offset_driver):
+        for m in self.motionpath_list:
+            u_value = cmds.getAttr(m + ".uValue")
+
+            add_node = cmds.shadingNode("addDoubleLinear", asUtility=True)
+            cmds.setAttr(add_node + ".input1", u_value)
+            cmds.connectAttr(offset_driver, add_node + ".input2", f=True)
+            cmds.connectAttr(add_node + ".output", m + ".uValue")
+
 
 def deleteConnection(plug):
     # """ Equivalent of MEL: CBdeleteConnection """
@@ -135,9 +211,15 @@ def deleteConnection(plug):
 def pointMode():
     for p in range(1, pointsNumber):
         if p == 1:
-            cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=0.0, p=True), n=nameBuilder_locator + str(p))
+            cmds.spaceLocator(
+                p=cmds.pointOnCurve(curve, pr=0.0, p=True),
+                n=nameBuilder_locator + str(p),
+            )
             # joint
-        cmds.spaceLocator(p=cmds.pointOnCurve(curve, pr=spacing * p, p=True), n=nameBuilder_locator + str(p))
+        cmds.spaceLocator(
+            p=cmds.pointOnCurve(curve, pr=spacing * p, p=True),
+            n=nameBuilder_locator + str(p),
+        )
         # joint
 
 
@@ -149,14 +231,14 @@ def pathMode(path):
         if p == 1:
             locator = cmds.spaceLocator(n=nameBuilder_locator + str(p))
             motionPath = cmds.pathAnimation(locator[0], c=path, f=True)
-            deleteConnection(motionPath + '.u')
-            cmds.setAttr(motionPath + '.uValue', 0)
+            deleteConnection(motionPath + ".u")
+            cmds.setAttr(motionPath + ".uValue", 0)
             locatorList.append(locator[0])
             # joint
         locator = cmds.spaceLocator(n=nameBuilder_locator + str(p))
         motionPath = cmds.pathAnimation(locator[0], c=path, f=True)
-        deleteConnection(motionPath + '.u')
-        cmds.setAttr(motionPath + '.uValue', spacing * p)
+        deleteConnection(motionPath + ".u")
+        cmds.setAttr(motionPath + ".uValue", spacing * p)
         locatorList.append(locator[0])
         # joint
         # -gruppa i locator
@@ -167,7 +249,7 @@ locList = []
 for cv in curve:
     print(cv)
     locList.extend(pathMode(cv))
-cmds.group(locList, n='locator_grp')
+cmds.group(locList, n="locator_grp")
 ## --ToDo
 
 # gui
