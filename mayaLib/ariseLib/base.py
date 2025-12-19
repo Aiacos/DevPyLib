@@ -1,7 +1,8 @@
 import pymel.core as pm
-from mayaLib.rigLib.utils.common import set_driven_key
+
 from mayaLib.rigLib.utils import humanIK
 from mayaLib.rigLib.utils import joint
+from mayaLib.rigLib.utils.common import set_driven_key
 from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
 
 
@@ -306,6 +307,10 @@ class BaseRig:
             # Connect middle eye aim control
             if pm.objExists("M_Eyes_Aim_01_ctrl"):
                 pm.parentConstraint("M_Eyes_Aim_01_ctrl", "AimEye_M", mo=True)
+            else:
+                pm.parentConstraint('M_Head_head_FS_jnt', 'AimEyeFollow_M', mo=True)
+                pm.connectAttr('AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2', 'AimEyeFollow_M_parentConstraint1.target[2].targetWeight', f=True)
+                pm.connectAttr('eyeAimFollowSetRange.outValueX', 'AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2', f=True)
             # Connect left eye aim control
             if pm.objExists("L_Eye_eye_aim_at_ctrl"):
                 pm.parentConstraint("L_Eye_eye_aim_at_ctrl", "AimEye_L", mo=True)
