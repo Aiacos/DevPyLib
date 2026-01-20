@@ -130,22 +130,27 @@ luna_rig = None
 luna_builder = None
 
 # Setup Luna integration before importing
-if LUNA_ROOT_PATH and _setup_luna_integration():
-    try:
-        # Now we can safely import Luna - moduleInfo is patched and
-        # directories module is pre-created in sys.modules
-        import luna
-        import luna_rig
-        import luna_builder
+if LUNA_ROOT_PATH:
+    if _setup_luna_integration():
+        try:
+            # Now we can safely import Luna - moduleInfo is patched and
+            # directories module is pre-created in sys.modules
+            import luna
+            import luna_rig
+            import luna_builder
 
-        LUNA_AVAILABLE = True
+            LUNA_AVAILABLE = True
 
-    except ImportError as e:
-        print(f"Warning: Luna not available - {e}")
-        traceback.print_exc()
-    except Exception as e:
-        print(f"Warning: Luna initialization error - {e}")
-        traceback.print_exc()
+        except ImportError as e:
+            print(f"Warning: Luna not available - {e}")
+            traceback.print_exc()
+        except Exception as e:
+            print(f"Warning: Luna initialization error - {e}")
+            traceback.print_exc()
+    else:
+        print("Warning: Luna setup failed - _setup_luna_integration() returned False")
+else:
+    print(f"Warning: Luna path not found at {_luna_path}")
 
 # Only import submodules if Luna is available
 if LUNA_AVAILABLE:
