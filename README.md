@@ -159,6 +159,10 @@ DevPyLib/
 ├── prismLib/                 # Prism Pipeline integration
 ├── pyfrost/                  # Bifrost utilities (git submodule)
 ├── tools/                    # Standalone tools
+├── wiki/                     # Complete documentation
+│   ├── MayaLib/             # MayaLib documentation
+│   ├── HoudiniLib/          # HoudiniLib documentation
+│   └── BlenderLib/          # BlenderLib documentation
 ├── userSetup.py              # Maya auto-loader
 └── requirements.txt          # Python dependencies
 ```
@@ -280,6 +284,35 @@ execfile('/path/to/DevPyLib/mayaLib/test/MayaLib.py')
 ---
 
 ## 📚 Documentation
+
+### Wiki
+
+Complete documentation is available in the **[wiki/](wiki/)** folder:
+
+| Section | Description |
+|---------|-------------|
+| [Home](wiki/Home.md) | Overview and navigation |
+| [Architecture](wiki/Architecture.md) | Design patterns and structure |
+| [API Reference](wiki/API-Reference.md) | Quick API reference |
+| [Cross-Platform](wiki/Cross-Platform.md) | Platform compatibility guide |
+| [Contributing](wiki/Contributing.md) | Contribution guidelines |
+
+#### MayaLib Documentation
+| Page | Description |
+|------|-------------|
+| [MayaLib Home](wiki/MayaLib/Home.md) | MayaLib overview |
+| [Getting Started](wiki/MayaLib/Getting-Started.md) | Setup guide |
+| [RigLib](wiki/MayaLib/RigLib.md) | Rigging library |
+| [AnimationLib](wiki/MayaLib/AnimationLib.md) | Animation tools |
+| [FluidLib](wiki/MayaLib/FluidLib.md) | Fluid simulations |
+| [BifrostLib](wiki/MayaLib/BifrostLib.md) | Bifrost/USD integration |
+| [GuiLib](wiki/MayaLib/GuiLib.md) | UI framework |
+
+#### Other DCCs
+- [HoudiniLib](wiki/HoudiniLib/Home.md) - Houdini tools and HDAs
+- [BlenderLib](wiki/BlenderLib/Home.md) - Blender utilities
+
+### Other Documentation
 
 - **CLAUDE.md** - Detailed architecture and patterns for developers
 - **CROSS_PLATFORM_MIGRATION.md** - Cross-platform migration notes
