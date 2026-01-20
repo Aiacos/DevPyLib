@@ -5,11 +5,12 @@ configures the render options to use anti-aliasing, holdout mode, and depth of
 field. It also enables NURBS curves in the object type filter.
 
 """
-import pymel.core as pm
+
 import maya.mel as mel
+import pymel.core as pm
 
 
-def set_render_engine(engine='mayaHardware2'):
+def set_render_engine(engine="mayaHardware2"):
     """Set Maya's render engine.
 
     Args:
@@ -29,12 +30,12 @@ def set_render_engine(engine='mayaHardware2'):
     pm.setAttr("hardwareRenderingGlobals.holdOutDetailMode", 2)
 
     # Update holdout mode
-    mel.eval('updateHoldOutMode;')
-    mel.eval('updateHoldOutMode;')
+    mel.eval("updateHoldOutMode;")
+    mel.eval("updateHoldOutMode;")
 
     # Print holdout attributes
     for attr in pm.listAttr("hardwareRenderingGlobals"):
-        if 'holdOut' in attr:
+        if "holdOut" in attr:
             print(attr)
 
     # Set render mode
@@ -44,8 +45,8 @@ def set_render_engine(engine='mayaHardware2'):
     pm.setAttr("hardwareRenderingGlobals.renderDepthOfField", 1)
 
     # Enable NURBS curves in object type filter
-    mel.eval('objectTypeFilterOnCallback 0;')
+    mel.eval("objectTypeFilterOnCallback 0;")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     set_render_engine()

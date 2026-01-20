@@ -1,3 +1,10 @@
+"""Skin cluster utilities for binding, copying, and managing skin weights.
+
+Provides comprehensive tools for working with Maya skin clusters including
+weight copying, mirroring, saving/loading weights to disk, and integration
+with ngSkinTools2 for advanced layered skin weighting workflows.
+"""
+
 __author__ = "Lorenzo Argentieri"
 
 import os
@@ -7,15 +14,13 @@ import maya.cmds as cmds
 import maya.mel as mel
 import pymel.core as pm
 from ngSkinTools2 import api as ngst_api
-from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
-from ngSkinTools2.api import init_layers, Layers
+from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode, init_layers
 
-from mayaLib.utility import bSkinSaver
+from mayaLib.utility import b_skin_saver
 
 
 def get_skincluster_object():
-    """
-    Selects and returns a list of objects with skin clusters.
+    """Selects and returns a list of objects with skin clusters.
 
     This function identifies all objects in the scene that have skin clusters,
     selects them, and returns a list of these objects.
@@ -23,7 +28,6 @@ def get_skincluster_object():
     Returns:
         list: A list of PyNode objects that have skin clusters.
     """
-
     object_list = []
     skin_cluster_list = pm.ls(type="skinCluster")
     for skin_cluster in skin_cluster_list:
@@ -35,8 +39,7 @@ def get_skincluster_object():
 
 
 def select_skin_cluster_object():
-    """
-    Selects and returns a list of objects with skin clusters.
+    """Selects and returns a list of objects with skin clusters.
 
     This function identifies all objects in the scene that have skin clusters,
     selects them, and returns a list of these objects.
@@ -44,7 +47,6 @@ def select_skin_cluster_object():
     Returns:
         list: A list of PyNode objects that have skin clusters.
     """
-
     object_list = get_skincluster_object()
 
     pm.select(object_list)
@@ -66,15 +68,17 @@ def disable_inherits_transform_on_skin_clusters():
         obj.inheritsTransform.set(0)
 
 
-def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
-    """Copy skin weight to mirrored mesh
+def copy_skin_weight_between_mesh(selection=None):
+    """Copy skin weight to mirrored mesh.
 
     Args:
-        selection (list, optional): A list of two PyNode objects. Defaults to pm.ls(sl=True).
+        selection (list | None): A list of two PyNode objects. Defaults to current selection.
 
     Returns:
         None
     """
+    if selection is None:
+        selection = pm.ls(sl=True)
     # Get the source and destination mesh from the selection
     source_mesh = selection[0]
     destination_mesh = selection[1]
@@ -94,8 +98,7 @@ def copy_skin_weight_between_mesh(selection=pm.ls(sl=True)):
 
 
 def copy_bind(source, destination, sa="closestPoint", ia="closestJoint"):
-    """
-    Bind and copy skinCluster weights from the source mesh to the destination mesh.
+    """Bind and copy skinCluster weights from the source mesh to the destination mesh.
 
     Args:
         source (str): The name of the source mesh.
@@ -150,8 +153,7 @@ def copy_bind_selected(selection_list):
 
 
 def find_related_skin_cluster(geo):
-    """
-    Find the related skinCluster for the given geometry.
+    """Find the related skinCluster for the given geometry.
 
     Args:
         geo (str): The name of the geometry for which to find the skinCluster.
@@ -159,7 +161,6 @@ def find_related_skin_cluster(geo):
     Returns:
         PyNode or None: The found skinCluster node, or None if no skinCluster is found.
     """
-
     skincluster = mel.eval("findRelatedSkinCluster " + geo)
     if skincluster == "" or len(pm.ls(skincluster, type="skinCluster")) == 0:
         skincluster = pm.ls(pm.listHistory(geo), type="skinCluster")
@@ -170,16 +171,12 @@ def find_related_skin_cluster(geo):
 
 
 def mirror_skincluster_to_opposite_object(source_obj, destination_object):
-    """
-    Mirror Skincluster to the opposite Object
+    """Mirror Skincluster to the opposite Object.
+
     Args:
         source_obj (string): Source Geo
-        destination_object (string):  Destination Geo
-
-    Returns:
-
+        destination_object (string):  Destination Geo.
     """
-
     geo_skincluster = find_related_skin_cluster(source_obj)
     r_geo_skincluster = find_related_skin_cluster(destination_object)
 
@@ -189,17 +186,13 @@ def mirror_skincluster_to_opposite_object(source_obj, destination_object):
 
 
 def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
-    """
-    Mirror Skincluster to opposite Object
+    """Mirror Skincluster to opposite Object.
+
     Args:
         source_list (string[]): Objects list
         left_side (string): Left pattern
-        r_side (string): Right Pattern
-
-    Returns:
-
+        r_side (string): Right Pattern.
     """
-
     for geo in pm.ls(source_list):
         r_geo = pm.ls(str(geo.name()).replace("L_", "R_"))[-1]
 
@@ -208,22 +201,20 @@ def mirror_all_skincluster_to_object(source_list, left_side="L_", r_side="R_"):
 
 def save_skin_weights(
     geo_list,
-    project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
+    project_path=None,
     sw_ext=".swt",
     do_directory=True,
 ):
-    """
-    save weights for character geometry objects
+    """Save weights for character geometry objects.
+
     Args:
         geo_list (string[]): Objects list
-        project_path (string): file path
+        project_path (string | None): file path
         sw_ext (string): file extension
-        do_directory (bool): create directory
-
-    Returns:
-
+        do_directory (bool): create directory.
     """
-
+    if project_path is None:
+        project_path = Path(cmds.file(q=True, sn=True)).parent.as_posix()
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
     if not directory.exists():
@@ -245,24 +236,23 @@ def save_skin_weights(
 
         # save skin weight file
         pm.select(obj)
-        bSkinSaver.bSaveSkinValues(wt_file)
+        b_skin_saver.bSaveSkinValues(wt_file)
 
 
 def load_skin_weights(
     geo_list,
-    project_path=Path(cmds.file(q=True, sn=True)).parent.as_posix(),
+    project_path=None,
     sw_ext=".swt",
 ):
-    """
-    load weights for character geometry objects
+    """Load weights for character geometry objects.
+
     Args:
         geo_list (string[]): Objects list
-        project_path (string): file path
-        sw_ext (string): file extension
-
-    Returns:
-
+        project_path (string | None): file path
+        sw_ext (string): file extension.
     """
+    if project_path is None:
+        project_path = Path(cmds.file(q=True, sn=True)).parent.as_posix()
     # check folder
     directory = Path(project_path) / "weights" / "skinCluster"
     if not directory.exists():
@@ -276,14 +266,11 @@ def load_skin_weights(
         fullpath_wt_file = directory / wt_file
         if fullpath_wt_file.exists():
             print("file to read: ", fullpath_wt_file)
-            bSkinSaver.bLoadSkinValues(
-                loadOnSelection=False, inputFile=fullpath_wt_file
-            )
+            b_skin_saver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpath_wt_file)
 
 
 def ng_batch_export(geo_list, path):
-    """
-    Export skin weights for a list of geos to a directory.
+    """Export skin weights for a list of geos to a directory.
 
     Args:
         geo_list (list of str): List of geometry names to export.
@@ -299,21 +286,22 @@ def ng_batch_export(geo_list, path):
 
         skincluster = find_related_skin_cluster(geo)
         layers = init_layers(str(skincluster.name()))
-        layer_base = layers.add("base weights")
+        layers.add("base weights")
 
         ngst_api.export_json(str(geo.name()), file=str(output_file_name))
 
 
-def ng_batch_import(geo_list, path, influence_list=pm.ls("*_FS_jnt")):
-    """
-    Import skin weights for a list of geos from a directory.
+def ng_batch_import(geo_list, path, influence_list=None):
+    """Import skin weights for a list of geos from a directory.
 
     Args:
         geo_list (list of str): List of geometry names to import.
         path (str): Directory path to import from. Will create the directory if it doesn't exist.
-        influence_list (list of str): List of influence names to bind to. Defaults to all joints ending in '_FS_jnt'.
+        influence_list (list | None): List of influence names to bind to. Defaults to all joints ending in '_FS_jnt'.
 
     """
+    if influence_list is None:
+        influence_list = pm.ls("*_FS_jnt")
     full_path = Path(path)
 
     for geo in pm.ls(geo_list):
@@ -324,7 +312,7 @@ def ng_batch_import(geo_list, path, influence_list=pm.ls("*_FS_jnt")):
 
         skincluster = find_related_skin_cluster(geo)
         layers = init_layers(str(skincluster.name()))
-        layer_base = layers.add("base weights")
+        layers.add("base weights")
 
         # configure how influences described in a file will be matched against the scene
         config = InfluenceMappingConfig()

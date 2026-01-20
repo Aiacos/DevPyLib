@@ -1,4 +1,4 @@
-import prismLib
-import mayaLib
-import houdiniLib
 import blenderLib
+import houdiniLib
+import mayaLib
+import prismLib

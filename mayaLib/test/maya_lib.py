@@ -1,0 +1,72 @@
+"""MayaLib plugin registration example.
+
+Demonstrates creating a simple Maya plugin command for
+the DevPyLib library.
+"""
+
+__author__ = "Lorenzo Argentieri"
+
+import sys
+
+import maya.api.OpenMaya as OM
+
+import mayaLib.guiLib.main_menu as mm
+
+
+def maya_useNewAPI():
+    """Signal that this plugin uses Maya Python API 2.0.
+
+    The presence of this function tells Maya that the plugin produces, and
+    expects to be passed, objects created using the Maya Python API 2.0.
+    """
+    pass
+
+
+# command
+class MayaLibPlugin(OM.MPxCommand):
+    """MayaLib plugin command for loading the DevPyLib main menu."""
+
+    k_plugin_cmd_name = "MayaLib"
+
+    def __init__(self):
+        """Initialize the MayaLib plugin command."""
+        OM.MPxCommand.__init__(self)
+
+    @staticmethod
+    def cmdCreator():
+        """Create and return a new instance of the command."""
+        return MayaLibPlugin()
+
+    def doIt(self, args):
+        """Execute the command by launching the MainMenu."""
+        mm.MainMenu()
+
+
+# Initialize the plug-in
+def initializePlugin(plugin):
+    """Initialize the MayaLib plugin.
+
+    Args:
+        plugin: Maya plugin object to initialize.
+    """
+    pluginFn = OM.MFnPlugin(plugin, "Lorenzo Argentieri", "1.0")
+    try:
+        pluginFn.registerCommand(MayaLibPlugin.k_plugin_cmd_name, MayaLibPlugin.cmdCreator)
+    except RuntimeError:
+        sys.stderr.write(f"Failed to register command: {MayaLibPlugin.k_plugin_cmd_name}\n")
+        raise
+
+
+# Uninitialize the plug-in
+def uninitializePlugin(plugin):
+    """Uninitialize the MayaLib plugin.
+
+    Args:
+        plugin: Maya plugin object to uninitialize.
+    """
+    pluginFn = OM.MFnPlugin(plugin)
+    try:
+        pluginFn.deregisterCommand(MayaLibPlugin.k_plugin_cmd_name)
+    except RuntimeError:
+        sys.stderr.write(f"Failed to unregister command: {MayaLibPlugin.k_plugin_cmd_name}\n")
+        raise

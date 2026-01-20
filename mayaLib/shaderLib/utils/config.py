@@ -1,13 +1,19 @@
-__author__ = 'Lorenzo Argentieri'
+"""Shader configuration and settings.
 
-diffuse = 'Diffuse'
-backlight = 'Backlight'
-specularColor = 'Specular'
-specularWeight = 'specularWeight'
-specularRoughness = 'Roughness'
-fresnel = 'f0'
-normal = 'Normal'
-height = 'Height'
-metallic = 'Metallic'
-emission = 'Emissive'
-displace = 'Displace'
+Provides configuration constants and settings for shader creation
+workflows.
+"""
+
+__author__ = "Lorenzo Argentieri"
+
+DIFFUSE = "Diffuse"
+BACKLIGHT = "Backlight"
+SPECULAR_COLOR = "Specular"
+SPECULAR_WEIGHT = "specularWeight"
+SPECULAR_ROUGHNESS = "Roughness"
+FRESNEL = "f0"
+NORMAL = "Normal"
+HEIGHT = "Height"
+METALLIC = "Metallic"
+EMISSION = "Emissive"
+DISPLACE = "Displace"

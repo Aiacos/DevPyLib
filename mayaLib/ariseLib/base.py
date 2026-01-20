@@ -1,22 +1,24 @@
+"""Base utilities for Arise rig system.
+
+Provides foundational classes and functions for the Arise character
+rigging framework.
+"""
+
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import humanIK
-from mayaLib.rigLib.utils import joint
+from mayaLib.rigLib.utils import human_ik, joint
 from mayaLib.rigLib.utils.common import set_driven_key
-from mayaLib.rigLib.utils.util import getAllObjectUnderGroup
+from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
 class BaseRig:
-    """
-    A base class for rigging operations in Maya.
+    """A base class for rigging operations in Maya.
 
     This class provides methods for setting up display layers, connecting controls,
     and managing rig components like HumanIK and facial rigs.
     """
 
-    def __init__(
-        self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False
-    ):
+    def __init__(self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False):
         """Initialize the BaseRig class with character settings.
 
         Args:
@@ -66,12 +68,8 @@ class BaseRig:
             pm.setAttr("geo.overrideEnabled", 1)
             # Connect the geometry_display attribute to the overrideDisplayType
             # attribute of the geometry group if it's not already connected.
-            if not pm.isConnected(
-                "Base_main_ctrl.geometry_display", "geo.overrideDisplayType"
-            ):
-                pm.connectAttr(
-                    "Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True
-                )
+            if not pm.isConnected("Base_main_ctrl.geometry_display", "geo.overrideDisplayType"):
+                pm.connectAttr("Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True)
 
     def connect_purpose(self, source, destination_list=None):
         """Connect purpose attribute to visibility of destination objects.
@@ -185,16 +183,14 @@ class BaseRig:
         ctrl_set = pm.sets(pm.ls(body_ctrl_set, face_ctrl_set), n="ctrls_set")
 
         # Meshes
-        render_geo_list = getAllObjectUnderGroup("render")
-        proxy_geo_list = getAllObjectUnderGroup("proxy")
-        guide_geo_list = getAllObjectUnderGroup("guide")
+        render_geo_list = list_objects_under_group("render")
+        proxy_geo_list = list_objects_under_group("proxy")
+        guide_geo_list = list_objects_under_group("guide")
 
         render_model_set = pm.sets(render_geo_list, n="render_model_set")
         proxy_model_set = pm.sets(proxy_geo_list, n="proxy_model_set")
         guide_model_set = pm.sets(guide_geo_list, n="guide_model_set")
-        model_set = pm.sets(
-            [render_model_set, proxy_model_set, guide_model_set], n="model_set"
-        )
+        model_set = pm.sets([render_model_set, proxy_model_set, guide_model_set], n="model_set")
 
         # Joints
         body_joint_set = pm.sets(joint_list, n="body_joint_set")
@@ -216,6 +212,8 @@ class BaseRig:
         Args:
             name (str): Name of the selection set.
             members (list): List of objects to add to the set.
+            parent (str | None): Optional parent set to add this set to.
+                If None and main_set exists, uses main_set. Defaults to None.
 
         Returns:
             PyNode: The created or existing object set.
@@ -327,9 +325,7 @@ class BaseRig:
                 pm.parentConstraint("R_Eye_eye_aim_at_ctrl", "AimEye_R", mo=True)
 
             # Hide specified controls if they exist
-            hide_ctrl_list = [
-                ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)
-            ]
+            hide_ctrl_list = [ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)]
             if hide_ctrl_list:
                 pm.hide(hide_ctrl_list)
 
@@ -352,9 +348,7 @@ class BaseRig:
                 "Base_main_ctrl.worldMatrix", "MainAndHeadScaleMultiplyDivide.input1"
             ):
                 decompose_matrix = pm.shadingNode("decomposeMatrix", asUtility=True)
-                pm.connectAttr(
-                    "Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True
-                )
+                pm.connectAttr("Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True)
                 pm.connectAttr(
                     decompose_matrix.outputScale,
                     "MainAndHeadScaleMultiplyDivide.input1",
@@ -366,12 +360,8 @@ class BaseRig:
 
         This function sets up the character for HumanIK, using the character's
         name as the name of the HumanIK character. It also sets the T-pose of
-        the character if enabled.
-
-        Args:
-            auto_t_pose (bool): Whether to go to T-pose after initialization.
+        the character if enabled (via self.auto_t_pose attribute).
         """
-
         # Define the control lists for the arms
         l_arms_ctrl_list = [
             "L_Arm_base_ctrl",
@@ -390,14 +380,14 @@ class BaseRig:
         if self.auto_t_pose:
             # Check if all left arm controls exist
             if all(pm.objExists(ctrl) for ctrl in l_arms_ctrl_list):
-                joint.setArmParallelToGrid(l_arms_ctrl_list)
+                joint.set_arm_parallel_to_grid(l_arms_ctrl_list)
             # Check if all right arm controls exist
             if all(pm.objExists(ctrl) for ctrl in r_arms_ctrl_list):
-                joint.setArmParallelToGrid(r_arms_ctrl_list)
+                joint.set_arm_parallel_to_grid(r_arms_ctrl_list)
 
         # Initialize HumanIK
         human_ik_name = f"{self.character_name}_HIK"
-        humanIK.HumanIK(human_ik_name, auto_T_pose=self.auto_t_pose)
+        human_ik.HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
 
     def _rename_skin_cluster(self):
         """Rename skin clusters for each geometry to be more descriptive.
@@ -409,7 +399,6 @@ class BaseRig:
         Returns:
             None
         """
-
         object_skincluster_dict = {}
         skin_cluster_list = pm.ls(type="skinCluster")
         for skin_cluster in skin_cluster_list:

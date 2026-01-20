@@ -1,4 +1,10 @@
-__author__ = 'Lorenzo Argentieri'
+"""Documentation extraction for UI tooltips.
+
+Provides utilities for extracting docstrings and generating
+documentation for GUI systems.
+"""
+
+__author__ = "Lorenzo Argentieri"
 
 import inspect
 

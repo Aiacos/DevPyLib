@@ -1,67 +1,54 @@
-"""
-transform @ utils
+"""Helpers for building common transform hierarchies in Maya rigs."""
 
-Functions to manipulate and create transforms
-"""
+from __future__ import annotations
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import name
+from mayaLib.rigLib.utils import name as name_utils
+
+__all__ = ["make_offset_group", "make_modify_group"]
 
 
-def makeOffsetGrp(object, prefix=''):
+def _default_prefix(node) -> str:
+    """Derive a safe prefix from a node name when not supplied."""
+    return name_utils.remove_suffix(node)
+
+
+def make_offset_group(node, prefix: str | None = None):
+    """Create an offset group above a transform while preserving parenting.
+
+    Args:
+        node: PyNode or string representing the transform to wrap.
+        prefix: Optional prefix for naming the new group.
+
+    Returns:
+        The newly created offset group as a PyNode.
     """
-    make offset group for given object
-    
-    @param object: transform object to get offset group
-    @param prefix: str, prefix to name new objects
-    @return: str, name of new offset group
-    """
+    node = pm.PyNode(node)
+    prefix = (prefix or _default_prefix(node)) + "Offset"
 
-    if not prefix:
-        prefix = name.removeSuffix(object)
+    offset_group = pm.group(n=f"{prefix}_GRP", em=True)
+    parent = pm.listRelatives(node, parent=True)
+    if parent:
+        pm.parent(offset_group, parent[0])
 
-    offsetGrp = pm.group(n=prefix + 'Offset_GRP', em=1)
-
-    objectParents = pm.listRelatives(object, p=1)
-
-    if objectParents:
-        pm.parent(offsetGrp, objectParents[0])
-
-    # match object transform
-    pm.delete(pm.parentConstraint(object, offsetGrp))
-    pm.delete(pm.scaleConstraint(object, offsetGrp))
-
-    # parent object under offset group
-    pm.parent(object, offsetGrp)
-
-    return offsetGrp
+    pm.delete(pm.parentConstraint(node, offset_group))
+    pm.delete(pm.scaleConstraint(node, offset_group))
+    pm.parent(node, offset_group)
+    return offset_group
 
 
-def makeModifyGrp(object, prefix=''):
-    """
-    make modify group for given object
+def make_modify_group(node, prefix: str | None = None):
+    """Create a modify group directly above a transform node."""
+    node = pm.PyNode(node)
+    prefix = (prefix or _default_prefix(node)) + "Modify"
 
-    @param object: transform object to get modify group
-    @param prefix: str, prefix to name new objects
-    @return: str, name of new modify group
-    """
+    modify_group = pm.group(n=f"{prefix}_GRP", em=True)
+    parent = pm.listRelatives(node, parent=True)
+    if parent:
+        pm.parent(modify_group, parent[0])
 
-    if not prefix:
-        prefix = name.removeSuffix(object)
-
-    modifyGrp = pm.group(n=prefix + 'Modify_GRP', em=1)
-
-    objectParents = pm.listRelatives(object, p=1)
-
-    if objectParents:
-        pm.parent(modifyGrp, objectParents[0])
-
-    # match object transform
-    pm.delete(pm.parentConstraint(object, modifyGrp))
-    pm.delete(pm.scaleConstraint(object, modifyGrp))
-
-    # parent object under offset group
-    pm.parent(object, modifyGrp)
-
-    return modifyGrp
+    pm.delete(pm.parentConstraint(node, modify_group))
+    pm.delete(pm.scaleConstraint(node, modify_group))
+    pm.parent(node, modify_group)
+    return modify_group

@@ -20,3 +20,5 @@ Python/\.idea/
 \.DS_Store
 
 .idea/
+
+.nvim/

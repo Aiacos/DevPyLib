@@ -1,16 +1,27 @@
-__author__ = 'Lorenzo Argentieri'
+"""Arnold shader creation utilities.
 
-from mayaLib.shaderLib.base.shader_base import Shader_base
+Provides the AiStandardSurface class for creating and configuring Arnold
+aiStandardSurface shaders with textures and properties.
+"""
+
+__author__ = "Lorenzo Argentieri"
+
+from mayaLib.shaderLib.base.shader_base import ShaderBase
 
 
-class aiStandardSurface(Shader_base):
-    """
-    Class for creating an aiStandardSurface shader.
-    """
+class AiStandardSurface(ShaderBase):
+    """Class for creating an aiStandardSurface shader."""
 
-    def __init__(self, shader_name, folder, shader_textures, shader_type='aiStandardSurface', standard=True, shading_engine=None):
-        """
-        Initializes an aiStandardSurface shader.
+    def __init__(
+        self,
+        shader_name,
+        folder,
+        shader_textures,
+        shader_type="aiStandardSurface",
+        standard=True,
+        shading_engine=None,
+    ):
+        """Initializes an aiStandardSurface shader.
 
         Args:
             shader_name (str): Name of the geometry or texture set.
@@ -21,8 +32,15 @@ class aiStandardSurface(Shader_base):
             shading_engine: Shading engine to use. Default is None.
         """
         # Initialize the base class
-        Shader_base.__init__(self, shader_name, folder, shader_textures, shader_type=shader_type, shading_engine=shading_engine)
-        self.shader = Shader_base.get_shader(self)
+        ShaderBase.__init__(
+            self,
+            shader_name,
+            folder,
+            shader_textures,
+            shader_type=shader_type,
+            shading_engine=shading_engine,
+        )
+        self.shader = ShaderBase.get_shader(self)
 
         self.folder = folder
 

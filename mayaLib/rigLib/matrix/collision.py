@@ -1,7 +1,31 @@
+"""Matrix-based collision system for character rigging.
+
+Provides the Collider class for creating collision detection and response
+between controls and meshes using matrix operations for deformation.
+"""
+
 import pymel.core as pm
 
 
-class Collider(object):
+class Collider:
+    """Matrix-based collision system for character rigging.
+
+    Creates a collision rig using matrix operations to deform a target mesh based on
+    a collision mesh and control point. Automatically constructs a complex node network
+    with matrix decomposition, vector products, and pair blending for smooth collision
+    response and weight-based fade effects.
+
+    Attributes:
+        ctrl: Control transform for the collision system
+        collision_point: Point that detects collision surface position
+        collision_mesh: Mesh that acts as the collision surface
+        target_mesh: Mesh that is deformed by the collision
+
+    Example:
+        >>> collider = Collider('arm', ctrl='arm_CTRL', target_mesh='arm_mesh')
+        >>> # Automatically sets up matrix-based collision detection and deformation
+    """
+
     def __init__(
         self,
         module_name,
@@ -10,8 +34,7 @@ class Collider(object):
         collision_mesh=None,
         target_mesh=None,
     ):
-        """
-        Initialize the collision system.
+        """Initialize the collision system.
 
         Args:
             module_name (str): The name of the module to be used for naming.
@@ -45,193 +68,179 @@ class Collider(object):
             self.target_mesh = pm.ls(target_mesh)[-1]
 
         # Create Nodes
-        closestPointOnMesh = pm.createNode(
+        closest_point_on_mesh = pm.createNode(
             "closestPointOnMesh", name=module_name + "_closestPointOnMesh"
         )
 
-        decomposeMatrix_collisionPoint = pm.createNode(
+        decompose_matrix_collision_point = pm.createNode(
             "decomposeMatrix", name=module_name + "_decomposeMatrix_collisionPoint"
         )
 
-        vectorProductZ = pm.createNode(
-            "vectorProduct", name=module_name + "_vectorProductZ"
-        )
-        pm.setAttr(vectorProductZ.operation, 2)
-        pm.setAttr(vectorProductZ.input1X, 1)
-        pm.setAttr(vectorProductZ.input1Y, 0)
+        vector_product_z = pm.createNode("vectorProduct", name=module_name + "_vectorProductZ")
+        pm.setAttr(vector_product_z.operation, 2)
+        pm.setAttr(vector_product_z.input1X, 1)
+        pm.setAttr(vector_product_z.input1Y, 0)
 
-        vectorProductX = pm.createNode(
-            "vectorProduct", name=module_name + "_vectorProductX"
-        )
-        pm.setAttr(vectorProductX.operation, 2)
+        vector_product_x = pm.createNode("vectorProduct", name=module_name + "_vectorProductX")
+        pm.setAttr(vector_product_x.operation, 2)
 
-        fourByFourMatrix = pm.createNode(
+        four_by_four_matrix = pm.createNode(
             "fourByFourMatrix", name=module_name + "_fourByFourMatrix"
         )
 
-        decomposeMatrix_fourByFour = pm.createNode(
+        decompose_matrix_four_by_four = pm.createNode(
             "decomposeMatrix", name=module_name + "_decomposeMatrixFourByFour"
         )
 
-        decomposeMatrix_collisionPoint_Inverse = pm.createNode(
+        decompose_matrix_collision_point_inverse = pm.createNode(
             "decomposeMatrix",
             name=module_name + "_decomposeMatrix_collisionPoint_Inverse",
         )
 
-        plusMinusAverageMatrix_distanceFromCurve = pm.createNode(
+        plus_minus_average_matrix_distance_from_curve = pm.createNode(
             "plusMinusAverage",
             name=module_name + "_plusMinusAverageMatrix_distanceFromCurve",
         )
-        pm.setAttr(plusMinusAverageMatrix_distanceFromCurve.operation, 1)
+        pm.setAttr(plus_minus_average_matrix_distance_from_curve.operation, 1)
 
-        condition_greaterThanZero = pm.createNode(
+        condition_greater_than_zero = pm.createNode(
             "condition", name=module_name + "_condition_greaterThanZero"
         )
-        pm.setAttr(condition_greaterThanZero.operation, 2)
-        pm.setAttr(condition_greaterThanZero.secondTerm, 0)
-        pm.setAttr(condition_greaterThanZero.colorIfTrueR, 1)
-        pm.setAttr(condition_greaterThanZero.colorIfFalseR, 0)
+        pm.setAttr(condition_greater_than_zero.operation, 2)
+        pm.setAttr(condition_greater_than_zero.secondTerm, 0)
+        pm.setAttr(condition_greater_than_zero.colorIfTrueR, 1)
+        pm.setAttr(condition_greater_than_zero.colorIfFalseR, 0)
 
-        remapValue_FadeSnap = pm.createNode(
+        remap_value_fade_snap = pm.createNode(
             "remapValue", name=module_name + "_remapValue_FadeSnap"
         )
-        pm.setAttr(remapValue_FadeSnap.inputMin, -0.1)
-        pm.setAttr(remapValue_FadeSnap.inputMax, 0)
-        pm.setAttr(remapValue_FadeSnap.outputMin, 0)
-        pm.setAttr(remapValue_FadeSnap.outputMax, 1)
+        pm.setAttr(remap_value_fade_snap.inputMin, -0.1)
+        pm.setAttr(remap_value_fade_snap.inputMax, 0)
+        pm.setAttr(remap_value_fade_snap.outputMin, 0)
+        pm.setAttr(remap_value_fade_snap.outputMax, 1)
 
-        condition_FadeSnap = pm.createNode(
-            "condition", name=module_name + "_condition_FadeSnap"
-        )
-        pm.setAttr(condition_FadeSnap.operation, 2)
-        pm.setAttr(condition_FadeSnap.secondTerm, -0.1)
+        condition_fade_snap = pm.createNode("condition", name=module_name + "_condition_FadeSnap")
+        pm.setAttr(condition_fade_snap.operation, 2)
+        pm.setAttr(condition_fade_snap.secondTerm, -0.1)
 
-        decomposeMatrix_ctrl = pm.createNode(
+        decompose_matrix_ctrl = pm.createNode(
             "decomposeMatrix", name=module_name + "_decomposeMatrix_ctrl"
         )
 
-        plusMinusAverageMatrix_OffsetFromCtrl = pm.createNode(
+        plus_minus_average_matrix_offset_from_ctrl = pm.createNode(
             "plusMinusAverage",
             name=module_name + "_plusMinusAverageMatrix_OffsetFromCtrl",
         )
-        pm.setAttr(plusMinusAverageMatrix_OffsetFromCtrl.operation, 1)
+        pm.setAttr(plus_minus_average_matrix_offset_from_ctrl.operation, 1)
 
-        pairBlend = pm.createNode("pairBlend", name=module_name + "_pairBlend")
+        pair_blend = pm.createNode("pairBlend", name=module_name + "_pairBlend")
 
         # Create Connection
         pm.connectAttr(
             self.collision_point.worldMatrix[0],
-            decomposeMatrix_collisionPoint.inputMatrix,
+            decompose_matrix_collision_point.inputMatrix,
             f=True,
         )
 
         pm.connectAttr(
-            self.collision_mesh[0].getShape().outMesh, closestPointOnMesh.inMesh, f=True
+            self.collision_mesh[0].getShape().outMesh, closest_point_on_mesh.inMesh, f=True
         )
         pm.connectAttr(
             self.collision_mesh[0].worldMatrix[0],
-            closestPointOnMesh.inputMatrix,
+            closest_point_on_mesh.inputMatrix,
             f=True,
         )
         pm.connectAttr(
-            decomposeMatrix_collisionPoint.outputTranslate,
-            closestPointOnMesh.inPosition,
+            decompose_matrix_collision_point.outputTranslate,
+            closest_point_on_mesh.inPosition,
             f=True,
         )
 
-        pm.connectAttr(closestPointOnMesh.result.normal, vectorProductZ.input2, f=True)
+        pm.connectAttr(closest_point_on_mesh.result.normal, vector_product_z.input2, f=True)
 
-        pm.connectAttr(closestPointOnMesh.normal, vectorProductX.input1, f=True)
-        pm.connectAttr(vectorProductZ.output, vectorProductX.input2, f=True)
+        pm.connectAttr(closest_point_on_mesh.normal, vector_product_x.input1, f=True)
+        pm.connectAttr(vector_product_z.output, vector_product_x.input2, f=True)
 
-        pm.connectAttr(vectorProductX.outputX, fourByFourMatrix.in00, f=True)
-        pm.connectAttr(vectorProductX.outputY, fourByFourMatrix.in01, f=True)
-        pm.connectAttr(vectorProductX.outputZ, fourByFourMatrix.in02, f=True)
-        pm.connectAttr(closestPointOnMesh.normalX, fourByFourMatrix.in10, f=True)
-        pm.connectAttr(closestPointOnMesh.normalY, fourByFourMatrix.in11, f=True)
-        pm.connectAttr(closestPointOnMesh.normalZ, fourByFourMatrix.in12, f=True)
-        pm.connectAttr(vectorProductZ.outputX, fourByFourMatrix.in20, f=True)
-        pm.connectAttr(vectorProductZ.outputY, fourByFourMatrix.in21, f=True)
-        pm.connectAttr(vectorProductZ.outputZ, fourByFourMatrix.in22, f=True)
-        pm.connectAttr(closestPointOnMesh.positionX, fourByFourMatrix.in30, f=True)
-        pm.connectAttr(closestPointOnMesh.positionY, fourByFourMatrix.in31, f=True)
-        pm.connectAttr(closestPointOnMesh.positionZ, fourByFourMatrix.in32, f=True)
+        pm.connectAttr(vector_product_x.outputX, four_by_four_matrix.in00, f=True)
+        pm.connectAttr(vector_product_x.outputY, four_by_four_matrix.in01, f=True)
+        pm.connectAttr(vector_product_x.outputZ, four_by_four_matrix.in02, f=True)
+        pm.connectAttr(closest_point_on_mesh.normalX, four_by_four_matrix.in10, f=True)
+        pm.connectAttr(closest_point_on_mesh.normalY, four_by_four_matrix.in11, f=True)
+        pm.connectAttr(closest_point_on_mesh.normalZ, four_by_four_matrix.in12, f=True)
+        pm.connectAttr(vector_product_z.outputX, four_by_four_matrix.in20, f=True)
+        pm.connectAttr(vector_product_z.outputY, four_by_four_matrix.in21, f=True)
+        pm.connectAttr(vector_product_z.outputZ, four_by_four_matrix.in22, f=True)
+        pm.connectAttr(closest_point_on_mesh.positionX, four_by_four_matrix.in30, f=True)
+        pm.connectAttr(closest_point_on_mesh.positionY, four_by_four_matrix.in31, f=True)
+        pm.connectAttr(closest_point_on_mesh.positionZ, four_by_four_matrix.in32, f=True)
 
         pm.connectAttr(
-            fourByFourMatrix.output, decomposeMatrix_fourByFour.inputMatrix, f=True
+            four_by_four_matrix.output, decompose_matrix_four_by_four.inputMatrix, f=True
         )
 
         pm.connectAttr(
             self.collision_point.worldInverseMatrix[0],
-            decomposeMatrix_collisionPoint_Inverse.inputMatrix,
+            decompose_matrix_collision_point_inverse.inputMatrix,
             f=True,
         )
 
         pm.connectAttr(
-            decomposeMatrix_fourByFour.outputTranslate,
-            plusMinusAverageMatrix_distanceFromCurve.input3D[0],
+            decompose_matrix_four_by_four.outputTranslate,
+            plus_minus_average_matrix_distance_from_curve.input3D[0],
             f=True,
         )
         pm.connectAttr(
-            decomposeMatrix_collisionPoint_Inverse.outputTranslate,
-            plusMinusAverageMatrix_distanceFromCurve.input3D[1],
-            f=True,
-        )
-
-        pm.connectAttr(
-            plusMinusAverageMatrix_distanceFromCurve.output3Dy,
-            condition_greaterThanZero.firstTerm,
+            decompose_matrix_collision_point_inverse.outputTranslate,
+            plus_minus_average_matrix_distance_from_curve.input3D[1],
             f=True,
         )
 
         pm.connectAttr(
-            plusMinusAverageMatrix_distanceFromCurve.output3Dy,
-            remapValue_FadeSnap.inputValue,
+            plus_minus_average_matrix_distance_from_curve.output3Dy,
+            condition_greater_than_zero.firstTerm,
             f=True,
         )
 
         pm.connectAttr(
-            condition_greaterThanZero.outColorR,
-            condition_FadeSnap.colorIfFalseR,
-            f=True,
-        )
-        pm.connectAttr(
-            remapValue_FadeSnap.outColorR, condition_FadeSnap.colorIfTrueR, f=True
-        )
-        pm.connectAttr(
-            plusMinusAverageMatrix_distanceFromCurve.output3Dy,
-            condition_FadeSnap.firstTerm,
+            plus_minus_average_matrix_distance_from_curve.output3Dy,
+            remap_value_fade_snap.inputValue,
             f=True,
         )
 
         pm.connectAttr(
-            self.ctrl.worldMatrix[0], decomposeMatrix_ctrl.inputMatrix, f=True
-        )
-
-        pm.connectAttr(
-            plusMinusAverageMatrix_distanceFromCurve.output3D,
-            plusMinusAverageMatrix_OffsetFromCtrl.input3D[0],
+            condition_greater_than_zero.outColorR,
+            condition_fade_snap.colorIfFalseR,
             f=True,
         )
+        pm.connectAttr(remap_value_fade_snap.outColorR, condition_fade_snap.colorIfTrueR, f=True)
         pm.connectAttr(
-            decomposeMatrix_ctrl.outputTranslate,
-            plusMinusAverageMatrix_OffsetFromCtrl.input3D[1],
+            plus_minus_average_matrix_distance_from_curve.output3Dy,
+            condition_fade_snap.firstTerm,
             f=True,
         )
 
-        pm.connectAttr(condition_FadeSnap.outColorR, pairBlend.weight, f=True)
-        pm.connectAttr(decomposeMatrix_ctrl.outputRotate, pairBlend.inRotate1, f=True)
+        pm.connectAttr(self.ctrl.worldMatrix[0], decompose_matrix_ctrl.inputMatrix, f=True)
+
         pm.connectAttr(
-            decomposeMatrix_fourByFour.outputRotate, pairBlend.inRotate2, f=True
+            plus_minus_average_matrix_distance_from_curve.output3D,
+            plus_minus_average_matrix_offset_from_ctrl.input3D[0],
+            f=True,
         )
         pm.connectAttr(
-            decomposeMatrix_ctrl.outputTranslate, pairBlend.inTranslate1, f=True
-        )
-        pm.connectAttr(
-            plusMinusAverageMatrix_OffsetFromCtrl.output3D,
-            pairBlend.inTranslate2,
+            decompose_matrix_ctrl.outputTranslate,
+            plus_minus_average_matrix_offset_from_ctrl.input3D[1],
             f=True,
         )
 
-        pm.connectAttr(pairBlend.outTranslate, self.target_mesh[0].translate, f=True)
-        pm.connectAttr(pairBlend.outRotate, self.target_mesh[0].rotate, f=True)
+        pm.connectAttr(condition_fade_snap.outColorR, pair_blend.weight, f=True)
+        pm.connectAttr(decompose_matrix_ctrl.outputRotate, pair_blend.inRotate1, f=True)
+        pm.connectAttr(decompose_matrix_four_by_four.outputRotate, pair_blend.inRotate2, f=True)
+        pm.connectAttr(decompose_matrix_ctrl.outputTranslate, pair_blend.inTranslate1, f=True)
+        pm.connectAttr(
+            plus_minus_average_matrix_offset_from_ctrl.output3D,
+            pair_blend.inTranslate2,
+            f=True,
+        )
+
+        pm.connectAttr(pair_blend.outTranslate, self.target_mesh[0].translate, f=True)
+        pm.connectAttr(pair_blend.outRotate, self.target_mesh[0].rotate, f=True)

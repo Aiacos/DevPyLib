@@ -1,7 +1,14 @@
-__author__ = 'Lorenzo Argentieri'
+"""Asset naming convention utilities.
 
-class Convention():
-    """Class to manage naming conventions of Maya assets
+Provides functions for enforcing and validating studio asset
+naming conventions.
+"""
+
+__author__ = "Lorenzo Argentieri"
+
+
+class Convention:
+    """Class to manage naming conventions of Maya assets.
 
     Attributes:
         separator (str): separator used in names
@@ -18,19 +25,22 @@ class Convention():
         conventionDict (dict): dictionary containing all the tags
     """
 
-    def __init__(self, uppercase=True,
-                 separator='_',
-                 left='l',
-                 right='r',
-                 grp='GRP',
-                 loc='LOC',
-                 geo='GEO',
-                 proxyGeo='PRX',
-                 cv='CRV',
-                 joint='JNT',
-                 ikHandle='IKH',
-                 control='CTRL'):
-        """Init Convention
+    def __init__(
+        self,
+        uppercase=True,
+        separator="_",
+        left="l",
+        right="r",
+        grp="GRP",
+        loc="LOC",
+        geo="GEO",
+        proxy_geo="PRX",
+        cv="CRV",
+        joint="JNT",
+        ik_handle="IKH",
+        control="CTRL",
+    ):
+        """Init Convention.
 
         Args:
             uppercase (bool): if True, all tags will be upper case
@@ -40,10 +50,10 @@ class Convention():
             grp (str): tag for group
             loc (str): tag for locator
             geo (str): tag for geometry
-            proxyGeo (str): tag for proxy geometry
+            proxy_geo (str): tag for proxy geometry
             cv (str): tag for curve
             joint (str): tag for joint
-            ikHandle (str): tag for IK handle
+            ik_handle (str): tag for IK handle
             control (str): tag for control
         """
         # general
@@ -61,7 +71,7 @@ class Convention():
 
         # mesh
         self.geo = geo
-        self.proxyGeo = proxyGeo
+        self.proxy_geo = proxy_geo
 
         # curve
         self.cv = cv
@@ -70,25 +80,27 @@ class Convention():
         self.joint = joint
 
         # IK handle
-        self.ikHandle = ikHandle
+        self.ik_handle = ik_handle
 
         # control
         self.control = control
 
-        self.conventionDict = {'separator': separator,
-                               'left': left,
-                               'right': right,
-                               'group': grp,
-                               'locator': loc,
-                               'geometry': geo,
-                               'proxyGeo': proxyGeo,
-                               'curve': cv,
-                               'joint': joint,
-                               'ikHandle': ikHandle,
-                               'control': control}
+        self.convention_dict = {
+            "separator": separator,
+            "left": left,
+            "right": right,
+            "group": grp,
+            "locator": loc,
+            "geometry": geo,
+            "proxyGeo": proxy_geo,
+            "curve": cv,
+            "joint": joint,
+            "ikHandle": ik_handle,
+            "control": control,
+        }
 
-    def toLower(self, s):
-        """Convert a string to lower case
+    def to_lower(self, s):
+        """Convert a string to lower case.
 
         Args:
             s (str): string to convert
@@ -98,8 +110,8 @@ class Convention():
         """
         return s.lower()
 
-    def toUpper(self, s):
-        """Convert a string to upper case
+    def to_upper(self, s):
+        """Convert a string to upper case.
 
         Args:
             s (str): string to convert
@@ -109,12 +121,12 @@ class Convention():
         """
         return s.upper()
 
-    def convertAllToDefault(self):
-        """Convert all tags to default convention"""
+    def convert_all_to_default(self):
+        """Convert all tags to default convention."""
         pass
 
-    def convertAllToScene(self):
-        """Convert all tags to scene convention"""
+    def convert_all_to_scene(self):
+        """Convert all tags to scene convention."""
         pass
 
 

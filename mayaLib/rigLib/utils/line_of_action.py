@@ -1,8 +1,9 @@
+"""Utilities to analyze meshes and generate line-of-action curves in Maya."""
+
 import math
 
-import maya.OpenMaya as OpenMaya
-import maya.cmds as cmds
 import pymel.core as pm
+from maya import OpenMaya, cmds
 
 
 def vector_diff(v1, v2):
@@ -15,7 +16,7 @@ def vector_diff(v1, v2):
     Returns:
         float: The difference vector between the two vectors.
     """
-    return [a - b for a, b in zip(v1, v2)]
+    return [a - b for a, b in zip(v1, v2, strict=False)]
 
 
 def vector_length(v):
@@ -57,19 +58,18 @@ def matrix_mult_vector(matrix, vector):
     """
     dimension = len(matrix)
     result = [0.0] * dimension
-    for i in range(dimension):
-        for j in range(len(vector)):
-            result[i] += matrix[i][j] * vector[j]
+    for row_index, row in enumerate(matrix):
+        for column_index, value in enumerate(vector):
+            result[row_index] += row[column_index] * value
     return result
 
 
 def compute_principal_eigenvector(input_matrix, max_iterations=1000, tolerance=1e-9):
-    """Computes the principal eigenvector of a square matrix using the
-    power iteration method. The principal eigen vector is the direction
-    of maximum variance in the data represented by the matrix. It corresponds
-    to the largest eigenvalue of the covariance matrix and it is the principal
-    component of PCA.
+    """Compute principal eigenvector using power iteration method (PCA).
 
+    Finds the direction of maximum variance in the data by iteratively applying
+    the matrix and normalizing. Corresponds to the largest eigenvalue of the
+    covariance matrix (first principal component).
 
     Args:
         input_matrix (list): A square matrix represented as a list of lists.
@@ -107,6 +107,7 @@ def compute_principal_eigenvector(input_matrix, max_iterations=1000, tolerance=1
 
 def compute_covariance_matrix(centered_points):
     """Compute the covariance matrix from the centered points.
+
     Uses the sample covariance (dividing by n-1). The covariance
     matrix is a square matrix where the element at (i, j) represents
     the covariance between the i-th and j-th dimensions. It describes
@@ -138,11 +139,12 @@ def compute_covariance_matrix(centered_points):
 
 
 def compute_main_axis(points):
-    """Given a list of points as a list or tuple of coordinates,
-    compute the main axis of the set of points using PCA.
-    PCA (Principal Component Analysis) is a linear dimensionality
-    reduction technique that allows to find the main axis of a set
-    of points. The main axis is the direction of maximum variance
+    """Compute the main axis of a set of points using PCA.
+
+    Given a list of points as a list or tuple of coordinates, compute the main
+    axis of the set of points using PCA (Principal Component Analysis). PCA is
+    a linear dimensionality reduction technique that allows to find the main
+    axis of a set of points. The main axis is the direction of maximum variance
     in the data.
 
     Args:
@@ -203,9 +205,14 @@ def get_points_py_list(geo_name):
     return vertices
 
 
-def get_closest_point_and_uv(mesh, query_point):
-    """Uses maya.OpenMaya to find the closest point on the mesh to
-    target_point and retrieves the corresponding UV coordinates.
+def get_closest_point_and_uv(
+    mesh,
+    query_point,
+):  # pylint: disable=too-many-locals
+    """Find the closest point on a mesh and retrieve corresponding UV coordinates.
+
+    Uses maya.OpenMaya to find the closest point on the mesh to target_point and
+    retrieves the corresponding UV coordinates.
 
     Args:
         mesh (str): The name of the mesh.
@@ -216,10 +223,10 @@ def get_closest_point_and_uv(mesh, query_point):
         tuple: (closestPoint (MPoint), (u, v) coordinates)
     """
     # Obtain the MObject for the mesh.
-    selList = OpenMaya.MSelectionList()
-    selList.add(mesh)
+    selection_list = OpenMaya.MSelectionList()
+    selection_list.add(mesh)
     mesh_dag = OpenMaya.MDagPath()
-    selList.getDagPath(0, mesh_dag)
+    selection_list.getDagPath(0, mesh_dag)
 
     # Create an MFnMesh for API operations.
     mesh_fn = OpenMaya.MFnMesh(mesh_dag)
@@ -235,9 +242,7 @@ def get_closest_point_and_uv(mesh, query_point):
     closest_polygon_ptr = closest_polygon_util.asIntPtr()
 
     # Compute the closest point on the mesh (in world space).
-    mesh_fn.getClosestPoint(
-        query, closest_point, OpenMaya.MSpace.kWorld, closest_polygon_ptr
-    )
+    mesh_fn.getClosestPoint(query, closest_point, OpenMaya.MSpace.kWorld, closest_polygon_ptr)
     closest_polygon = OpenMaya.MScriptUtil.getInt(closest_polygon_ptr)
 
     # Prepare MScriptUtil objects for retrieving U and V values.
@@ -255,9 +260,7 @@ def get_closest_point_and_uv(mesh, query_point):
         polygon_average_point += OpenMaya.MVector(mesh_points[vertex_index])
     if polygon_vertices_count > 0:
         polygon_average_point /= polygon_vertices_count
-    mesh_fn.getClosestPoint(
-        polygon_average_point, closest_point, OpenMaya.MSpace.kWorld
-    )
+    mesh_fn.getClosestPoint(polygon_average_point, closest_point, OpenMaya.MSpace.kWorld)
     mesh_fn.getUVAtPoint(closest_point, uv_point, OpenMaya.MSpace.kWorld)
 
     u = OpenMaya.MScriptUtil.getFloat2ArrayItem(uv_point, 0, 0)
@@ -267,11 +270,11 @@ def get_closest_point_and_uv(mesh, query_point):
 
 
 def get_sensor_locator_driver_node(node, matrix_plug, position_plug):
-    """Get the driver node from a locator or sensor depending on the connection
-    that had been made using the matrix or the position plug.
-        - If the matrix plug has a connection return the node directly associated (joint, locator, etc).
-        - If the position plug has a connection return the node associated to the
-          'decomposeMatrix' that was attached to the plug (joint, locator, etc).
+    """Resolve the driver node connected to a sensor or locator.
+
+    Logic:
+        * Prefer the direct matrix connection (joint, locator, etc.).
+        * Otherwise, follow the `decomposeMatrix` connected to the position plug.
 
     Args:
         node (str): The locator or sensor node from which to extract the
@@ -283,16 +286,14 @@ def get_sensor_locator_driver_node(node, matrix_plug, position_plug):
         str: Returns the name of the driver node (joint, locator, etc).
             None if not found.
     """
-    conn = cmds.listConnections("{0}.{1}".format(node, matrix_plug))
+    conn = cmds.listConnections(f"{node}.{matrix_plug}")
     if conn:
         return conn[0]
 
-    matrix = cmds.listConnections(
-        "{0}.{1}".format(node, position_plug), type="decomposeMatrix"
-    )
+    matrix = cmds.listConnections(f"{node}.{position_plug}", type="decomposeMatrix")
     if not matrix:
         return None
-    conn = cmds.listConnections("{0}.inputMatrix".format(matrix[0]))
+    conn = cmds.listConnections(f"{matrix[0]}.inputMatrix")
     if not conn:
         return None
 
@@ -346,10 +347,16 @@ def squared_distance(p1, p2):
     return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 + (p1[2] - p2[2]) ** 2
 
 
-def find_extremal_vertices(vertices, centroid, direction):
-    """Find the two vertices of a mesh that are extremal in the direction
-    of the main axis. The two vertices are the closest to the end points
-    of the line defined by the centroid and the direction vector.
+def find_extremal_vertices(
+    vertices,
+    centroid,
+    direction,
+):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+    """Find extremal vertices along the main axis of a mesh.
+
+    Find the two vertices of a mesh that are extremal in the direction of the
+    main axis. The two vertices are the closest to the end points of the line
+    defined by the centroid and the direction vector.
 
     This is done by intersecting a parametric line (along the main axis) with
     the mesh's axis-aligned bounding box (AABB), determining the entry and exit
@@ -428,19 +435,13 @@ def find_extremal_vertices(vertices, centroid, direction):
 
             # Check if the intersection point lies within the bounding limits for the other axes.
             if axis == 0:
-                if (min_y - eps <= p_y <= max_y + eps) and (
-                    min_z - eps <= p_z <= max_z + eps
-                ):
+                if (min_y - eps <= p_y <= max_y + eps) and (min_z - eps <= p_z <= max_z + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
             elif axis == 1:
-                if (min_x - eps <= p_x <= max_x + eps) and (
-                    min_z - eps <= p_z <= max_z + eps
-                ):
+                if (min_x - eps <= p_x <= max_x + eps) and (min_z - eps <= p_z <= max_z + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
             else:  # axis == 2
-                if (min_x - eps <= p_x <= max_x + eps) and (
-                    min_y - eps <= p_y <= max_y + eps
-                ):
+                if (min_x - eps <= p_x <= max_x + eps) and (min_y - eps <= p_y <= max_y + eps):
                     intersections.append((t, (p_x, p_y, p_z)))
 
     # Ensure we found at least two intersections.
@@ -484,8 +485,10 @@ def find_extremal_vertices(vertices, centroid, direction):
 
 
 def get_name_from_geo(geo_name, object_name):
-    """Generates a name for the object based on the geometry name and the object type.
-    If the geometry name ends with "GEO" or "geo", it is removed before concatenation.
+    """Generate a name for the object based on geometry name and object type.
+
+    If the geometry name ends with "GEO" or "geo", it is removed before
+    concatenation.
 
     Args:
         geo_name (str): The name of the geometry.
@@ -502,13 +505,14 @@ def get_name_from_geo(geo_name, object_name):
     if geo_name.upper().endswith("GEO"):
         geo_name = geo_name[:-3]
 
-    return "{0}{1}".format(geo_name, object_name)
+    return f"{geo_name}{object_name}"
 
 
 def create_rivet_at_point(mesh, target_point, rivet_base_name, space_scale=1.0):
-    """Creates a rivet-based rivet on the given mesh at the point closest
-    to target_point. The rivet is positioned based on UV coordinates computed
-    via maya.OpenMaya, so the resulting locator will follow the mesh as it deforms.
+    """Create a rivet on a mesh at the point closest to target_point.
+
+    The rivet is positioned based on UV coordinates computed via maya.OpenMaya,
+    so the resulting locator will follow the mesh as it deforms.
 
     Args:
         mesh (str): The name of the mesh (e.g., "mummy_geo").
@@ -522,7 +526,7 @@ def create_rivet_at_point(mesh, target_point, rivet_base_name, space_scale=1.0):
         str: The name of the uvOutput node created.
     """
     # Use the API to compute the closest point and its UV in world space.
-    closest_point, (u, v) = get_closest_point_and_uv(mesh, target_point)
+    _, (u, v) = get_closest_point_and_uv(mesh, target_point)
 
     # Get the shape node for the mesh.
     if cmds.nodeType(mesh) != "mesh":
@@ -534,30 +538,35 @@ def create_rivet_at_point(mesh, target_point, rivet_base_name, space_scale=1.0):
         rivet_base_name = ""
 
     # Create a rivet node.
-    cmds.select("{0}.f[0]".format(mesh))
-    rivet_name = "{0}_rivet".format(rivet_base_name)
-    rivet_locator_name = "{0}_rivet_loc".format(rivet_base_name)
+    cmds.select(f"{mesh}.f[0]")
+    rivet_name = f"{rivet_base_name}_rivet"
+    rivet_locator_name = f"{rivet_base_name}_rivet_loc"
     cmds.Rivet()
     uv_pin, pin_output = cmds.ls(selection=True)
     rivet_name = cmds.rename(uv_pin, rivet_name)
     rivet_locator_name = cmds.rename(pin_output, rivet_locator_name)
 
     # Set the rivet's UV parameters based on the computed UV.
-    cmds.setAttr("{0}.coordinate[0].coordinateU".format(rivet_name), u)
-    cmds.setAttr("{0}.coordinate[0].coordinateV".format(rivet_name), v)
+    cmds.setAttr(f"{rivet_name}.coordinate[0].coordinateU", u)
+    cmds.setAttr(f"{rivet_name}.coordinate[0].coordinateV", v)
 
     # Set local scale based on the space scale for better visualization
     if space_scale > 1e-6:
         local_scale = 1.0 / space_scale
-        cmds.setAttr("{0}.localScaleX".format(rivet_locator_name), local_scale)
-        cmds.setAttr("{0}.localScaleY".format(rivet_locator_name), local_scale)
-        cmds.setAttr("{0}.localScaleZ".format(rivet_locator_name), local_scale)
+        cmds.setAttr(f"{rivet_locator_name}.localScaleX", local_scale)
+        cmds.setAttr(f"{rivet_locator_name}.localScaleY", local_scale)
+        cmds.setAttr(f"{rivet_locator_name}.localScaleZ", local_scale)
 
     return rivet_name, rivet_locator_name
 
 
-def create_line_of_action(geo, skeleton_geo, name_suffix="_loa_crv", space_scale=1.0):
-    """Create a line of action curve between two extremal points on a geometry.
+def create_line_of_action(
+    geo,
+    skeleton_geo,
+    name_suffix="_loa_crv",
+    space_scale=1.0,
+):  # pylint: disable=too-many-locals
+    """Create a line of action curve between extremal points on geometry.
 
     This function computes the main axis of a given geometry and identifies two
     extremal vertices along that axis. It then creates a rivet and locator at
@@ -583,31 +592,25 @@ def create_line_of_action(geo, skeleton_geo, name_suffix="_loa_crv", space_scale
     fibers_dir = main_axis_info[1]
 
     # Find the extremal vertices along the main axis.
-    extremal_vertices_data = find_extremal_vertices(
-        vertices, fibers_centroid, fibers_dir
-    )
+    extremal_vertices_data = find_extremal_vertices(vertices, fibers_centroid, fibers_dir)
 
-    # Extract start and end points and indices.
-    start_index = extremal_vertices_data["start_index"]
-    end_index = extremal_vertices_data["end_index"]
+    # Extract start and end points.
     start_point = extremal_vertices_data["start_point"]
     end_point = extremal_vertices_data["end_point"]
 
     # Generate names for rivets based on the geometry's short name.
-    geo_short_name = str(geo).split("|")[-1]
+    geo_short_name = str(geo).rsplit("|", maxsplit=1)[-1]
     rivet_start_name = get_name_from_geo(geo_short_name, "SensorStart")
     rivet_end_name = get_name_from_geo(geo_short_name, "SensorEnd")
 
     # Create rivets and locators at the extremal points.
-    rivet_start, locator_start = create_rivet_at_point(
+    _, locator_start = create_rivet_at_point(
         skeleton_geo, start_point, rivet_start_name, space_scale
     )
-    rivet_end, locator_end = create_rivet_at_point(
-        skeleton_geo, end_point, rivet_end_name, space_scale
-    )
+    _, locator_end = create_rivet_at_point(skeleton_geo, end_point, rivet_end_name, space_scale)
 
     # Create a curve between the locators in world space.
-    cv_name = str(geo).replace("_geo", "") + name_suffix
+    cv_name = f"{str(geo).replace('_geo', '')}{name_suffix}"
     p1 = cmds.xform(locator_start, q=True, t=True, ws=True)
     p2 = cmds.xform(locator_end, q=True, t=True, ws=True)
     curve = cmds.curve(p=[p1, p2], degree=1, name=cv_name)
@@ -619,9 +622,8 @@ def create_line_of_action(geo, skeleton_geo, name_suffix="_loa_crv", space_scale
 
 def create_all_lines_of_action(
     geos=None, skeleton_geo=None, name_suffix="_loa_crv", loa_grp="line_of_action_grp"
-):
-    """
-    Computes and creates all line of actions for a list of geos.
+):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+    """Compute and build line-of-action curves for a set of geometries.
 
     Args:
         geos: A list of geometry objects.
@@ -635,43 +637,48 @@ def create_all_lines_of_action(
         loa_grp: Name of the group for the line of action curves.
         cv_list: List of names for the line of action curves.
     """
-
+    geos = list(geos) if geos else []
     if not geos:
-        muscle_grp = pm.ls("muscle_grp")[-1]
-        geos = muscle_grp.getChildren()
+        muscle_groups = pm.ls("muscle_grp")
+        if not muscle_groups:
+            pm.warning("No geometries provided and muscle_grp not found.")
+            return None, []
+        geos = muscle_groups[-1].getChildren()
 
+    skeleton_proxy = str(skeleton_geo) if skeleton_geo else None
+    combined_skeleton = None
     if not skeleton_geo or skeleton_geo == "skeleton_grp":
-        # Duplicate the skeleton geometry if it doesn't exist or is the default
-        # name.
-        skeleton_geo = pm.ls("skeleton_grp")[-1]
-        duplicate_skeleton = pm.duplicate(skeleton_geo, n="skeleton_duplicate_geo")[0]
-
-        # Combine all the duplicated skeleton into a single geometry.
+        skeleton_groups = pm.ls("skeleton_grp")
+        if not skeleton_groups:
+            pm.warning("skeleton_grp not found; cannot build line of action.")
+            return None, []
+        skeleton_source = skeleton_groups[-1]
+        skeleton_proxy = pm.duplicate(skeleton_source, n="skeleton_duplicate_geo")[0]
         combined_skeleton = pm.polyUnite(
-            duplicate_skeleton,
+            skeleton_proxy,
             ch=False,
             mergeUVSets=True,
             centerPivot=False,
             name="skeleton_proxy_geo",
         )[-1]
-
-        combined_skeleton = str(combined_skeleton.name())
+        skeleton_proxy = str(combined_skeleton.name())
+    else:
+        skeleton_proxy = skeleton_proxy or ""
 
     cv_list = []
     for geo in geos:
-        # Compute and create the line of action curve for each geometry.
-        cv_name = str(geo).replace("_geo", "") + name_suffix
-        print(geo, combined_skeleton)
-        cv = create_line_of_action(geo, combined_skeleton, name_suffix=name_suffix)
+        geo_name = str(geo)
+        cv_name = f"{geo_name.replace('_geo', '')}{name_suffix}"
+        create_line_of_action(geo, skeleton_proxy, name_suffix=name_suffix)
         cv_list.append(cv_name)
 
     if not pm.objExists(loa_grp):
-        # Create the group for the line of action curves if it doesn't exist.
         pm.group(n=loa_grp, em=True, p="guide")
 
-    # Parent all the line of action curves to the group.
-    pm.parent(cv_list, loa_grp)
+    if cv_list:
+        pm.parent(cv_list, loa_grp)
 
-    pm.delete(combined_skeleton)
+    if combined_skeleton:
+        pm.delete(combined_skeleton)
 
     return loa_grp, cv_list

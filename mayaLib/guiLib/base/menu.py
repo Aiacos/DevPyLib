@@ -1,25 +1,47 @@
-__author__ = 'Lorenzo Argentieri'
+"""Maya menu creation utilities.
+
+Provides tools for creating and managing Maya menus with
+dynamic content.
+"""
+
+__author__ = "Lorenzo Argentieri"
 
 import maya
 import pymel.core as pm
 
 
-class Menu():
-    gMainWindow = maya.mel.eval('$tmpVar=$gMainWindow')
+class Menu:
+    """Maya menu creation and management utility.
 
-    def __init__(self, menu_name='test', parent=gMainWindow):
-        """Construct a Menu Object
+    Provides a high-level interface for creating Maya menus and menu items with
+    support for submenus, checkboxes, and custom commands. Simplifies menu creation
+    by handling PyMEL callbacks and menu hierarchy automatically.
+
+    Attributes:
+        lib_menu: The main PyMEL menu object
+        item: Dictionary of menu items keyed by name
+
+    Example:
+        >>> menu = Menu('MyMenu')
+        >>> menu.add_menuitem('Test Item', cmd=my_function)
+        >>> submenu = menu.add_submenu('Submenu')
+        >>> menu.add_menuitem('Submenu Item', parent=submenu, cmd=another_function)
+    """
+
+    g_main_window = maya.mel.eval("$tmpVar=$gMainWindow")
+
+    def __init__(self, menu_name="test", parent=g_main_window):
+        """Construct a Menu Object.
 
         Args:
             menu_name (str): The name of the menu to be created
             parent (str): The name of the parent menu
         """
-        self.lib_menu = pm.menu(
-            label=menu_name, parent=parent, tearOff=True)
+        self.lib_menu = pm.menu(label=menu_name, parent=parent, tearOff=True)
         self.item = {}
 
     def __del__(self):
-        """Delete the menu when the class is deleted
+        """Delete the menu when the class is deleted.
 
         This method is called when the class is deleted. It removes the menu
         from Maya's menu bar.
@@ -43,17 +65,18 @@ class Menu():
             parent = self.lib_menu.name()
 
         # Create a menu item with or without an image
+        callback = pm.Callback(cmd)
         if image is None:
-            self.item[item_name] = pm.menuItem(item_name, p=parent, command=cmd.__name__ + '()')
+            self.item[item_name] = pm.menuItem(item_name, p=parent, command=callback)
         else:
-            self.item[item_name] = pm.menuItem(item_name, p=parent, command=cmd.__name__ + '()', image=image)
+            self.item[item_name] = pm.menuItem(item_name, p=parent, command=callback, image=image)
 
         # Return the last part of the parent path
         ret_parent = self.item[item_name]
-        return ret_parent.rpartition('|')[-1]
+        return ret_parent.rpartition("|")[-1]
 
-    def add_menuCheckBox(self, item_name, cmd, parent=None):
-        """Bind function to menuItem
+    def add_menu_check_box(self, item_name, cmd, parent=None):
+        """Bind function to menuItem.
 
         Args:
             item_name (str): Label for menuItem
@@ -67,13 +90,13 @@ class Menu():
             parent = self.lib_menu.name()
 
         self.item[item_name] = pm.menuItem(
-            item_name, p=parent, command=cmd.__name__ + '()', checkBox=True
+            item_name, p=parent, command=pm.Callback(cmd), checkBox=True
         )
         ret_parent = self.item[item_name]
-        return ret_parent.rpartition('|')[-1]
+        return ret_parent.rpartition("|")[-1]
 
     def add_submenu(self, submenu_name, parent=None):
-        """Add sub menu container
+        """Add sub menu container.
 
         Args:
             submenu_name (str): Label for Sub_menuItem
@@ -85,22 +108,24 @@ class Menu():
         if parent is None:
             parent = self.lib_menu.name()
 
-        self.item[submenu_name] = pm.menuItem(
-            submenu_name, p=parent, subMenu=True, tearOff=True
-        )
+        self.item[submenu_name] = pm.menuItem(submenu_name, p=parent, subMenu=True, tearOff=True)
         ret_parent = self.item[submenu_name]
-        return ret_parent.rpartition('|')[-1]
+        return ret_parent.rpartition("|")[-1]
 
 
 def print_text():
-    print('hello test')
+    """Test function for menu command demonstration.
+
+    Prints a test message, used as example command in menu item creation.
+    """
+    print("hello test")
 
 
 if __name__ == "__main__":
-    menuPanel = Menu('test')
-    menuPanel.add_menuitem('testClickCmd', cmd=print_text)
-    p = menuPanel.add_submenu('testSubMenu')
-    menuPanel.add_menuitem('testSubItem', parent=p, cmd=print_text)
+    menu_panel = Menu("test")
+    menu_panel.add_menuitem("testClickCmd", cmd=print_text)
+    p = menu_panel.add_submenu("testSubMenu")
+    menu_panel.add_menuitem("testSubItem", parent=p, cmd=print_text)
     # try:
     #     lib_menu.delete()
     #     print('deleted')
