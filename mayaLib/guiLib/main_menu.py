@@ -18,12 +18,10 @@ from maya import mel
 
 try:
     from PySide6 import QtCore, QtGui, QtWidgets
-    from PySide6.QtCore import SIGNAL, QObject
     from PySide6.QtGui import QAction
     from shiboken6 import wrapInstance
 except ImportError:
     from PySide2 import QtCore, QtGui, QtWidgets
-    from PySide2.QtCore import SIGNAL, QObject
     from PySide2.QtWidgets import QAction
     from shiboken2 import wrapInstance
 
@@ -389,11 +387,7 @@ class MainMenu(QtWidgets.QWidget):
 
             self.lib_menu.addAction(self.w_action)
 
-            QObject.connect(
-                self.lib_window,
-                SIGNAL("updateWidget()"),
-                lambda: self.update_widget(lib_path),
-            )
+            self.lib_window.update_widget.connect(lambda: self.update_widget(lib_path))
             self.lib_menu.triggered.connect(self.show_widget)
 
     def update_widget(self, lib_path):
@@ -411,12 +405,7 @@ class MainMenu(QtWidgets.QWidget):
         self.w_action.setDefaultWidget(self.lib_window)
 
         self.lib_menu.addAction(self.w_action)
-        try:
-            self.lib_window.update_widget.connect(lambda: self.update_widget(lib_path))
-        except AttributeError:
-            QObject.connect(
-                self.lib_window, SIGNAL("updateWidget()"), lambda: self.update_widget(lib_path)
-            )
+        self.lib_window.update_widget.connect(lambda: self.update_widget(lib_path))
         self.lib_menu.triggered.connect(self.show_widget)
         print("Reloaded MayaLib!")
 
