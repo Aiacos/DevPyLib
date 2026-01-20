@@ -145,9 +145,23 @@ luna_builder = None
 # Setup Luna integration before importing
 if LUNA_ROOT_PATH and _setup_luna_integration():
     try:
+        # Remove any auto-created 'luna' placeholder that Python might have
+        # created when we injected 'luna.static'. This allows the real luna
+        # package to be imported from the filesystem.
+        if "luna" in sys.modules:
+            # Check if it's a placeholder (no __file__ attribute or empty module)
+            luna_placeholder = sys.modules["luna"]
+            if not hasattr(luna_placeholder, "__file__") or luna_placeholder.__file__ is None:
+                del sys.modules["luna"]
+
         # Now we can safely import Luna - moduleInfo is patched and
         # directories module is pre-created
         import luna
+
+        # After importing luna, ensure luna.static still has our directories module
+        if hasattr(luna, "static") and hasattr(sys.modules.get("luna.static"), "directories"):
+            luna.static = sys.modules["luna.static"]
+
         import luna_rig
         import luna_builder
 
