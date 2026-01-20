@@ -19,35 +19,12 @@ _luna_path = Path(__file__).parent.parent.parent / "luna"
 LUNA_ROOT_PATH = str(_luna_path) if _luna_path.exists() else None
 
 
-def _patch_pymel_api():
-    """Patch pymel.api to include MQtUtil functions that Luna expects.
-
-    Luna uses pymel.api.MQtUtil_mainWindow() but this doesn't exist in modern
-    PyMEL. The actual function is maya.OpenMayaUI.MQtUtil.mainWindow().
-    """
-    try:
-        import pymel.api as pma
-        from maya.OpenMayaUI import MQtUtil
-
-        # Add the MQtUtil_mainWindow function that Luna expects
-        if not hasattr(pma, "MQtUtil_mainWindow"):
-            pma.MQtUtil_mainWindow = MQtUtil.mainWindow
-
-        # Also ensure MQtUtil is available for other functions Luna might use
-        if not hasattr(pma, "MQtUtil"):
-            pma.MQtUtil = MQtUtil
-
-    except ImportError:
-        pass
-
-
 def _setup_luna_integration():
     """Set up Luna integration by patching moduleInfo and pre-creating directories module.
 
     This function must be called BEFORE any Luna imports. It:
-    1. Patches pymel.api to include MQtUtil functions Luna expects
-    2. Patches pymel.core.moduleInfo to return Luna's path when queried
-    3. Pre-creates the luna.static.directories module with correct paths
+    1. Patches pymel.core.moduleInfo to return Luna's path when queried
+    2. Pre-creates the luna.static.directories module with correct paths
 
     Returns:
         bool: True if setup was successful, False otherwise.
@@ -59,9 +36,6 @@ def _setup_luna_integration():
         import pymel.core as pm
     except ImportError:
         return False
-
-    # Patch pymel.api first for Qt utilities
-    _patch_pymel_api()
 
     # Store the original moduleInfo function
     _original_module_info = pm.moduleInfo
