@@ -1,3 +1,6 @@
 [submodule "pyfrost"]
 	path = pyfrost
 	url = https://github.com/BenoitGielly/pyfrost.git
+[submodule "luna"]
+	path = luna
+	url = https://github.com/Aiacos/luna.git
