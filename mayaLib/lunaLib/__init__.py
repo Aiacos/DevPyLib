@@ -7,6 +7,9 @@ Luna expects to be installed as a Maya module (with a .mod file), but we're
 integrating it as a submodule by adding it to sys.path. This requires patching
 both the pymel.core.moduleInfo function and Luna's directories module BEFORE
 any Luna imports occur.
+
+This module uses lazy loading - Luna is only initialized when actually needed,
+not at Maya startup time (when PyMEL might not be ready yet).
 """
 
 import os
@@ -18,6 +21,17 @@ from types import ModuleType
 # Determine Luna root path
 _luna_path = Path(__file__).parent.parent.parent / "luna"
 LUNA_ROOT_PATH = str(_luna_path) if _luna_path.exists() else None
+
+# Add Luna path to sys.path early
+if LUNA_ROOT_PATH and LUNA_ROOT_PATH not in sys.path:
+    sys.path.insert(0, LUNA_ROOT_PATH)
+
+# Lazy loading state
+_luna_initialized = False
+_luna_available = False
+luna = None
+luna_rig = None
+luna_builder = None
 
 
 def _setup_luna_integration():
@@ -119,41 +133,87 @@ def _create_directories_module(pm):
     sys.modules["luna.static.directories"] = directories_module
 
 
-# Add Luna path to sys.path
-if LUNA_ROOT_PATH and LUNA_ROOT_PATH not in sys.path:
-    sys.path.insert(0, LUNA_ROOT_PATH)
+def _initialize_luna():
+    """Initialize Luna modules (lazy loading).
 
-# Try to import Luna modules
-LUNA_AVAILABLE = False
-luna = None
-luna_rig = None
-luna_builder = None
+    This function is called on first access to Luna functionality.
+    It sets up the integration and imports Luna modules.
 
-# Setup Luna integration before importing
-if LUNA_ROOT_PATH:
-    if _setup_luna_integration():
-        try:
-            # Now we can safely import Luna - moduleInfo is patched and
-            # directories module is pre-created in sys.modules
-            import luna
-            import luna_rig
-            import luna_builder
+    Returns:
+        bool: True if Luna was successfully initialized.
+    """
+    global _luna_initialized, _luna_available, luna, luna_rig, luna_builder
 
-            LUNA_AVAILABLE = True
+    if _luna_initialized:
+        return _luna_available
 
-        except ImportError as e:
-            print(f"Warning: Luna not available - {e}")
-            traceback.print_exc()
-        except Exception as e:
-            print(f"Warning: Luna initialization error - {e}")
-            traceback.print_exc()
-    else:
+    _luna_initialized = True
+
+    if not LUNA_ROOT_PATH:
+        print(f"Warning: Luna path not found at {_luna_path}")
+        return False
+
+    if not _setup_luna_integration():
         print("Warning: Luna setup failed - _setup_luna_integration() returned False")
-else:
-    print(f"Warning: Luna path not found at {_luna_path}")
+        return False
 
-# Only import submodules if Luna is available
-if LUNA_AVAILABLE:
-    from . import components
-    from . import functions
-    from . import tools
+    try:
+        # Now we can safely import Luna - moduleInfo is patched and
+        # directories module is pre-created in sys.modules
+        import luna as _luna
+        import luna_rig as _luna_rig
+        import luna_builder as _luna_builder
+
+        luna = _luna
+        luna_rig = _luna_rig
+        luna_builder = _luna_builder
+        _luna_available = True
+
+        # Import submodules
+        from . import components
+        from . import functions
+        from . import tools
+
+        return True
+
+    except ImportError as e:
+        print(f"Warning: Luna not available - {e}")
+        traceback.print_exc()
+        return False
+    except Exception as e:
+        print(f"Warning: Luna initialization error - {e}")
+        traceback.print_exc()
+        return False
+
+
+def is_available():
+    """Check if Luna is available.
+
+    This will trigger lazy initialization if not already done.
+
+    Returns:
+        bool: True if Luna is available and initialized.
+    """
+    return _initialize_luna()
+
+
+# For backwards compatibility
+@property
+def LUNA_AVAILABLE():
+    """Check if Luna is available (property for backwards compatibility)."""
+    return is_available()
+
+
+# Make LUNA_AVAILABLE work as a simple boolean check too
+def __getattr__(name):
+    """Module-level __getattr__ for lazy loading."""
+    if name == "LUNA_AVAILABLE":
+        return is_available()
+    if name in ("luna", "luna_rig", "luna_builder"):
+        _initialize_luna()
+        return globals().get(name)
+    if name in ("components", "functions", "tools"):
+        if _initialize_luna():
+            return getattr(sys.modules[__name__], name, None)
+        return None
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
