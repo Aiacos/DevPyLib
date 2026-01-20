@@ -11,6 +11,7 @@ any Luna imports occur.
 
 import os
 import sys
+import traceback
 from pathlib import Path
 from types import ModuleType
 
@@ -110,23 +111,25 @@ def _create_directories_module(pm):
 
     directories_module.get_icon_path = get_icon_path
 
-    # Create parent namespace modules if they don't exist
-    # This is needed for "from luna.static import directories" to work
-    if "luna" not in sys.modules:
-        luna_module = ModuleType("luna")
-        luna_module.__path__ = [LUNA_ROOT_PATH]
-        sys.modules["luna"] = luna_module
+    # We need to inject directories BEFORE luna.static.directories.py gets imported.
+    # The strategy is:
+    # 1. Pre-inject luna.static.directories into sys.modules
+    # 2. When 'import luna' runs, it will eventually try to import luna.static.directories
+    # 3. Python will find our pre-injected module in sys.modules and use it
+    #
+    # NOTE: We create luna.static as a namespace package so Python can find
+    # luna.static.directories as a submodule. We do NOT create luna - that comes
+    # from the real package.
 
-    if "luna.static" not in sys.modules:
-        static_module = ModuleType("luna.static")
-        static_module.__path__ = [os.path.join(LUNA_ROOT_PATH, "luna", "static")]
-        sys.modules["luna.static"] = static_module
+    # Create luna.static namespace (but not luna itself - let that be the real package)
+    static_module = ModuleType("luna.static")
+    static_module.__path__ = [os.path.join(LUNA_ROOT_PATH, "luna", "static")]
+    static_module.__package__ = "luna.static"
+    static_module.directories = directories_module
 
-    # Inject the directories module
+    # Inject into sys.modules
+    sys.modules["luna.static"] = static_module
     sys.modules["luna.static.directories"] = directories_module
-
-    # Also set directories as an attribute of luna.static
-    sys.modules["luna.static"].directories = directories_module
 
 
 # Add Luna path to sys.path
@@ -152,8 +155,10 @@ if LUNA_ROOT_PATH and _setup_luna_integration():
 
     except ImportError as e:
         print(f"Warning: Luna not available - {e}")
+        traceback.print_exc()
     except Exception as e:
         print(f"Warning: Luna initialization error - {e}")
+        traceback.print_exc()
 
 # Only import submodules if Luna is available
 if LUNA_AVAILABLE:
