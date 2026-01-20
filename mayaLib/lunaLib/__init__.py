@@ -8,12 +8,9 @@ integrating it as a submodule by adding it to sys.path. This requires patching
 both the pymel.core.moduleInfo function and Luna's directories module BEFORE
 any Luna imports occur.
 
-This module uses lazy loading with auto-start preference:
-- First time: Luna initializes only when the button is clicked
-- After first use: Luna auto-initializes on Maya startup
+Luna auto-initializes on Maya startup via evalDeferred to ensure PyMEL is ready.
 """
 
-import json
 import os
 import sys
 import traceback
@@ -23,9 +20,6 @@ from types import ModuleType
 # Determine Luna root path
 _luna_path = Path(__file__).parent.parent.parent / "luna"
 LUNA_ROOT_PATH = str(_luna_path) if _luna_path.exists() else None
-
-# Preference file path (stored in Maya prefs directory)
-_PREF_FILE = Path(__file__).parent / ".luna_autostart"
 
 # Add Luna path to sys.path early
 if LUNA_ROOT_PATH and LUNA_ROOT_PATH not in sys.path:
@@ -37,23 +31,6 @@ _luna_available = False
 luna = None
 luna_rig = None
 luna_builder = None
-
-
-def _should_autostart():
-    """Check if Luna should auto-start based on saved preference.
-
-    Returns:
-        bool: True if Luna was previously used and should auto-start.
-    """
-    return _PREF_FILE.exists()
-
-
-def _save_autostart_preference():
-    """Save preference to auto-start Luna on future Maya sessions."""
-    try:
-        _PREF_FILE.write_text("1")
-    except Exception:
-        pass  # Silent fail - preference is not critical
 
 
 def _setup_luna_integration():
@@ -196,9 +173,6 @@ def _initialize_luna():
         from . import functions
         from . import tools
 
-        # Save preference for auto-start on next Maya session
-        _save_autostart_preference()
-
         return True
 
     except ImportError as e:
@@ -245,18 +219,16 @@ def __getattr__(name):
 
 
 def deferred_autostart():
-    """Auto-start Luna if it was previously used.
+    """Auto-start Luna on Maya startup.
 
     This is called via Maya's evalDeferred to ensure PyMEL is ready.
     """
-    if _should_autostart():
-        _initialize_luna()
+    _initialize_luna()
 
 
-# Auto-start Luna if preference exists (deferred to ensure Maya is ready)
-if _should_autostart():
-    try:
-        import maya.cmds as cmds
-        cmds.evalDeferred("from mayaLib.lunaLib import deferred_autostart; deferred_autostart()", lowestPriority=True)
-    except ImportError:
-        pass  # Not in Maya environment
+# Auto-start Luna on Maya startup (deferred to ensure PyMEL is ready)
+try:
+    import maya.cmds as cmds
+    cmds.evalDeferred("from mayaLib.lunaLib import deferred_autostart; deferred_autostart()", lowestPriority=True)
+except ImportError:
+    pass  # Not in Maya environment
