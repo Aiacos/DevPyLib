@@ -110,8 +110,23 @@ def _create_directories_module(pm):
 
     directories_module.get_icon_path = get_icon_path
 
-    # Inject the module into sys.modules BEFORE any Luna imports
+    # Create parent namespace modules if they don't exist
+    # This is needed for "from luna.static import directories" to work
+    if "luna" not in sys.modules:
+        luna_module = ModuleType("luna")
+        luna_module.__path__ = [LUNA_ROOT_PATH]
+        sys.modules["luna"] = luna_module
+
+    if "luna.static" not in sys.modules:
+        static_module = ModuleType("luna.static")
+        static_module.__path__ = [os.path.join(LUNA_ROOT_PATH, "luna", "static")]
+        sys.modules["luna.static"] = static_module
+
+    # Inject the directories module
     sys.modules["luna.static.directories"] = directories_module
+
+    # Also set directories as an attribute of luna.static
+    sys.modules["luna.static"].directories = directories_module
 
 
 # Add Luna path to sys.path
