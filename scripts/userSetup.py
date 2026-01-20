@@ -134,6 +134,19 @@ if lib_dir:
     # Create main menu (deferred to ensure Maya UI is ready)
     command = f"import mayaLib.guiLib.main_menu as mm; libmenu = mm.MainMenu('{lib_dir}')"
     cmds.evalDeferred(command, lowestPriority=True)
+
+    # Initialize Luna integration (deferred)
+    luna_init_cmd = """
+try:
+    from mayaLib.lunaLib import LUNA_AVAILABLE
+    if LUNA_AVAILABLE:
+        from mayaLib.lunaLib.bridge import register_mayalib_utilities
+        register_mayalib_utilities()
+        print("Luna integration initialized")
+except Exception as e:
+    print(f"Luna integration not available: {e}")
+"""
+    cmds.evalDeferred(luna_init_cmd, lowestPriority=True)
 else:
     print("Warning: DEVPYLIB_PATH not set in Maya.env")
 

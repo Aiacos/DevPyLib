@@ -10,6 +10,7 @@ from . import (
     fluidLib,
     guiLib,
     lookdevLib,
+    lunaLib,
     modelLib,
     pipelineLib,
     rigLib,

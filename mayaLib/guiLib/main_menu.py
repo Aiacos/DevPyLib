@@ -70,7 +70,10 @@ class SearchLineEdit(QtWidgets.QLineEdit):
             f"QLineEdit {{padding-right: {button_size.width() + frame_width + 1}px; }}"
         )
         self.setMinimumSize(
-            max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 3),
+            max(
+                self.minimumSizeHint().width(),
+                button_size.width() + frame_width * 2 + 3,
+            ),
             max(
                 self.minimumSizeHint().height(),
                 button_size.height() + frame_width * 2 + 3,
@@ -111,6 +114,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         close_icon_path = lib_path / "mayaLib" / "icons" / "close.png"
         update_icon_path = lib_path / "mayaLib" / "icons" / "update.png"
         reload_icon_path = lib_path / "mayaLib" / "icons" / "reload.png"
+        luna_icon_path = lib_path / "luna" / "res" / "images" / "icons" / "builder.svg"
 
         self.lib_structure = lm.StructureManager(mayaLib)
         self.lib_dict = self.lib_structure.get_struct_lib()["mayaLib"]
@@ -147,16 +151,19 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.doc_label)
         self.doc_label.setText("")
 
-        # Update and Reload Buttons
+        # Luna, Update, and Reload Buttons
+        self.luna_button = self.add_icon_button("Luna Builder", str(luna_icon_path))
         self.update_button = self.add_icon_button("update", str(update_icon_path))
         self.reload_button = self.add_icon_button("reload", str(reload_icon_path))
 
         self.button_layout = QtWidgets.QHBoxLayout()
+        self.button_layout.addWidget(self.luna_button)
         self.button_layout.addWidget(self.reload_button)
         self.button_layout.addWidget(self.update_button)
         self.layout.addLayout(self.button_layout)
 
         # Connect signals
+        self.luna_button.clicked.connect(self.open_luna_builder)
         self.reload_button.clicked.connect(self.reloaded)
         self.update_button.clicked.connect(self.download)
         self.search_line_edit.speak.connect(
@@ -223,6 +230,20 @@ class MenuLibWidget(QtWidgets.QWidget):
         # lib.download()
         lib.pull_from_git()
         self.reloaded()
+
+    def open_luna_builder(self):
+        """Open the Luna Builder visual rig editor."""
+        try:
+            from mayaLib.lunaLib import LUNA_AVAILABLE
+
+            if LUNA_AVAILABLE:
+                from mayaLib.lunaLib.tools import launch_builder
+
+                launch_builder()
+            else:
+                print("Luna is not available")
+        except ImportError as e:
+            print(f"Could not open Luna Builder: {e}")
 
     def add_icon_button(self, name, img_path):
         """Create a button with an icon.
@@ -359,7 +380,9 @@ class MenuLibWidget(QtWidgets.QWidget):
 class MainMenu(QtWidgets.QWidget):
     """Main menu widget to display the library in Maya."""
 
-    def __init__(self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True):
+    def __init__(
+        self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True
+    ):
         """Initialize the MainMenu.
 
         Args:
