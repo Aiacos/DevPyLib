@@ -111,24 +111,11 @@ def _create_directories_module(pm):
 
     directories_module.get_icon_path = get_icon_path
 
-    # We need to inject directories BEFORE luna.static.directories.py gets imported.
-    # The strategy is:
-    # 1. Pre-inject luna.static.directories into sys.modules
-    # 2. When 'import luna' runs, it will eventually try to import luna.static.directories
-    # 3. Python will find our pre-injected module in sys.modules and use it
-    #
-    # NOTE: We create luna.static as a namespace package so Python can find
-    # luna.static.directories as a submodule. We do NOT create luna - that comes
-    # from the real package.
-
-    # Create luna.static namespace (but not luna itself - let that be the real package)
-    static_module = ModuleType("luna.static")
-    static_module.__path__ = [os.path.join(LUNA_ROOT_PATH, "luna", "static")]
-    static_module.__package__ = "luna.static"
-    static_module.directories = directories_module
-
-    # Inject into sys.modules
-    sys.modules["luna.static"] = static_module
+    # We ONLY inject luna.static.directories into sys.modules.
+    # We do NOT create luna or luna.static - those will import normally from
+    # the real Luna package. When Python later tries to import luna.static.directories,
+    # it will find our pre-injected module in sys.modules and use it instead of
+    # running the real directories.py (which would fail due to moduleInfo).
     sys.modules["luna.static.directories"] = directories_module
 
 
@@ -145,23 +132,9 @@ luna_builder = None
 # Setup Luna integration before importing
 if LUNA_ROOT_PATH and _setup_luna_integration():
     try:
-        # Remove any auto-created 'luna' placeholder that Python might have
-        # created when we injected 'luna.static'. This allows the real luna
-        # package to be imported from the filesystem.
-        if "luna" in sys.modules:
-            # Check if it's a placeholder (no __file__ attribute or empty module)
-            luna_placeholder = sys.modules["luna"]
-            if not hasattr(luna_placeholder, "__file__") or luna_placeholder.__file__ is None:
-                del sys.modules["luna"]
-
         # Now we can safely import Luna - moduleInfo is patched and
-        # directories module is pre-created
+        # directories module is pre-created in sys.modules
         import luna
-
-        # After importing luna, ensure luna.static still has our directories module
-        if hasattr(luna, "static") and hasattr(sys.modules.get("luna.static"), "directories"):
-            luna.static = sys.modules["luna.static"]
-
         import luna_rig
         import luna_builder
 
