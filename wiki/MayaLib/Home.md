@@ -248,4 +248,4 @@ MayaLib creates a standardized rig hierarchy:
 
 ---
 
-*Last updated: January 2026*
+*Last updated: February 2026*

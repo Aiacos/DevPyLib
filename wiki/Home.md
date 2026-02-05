@@ -280,4 +280,4 @@ For issues, feature requests, or contributions, please visit the project reposit
 
 ---
 
-*Last updated: January 2026*
+*Last updated: February 2026*
