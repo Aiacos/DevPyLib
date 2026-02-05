@@ -41,6 +41,8 @@ mayaLib/
 │   └── matrix/       # Matrix-based rigging
 ├── animationLib/     # Animation tools
 │   └── bvh_importer.py
+├── ariseLib/         # Arise rigging system integration
+│   └── base.py       # BaseRig class and utilities
 ├── modelLib/         # Modeling utilities
 │   ├── base/         # Base modeling classes
 │   ├── tools/        # Quad patcher, etc.
@@ -82,6 +84,7 @@ mayaLib/
 |--------|-------------|---------------|
 | **rigLib** | Character rigging system | [RigLib Documentation](RigLib.md) |
 | **animationLib** | Animation tools | [AnimationLib Documentation](AnimationLib.md) |
+| **ariseLib** | Arise rigging system integration | [AriseLib Documentation](AriseLib.md) |
 | **modelLib** | Modeling utilities | [ModelLib Documentation](ModelLib.md) |
 | **shaderLib** | Shader/lookdev tools | [ShaderLib Documentation](ShaderLib.md) |
 | **fluidLib** | Fluid simulation | [FluidLib Documentation](FluidLib.md) |
