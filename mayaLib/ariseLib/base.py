@@ -192,9 +192,15 @@ class BaseRig:
         ctrl_set = pm.sets(pm.ls(body_ctrl_set, face_ctrl_set), n="ctrls_set")
 
         # Meshes
-        render_geo_list = list_objects_under_group("render") if pm.objExists("render") else []
-        proxy_geo_list = list_objects_under_group("proxy") if pm.objExists("proxy") else []
-        guide_geo_list = list_objects_under_group("guide") if pm.objExists("guide") else []
+        render_geo_list = (
+            list_objects_under_group("render") if pm.objExists("render") else []
+        )
+        proxy_geo_list = (
+            list_objects_under_group("proxy") if pm.objExists("proxy") else []
+        )
+        guide_geo_list = (
+            list_objects_under_group("guide") if pm.objExists("guide") else []
+        )
 
         model_sets = []
         if render_geo_list:
@@ -214,7 +220,11 @@ class BaseRig:
                 geometry_model_set = pm.sets(geometry_geo_list, n="geometry_model_set")
                 model_sets.append(geometry_model_set)
 
-        model_set = pm.sets(model_sets, n="model_set") if model_sets else pm.sets(empty=True, n="model_set")
+        model_set = (
+            pm.sets(model_sets, n="model_set")
+            if model_sets
+            else pm.sets(empty=True, n="model_set")
+        )
 
         # Joints
         body_joint_set = pm.sets(joint_list, n="body_joint_set")
@@ -382,6 +392,109 @@ class BaseRig:
                     "MainAndHeadScaleMultiplyDivide.input1",
                     f=True,
                 )
+
+    def setup_face_RIG_NEW(self):
+        # constraint tra testa e motion system
+        if pm.objExists("FaceJoint_M"):
+            pm.parent("FaceJoint_M", "M_Head_head_FS_jnt")
+            # pm.parentConstraint('M_Head_head_FS_jnt', 'FaceMotionSystem', mo=True)
+            # pm.parentConstraint('M_Head_head_FS_jnt', 'FaceDeformationFollowHead', mo=True)
+            # pm.parentConstraint('M_Head_head_FS_jnt', 'LipFollowHead', mo=True)
+
+            # pm.parentConstraint('M_Head_head_FS_jnt', 'AimEyeFollow_M', mo=True)
+            # pm.connectAttr('AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2', 'AimEyeFollow_M_parentConstraint1.target[2].targetWeight', f=True)
+            # pm.connectAttr('eyeAimFollowSetRange.outValueX', 'AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2', f=True)
+
+            # delete AimEyeFollowMMStatic_M if exist
+            if pm.objExists("AimEyeFollowMMStatic_M"):
+                pm.delete("AimEyeFollowMMStatic_M")
+            mult_matrix = pm.shadingNode(
+                "multMatrix", asUtility=True, name="AimEyeFollowMMStatic_M"
+            )
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix", mult_matrix.matrixIn[1], f=True
+            )
+            pm.connectAttr(
+                mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True
+            )
+
+            if pm.objExists("eyeAimFollowSetRange"):
+                pm.delete("eyeAimFollowSetRange")
+            if pm.objExists("AimEyeFollow_M_parentConstraint1"):
+                pm.delete("AimEyeFollow_M_parentConstraint1")
+            pm.parentConstraint(
+                "EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True
+            )
+            set_range = pm.shadingNode(
+                "setRange", asUtility=True, name="eyeAimFollowSetRange"
+            )
+            pm.connectAttr(
+                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True
+            )
+            pm.connectAttr(
+                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True
+            )
+            pm.connectAttr(
+                "eyeAimFollowSetRange.outValue.outValueX",
+                "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW1",
+                f=True,
+            )
+            pm.connectAttr(
+                "eyeAimFollowSetRange.outValue.outValueY",
+                "AimEyeFollow_M_parentConstraint1.EyeAimStaticW0",
+                f=True,
+            )
+            pm.setAttr("eyeAimFollowSetRange.minY", 1)
+            pm.setAttr("eyeAimFollowSetRange.maxX", 1)
+            pm.setAttr("eyeAimFollowSetRange.oldMaxY", 10)
+            pm.setAttr("eyeAimFollowSetRange.oldMaxX", 10)
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "EyeAimFollowHeadMM_EyeAimFollowHead.matrixIn[0]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "FaceMotionSystemMM_FaceMotionSystem.matrixIn[1]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "LipFollowHeadMM_LipFollowHead.matrixIn[0]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "FaceDeformationFollowHeadMM_FaceDeformationFollowHead.matrixIn[1]",
+                f=True,
+            )
+
+            # prima disconnetto e imposto la scala a uno sennò implode
+
+            if pm.isConnected(
+                "Base_main_offset_grp.scale", "MainAndHeadScaleMultiplyDivide.input1"
+            ):
+                pm.disconnectAttr(
+                    "Base_main_offset_grp.scale",
+                    "MainAndHeadScaleMultiplyDivide.input1",
+                )
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1X", 1)
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Y", 1)
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Z", 1)
+
+            decompose_matrix = pm.shadingNode("decomposeMatrix", asUtility=True)
+            pm.connectAttr(
+                "Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True
+            )
+            pm.connectAttr(
+                decompose_matrix.outputScale,
+                "MainAndHeadScaleMultiplyDivide.input1",
+                f=True,
+            )
 
     def _setup_human_ik(self):
         """Set up HumanIK for the character.
