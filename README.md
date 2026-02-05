@@ -139,6 +139,7 @@ The **DevPyLib** menu will appear automatically in Maya's interface! 🎉
 DevPyLib/
 ├── mayaLib/                    # Main Maya library (~28K LOC)
 │   ├── animationLib/          # Animation tools
+│   ├── ariseLib/              # Arise rig system (HumanIK, face rig)
 │   ├── bifrostLib/            # Bifrost graph and USD integration
 │   ├── fluidLib/              # Fluid system (smoke, fire, explosion)
 │   ├── guiLib/                # Automatic GUI system
@@ -314,6 +315,7 @@ Complete documentation is available in the **[wiki/](wiki/)** folder:
 
 ### Other Documentation
 
+- **CHANGELOG.md** - Version history and changes
 - **CLAUDE.md** - Detailed architecture and patterns for developers
 - **CROSS_PLATFORM_MIGRATION.md** - Cross-platform migration notes
 - **Inline docs** - All functions have complete docstrings

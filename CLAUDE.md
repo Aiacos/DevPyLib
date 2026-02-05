@@ -12,6 +12,7 @@ DevPyLib is a comprehensive development library for DCC (Digital Content Creatio
 DevPyLib/
 ├── mayaLib/          # Primary Maya utilities (~28K LOC)
 │   ├── rigLib/       # Character rigging (Ziva, AdonisFX integration)
+│   ├── ariseLib/     # Arise rig system integration (HumanIK, face rig)
 │   ├── bifrostLib/   # Bifrost graph/USD integration
 │   ├── fluidLib/     # Fluid simulation utilities
 │   ├── animationLib/ # Animation tools (BVH importer, etc.)
