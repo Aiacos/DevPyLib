@@ -41,6 +41,7 @@ DevPyLib/
 │   ├── shaderLib/    # Shader/lookdev tools
 │   ├── guiLib/       # UI framework with introspection-based widget generation
 │   ├── pipelineLib/  # Pipeline utilities (naming conventions, workspace)
+│   ├── ariseLib/     # Arise rigging framework integration
 │   ├── lunaLib/      # Luna rigging framework integration
 │   ├── plugin/       # Maya Python API 2.0 plugins
 │   └── test/         # Integration test scripts
