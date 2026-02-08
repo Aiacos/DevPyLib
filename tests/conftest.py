@@ -4,11 +4,17 @@ Provides fixtures and setup for testing without Maya.
 """
 
 import sys
+from pathlib import Path
 from unittest.mock import MagicMock
 
 
 def pytest_configure(config):
     """Configure pytest before collecting tests."""
+    # Add repository root to Python path for mayaLib imports
+    repo_root = Path(__file__).parent.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
     # Ensure user site-packages is in path
     import site
     user_site = site.getusersitepackages()
