@@ -1,0 +1,36 @@
+# GitHub Actions CI Workflow for DevPyLib
+# Runs linting and formatting checks on push/PR
+
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Ruff
+        run: pip install ruff>=0.1.0
+
+      - name: Run Ruff check (linting)
+        run: ruff check . --output-format=github
+
+      - name: Run Ruff format check
+        run: ruff format --check .
