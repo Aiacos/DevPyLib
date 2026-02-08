@@ -50,6 +50,19 @@ Once a vulnerability is reported:
 4. We will release a patched version
 5. We will publicly acknowledge the reporter (unless anonymity is requested)
 
+## Security Features
+
+DevPyLib includes built-in security measures to protect against supply chain attacks:
+
+### Library Update Integrity Verification
+
+- **Hash Verification**: All library updates downloaded via `lib_manager.py` are verified using SHA-256 cryptographic hashes before extraction
+- **MITM Protection**: The download process validates the integrity of downloaded files against known-good hashes, preventing man-in-the-middle attacks
+- **Automatic Cleanup**: If hash verification fails, the downloaded file is automatically deleted to prevent accidental installation of unverified or potentially malicious code
+- **Clear Error Reporting**: Security failures generate detailed error messages to help diagnose download issues or potential security threats
+
+This feature ensures that DevPyLib updates are authentic and have not been tampered with during download.
+
 ## Security Best Practices for Users
 
 When using DevPyLib in your DCC pipeline:
