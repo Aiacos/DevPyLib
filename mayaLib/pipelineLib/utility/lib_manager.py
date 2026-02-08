@@ -473,6 +473,22 @@ class InstallLibrary:
             print(f"Error downloading file: {e}")
             return
 
+        # Verify hash if expected hash is provided
+        if self.lib_hash:
+            try:
+                if not self._verify_file_hash(zip_path, self.lib_hash):
+                    print("Hash verification failed. Aborting installation.")
+                    # Clean up downloaded file
+                    try:
+                        zip_path.unlink()
+                        print(f"Removed invalid file: {zip_path}")
+                    except (OSError, PermissionError) as e:
+                        print(f"Error removing invalid file: {e}")
+                    return
+            except (FileNotFoundError, OSError) as e:
+                print(f"Hash verification error: {e}")
+                return
+
         # Unzip using zipfile module (cross-platform)
         try:
             with zipfile.ZipFile(str(zip_path), "r") as zip_ref:
