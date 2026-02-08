@@ -59,8 +59,6 @@ addopts = [
     "--strict-markers",      # Strict marker usage
     "--color=yes",           # Colored output
     "--code-highlight=yes",  # Syntax highlighting
-    "--ignore=mayaLib/__init__.py",
-    "--ignore=__init__.py",
 ]
 
 # Test markers for organization
