@@ -6,7 +6,6 @@ file textures, place2dTexture, and PxrTexture nodes for different renderers.
 
 __author__ = "Lorenzo Argentieri"
 
-import os
 import pathlib
 
 import pymel.core as pm

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import importlib
-import os
 import platform
 import sys
 from pathlib import Path

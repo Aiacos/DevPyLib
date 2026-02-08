@@ -6,7 +6,6 @@ texture setup and material property configuration across multiple renderers.
 
 __author__ = "Lorenzo Argentieri"
 
-import os
 import pathlib
 
 from pymel import core as pm
