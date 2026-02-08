@@ -1,0 +1,43 @@
+# CODEOWNERS file for DevPyLib
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for all files in the repository
+# These owners will be requested for review when someone opens a pull request
+*                           @Aiacos
+
+# Core Maya library - primary codebase
+/mayaLib/                   @Aiacos
+
+# Arise rig system integration
+/mayaLib/ariseLib/          @Aiacos
+
+# Rigging library - character rigging, Ziva, AdonisFX
+/mayaLib/rigLib/            @Aiacos
+
+# Bifrost graph and USD integration
+/mayaLib/bifrostLib/        @Aiacos
+
+# GUI framework
+/mayaLib/guiLib/            @Aiacos
+
+# Pipeline utilities
+/mayaLib/pipelineLib/       @Aiacos
+
+# Maya plugins (C++ API)
+/mayaLib/plugin/            @Aiacos
+
+# Houdini utilities
+/houdiniLib/                @Aiacos
+
+# Blender utilities
+/blenderLib/                @Aiacos
+
+# Prism Pipeline integration
+/prismLib/                  @Aiacos
+
+# CI/CD and GitHub configuration
+/.github/                   @Aiacos
+
+# Project configuration
+/pyproject.toml             @Aiacos
+/requirements.txt           @Aiacos

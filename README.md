@@ -1,5 +1,11 @@
 # DevPyLib
 
+[![Build Status](https://github.com/Aiacos/DevPyLib/actions/workflows/ci.yml/badge.svg)](https://github.com/Aiacos/DevPyLib/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/Aiacos/DevPyLib/branch/master/graph/badge.svg)](https://codecov.io/gh/Aiacos/DevPyLib)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![License](https://img.shields.io/github/license/Aiacos/DevPyLib)](https://github.com/Aiacos/DevPyLib/blob/master/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
+
 **DevPyLib** is a comprehensive development library for DCC (Digital Content Creation) applications, with primary support for **Autodesk Maya** and ongoing development for **Houdini** and **Blender**.
 
 It provides professional-grade tools for rigging, animation, simulations, shading, modeling, and pipeline management for VFX and animation studios.
@@ -385,6 +391,45 @@ def myFunction(param1, param2=True):
 - ✅ Test on Windows, Linux, and macOS when possible
 - ❌ Don't use hardcoded paths
 - ❌ Don't use manual path separators (`/` or `\`)
+
+### Branch Protection Rules
+
+To maintain code quality and ensure stable releases, we recommend configuring the following branch protection rules for the `main`/`master` branch:
+
+#### Required Settings
+
+| Rule | Description |
+|------|-------------|
+| **Require status checks before merging** | All CI jobs (lint, test) must pass before a PR can be merged |
+| **Require pull request reviews** | At least 1 reviewer approval required before merging |
+| **Require branches to be up to date** | Branch must be current with base branch before merging |
+
+#### Recommended Settings
+
+| Rule | Description |
+|------|-------------|
+| **Require linear history** | Prevents merge commits, enforces rebase/squash workflow |
+| **Require signed commits** | Ensures commit authenticity (optional) |
+| **Include administrators** | Applies rules to repository admins as well |
+
+#### How to Configure (GitHub)
+
+1. Go to **Settings** → **Branches** in your repository
+2. Under "Branch protection rules", click **Add rule**
+3. Enter `main` (or `master`) as the branch name pattern
+4. Enable the desired protection rules
+5. Click **Create** to save
+
+#### CI Status Checks
+
+The following status checks should be required to pass:
+
+- `lint` - Ruff linting and formatting checks
+- `test (3.9)` - pytest on Python 3.9
+- `test (3.10)` - pytest on Python 3.10
+- `test (3.11)` - pytest on Python 3.11
+
+See `.github/workflows/ci.yml` for the complete CI pipeline configuration.
 
 ---
 
