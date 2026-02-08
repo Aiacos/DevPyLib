@@ -4,7 +4,7 @@
 [![Coverage](https://codecov.io/gh/Aiacos/DevPyLib/branch/master/graph/badge.svg)](https://codecov.io/gh/Aiacos/DevPyLib)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/github/license/Aiacos/DevPyLib)](https://github.com/Aiacos/DevPyLib/blob/master/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 
 **DevPyLib** is a comprehensive development library for DCC (Digital Content Creation) applications, with primary support for **Autodesk Maya** and ongoing development for **Houdini** and **Blender**.
 
