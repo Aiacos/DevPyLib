@@ -435,7 +435,8 @@ class ShaderFromJson:
 
 
 if __name__ == "__main__":
-    path = "/Users/lorenzoargentieri/Desktop/testTexture"
+    # Cross-platform test path - adjust folder name as needed
+    path = str(pathlib.Path.home() / "Desktop" / "testTexture")
     # tx = file.TextureFileManager(dirname=path)
     # texdict = tx.texture_dict['Skull']
     # shaderdict = texdict['Skull']
