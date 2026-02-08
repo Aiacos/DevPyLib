@@ -115,6 +115,7 @@ class InstallLibrary:
 
         Attributes:
             libUrl (str): URL of the zip library file.
+            lib_hash (str): Expected SHA-256 hash of the library zip file.
             homeUser (pathlib.Path): Path to the user home.
             winPath (str): Path to the windows maya script directory.
             linuxPath (str): Path to the linux maya script directory.
@@ -126,6 +127,7 @@ class InstallLibrary:
             libDir (pathlib.Path): Path to the library installation.
         """
         self.lib_url = "https://github.com/Aiacos/DevPyLib/archive/master.zip"
+        self.lib_hash = ""  # Expected SHA-256 hash for downloaded library verification
         self.home_user = pathlib.Path.home()
 
         # Cross-platform Maya script paths
