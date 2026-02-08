@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -259,7 +259,7 @@ class TestFileOpening:
             args=[], returncode=0, stdout=b"", stderr=b""
         )
 
-        result = secure_opener.open_file(test_file)
+        secure_opener.open_file(test_file)
 
         mock_run.assert_called_once()
         call_args = mock_run.call_args
@@ -274,7 +274,7 @@ class TestFileOpening:
             args=[], returncode=0, stdout=b"", stderr=b""
         )
 
-        result = secure_opener.open_file(test_file, validate=False)
+        secure_opener.open_file(test_file, validate=False)
         mock_run.assert_called_once()
 
     @patch("subprocess.run")
@@ -476,7 +476,7 @@ class TestConvenienceFunction:
             args=[], returncode=0, stdout=b"", stderr=b""
         )
 
-        result = open_file_secure(test_file)
+        open_file_secure(test_file)
         mock_run.assert_called_once()
 
     @patch("subprocess.run")
@@ -489,7 +489,7 @@ class TestConvenienceFunction:
         custom_file = temp_dir / "file.custom"
         custom_file.write_text("content")
 
-        result = open_file_secure(custom_file, allowed_extensions={".custom"})
+        open_file_secure(custom_file, allowed_extensions={".custom"})
         mock_run.assert_called_once()
 
     @patch("subprocess.run")
@@ -499,7 +499,7 @@ class TestConvenienceFunction:
             args=[], returncode=0, stdout=b"", stderr=b""
         )
 
-        result = open_file_secure(test_file, timeout=60)
+        open_file_secure(test_file, timeout=60)
 
         call_args = mock_run.call_args
         assert call_args[1]["timeout"] == 60
@@ -629,7 +629,7 @@ class TestIntegration:
             )
 
             # Open file
-            result = opener.open_file(test_file)
+            opener.open_file(test_file)
             assert mock_run.called
 
     def test_multiple_files_different_extensions(self, temp_dir):
@@ -651,7 +651,7 @@ class TestIntegration:
                 test_file = temp_dir / filename
                 test_file.write_bytes(content)
 
-                result = opener.open_file(test_file)
+                opener.open_file(test_file)
                 assert mock_run.called
 
             assert mock_run.call_count == len(files)

@@ -4,11 +4,9 @@ Provides safe file opening with external applications, preventing command inject
 and path traversal vulnerabilities. Implements CWE-78 mitigation strategies.
 """
 
-import os
 import platform
 import subprocess
 from pathlib import Path
-from typing import Literal
 
 __author__ = "DevPyLib Contributors"
 
@@ -222,10 +220,7 @@ class SecureFileOpener:
             subprocess.SubprocessError: If subprocess fails.
         """
         # Validate path
-        if validate:
-            validated_path = self.validate_path(file_path)
-        else:
-            validated_path = Path(file_path).resolve()
+        validated_path = self.validate_path(file_path) if validate else Path(file_path).resolve()
 
         # Get platform-specific opener
         opener_cmd, use_shell = self._get_opener()
