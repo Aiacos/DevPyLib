@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import importlib
-import os
+import platform
 import sys
+from pathlib import Path
 
 import pymel.core as pm
 from maya import mel
@@ -533,16 +534,18 @@ class HumanIK:
         Returns:
             None
         """
-        base_plugin_path = os.path.join(
-            "C:/Users",
-            os.getlogin(),
-            "Documents",
-            "maya",
-            "Plug-ins",
-            "arise_main",
-        )
+        # Get Maya plug-ins directory based on platform
+        system = platform.system()
+        if system == "Windows":
+            maya_base = Path.home() / "Documents" / "maya"
+        elif system == "Darwin":  # macOS
+            maya_base = Path.home() / "Library" / "Preferences" / "Autodesk" / "maya"
+        else:  # Linux
+            maya_base = Path.home() / "maya"
+
+        base_plugin_path = maya_base / "Plug-ins" / "arise_main"
         version_folder = f"py_{sys.version_info.major}_{sys.version_info.minor}"
-        plugin_path = os.path.join(base_plugin_path, version_folder)
+        plugin_path = str(base_plugin_path / version_folder)
 
         if plugin_path not in sys.path:
             sys.path.append(plugin_path)

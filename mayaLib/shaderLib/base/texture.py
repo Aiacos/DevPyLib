@@ -6,8 +6,6 @@ file textures, place2dTexture, and PxrTexture nodes for different renderers.
 
 __author__ = "Lorenzo Argentieri"
 
-import glob
-import os
 import pathlib
 
 import pymel.core as pm
@@ -70,9 +68,10 @@ class TextureFolder:
             list: List of image filenames.
         """
         img_list = []
-        os.chdir(self.get_texture_folder())
-        for filename in glob.glob("*." + search_extension):
-            img_list.append(filename)
+        # Use Path.glob() instead of os.chdir() to avoid changing global state
+        pattern = f"*.{search_extension}"
+        for filepath in self.texture_folder.glob(pattern):
+            img_list.append(filepath.name)
 
         return img_list
 

@@ -6,8 +6,6 @@ texture setup and material property configuration across multiple renderers.
 
 __author__ = "Lorenzo Argentieri"
 
-import glob
-import os
 import pathlib
 
 from pymel import core as pm
@@ -282,9 +280,10 @@ class ConvertShaders:
             main_name = tex_name.split(" ")[0].split("_")[0]
             print("main name:", main_name)
 
-            os.chdir(path)
-            for file in glob.glob(main_name + "*." + extension):
-                texture_list.append(file)
+            # Use Path.glob() instead of os.chdir() to avoid changing global state
+            pattern = f"{main_name}*.{extension}"
+            for file in pathlib.Path(path).glob(pattern):
+                texture_list.append(file.name)
 
             return texture_list
         else:
@@ -435,7 +434,8 @@ class ShaderFromJson:
 
 
 if __name__ == "__main__":
-    path = "/Users/lorenzoargentieri/Desktop/testTexture"
+    # Cross-platform test path - adjust folder name as needed
+    path = str(pathlib.Path.home() / "Desktop" / "testTexture")
     # tx = file.TextureFileManager(dirname=path)
     # texdict = tx.texture_dict['Skull']
     # shaderdict = texdict['Skull']
