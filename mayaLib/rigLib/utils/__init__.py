@@ -6,26 +6,57 @@ deformation tools, skin weighting, and specialized systems for dynamics,
 spaces, and custom rig components.
 """
 
-from . import (
-    attributes,
-    cloth_muscle_setup,
-    color_control,
-    common,
-    ctrl_shape,
-    dynamic,
-    follow_ctrl,
-    foot_roll,
-    human_ik,
-    ikfk_switch,
-    joint,
-    line_of_action,
-    meta_human,
-    name,
-    pole_vector,
-    proxy_geo,
-    pxr_control,
-    spaces,
-    stretchy_ik_chain,
-    transform,
-    util,
-)
+from typing import Any
+
+__all__ = [
+    "attributes",
+    "cloth_muscle_setup",
+    "color_control",
+    "common",
+    "control",
+    "ctrl_shape",
+    "deform",
+    "dynamic",
+    "flexiplane",
+    "follow_ctrl",
+    "foot_roll",
+    "human_ik",
+    "ikfk_switch",
+    "joint",
+    "line_of_action",
+    "meta_human",
+    "name",
+    "parameter_resolution",
+    "pole_vector",
+    "proxy_geo",
+    "pxr_control",
+    "scapula",
+    "skin",
+    "spaces",
+    "stretchy_ik_chain",
+    "transform",
+    "unreal_engine_skeleton_converter",
+    "util",
+]
+
+
+def __getattr__(name: str) -> Any:
+    """Lazy load rigging utility modules.
+
+    Args:
+        name: Module name to load.
+
+    Returns:
+        The requested module.
+
+    Raises:
+        AttributeError: If module not found.
+    """
+    if name in __all__:
+        from importlib import import_module
+
+        module = import_module(f".{name}", __name__)
+        globals()[name] = module
+        return module
+
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
