@@ -58,6 +58,18 @@ jobs:
           pip install pytest>=7.0.0 pytest-cov>=4.0.0
           pip install numpy GitPython
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
-          pytest tests/ -v --tb=short || echo "No tests found or tests skipped"
+          pytest tests/ -v --tb=short --cov=. --cov-report=xml --cov-report=term-missing || echo "No tests found or tests skipped"
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.10'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
