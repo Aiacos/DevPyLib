@@ -37,16 +37,12 @@ def build_install_cmd(lib_dir, lib_name, port):
     a running Maya instance via commandPort to install and initialize a library.
 
     Args:
-        lib_dir: Directory path containing the library to install
-        lib_name: Name of the library module to import
-        port: Maya commandPort number to connect to
+        lib_dir (str): Directory path containing the library to install.
+        lib_name (str): Name of the library module to import.
+        port (int): Maya commandPort number to connect to.
 
     Returns:
-        str: Multi-line Python script ready for remote execution
-
-    Example:
-        >>> cmd = build_install_cmd('/path/to/DevPyLib', 'mayaLib', 7001)
-        >>> # Send cmd to Maya via commandPort
+        str: Multi-line Python script ready for remote execution.
     """
     lib_dir_literal = repr(lib_dir)
     port_literal = repr(str(port))
@@ -87,44 +83,27 @@ class InstallLibrary:
 
     Handles cross-platform installation, updating, and configuration of the DevPyLib
     library. Manages Python paths, Maya environment variables, and plugin loading
-    across Windows, macOS, and Linux platforms. Supports both development and
-    production installation modes.
+    across Windows, macOS, and Linux platforms.
 
     Attributes:
-        libUrl: URL to the library zip file
-        homeUser: User home directory path
-        mayaScriptPath: Platform-specific Maya scripts directory
-        workspace_path: Workspace directory path
-        libDir: Installation directory path
-        libName: Library module name
-        dev_mode: Whether in development mode
-
-    Example:
-        >>> installer = InstallLibrary(lib_dir='/path/to/DevPyLib')
-        >>> installer.install_from_git()
-        >>> installer.install_in_maya_user_setup()
+        lib_url (str): URL to the library zip file.
+        lib_hash (str): Expected SHA-256 hash for verification.
+        home_user (pathlib.Path): User home directory path.
+        maya_script_path (pathlib.Path): Platform-specific Maya scripts directory.
+        workspace_path (pathlib.Path): Workspace directory path.
+        lib_dir (pathlib.Path): Installation directory path.
+        lib_name (str): Library module name.
+        dev_mode (bool): Whether in development mode.
+        port (str): Maya command port.
     """
 
     def __init__(self, dev_mode=False, parent=None, lib_dir=None):
         """Initialize the InstallLibrary.
 
         Args:
-            dev_mode (bool, optional): Install in development mode. Defaults to False.
-            parent (QWidget, optional): Parent widget. Defaults to None.
-            lib_dir (pathlib.Path, optional): Path to the library installation. Defaults to None.
-
-        Attributes:
-            libUrl (str): URL of the zip library file.
-            lib_hash (str): Expected SHA-256 hash of the library zip file.
-            homeUser (pathlib.Path): Path to the user home.
-            winPath (str): Path to the windows maya script directory.
-            linuxPath (str): Path to the linux maya script directory.
-            osxPath (str): Path to the osx maya script directory.
-            mayaScriptPath (pathlib.Path): Path to the maya script directory.
-            wokspace_path (pathlib.Path): Path to the workspace directory.
-            port (str): Maya command port.
-            libName (str): Name of the library.
-            libDir (pathlib.Path): Path to the library installation.
+            dev_mode (bool): Install in development mode. Defaults to False.
+            parent (QWidget): Parent widget for UI integration. Defaults to None.
+            lib_dir (pathlib.Path): Custom library installation path. Defaults to None.
         """
         self.lib_url = "https://github.com/Aiacos/DevPyLib/archive/master.zip"
         self.lib_hash = ""  # Expected SHA-256 hash for downloaded library verification
@@ -170,11 +149,10 @@ class InstallLibrary:
         self.dev_mode = dev_mode
 
     def _verify_file_hash(self, file_path, expected_hash):
-        """Verify the SHA-256 hash of a file.
+        """Verify the SHA-256 hash of a downloaded file.
 
-        Computes the SHA-256 hash of the file at the given path and compares
-        it with the expected hash. Uses chunk reading for memory efficiency
-        with large files.
+        Computes the SHA-256 hash and compares it with the expected value.
+        Uses chunk reading for memory efficiency with large files.
 
         Args:
             file_path (pathlib.Path): Path to the file to verify.
@@ -186,13 +164,6 @@ class InstallLibrary:
         Raises:
             FileNotFoundError: If the file does not exist.
             OSError: If there is an error reading the file.
-
-        Example:
-            >>> installer = InstallLibrary()
-            >>> is_valid = installer._verify_file_hash(
-            ...     pathlib.Path('master.zip'),
-            ...     'abc123...'
-            ... )
         """
         try:
             if not pathlib.Path(file_path).exists():
@@ -224,13 +195,13 @@ class InstallLibrary:
             raise
 
     def install_from_git(self, git_url="https://github.com/Aiacos/DevPyLib"):
-        """Install the library by cloning the git repository.
+        """Install the library by cloning from a git repository.
 
         Args:
-            git_url (str, optional): The git repository URL. Defaults to 'https://github.com/Aiacos/DevPyLib'.
+            git_url (str): The git repository URL to clone from.
 
         Returns:
-            bool: True if successful, False if not.
+            bool: True if successful, False otherwise.
         """
         try:
             print("Cloning: ", git_url, " in folder: ", self.lib_dir)
@@ -245,7 +216,7 @@ class InstallLibrary:
         """Pull the latest changes from the git repository.
 
         Returns:
-            bool: True if successful, False if not.
+            bool: True if successful, False otherwise.
         """
         try:
             print("Pulling: ", self.lib_dir)
@@ -258,15 +229,13 @@ class InstallLibrary:
             return False
 
     def copy_to_maya_env(self):
-        """Copy the library paths to the Maya environment file (Maya.env) for the current user.
+        """Add library paths to the Maya.env file.
 
-        This function ensures that the specified library directory is added to the Maya environment
-        by checking if the entries for `MAYA_APP_DIR` and `PYTHONPATH` are already present in the
-        Maya.env file. If not present, it appends these entries to the file.
+        Ensures the library directory is added to MAYA_APP_DIR and PYTHONPATH
+        in the Maya.env file for the current Maya version.
 
         Returns:
-            bool: True if the entries were successfully added, False if the entries already exist or
-                  if there was any error during the process.
+            bool: True if entries were added successfully, False if already present or on error.
         """
         # Cross-platform Maya.env path detection
         maya_version = str(pm.about(version=True))
@@ -326,15 +295,13 @@ class InstallLibrary:
             return False
 
     def update_dev_mode(self, dev_path=False):
-        """Update the development mode settings for the library.
+        """Update the development mode settings and installation path.
+
+        Sets dev_mode flag and updates lib_dir if a development path is provided.
+        Also rebuilds the installation command based on the new settings.
 
         Args:
-            dev_path (str, optional): The development path to set. Defaults to False.
-
-        Sets:
-            self.dev_mode (bool): True if dev_path is provided, otherwise False.
-            self.lib_dir (str): The development path if dev_path is provided.
-            self.install_command (str): The installation command constructed based on the library directory, name, and port.
+            dev_path (str): The development path to use. Empty string or False disables dev mode.
         """
         self.dev_mode = dev_path != ""
 
@@ -344,18 +311,10 @@ class InstallLibrary:
         self.install_command = build_install_cmd(self.lib_dir, self.lib_name, self.port)
 
     def install_in_maya_user_setup(self):
-        """Install the library in Maya user setup.
+        """Install the library in Maya userSetup.py file.
 
-        This method writes the installation command into Maya user setup file.
-        If the file does not exist, it creates a new one.
-        If the file exists, it appends the command to the end of the file.
-
-        Args:
-            None
-
-        Returns:
-            None
-
+        Writes the installation command to the Maya userSetup.py file.
+        Creates the file if it doesn't exist, or appends if it does.
         """
         user_setup_path = self.maya_script_path
         file_name = "userSetup.py"
@@ -371,21 +330,10 @@ class InstallLibrary:
             print("ERROR: Directory not exist!")
 
     def install(self):
-        """Install the library by performing the following actions.
+        """Install the library in Maya.
 
-        1. Uninstall any existing installation.
-        2. Download the library if not in development mode.
-        3. Install the library in the Maya user setup.
-
-        Note:
-            This method currently does not install dependency packages,
-            but a placeholder for installing 'numpy' is included.
-
-        Args:
-            None
-
-        Returns:
-            None
+        Performs uninstall, download (if not in dev mode), and installation
+        to Maya userSetup.py.
         """
         self.uninstall()
         if not self.dev_mode:
@@ -396,17 +344,10 @@ class InstallLibrary:
         # pip.main(['install', 'numpy'])
 
     def uninstall(self):
-        """Uninstall the library by performing the following actions.
+        """Uninstall the library from Maya.
 
-        1. Remove the line in the Maya user setup script
-           that imports the library.
-        2. Delete the library directory.
-
-        Args:
-            None
-
-        Returns:
-            None
+        Removes the library import from userSetup.py and deletes
+        the library directory.
         """
         user_setup_path = self.maya_script_path
         file_name = "userSetup.py"
@@ -418,15 +359,15 @@ class InstallLibrary:
         self.delete()
 
     def reporthook(self, count, block_size, total_size):
-        """Report hook for urlretrieve that prints the percentage of the file downloaded to the console.
+        """Report download progress to console.
+
+        Callback for urllib.request.urlretrieve to display download progress
+        including percentage, size, speed, and elapsed time.
 
         Args:
-            count (int): The number of blocks transferred so far.
-            block_size (int): The size of each block in bytes.
-            total_size (int): The total size of the file in bytes.
-
-        Returns:
-            None
+            count (int): Number of blocks transferred so far.
+            block_size (int): Size of each block in bytes.
+            total_size (int): Total file size in bytes.
         """
         global start_time
         if count == 0:
@@ -442,16 +383,13 @@ class InstallLibrary:
         sys.stdout.flush()
 
     def download(self, zip_filename="master.zip"):
-        """Download the library from the given URL.
+        """Download and extract the library from the configured URL.
 
-        This method will download the library to the given path, unzip it,
-        and then remove the zip file. Cross-platform implementation using zipfile.
+        Downloads the library zip file, verifies its hash if configured,
+        extracts it, and cleans up the zip file. Aborts on verification failure.
 
         Args:
-            zip_filename (str): The name of the zip file to download.
-
-        Returns:
-            None
+            zip_filename (str): Name of the zip file to download.
         """
         download_dir = pathlib.Path(self.maya_script_path)
         zip_path = download_dir / zip_filename
@@ -554,15 +492,9 @@ class InstallLibrary:
             print(f"Error removing zip file: {e}")
 
     def delete(self):
-        """Delete the DevPyLib-master directory from the Maya script path.
+        """Delete the library directory from the Maya script path.
 
-        Cross-platform implementation using shutil.
-
-        Args:
-            None
-
-        Returns:
-            None
+        Removes the DevPyLib-master directory using cross-platform shutil.
         """
         delete_dir = pathlib.Path(self.maya_script_path) / "DevPyLib-master"
 
