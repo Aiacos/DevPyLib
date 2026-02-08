@@ -6,7 +6,6 @@ texture setup and material property configuration across multiple renderers.
 
 __author__ = "Lorenzo Argentieri"
 
-import glob
 import os
 import pathlib
 
@@ -282,9 +281,10 @@ class ConvertShaders:
             main_name = tex_name.split(" ")[0].split("_")[0]
             print("main name:", main_name)
 
-            os.chdir(path)
-            for file in glob.glob(main_name + "*." + extension):
-                texture_list.append(file)
+            # Use Path.glob() instead of os.chdir() to avoid changing global state
+            pattern = f"{main_name}*.{extension}"
+            for file in pathlib.Path(path).glob(pattern):
+                texture_list.append(file.name)
 
             return texture_list
         else:
