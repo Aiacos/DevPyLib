@@ -4,4 +4,23 @@ Provides tools for naming conventions, workspace management, and
 integration with production pipeline systems.
 """
 
-from . import utility
+import importlib
+
+# Define submodules to lazily load
+_submodules = {
+    "utility": ".utility",
+}
+
+
+def __getattr__(name):
+    """Lazy load submodules on first access."""
+    if name in _submodules:
+        module = importlib.import_module(_submodules[name], package=__name__)
+        globals()[name] = module
+        return module
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    """Return list of available attributes."""
+    return list(_submodules.keys())
