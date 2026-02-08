@@ -6,6 +6,7 @@ and cross-platform DevPyLib installation in Maya environments.
 
 __author__ = "Lorenzo Argentieri"
 
+import hashlib
 import os
 import os.path
 
@@ -165,6 +166,60 @@ class InstallLibrary:
             self.lib_dir = lib_dir
 
         self.dev_mode = dev_mode
+
+    def _verify_file_hash(self, file_path, expected_hash):
+        """Verify the SHA-256 hash of a file.
+
+        Computes the SHA-256 hash of the file at the given path and compares
+        it with the expected hash. Uses chunk reading for memory efficiency
+        with large files.
+
+        Args:
+            file_path (pathlib.Path): Path to the file to verify.
+            expected_hash (str): Expected SHA-256 hash in hexadecimal format.
+
+        Returns:
+            bool: True if the hash matches, False otherwise.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            OSError: If there is an error reading the file.
+
+        Example:
+            >>> installer = InstallLibrary()
+            >>> is_valid = installer._verify_file_hash(
+            ...     pathlib.Path('master.zip'),
+            ...     'abc123...'
+            ... )
+        """
+        try:
+            if not pathlib.Path(file_path).exists():
+                raise FileNotFoundError(f"File not found: {file_path}")
+
+            # Compute SHA-256 hash with chunk reading for memory efficiency
+            sha256_hash = hashlib.sha256()
+            with open(file_path, "rb") as f:
+                # Read file in 8KB chunks
+                for chunk in iter(lambda: f.read(8192), b""):
+                    sha256_hash.update(chunk)
+
+            computed_hash = sha256_hash.hexdigest()
+
+            if computed_hash == expected_hash:
+                print(f"Hash verification successful for {file_path}")
+                return True
+            else:
+                print(f"Hash mismatch for {file_path}")
+                print(f"Expected: {expected_hash}")
+                print(f"Computed: {computed_hash}")
+                return False
+
+        except FileNotFoundError as e:
+            print(f"Verification failed: {e}")
+            raise
+        except OSError as e:
+            print(f"Error reading file during verification: {e}")
+            raise
 
     def install_from_git(self, git_url="https://github.com/Aiacos/DevPyLib"):
         """Install the library by cloning the git repository.
