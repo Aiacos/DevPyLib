@@ -392,6 +392,45 @@ def myFunction(param1, param2=True):
 - ❌ Don't use hardcoded paths
 - ❌ Don't use manual path separators (`/` or `\`)
 
+### Branch Protection Rules
+
+To maintain code quality and ensure stable releases, we recommend configuring the following branch protection rules for the `main`/`master` branch:
+
+#### Required Settings
+
+| Rule | Description |
+|------|-------------|
+| **Require status checks before merging** | All CI jobs (lint, test) must pass before a PR can be merged |
+| **Require pull request reviews** | At least 1 reviewer approval required before merging |
+| **Require branches to be up to date** | Branch must be current with base branch before merging |
+
+#### Recommended Settings
+
+| Rule | Description |
+|------|-------------|
+| **Require linear history** | Prevents merge commits, enforces rebase/squash workflow |
+| **Require signed commits** | Ensures commit authenticity (optional) |
+| **Include administrators** | Applies rules to repository admins as well |
+
+#### How to Configure (GitHub)
+
+1. Go to **Settings** → **Branches** in your repository
+2. Under "Branch protection rules", click **Add rule**
+3. Enter `main` (or `master`) as the branch name pattern
+4. Enable the desired protection rules
+5. Click **Create** to save
+
+#### CI Status Checks
+
+The following status checks should be required to pass:
+
+- `lint` - Ruff linting and formatting checks
+- `test (3.9)` - pytest on Python 3.9
+- `test (3.10)` - pytest on Python 3.10
+- `test (3.11)` - pytest on Python 3.11
+
+See `.github/workflows/ci.yml` for the complete CI pipeline configuration.
+
 ---
 
 ## 🔍 Troubleshooting
