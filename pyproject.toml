@@ -51,6 +51,7 @@ testpaths = ["mayaLib/test", "tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+norecursedirs = [".*", "build", "dist", "CVS", "_darcs", "{arch}", "*.egg"]
 
 addopts = [
     "-v",                    # Verbose output
