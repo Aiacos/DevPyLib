@@ -477,16 +477,64 @@ class InstallLibrary:
         if self.lib_hash:
             try:
                 if not self._verify_file_hash(zip_path, self.lib_hash):
-                    print("Hash verification failed. Aborting installation.")
-                    # Clean up downloaded file
+                    # Hash mismatch detected - potential security issue
+                    error_msg = (
+                        "SECURITY WARNING: Hash verification failed!\n"
+                        "The downloaded file's hash does not match the expected value.\n"
+                        "This could indicate:\n"
+                        "  - A man-in-the-middle (MITM) attack\n"
+                        "  - A corrupted download\n"
+                        "  - An outdated expected hash value\n"
+                        "Installation aborted for security reasons."
+                    )
+                    print(error_msg)
+
+                    # Clean up downloaded file to prevent accidental extraction
                     try:
                         zip_path.unlink()
-                        print(f"Removed invalid file: {zip_path}")
-                    except (OSError, PermissionError) as e:
-                        print(f"Error removing invalid file: {e}")
+                        print(f"Removed unverified file: {zip_path}")
+                    except (OSError, PermissionError) as cleanup_error:
+                        print(
+                            f"WARNING: Failed to remove unverified file {zip_path}: {cleanup_error}"
+                        )
+                        print("Please manually delete this file before retrying installation.")
                     return
-            except (FileNotFoundError, OSError) as e:
-                print(f"Hash verification error: {e}")
+
+            except FileNotFoundError as e:
+                # File disappeared during verification
+                print(f"Hash verification error: File not found - {e}")
+                print("The downloaded file could not be found for verification.")
+                return
+
+            except OSError as e:
+                # I/O error during hash computation
+                error_msg = (
+                    f"Hash verification error: Unable to read file - {e}\n"
+                    "This could indicate file system issues or insufficient permissions."
+                )
+                print(error_msg)
+
+                # Attempt cleanup on I/O errors
+                if zip_path.exists():
+                    try:
+                        zip_path.unlink()
+                        print(f"Removed unreadable file: {zip_path}")
+                    except (OSError, PermissionError) as cleanup_error:
+                        print(f"WARNING: Failed to remove unreadable file: {cleanup_error}")
+                return
+
+            except Exception as e:
+                # Catch any unexpected errors during verification
+                print(f"Unexpected error during hash verification: {type(e).__name__}: {e}")
+                print("Installation aborted due to verification failure.")
+
+                # Attempt cleanup for any unexpected errors
+                if zip_path.exists():
+                    try:
+                        zip_path.unlink()
+                        print(f"Removed file due to verification error: {zip_path}")
+                    except (OSError, PermissionError) as cleanup_error:
+                        print(f"WARNING: Failed to remove file: {cleanup_error}")
                 return
 
         # Unzip using zipfile module (cross-platform)
