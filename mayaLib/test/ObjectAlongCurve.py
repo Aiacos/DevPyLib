@@ -6,6 +6,7 @@ class CurvesFromEdge(object):
     """Create NURBS curves from polygon mesh edge loops with optional rebuild."""
 
     def __init__(self, geo, edge, rebuild=True):
+        """Initialise NURBS curve from polygon edge loop."""
         self.geo = pm.ls(geo)[-1]
         self.name = str(geo.name()).replace("_geo", "") + "_cv_0"
 
@@ -101,6 +102,7 @@ class JointChainCurve(object):
     """Calculate spacing for joint chains distributed along curves."""
 
     def __init__(self, pointsNumber=5):
+        """Initialise joint chain spacing calculator."""
         # nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
         # nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
 
@@ -150,6 +152,7 @@ class ObjectAlongCurve(object):
     """Create joint chains along a curve path using motion path animation."""
 
     def __init__(self, path_crv, n_jnt=12, offset_driver=None):
+        """Initialise joint chain along curve path."""
         self.path_crv = path_crv
         self.n_jnts = n_jnt
 
