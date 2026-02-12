@@ -243,9 +243,10 @@ Standard rig structure from `rigLib/base/module.py`:
 ```
 
 ### Multi-DCC Support
-`prismLib/pipeline.py::detect_host_app()` detects Maya vs Houdini by checking `sys.modules`:
+`prismLib/pipeline.py::detect_host_app()` detects Maya, Houdini, and Blender by checking `sys.modules`:
 - Returns "Maya" if `maya.cmds` loaded
 - Returns "Houdini" if `hou` loaded
+- Returns "Blender" if `bpy` loaded
 - Use this pattern when creating DCC-agnostic tools
 
 ## Common Workflows
