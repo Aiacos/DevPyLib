@@ -131,6 +131,19 @@ class JointChainCurve(object):
 
 
 def extract_feather_curves(geo, edge_idx_list):
+    """Extract and rebuild NURBS curves from polygon edge loops.
+
+    Creates NURBS curves from multiple edge loops on a polygon mesh, with
+    alternating curve directions. Each curve is rebuilt to degree 3 with
+    4 spans for consistent topology.
+
+    Args:
+        geo: Polygon geometry mesh to extract curves from.
+        edge_idx_list: List of edge indices defining edge loops.
+
+    Returns:
+        list: List of rebuilt NURBS curves extracted from edge loops.
+    """
     cv_list = []
     for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list))):
         tmp_loop_idx = pm.polySelect(geo, edgeLoop=loop_idx)
@@ -225,8 +238,15 @@ class ObjectAlongCurve(object):
 
 
 def deleteConnection(plug):
-    # """ Equivalent of MEL: CBdeleteConnection """
+    """Delete Maya attribute connections safely.
 
+    Equivalent to MEL's CBdeleteConnection command. Handles both read-only
+    and writable destination attributes by using appropriate disconnection
+    methods.
+
+    Args:
+        plug: Maya attribute plug to disconnect (e.g., "node.attribute").
+    """
     if cmds.connectionInfo(plug, isDestination=True):
         plug = cmds.connectionInfo(plug, getExactDestination=True)
         readOnly = cmds.ls(plug, ro=True)
@@ -239,6 +259,12 @@ def deleteConnection(plug):
 
 
 def pointMode():
+    """Create locators at evenly-spaced points along a curve.
+
+    Generates locator transforms positioned at parametric points along the
+    selected curve using pointOnCurve evaluation. Spacing is determined by
+    the global spacing variable.
+    """
     for p in range(1, pointsNumber):
         if p == 1:
             cmds.spaceLocator(
@@ -254,6 +280,18 @@ def pointMode():
 
 
 def pathMode(path):
+    """Create locators along a curve path using motion path animation.
+
+    Generates locator transforms distributed along the specified curve using
+    Maya's pathAnimation system. Each locator's position is controlled by
+    a motionPath node with disconnected time input for static placement.
+
+    Args:
+        path: Name of the NURBS curve to distribute locators along.
+
+    Returns:
+        list: List of created locator transform names.
+    """
     nameBuilder_locator = path + "_loc"
     nameBuilder_joint = path + "_jnt"
     locatorList = []
