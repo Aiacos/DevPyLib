@@ -110,16 +110,13 @@ def build_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-ar
         lock_channels=["t", "s", "v"],
         scale=rig_scale,
     )
-    scapula_ik = pm.ikHandle(
-        n=f"{prefix}Scapula_IKH",
-        sol="ikSCsolver",
-        sj=scapula_joint,
-        ee=limb_joints[0],
-    )[0]
-    pm.hide(scapula_ik)
-    pm.parentConstraint(base_attach_group, clavicle_ctrl.get_top(), mo=True)
-    pm.parent(scapula_ik, clavicle_ctrl.get_control())
-    pm.pointConstraint(clavicle_ctrl.get_control(), scapula_joint)
+    _build_control_with_ik_handle(
+        ctrl=clavicle_ctrl,
+        ik_name=f"{prefix}Scapula_IKH",
+        scapula_joint=scapula_joint,
+        limb_joints=limb_joints,
+        base_attach_group=base_attach_group,
+    )
     return clavicle_ctrl
 
 
