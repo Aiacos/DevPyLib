@@ -3867,7 +3867,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
                 objects[0], objects[1], frontOfChain=1, tc=0, n=objects[0] + "_faceRig_bs"
             )
             pm.setAttr(objects[0] + "_faceRig_bs." + objNoSpaceObj, 1)
-            print("// Result: BlendShape ->> {}").format(objects[0] + "_faceRig_bs")
+            print(f"// Result: BlendShape ->> {objects[0]}_faceRig_bs")
         else:
             print("Please select source and target mesh to connect with BlendShape")
 
