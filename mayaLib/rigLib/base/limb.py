@@ -36,6 +36,34 @@ __all__ = [
 ]
 
 
+def _build_control_with_ik_handle(
+    ctrl: control.Control,
+    ik_name: str,
+    scapula_joint: str,
+    limb_joints: Sequence[str],
+    base_attach_group: pm.PyNode,
+) -> None:
+    """Create and configure an IK handle for a control.
+
+    Args:
+        ctrl: The control to attach the IK handle to.
+        ik_name: Name for the IK handle.
+        scapula_joint: Joint to constrain with point constraint.
+        limb_joints: Sequence of limb joints (first joint is the IK end effector).
+        base_attach_group: Group to parent constrain the control to.
+    """
+    scapula_ik = pm.ikHandle(
+        n=ik_name,
+        sol="ikSCsolver",
+        sj=scapula_joint,
+        ee=limb_joints[0],
+    )[0]
+    pm.hide(scapula_ik)
+    pm.parentConstraint(base_attach_group, ctrl.get_top(), mo=True)
+    pm.parent(scapula_ik, ctrl.get_control())
+    pm.pointConstraint(ctrl.get_control(), scapula_joint)
+
+
 def build_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     prefix: str,
     limb_joints: Sequence[str],
