@@ -78,7 +78,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         row = 0
         for arg in self.args:
-            if arg[0] != "self":
+            if arg[0] not in ("self", "progress_callback"):
                 # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
                 fill_button = None
@@ -211,7 +211,7 @@ class FunctionUI(QtWidgets.QWidget):
         """
         counter = 0
         for arg in self.args:
-            if arg[0] != "self":
+            if arg[0] not in ("self", "progress_callback"):
                 if defaultvisible:
                     # Show related widgets if the argument has a default value
                     if arg[1] is not None:
@@ -287,10 +287,48 @@ class FunctionUI(QtWidgets.QWidget):
     def wrapper(self, args):
         """Wrapper around the function to execute.
 
+        Automatically detects if the wrapped function accepts a progress_callback
+        parameter and provides a callback that updates the UI progress bar.
+
         Args:
             args (list): List of arguments to pass to the function.
         """
-        self.function(*args)
+        # Check if the function signature includes 'progress_callback' parameter
+        has_progress_callback = "progress_callback" in self.sig.parameters
+
+        if has_progress_callback:
+            # Create a progress callback that updates the UI
+            def progress_callback(percent, message=""):
+                """Update progress bar and label.
+
+                Args:
+                    percent (int): Progress percentage (0-100).
+                    message (str): Status message to display.
+                """
+                # Show progress widgets if hidden
+                if self.progress_bar.isHidden():
+                    self.progress_bar.show()
+                    self.progress_label.show()
+
+                # Update progress bar and label
+                self.progress_bar.setValue(percent)
+                self.progress_label.setText(message)
+
+                # Process events to update UI
+                QtWidgets.QApplication.processEvents()
+
+            # Call function with progress callback
+            try:
+                self.function(*args, progress_callback=progress_callback)
+            finally:
+                # Hide progress widgets when done
+                self.progress_bar.hide()
+                self.progress_label.hide()
+                self.progress_bar.setValue(0)
+                self.progress_label.setText("")
+        else:
+            # Call function without progress callback
+            self.function(*args)
 
 
 if __name__ == "__main__":
