@@ -24,6 +24,9 @@ def detect_host_app_v2():
     # Check if Houdini is loaded
     if "hou" in sys.modules:
         return "Houdini"
+    # Check if Blender is loaded
+    if "bpy" in sys.modules:
+        return "Blender"
 
     # If none of the above, return None
     return None
