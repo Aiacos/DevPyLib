@@ -3,7 +3,10 @@ import pymel.core as pm
 
 
 class CurvesFromEdge(object):
+    """Create NURBS curves from polygon mesh edge loops with optional rebuild."""
+
     def __init__(self, geo, edge, rebuild=True):
+        """Initialise NURBS curve from polygon edge loop."""
         self.geo = pm.ls(geo)[-1]
         self.name = str(geo.name()).replace("_geo", "") + "_cv_0"
 
@@ -78,6 +81,17 @@ class CurvesFromEdge(object):
         return deformer_node
 
     def poly_to_curve(self, edge_list):
+        """Convert polygon edges to a NURBS curve.
+
+        Creates a degree 3 NURBS curve from the provided edge list using Maya's
+        polyToCurve command with smooth mesh preview conformity.
+
+        Args:
+            edge_list: List of polygon edges to convert to curve.
+
+        Returns:
+            tuple: The created curve and polyEdgeToCurve deformer node.
+        """
         edge_list = pm.ls(edge_list)
         pm.select(edge_list)
         cv, deformer = pm.ls(
@@ -89,14 +103,27 @@ class CurvesFromEdge(object):
         return cv, deformer
 
     def get_cv(self):
+        """Get the created NURBS curve.
+
+        Returns:
+            The NURBS curve created from polygon edges.
+        """
         return self.cv
 
     def get_deformer_node(self):
+        """Get the polyEdgeToCurve deformer node.
+
+        Returns:
+            The deformer node created during curve conversion.
+        """
         return self.deformer_node
 
 
 class JointChainCurve(object):
+    """Calculate spacing for joint chains distributed along curves."""
+
     def __init__(self, pointsNumber=5):
+        """Initialise joint chain spacing calculator."""
         # nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
         # nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
 
@@ -104,6 +131,19 @@ class JointChainCurve(object):
 
 
 def extract_feather_curves(geo, edge_idx_list):
+    """Extract and rebuild NURBS curves from polygon edge loops.
+
+    Creates NURBS curves from multiple edge loops on a polygon mesh, with
+    alternating curve directions. Each curve is rebuilt to degree 3 with
+    4 spans for consistent topology.
+
+    Args:
+        geo: Polygon geometry mesh to extract curves from.
+        edge_idx_list: List of edge indices defining edge loops.
+
+    Returns:
+        list: List of rebuilt NURBS curves extracted from edge loops.
+    """
     cv_list = []
     for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list))):
         tmp_loop_idx = pm.polySelect(geo, edgeLoop=loop_idx)
@@ -143,7 +183,10 @@ curve = cmds.ls(sl=True)
 
 ## Main --wip
 class ObjectAlongCurve(object):
+    """Create joint chains along a curve path using motion path animation."""
+
     def __init__(self, path_crv, n_jnt=12, offset_driver=None):
+        """Initialise joint chain along curve path."""
         self.path_crv = path_crv
         self.n_jnts = n_jnt
 
@@ -195,8 +238,15 @@ class ObjectAlongCurve(object):
 
 
 def deleteConnection(plug):
-    # """ Equivalent of MEL: CBdeleteConnection """
+    """Delete Maya attribute connections safely.
 
+    Equivalent to MEL's CBdeleteConnection command. Handles both read-only
+    and writable destination attributes by using appropriate disconnection
+    methods.
+
+    Args:
+        plug: Maya attribute plug to disconnect (e.g., "node.attribute").
+    """
     if cmds.connectionInfo(plug, isDestination=True):
         plug = cmds.connectionInfo(plug, getExactDestination=True)
         readOnly = cmds.ls(plug, ro=True)
@@ -209,6 +259,12 @@ def deleteConnection(plug):
 
 
 def pointMode():
+    """Create locators at evenly-spaced points along a curve.
+
+    Generates locator transforms positioned at parametric points along the
+    selected curve using pointOnCurve evaluation. Spacing is determined by
+    the global spacing variable.
+    """
     for p in range(1, pointsNumber):
         if p == 1:
             cmds.spaceLocator(
@@ -224,6 +280,18 @@ def pointMode():
 
 
 def pathMode(path):
+    """Create locators along a curve path using motion path animation.
+
+    Generates locator transforms distributed along the specified curve using
+    Maya's pathAnimation system. Each locator's position is controlled by
+    a motionPath node with disconnected time input for static placement.
+
+    Args:
+        path: Name of the NURBS curve to distribute locators along.
+
+    Returns:
+        list: List of created locator transform names.
+    """
     nameBuilder_locator = path + "_loc"
     nameBuilder_joint = path + "_jnt"
     locatorList = []
