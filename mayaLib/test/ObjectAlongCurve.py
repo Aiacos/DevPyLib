@@ -3,6 +3,8 @@ import pymel.core as pm
 
 
 class CurvesFromEdge(object):
+    """Create NURBS curves from polygon mesh edge loops with optional rebuild."""
+
     def __init__(self, geo, edge, rebuild=True):
         self.geo = pm.ls(geo)[-1]
         self.name = str(geo.name()).replace("_geo", "") + "_cv_0"
@@ -96,6 +98,8 @@ class CurvesFromEdge(object):
 
 
 class JointChainCurve(object):
+    """Calculate spacing for joint chains distributed along curves."""
+
     def __init__(self, pointsNumber=5):
         # nameBuilder_locator = curve[0] + "_loc"  # in function, lacal variables
         # nameBuilder_joint = curve[0] + "_jnt"  # in function, local variables
@@ -143,6 +147,8 @@ curve = cmds.ls(sl=True)
 
 ## Main --wip
 class ObjectAlongCurve(object):
+    """Create joint chains along a curve path using motion path animation."""
+
     def __init__(self, path_crv, n_jnt=12, offset_driver=None):
         self.path_crv = path_crv
         self.n_jnts = n_jnt
