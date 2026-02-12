@@ -38,12 +38,19 @@ def detect_host_app() -> str | None:
     Returns:
         str | None: The name of the host application or None if not detected.
     """
-    if importlib_util.find_spec("maya.cmds") is not None:
-        return "Maya"
-    if importlib_util.find_spec("hou") is not None:
-        return "Houdini"
-    if importlib_util.find_spec("bpy") is not None:
-        return "Blender"
+    dcc_modules = [
+        ("maya.cmds", "Maya"),
+        ("hou", "Houdini"),
+        ("bpy", "Blender"),
+    ]
+
+    for module_name, dcc_name in dcc_modules:
+        try:
+            if importlib_util.find_spec(module_name) is not None:
+                return dcc_name
+        except (ModuleNotFoundError, ValueError):
+            continue
+
     return None
 
 
