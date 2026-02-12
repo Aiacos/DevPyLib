@@ -81,6 +81,17 @@ class CurvesFromEdge(object):
         return deformer_node
 
     def poly_to_curve(self, edge_list):
+        """Convert polygon edges to a NURBS curve.
+
+        Creates a degree 3 NURBS curve from the provided edge list using Maya's
+        polyToCurve command with smooth mesh preview conformity.
+
+        Args:
+            edge_list: List of polygon edges to convert to curve.
+
+        Returns:
+            tuple: The created curve and polyEdgeToCurve deformer node.
+        """
         edge_list = pm.ls(edge_list)
         pm.select(edge_list)
         cv, deformer = pm.ls(
@@ -92,9 +103,19 @@ class CurvesFromEdge(object):
         return cv, deformer
 
     def get_cv(self):
+        """Get the created NURBS curve.
+
+        Returns:
+            The NURBS curve created from polygon edges.
+        """
         return self.cv
 
     def get_deformer_node(self):
+        """Get the polyEdgeToCurve deformer node.
+
+        Returns:
+            The deformer node created during curve conversion.
+        """
         return self.deformer_node
 
 
