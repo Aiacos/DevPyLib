@@ -42,6 +42,8 @@ def detect_host_app() -> str | None:
         return "Maya"
     if importlib_util.find_spec("hou") is not None:
         return "Houdini"
+    if importlib_util.find_spec("bpy") is not None:
+        return "Blender"
     return None
 
 
