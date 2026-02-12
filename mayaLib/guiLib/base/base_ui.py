@@ -17,6 +17,7 @@ except ImportError:
     from PySide2 import QtCore, QtWidgets
 
 import mayaLib.pipelineLib.utility.docs as doc
+from mayaLib.guiLib.utils.error_dialog import show_exception_dialog
 
 
 class FunctionUI(QtWidgets.QWidget):
@@ -28,10 +29,6 @@ class FunctionUI(QtWidgets.QWidget):
     to populate from Maya selection. Includes an Execute button and Advanced mode
     toggle to show/hide optional parameters.
 
-    Functions that accept a 'progress_callback' parameter will automatically display
-    a progress bar and status label during execution. The callback receives two
-    arguments: percent (0-100) and an optional message string.
-
     Attributes:
         function: The function or class being wrapped
         sig: The function signature
@@ -41,30 +38,15 @@ class FunctionUI(QtWidgets.QWidget):
         fill_button_list: List of fill-from-selection buttons
         exec_button: The execute button
         advanced_checkbox: Toggle for advanced parameters
-        progress_bar: Progress bar for long-running operations
-        progress_label: Label for progress status messages
         doclabel: Label displaying function documentation
 
     Example:
-        Basic function without progress:
         >>> def my_function(param1, param2=10):
         ...     '''My test function.'''
         ...     pass
         >>> ui = FunctionUI(my_function)
         >>> ui.show()
-
-        Function with progress callback:
-        >>> def long_operation(iterations=100, progress_callback=None):
-        ...     '''A long-running operation with progress tracking.'''
-        ...     for i in range(iterations):
-        ...         # Do work here
-        ...         if progress_callback:
-        ...             progress_callback(int((i / iterations) * 100), f"Processing {i+1}/{iterations}")
-        >>> ui = FunctionUI(long_operation)
-        >>> ui.show()
     """
-
-    progress_update = QtCore.Signal(int, str)
 
     def __init__(self, func, parent=None):
         """Initializes the FunctionUI widget.
@@ -93,10 +75,13 @@ class FunctionUI(QtWidgets.QWidget):
 
         row = 0
         for arg in self.args:
-            if arg[0] not in ("self", "progress_callback"):
+            if arg[0] != "self":
                 # Create a label for the argument
                 labelname = QtWidgets.QLabel(arg[0])
                 fill_button = None
+
+                # Get parameter annotation for placeholder text generation
+                param_annotation = self.sig.parameters[arg[0]].annotation
 
                 if arg[1] is not None:
                     # Create a line edit or checkbox based on argument type
@@ -106,9 +91,17 @@ class FunctionUI(QtWidgets.QWidget):
                     else:
                         lineedit = QtWidgets.QLineEdit(str(arg[1]))
                         fill_button = QtWidgets.QPushButton(">")
+                        placeholder = self.generate_placeholder_text(
+                            arg[0], param_annotation, arg[1]
+                        )
+                        lineedit.setPlaceholderText(placeholder)
                 else:
                     lineedit = QtWidgets.QLineEdit("")
                     fill_button = QtWidgets.QPushButton(">")
+                    placeholder = self.generate_placeholder_text(
+                        arg[0], param_annotation, None
+                    )
+                    lineedit.setPlaceholderText(placeholder)
 
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
@@ -131,23 +124,14 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.exec_button, row, 2)
         self.layout.addWidget(self.advanced_checkbox, row, 0)
 
-        # Create progress widgets
-        self.progress_label = QtWidgets.QLabel("")
-        self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_label.hide()
-        self.progress_bar.hide()
-        self.layout.addWidget(self.progress_label, row + 1, 0, 1, 2)
-        self.layout.addWidget(self.progress_bar, row + 1, 2)
-
         # Display function documentation
         self.doclabel = QtWidgets.QLabel(doc.get_docs(func))
-        self.layout.addWidget(self.doclabel, row + 2, 2)
+        self.layout.addWidget(self.doclabel, row + 1, 2)
         self.setLayout(self.layout)
 
         # Connect signals to slots
         self.exec_button.clicked.connect(self.exec_function)
         self.advanced_checkbox.stateChanged.connect(self.toggle_default_parameter)
-        self.progress_update.connect(self._update_progress_ui)
 
         for button in self.fill_button_list:
             if button is not None:
@@ -193,6 +177,122 @@ class FunctionUI(QtWidgets.QWidget):
         # names of the selected objects
         lineedit.setText(", ".join(text_list))
 
+    def generate_placeholder_text(self, param_name, param_annotation, default_value):
+        """Generate placeholder text based on parameter type and name.
+
+        Analyzes the parameter annotation and name to provide context-aware
+        placeholder text that helps users understand what input is expected.
+
+        Args:
+            param_name (str): The name of the parameter.
+            param_annotation: The type annotation of the parameter (if available).
+            default_value: The default value of the parameter (if available).
+
+        Returns:
+            str: Appropriate placeholder text for the parameter.
+        """
+        param_lower = param_name.lower()
+
+        # Check type annotation first if available
+        if param_annotation is not inspect.Parameter.empty:
+            annotation_str = str(param_annotation)
+            if "int" in annotation_str.lower():
+                return "Enter integer value"
+            elif "float" in annotation_str.lower():
+                return "Enter float value"
+            elif "str" in annotation_str.lower():
+                return "Enter text"
+            elif "list" in annotation_str.lower():
+                return "Enter comma-separated values"
+            elif "bool" in annotation_str.lower():
+                return ""
+
+        # Rigging-specific reference parameters
+        if param_lower.endswith("_to") or param_lower in [
+            "parent", "target", "driver", "driven",
+        ]:
+            return "Select reference object"
+
+        # Maya object-related parameters
+        elif any(
+            keyword in param_lower
+            for keyword in ["mesh", "obj", "node", "transform", "geo", "geometry"]
+        ):
+            return "Select Maya object(s)"
+        elif any(keyword in param_lower for keyword in ["ctrl", "control", "curve"]):
+            return "Select control object(s)"
+        elif any(keyword in param_lower for keyword in ["joint", "jnt", "bone"]):
+            return "Select joint(s)"
+        elif any(keyword in param_lower for keyword in ["vertex", "vert", "vtx"]):
+            return "Select vertex/vertices"
+        elif any(keyword in param_lower for keyword in ["edge"]):
+            return "Select edge(s)"
+        elif any(keyword in param_lower for keyword in ["face", "poly"]):
+            return "Select face(s)"
+
+        # Shape/type selection parameters
+        elif "shape" in param_lower or "type" in param_lower:
+            if default_value and isinstance(default_value, str):
+                return f"Enter shape type (e.g., {default_value})"
+            return "Enter shape type"
+
+        # Channel parameters
+        elif "channel" in param_lower or "attr" in param_lower:
+            if default_value is None or isinstance(default_value, (list, tuple)):
+                return "Enter channels (e.g., t,r,s,v)"
+            return "Enter channel name"
+
+        # Naming parameters
+        elif any(keyword in param_lower for keyword in ["name", "label"]):
+            return "Enter name"
+        elif "prefix" in param_lower:
+            return "Enter prefix (e.g., l_, r_, c_)"
+        elif "suffix" in param_lower:
+            return "Enter suffix (e.g., _CTRL, _GRP)"
+
+        # File/path parameters
+        elif any(keyword in param_lower for keyword in ["path", "file", "directory", "dir"]):
+            return "Enter file path"
+
+        # Numeric parameters
+        elif "scale" in param_lower:
+            return "Enter scale value (e.g., 1.0)"
+        elif any(
+            keyword in param_lower for keyword in ["count", "number", "num", "index", "idx"]
+        ):
+            return "Enter integer"
+        elif any(keyword in param_lower for keyword in ["value", "val", "amount"]):
+            return "Enter numeric value"
+        elif any(keyword in param_lower for keyword in ["factor", "weight", "blend"]):
+            return "Enter value (0.0-1.0)"
+        elif any(
+            keyword in param_lower for keyword in ["radius", "distance", "dist", "length"]
+        ):
+            return "Enter distance value"
+        elif any(keyword in param_lower for keyword in ["angle", "rotation", "rot"]):
+            return "Enter angle (degrees)"
+
+        # Color parameters
+        elif "color" in param_lower:
+            return "Enter color (R,G,B)"
+
+        # Axis parameters
+        elif "axis" in param_lower:
+            return "Enter axis (X, Y, or Z)"
+
+        # Based on default value type
+        elif default_value is not None:
+            if isinstance(default_value, int):
+                return "Enter integer value"
+            elif isinstance(default_value, float):
+                return "Enter float value"
+            elif isinstance(default_value, (list, tuple)):
+                return "Enter comma-separated values"
+            elif isinstance(default_value, str) and default_value == "":
+                return "Enter text (optional)"
+
+        return "Enter value"
+
     def get_parameter_list(self):
         """Returns a list of parameters for the UI.
 
@@ -227,7 +327,7 @@ class FunctionUI(QtWidgets.QWidget):
         """
         counter = 0
         for arg in self.args:
-            if arg[0] not in ("self", "progress_callback"):
+            if arg[0] != "self":
                 if defaultvisible:
                     # Show related widgets if the argument has a default value
                     if arg[1] is not None:
@@ -303,61 +403,18 @@ class FunctionUI(QtWidgets.QWidget):
     def wrapper(self, args):
         """Wrapper around the function to execute.
 
-        Automatically detects if the wrapped function accepts a progress_callback
-        parameter and provides a callback that updates the UI progress bar.
+        Executes the wrapped function with error handling. If the function
+        raises an exception, displays a user-friendly error dialog with the
+        exception details and full traceback.
 
         Args:
             args (list): List of arguments to pass to the function.
         """
-        # Check if the function signature includes 'progress_callback' parameter
-        has_progress_callback = "progress_callback" in self.sig.parameters
-
-        if has_progress_callback:
-            # Create a progress callback that emits signal for thread-safe updates
-            def progress_callback(percent, message=""):
-                """Update progress via signal emission.
-
-                Emits the progress_update signal which is connected to
-                _update_progress_ui slot for thread-safe UI updates.
-
-                Args:
-                    percent (int): Progress percentage (0-100).
-                    message (str): Status message to display.
-                """
-                # Emit signal (thread-safe)
-                self.progress_update.emit(percent, message)
-
-            # Call function with progress callback
-            try:
-                self.function(*args, progress_callback=progress_callback)
-            finally:
-                # Hide progress widgets when done
-                self.progress_bar.hide()
-                self.progress_label.hide()
-                self.progress_bar.setValue(0)
-                self.progress_label.setText("")
-        else:
-            # Call function without progress callback
+        try:
             self.function(*args)
-
-    def _update_progress_ui(self, percent, message):
-        """Update progress UI widgets (slot for progress_update signal).
-
-        This slot is connected to the progress_update signal and handles
-        all UI updates in a thread-safe manner via Qt's signal/slot mechanism.
-
-        Args:
-            percent (int): Progress percentage (0-100).
-            message (str): Status message to display.
-        """
-        # Show progress widgets if hidden
-        if self.progress_bar.isHidden():
-            self.progress_bar.show()
-            self.progress_label.show()
-
-        # Update progress bar and label
-        self.progress_bar.setValue(percent)
-        self.progress_label.setText(message)
+        except Exception as e:
+            # Display error dialog with exception details and traceback
+            show_exception_dialog(e, title=self.function.__name__)
 
 
 if __name__ == "__main__":

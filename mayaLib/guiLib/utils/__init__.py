@@ -3,7 +3,7 @@
 Provides helper functions for Qt/Maya UI integration.
 """
 
-__all__ = ["py_qt_maya_window"]
+__all__ = ["py_qt_maya_window", "error_dialog"]
 
 
 def __getattr__(name):
