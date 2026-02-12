@@ -28,6 +28,10 @@ class FunctionUI(QtWidgets.QWidget):
     to populate from Maya selection. Includes an Execute button and Advanced mode
     toggle to show/hide optional parameters.
 
+    Functions that accept a 'progress_callback' parameter will automatically display
+    a progress bar and status label during execution. The callback receives two
+    arguments: percent (0-100) and an optional message string.
+
     Attributes:
         function: The function or class being wrapped
         sig: The function signature
@@ -42,10 +46,21 @@ class FunctionUI(QtWidgets.QWidget):
         doclabel: Label displaying function documentation
 
     Example:
+        Basic function without progress:
         >>> def my_function(param1, param2=10):
         ...     '''My test function.'''
         ...     pass
         >>> ui = FunctionUI(my_function)
+        >>> ui.show()
+
+        Function with progress callback:
+        >>> def long_operation(iterations=100, progress_callback=None):
+        ...     '''A long-running operation with progress tracking.'''
+        ...     for i in range(iterations):
+        ...         # Do work here
+        ...         if progress_callback:
+        ...             progress_callback(int((i / iterations) * 100), f"Processing {i+1}/{iterations}")
+        >>> ui = FunctionUI(long_operation)
         >>> ui.show()
     """
 
