@@ -147,6 +147,7 @@ class FunctionUI(QtWidgets.QWidget):
         # Connect signals to slots
         self.exec_button.clicked.connect(self.exec_function)
         self.advanced_checkbox.stateChanged.connect(self.toggle_default_parameter)
+        self.progress_update.connect(self._update_progress_ui)
 
         for button in self.fill_button_list:
             if button is not None:
@@ -312,25 +313,19 @@ class FunctionUI(QtWidgets.QWidget):
         has_progress_callback = "progress_callback" in self.sig.parameters
 
         if has_progress_callback:
-            # Create a progress callback that updates the UI
+            # Create a progress callback that emits signal for thread-safe updates
             def progress_callback(percent, message=""):
-                """Update progress bar and label.
+                """Update progress via signal emission.
+
+                Emits the progress_update signal which is connected to
+                _update_progress_ui slot for thread-safe UI updates.
 
                 Args:
                     percent (int): Progress percentage (0-100).
                     message (str): Status message to display.
                 """
-                # Show progress widgets if hidden
-                if self.progress_bar.isHidden():
-                    self.progress_bar.show()
-                    self.progress_label.show()
-
-                # Update progress bar and label
-                self.progress_bar.setValue(percent)
-                self.progress_label.setText(message)
-
-                # Process events to update UI
-                QtWidgets.QApplication.processEvents()
+                # Emit signal (thread-safe)
+                self.progress_update.emit(percent, message)
 
             # Call function with progress callback
             try:
@@ -344,6 +339,25 @@ class FunctionUI(QtWidgets.QWidget):
         else:
             # Call function without progress callback
             self.function(*args)
+
+    def _update_progress_ui(self, percent, message):
+        """Update progress UI widgets (slot for progress_update signal).
+
+        This slot is connected to the progress_update signal and handles
+        all UI updates in a thread-safe manner via Qt's signal/slot mechanism.
+
+        Args:
+            percent (int): Progress percentage (0-100).
+            message (str): Status message to display.
+        """
+        # Show progress widgets if hidden
+        if self.progress_bar.isHidden():
+            self.progress_bar.show()
+            self.progress_label.show()
+
+        # Update progress bar and label
+        self.progress_bar.setValue(percent)
+        self.progress_label.setText(message)
 
 
 if __name__ == "__main__":
