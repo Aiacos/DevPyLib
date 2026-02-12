@@ -49,6 +49,8 @@ class FunctionUI(QtWidgets.QWidget):
         >>> ui.show()
     """
 
+    progress_update = QtCore.Signal(int, str)
+
     def __init__(self, func, parent=None):
         """Initializes the FunctionUI widget.
 
