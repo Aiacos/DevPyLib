@@ -37,6 +37,8 @@ class FunctionUI(QtWidgets.QWidget):
         fill_button_list: List of fill-from-selection buttons
         exec_button: The execute button
         advanced_checkbox: Toggle for advanced parameters
+        progress_bar: Progress bar for long-running operations
+        progress_label: Label for progress status messages
         doclabel: Label displaying function documentation
 
     Example:
@@ -112,9 +114,17 @@ class FunctionUI(QtWidgets.QWidget):
         self.layout.addWidget(self.exec_button, row, 2)
         self.layout.addWidget(self.advanced_checkbox, row, 0)
 
+        # Create progress widgets
+        self.progress_label = QtWidgets.QLabel("")
+        self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_label.hide()
+        self.progress_bar.hide()
+        self.layout.addWidget(self.progress_label, row + 1, 0, 1, 2)
+        self.layout.addWidget(self.progress_bar, row + 1, 2)
+
         # Display function documentation
         self.doclabel = QtWidgets.QLabel(doc.get_docs(func))
-        self.layout.addWidget(self.doclabel, row + 1, 2)
+        self.layout.addWidget(self.doclabel, row + 2, 2)
         self.setLayout(self.layout)
 
         # Connect signals to slots
