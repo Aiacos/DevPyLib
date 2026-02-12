@@ -247,7 +247,6 @@ class StructureManager:
             if isinstance(v, dict):
                 self.nested_dict_iter(v)
             else:
-                # print("{0} : {1}".format(k, v))
                 module = v
                 class_list = self.get_all_class(module)
                 function_list = self.get_all_function(module)
