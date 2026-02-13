@@ -125,6 +125,8 @@ ignore = [
 "*_test.py" = ["D100", "D103"]
 "mayaLib/test/*" = ["N802", "N806", "N812", "N813", "N814", "N817"]  # Test files use legacy naming, Maya import conventions
 "**/plugin/*" = ["N802", "N812", "N813", "N814", "N817"]  # Maya plugins: camelCase required + Maya import conventions (om, OM, etc.)
+"mayaLib/rigLib/face/widgets/*" = ["N802", "N806"]  # Qt UI methods (showEvent, closeEvent) and legacy camelCase naming
+"mayaLib/rigLib/face/skin/*" = ["N812"]  # Pickle import alias convention
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"  # Use Google-style docstrings
