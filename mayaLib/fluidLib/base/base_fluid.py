@@ -43,7 +43,7 @@ class BaseFluid:
 
         # Connect Emitter to Fluid Container
         pm.connectDynamic(self.fluid_shape, em=self.fluid_emit)
-        pm.parent(self.fluid_emit, self.fluid_shape)
+        pm.parent(self.fluid_emit, self.fluid_transform)
 
         # Setup fluid shape
         self.setup_fluid_shape(base_res)
