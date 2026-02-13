@@ -44,7 +44,7 @@ def setup_repart_opacity_ramp(
     """
     step = int(100 / sampling)
     for i in [round(x * 0.01, 4) for x in range(0, 100 + 1, step)]:
-        y = math_function.repart_function(i, l=curve_parameter)
+        y = math_function.repart_function(i, lambda_val=curve_parameter)
         fluid_container.opacity[int(i * sampling)].opacity_Position.set(i)
         fluid_container.opacity[int(i * sampling)].opacity_FloatValue.set(y)
         fluid_container.opacity[int(i * sampling)].opacity_Interp.set(1)
