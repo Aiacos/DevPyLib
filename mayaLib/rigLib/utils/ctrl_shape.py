@@ -47,6 +47,11 @@ __all__ = [
     "headCtrlShape",
     "displayCtrlShape",
     "ikfkCtrlShape",
+    "pinCtrlShape",
+    "arrowCtrlShape",
+    "cubeCtrlShape",
+    "crossCtrlShape",
+    "squareCtrlShape",
 ]
 
 
@@ -586,6 +591,154 @@ def ikfkCtrlShape(name: str = "ikfk_CTRL", scale: float = 1.0):
         # Back to start
         [-1.0 * s, 0.25 * s, 0],
         [-1.0 * s, 0.5 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def pinCtrlShape(name: str = "pin_CTRL", scale: float = 1.0):
+    """Create a pin/thumbtack-shaped control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Pin head (circle)
+        [0, 1.0 * s, 0.5 * s],
+        [0.354 * s, 1.0 * s, 0.354 * s],
+        [0.5 * s, 1.0 * s, 0],
+        [0.354 * s, 1.0 * s, -0.354 * s],
+        [0, 1.0 * s, -0.5 * s],
+        [-0.354 * s, 1.0 * s, -0.354 * s],
+        [-0.5 * s, 1.0 * s, 0],
+        [-0.354 * s, 1.0 * s, 0.354 * s],
+        [0, 1.0 * s, 0.5 * s],
+        # Pin shaft
+        [0, 1.0 * s, 0],
+        [0, -1.0 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def arrowCtrlShape(name: str = "arrow_CTRL", scale: float = 1.0):
+    """Create a single arrow control pointing forward.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Arrow shaft
+        [0, 0, -1.0 * s],
+        [0, 0, 0.5 * s],
+        # Arrow head
+        [-0.5 * s, 0, 0.5 * s],
+        [0, 0, 1.0 * s],
+        [0.5 * s, 0, 0.5 * s],
+        [0, 0, 0.5 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def cubeCtrlShape(name: str = "cube_CTRL", scale: float = 1.0):
+    """Create a cube wireframe control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Bottom face
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        # Up to top face
+        [-1.0 * s, 1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, -1.0 * s],
+        # Connect edges
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        [-1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, 1.0 * s],
+        [1.0 * s, 1.0 * s, 1.0 * s],
+        [1.0 * s, -1.0 * s, 1.0 * s],
+        [1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, -1.0 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def crossCtrlShape(name: str = "cross_CTRL", scale: float = 1.0):
+    """Create a cross/plus-shaped control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Vertical arm
+        [0, 1.0 * s, 0],
+        [0, 0.25 * s, 0],
+        # Right arm
+        [1.0 * s, 0, 0],
+        [0.25 * s, 0, 0],
+        # Bottom arm
+        [0, -1.0 * s, 0],
+        [-0.25 * s, 0, 0],
+        # Left arm
+        [-1.0 * s, 0, 0],
+        [0, 0.25 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def squareCtrlShape(name: str = "square_CTRL", scale: float = 1.0):
+    """Create a simple square control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        [-1.0 * s, 0, -1.0 * s],
+        [1.0 * s, 0, -1.0 * s],
+        [1.0 * s, 0, 1.0 * s],
+        [-1.0 * s, 0, 1.0 * s],
+        [-1.0 * s, 0, -1.0 * s],
     ]
 
     curve = pm.curve(name=name, d=1, p=points)
