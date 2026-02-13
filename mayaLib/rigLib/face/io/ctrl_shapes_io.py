@@ -22,8 +22,6 @@ Example:
 
 import contextlib
 import logging
-import os
-from typing import Optional
 
 __author__ = "Lorenzo Argentieri"
 
@@ -31,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 
 def export_ctrl_shapes(
-    file_path: Optional[str] = None,
-    rig_name: Optional[str] = None,
+    file_path: str | None = None,
+    rig_name: str | None = None,
     use_prefix: bool = True,
 ) -> bool:
     """Export facial rig control shapes to a Maya ASCII file.
@@ -161,8 +159,8 @@ def export_ctrl_shapes(
 
 
 def import_ctrl_shapes(
-    file_path: Optional[str] = None,
-    rig_name: Optional[str] = None,
+    file_path: str | None = None,
+    rig_name: str | None = None,
     use_prefix: bool = True,
 ) -> bool:
     """Import facial rig control shapes from a Maya ASCII file.
@@ -272,7 +270,7 @@ def import_ctrl_shapes(
 
 def export_ctrl_shapes_no_ui(
     file_path: str,
-    rig_name: Optional[str] = None,
+    rig_name: str | None = None,
 ) -> bool:
     """Export control shapes without UI interaction.
 
@@ -302,7 +300,7 @@ def export_ctrl_shapes_no_ui(
 
 def import_ctrl_shapes_no_ui(
     file_path: str,
-    rig_name: Optional[str] = None,
+    rig_name: str | None = None,
 ) -> bool:
     """Import control shapes without UI interaction.
 

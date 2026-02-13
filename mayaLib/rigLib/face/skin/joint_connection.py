@@ -23,7 +23,6 @@ Example:
         data = joint_connection.decode_data_from_attr(node, "my_data")
 """
 
-import contextlib
 import logging
 
 try:
@@ -61,8 +60,6 @@ def encode_data_to_attr(node, attr_name, data):
     Example:
         >>> encode_data_to_attr(joint, "connection_data", [("nodeA", "tx")])
     """
-    import pymel.all as pm
-
     if not node.hasAttr(attr_name):
         node.addAttr(attr_name, dataType="string")
 

@@ -30,7 +30,6 @@ Example:
 
 import logging
 from enum import IntEnum
-from typing import Optional, Union
 
 __author__ = "Lorenzo Argentieri"
 
@@ -298,7 +297,7 @@ def remove_namespace_from_object(obj_name: str) -> str:
         return obj_name.split(":")[-1]
 
 
-def get_geometry_with_namespace_removal() -> Optional[str]:
+def get_geometry_with_namespace_removal() -> str | None:
     """Get selected geometry object with namespace removed.
 
     Selects the first object in the current selection, removes any
@@ -345,7 +344,7 @@ def select_all_vertices(mesh: str) -> list:
 
 def get_foreground_face_selection(
     head_geo: str,
-    exclude_vertices: Optional[list] = None,
+    exclude_vertices: list | None = None,
 ) -> list:
     """Get foreground (front-facing) vertex selection for facial rig.
 
@@ -388,7 +387,7 @@ def get_foreground_face_selection(
 def validate_vertex_selection(
     vertices: list,
     minimum_count: int = 1,
-    maximum_count: Optional[int] = None,
+    maximum_count: int | None = None,
 ) -> bool:
     """Validate a vertex selection meets requirements.
 
@@ -448,7 +447,7 @@ def get_vertex_positions(vertices: list, world_space: bool = True) -> list:
     return positions
 
 
-def get_selection_center(selection: Optional[list] = None) -> tuple:
+def get_selection_center(selection: list | None = None) -> tuple:
     """Calculate the center point of a selection.
 
     Args:

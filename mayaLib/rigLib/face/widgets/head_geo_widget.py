@@ -8,11 +8,11 @@ __author__ = "Lorenzo Argentieri"
 
 # Qt imports with PySide6/PySide2 fallback
 try:
-    from PySide6 import QtWidgets
     from PySide6 import QtGui as QtG
+    from PySide6 import QtWidgets
 except (ImportError, ModuleNotFoundError):
-    from PySide2 import QtWidgets
     from PySide2 import QtGui as QtG
+    from PySide2 import QtWidgets
 
 from mayaLib.rigLib.face.constants import (
     DEFAULT_COLOR,

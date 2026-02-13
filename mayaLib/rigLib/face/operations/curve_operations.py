@@ -38,7 +38,6 @@ Example:
 
 import logging
 from enum import IntEnum
-from typing import Optional
 
 __author__ = "Lorenzo Argentieri"
 
@@ -275,7 +274,7 @@ def select_frontmost_projected_curve(projected_pattern, shape_pattern_exclude=No
     sorted_z = sorted(z_positions)
     front_z = sorted_z[-1]  # Last element is highest
 
-    for i, crv in enumerate(curves):
+    for _i, crv in enumerate(curves):
         center = cmds.xform(crv, q=True, ws=True, piv=True)
         if center[2] == front_z:
             cmds.select(crv, replace=True)

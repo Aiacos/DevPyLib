@@ -6,9 +6,7 @@ the facial rigging interface into tabbed panels.
 
 __author__ = "Lorenzo Argentieri"
 
-import contextlib
 import json
-import os
 import sys
 
 # Qt imports with PySide6/PySide2 fallback
@@ -19,7 +17,6 @@ except (ImportError, ModuleNotFoundError):
 
 # Maya imports - deferred to allow syntax checking
 import maya.cmds as cmds
-import maya.mel as mel
 import pymel.all as pm
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
@@ -1429,6 +1426,7 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         Args:
             source_mesh: Source mesh with skin cluster.
             target_mesh: Target mesh(es) to copy weights to.
+            *args: Additional arguments (unused, for Qt signal compatibility).
         """
         from mayaLib.rigLib.face.skin import skin_ops
 
