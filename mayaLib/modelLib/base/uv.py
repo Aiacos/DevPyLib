@@ -151,10 +151,19 @@ class AutoUV:
                   as a list of four integers [u_min, u_max, v_min, v_max].
         """
         uvs = pm.polyListComponentConversion(shell, tuv=True)
+        uv_list = pm.ls(uvs, fl=True)
         uv_tile_range = []
 
-        for _i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True), strict=False):
-            u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
+        if not uv_list:
+            return uv_tile_range
+
+        # Batch query all UV coordinates at once (returns flat list: [u1, v1, u2, v2, ...])
+        uv_coords = pm.polyEditUV(uv_list, q=True)
+
+        # Process coordinates in pairs (u, v)
+        for i in range(0, len(uv_coords), 2):
+            u = uv_coords[i]
+            v = uv_coords[i + 1]
 
             u_max = int(u) + 1
             u_min = int(u)
@@ -164,7 +173,7 @@ class AutoUV:
 
             tile = [u_min, u_max, v_min, v_max]
             if tile not in uv_tile_range:
-                uv_tile_range.append([u_min, u_max, v_min, v_max])
+                uv_tile_range.append(tile)
 
         return uv_tile_range
 
