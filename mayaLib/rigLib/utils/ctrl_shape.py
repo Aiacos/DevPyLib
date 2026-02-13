@@ -39,6 +39,19 @@ __all__ = [
     "flip_control_shape_x",
     "flip_control_shape_y",
     "flip_control_shape_z",
+    "sphereCtrlShape",
+    "moveCtrlShape",
+    "trapeziumCtrlShape",
+    "chestCtrlShape",
+    "hipCtrlShape",
+    "headCtrlShape",
+    "displayCtrlShape",
+    "ikfkCtrlShape",
+    "pinCtrlShape",
+    "arrowCtrlShape",
+    "cubeCtrlShape",
+    "crossCtrlShape",
+    "squareCtrlShape",
 ]
 
 
@@ -331,6 +344,405 @@ def flip_control_shape_z(*_):
     for node in selection:
         _flip_control_shape(node, [1, 1, -1])
     pm.select(selection)
+
+
+def sphereCtrlShape(name: str = "sphere_CTRL", scale: float = 1.0):
+    """Create a sphere-shaped control from three orthogonal circles.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    # Create three circles in X, Y, Z planes
+    circle_x = pm.circle(
+        name=f"{name}_tempX", normal=[1, 0, 0], radius=scale, sections=8, constructionHistory=False
+    )[0]
+    circle_y = pm.circle(
+        name=f"{name}_tempY", normal=[0, 1, 0], radius=scale, sections=8, constructionHistory=False
+    )[0]
+    circle_z = pm.circle(
+        name=f"{name}_tempZ", normal=[0, 0, 1], radius=scale, sections=8, constructionHistory=False
+    )[0]
+
+    # Parent shapes to first circle
+    shapes_y = circle_y.getShapes()
+    shapes_z = circle_z.getShapes()
+    pm.parent(shapes_y + shapes_z, circle_x, r=True, s=True)
+    pm.delete([circle_y, circle_z])
+
+    # Rename
+    circle_x.rename(name)
+    return circle_x
+
+
+def moveCtrlShape(name: str = "move_CTRL", scale: float = 1.0):
+    """Create a four-way arrow control for translation.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Right arrow
+        [0.5 * s, 0, 0],
+        [0.75 * s, 0, 0],
+        [0.75 * s, 0, 0.25 * s],
+        [1.0 * s, 0, 0],
+        [0.75 * s, 0, -0.25 * s],
+        [0.75 * s, 0, 0],
+        [0.5 * s, 0, 0],
+        # Top arrow
+        [0, 0, 0.5 * s],
+        [0, 0, 0.75 * s],
+        [0.25 * s, 0, 0.75 * s],
+        [0, 0, 1.0 * s],
+        [-0.25 * s, 0, 0.75 * s],
+        [0, 0, 0.75 * s],
+        [0, 0, 0.5 * s],
+        # Left arrow
+        [-0.5 * s, 0, 0],
+        [-0.75 * s, 0, 0],
+        [-0.75 * s, 0, 0.25 * s],
+        [-1.0 * s, 0, 0],
+        [-0.75 * s, 0, -0.25 * s],
+        [-0.75 * s, 0, 0],
+        [-0.5 * s, 0, 0],
+        # Bottom arrow
+        [0, 0, -0.5 * s],
+        [0, 0, -0.75 * s],
+        [0.25 * s, 0, -0.75 * s],
+        [0, 0, -1.0 * s],
+        [-0.25 * s, 0, -0.75 * s],
+        [0, 0, -0.75 * s],
+        [0, 0, -0.5 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def trapeziumCtrlShape(name: str = "trapezium_CTRL", scale: float = 1.0):
+    """Create a trapezoid-shaped control suitable for spine/torso.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        [-1.0 * s, 1.0 * s, 0],
+        [1.0 * s, 1.0 * s, 0],
+        [1.5 * s, -1.0 * s, 0],
+        [-1.5 * s, -1.0 * s, 0],
+        [-1.0 * s, 1.0 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def chestCtrlShape(name: str = "chest_CTRL", scale: float = 1.0):
+    """Create a chest-shaped control for upper torso.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Outer rectangle
+        [-1.5 * s, 1.0 * s, 0],
+        [1.5 * s, 1.0 * s, 0],
+        [1.5 * s, -1.0 * s, 0],
+        [-1.5 * s, -1.0 * s, 0],
+        [-1.5 * s, 1.0 * s, 0],
+        # Connection to inner
+        [-1.0 * s, 0.5 * s, 0],
+        # Inner rectangle
+        [-1.0 * s, 0.5 * s, 0],
+        [1.0 * s, 0.5 * s, 0],
+        [1.0 * s, -0.5 * s, 0],
+        [-1.0 * s, -0.5 * s, 0],
+        [-1.0 * s, 0.5 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def hipCtrlShape(name: str = "hip_CTRL", scale: float = 1.0):
+    """Create a hip-shaped control for lower torso.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Inverted trapezoid for hips
+        [-1.5 * s, 1.0 * s, 0],
+        [1.5 * s, 1.0 * s, 0],
+        [1.0 * s, -1.0 * s, 0],
+        [-1.0 * s, -1.0 * s, 0],
+        [-1.5 * s, 1.0 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def headCtrlShape(name: str = "head_CTRL", scale: float = 1.0):
+    """Create a head-shaped control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    # Create a circle with a vertical line (like a lollipop)
+    points = [
+        # Circle around head (8 points)
+        [0, 1.0 * s, 1.0 * s],
+        [0.707 * s, 1.0 * s, 0.707 * s],
+        [1.0 * s, 1.0 * s, 0],
+        [0.707 * s, 1.0 * s, -0.707 * s],
+        [0, 1.0 * s, -1.0 * s],
+        [-0.707 * s, 1.0 * s, -0.707 * s],
+        [-1.0 * s, 1.0 * s, 0],
+        [-0.707 * s, 1.0 * s, 0.707 * s],
+        [0, 1.0 * s, 1.0 * s],
+        # Neck line
+        [0, 1.0 * s, 0],
+        [0, 0, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def displayCtrlShape(name: str = "display_CTRL", scale: float = 1.0):
+    """Create a simple square frame control for display/visibility toggles.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        [-1.0 * s, 1.0 * s, 0],
+        [1.0 * s, 1.0 * s, 0],
+        [1.0 * s, -1.0 * s, 0],
+        [-1.0 * s, -1.0 * s, 0],
+        [-1.0 * s, 1.0 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def ikfkCtrlShape(name: str = "ikfk_CTRL", scale: float = 1.0):
+    """Create an IK/FK switch control shape.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    # Create a double-ended arrow for switching
+    points = [
+        # Left arrow
+        [-1.0 * s, 0.5 * s, 0],
+        [-1.5 * s, 0, 0],
+        [-1.0 * s, -0.5 * s, 0],
+        [-1.0 * s, -0.25 * s, 0],
+        # Center bar
+        [-1.0 * s, -0.25 * s, 0],
+        [1.0 * s, -0.25 * s, 0],
+        # Right arrow
+        [1.0 * s, -0.5 * s, 0],
+        [1.5 * s, 0, 0],
+        [1.0 * s, 0.5 * s, 0],
+        [1.0 * s, 0.25 * s, 0],
+        # Back to start
+        [-1.0 * s, 0.25 * s, 0],
+        [-1.0 * s, 0.5 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def pinCtrlShape(name: str = "pin_CTRL", scale: float = 1.0):
+    """Create a pin/thumbtack-shaped control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Pin head (circle)
+        [0, 1.0 * s, 0.5 * s],
+        [0.354 * s, 1.0 * s, 0.354 * s],
+        [0.5 * s, 1.0 * s, 0],
+        [0.354 * s, 1.0 * s, -0.354 * s],
+        [0, 1.0 * s, -0.5 * s],
+        [-0.354 * s, 1.0 * s, -0.354 * s],
+        [-0.5 * s, 1.0 * s, 0],
+        [-0.354 * s, 1.0 * s, 0.354 * s],
+        [0, 1.0 * s, 0.5 * s],
+        # Pin shaft
+        [0, 1.0 * s, 0],
+        [0, -1.0 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def arrowCtrlShape(name: str = "arrow_CTRL", scale: float = 1.0):
+    """Create a single arrow control pointing forward.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Arrow shaft
+        [0, 0, -1.0 * s],
+        [0, 0, 0.5 * s],
+        # Arrow head
+        [-0.5 * s, 0, 0.5 * s],
+        [0, 0, 1.0 * s],
+        [0.5 * s, 0, 0.5 * s],
+        [0, 0, 0.5 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def cubeCtrlShape(name: str = "cube_CTRL", scale: float = 1.0):
+    """Create a cube wireframe control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Bottom face
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        # Up to top face
+        [-1.0 * s, 1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, -1.0 * s],
+        # Connect edges
+        [-1.0 * s, -1.0 * s, -1.0 * s],
+        [-1.0 * s, -1.0 * s, 1.0 * s],
+        [-1.0 * s, 1.0 * s, 1.0 * s],
+        [1.0 * s, 1.0 * s, 1.0 * s],
+        [1.0 * s, -1.0 * s, 1.0 * s],
+        [1.0 * s, -1.0 * s, -1.0 * s],
+        [1.0 * s, 1.0 * s, -1.0 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def crossCtrlShape(name: str = "cross_CTRL", scale: float = 1.0):
+    """Create a cross/plus-shaped control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        # Vertical arm
+        [0, 1.0 * s, 0],
+        [0, 0.25 * s, 0],
+        # Right arm
+        [1.0 * s, 0, 0],
+        [0.25 * s, 0, 0],
+        # Bottom arm
+        [0, -1.0 * s, 0],
+        [-0.25 * s, 0, 0],
+        # Left arm
+        [-1.0 * s, 0, 0],
+        [0, 0.25 * s, 0],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
+
+
+def squareCtrlShape(name: str = "square_CTRL", scale: float = 1.0):
+    """Create a simple square control.
+
+    Args:
+        name: Name for the control curve.
+        scale: Uniform scale factor for the control.
+
+    Returns:
+        The created curve transform node.
+    """
+    s = scale
+    points = [
+        [-1.0 * s, 0, -1.0 * s],
+        [1.0 * s, 0, -1.0 * s],
+        [1.0 * s, 0, 1.0 * s],
+        [-1.0 * s, 0, 1.0 * s],
+        [-1.0 * s, 0, -1.0 * s],
+    ]
+
+    curve = pm.curve(name=name, d=1, p=points)
+    return curve
 
 
 if __name__ == "__main__":

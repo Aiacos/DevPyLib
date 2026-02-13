@@ -86,6 +86,21 @@ class Control:
         elif shape == "ikfk":
             ctrl_object = ctrl_shape_lib.ikfkCtrlShape(name=prefix + "_CTRL", scale=scale)
 
+        elif shape == "pin":
+            ctrl_object = ctrl_shape_lib.pinCtrlShape(name=prefix + "_CTRL", scale=scale)
+
+        elif shape == "arrow":
+            ctrl_object = ctrl_shape_lib.arrowCtrlShape(name=prefix + "_CTRL", scale=scale)
+
+        elif shape == "cube":
+            ctrl_object = ctrl_shape_lib.cubeCtrlShape(name=prefix + "_CTRL", scale=scale)
+
+        elif shape == "cross":
+            ctrl_object = ctrl_shape_lib.crossCtrlShape(name=prefix + "_CTRL", scale=scale)
+
+        elif shape == "square":
+            ctrl_object = ctrl_shape_lib.squareCtrlShape(name=prefix + "_CTRL", scale=scale)
+
         # default ctrl
         if not ctrl_object:
             ctrl_object = pm.circle(
