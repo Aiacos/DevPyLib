@@ -105,19 +105,26 @@ class AutoUV:
             bool: True if all UVs are within the boundaries, False otherwise.
         """
         uvs = pm.polyListComponentConversion(shell, tuv=True)
+        uv_list = pm.ls(uvs, fl=True)
+
+        if not uv_list:
+            return True
+
+        # Batch query all UV coordinates at once (returns flat list: [u1, v1, u2, v2, ...])
+        uv_coords = pm.polyEditUV(uv_list, q=True)
 
         u_max = 1
         u_min = 0
         v_max = 1
         v_min = 0
-        for i, uv in zip(list(range(len(pm.ls(uvs, fl=True)))), pm.ls(uvs, fl=True), strict=False):
-            u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
+
+        # Process coordinates in pairs (u, v)
+        for i in range(0, len(uv_coords), 2):
+            u = uv_coords[i]
+            v = uv_coords[i + 1]
 
             if i > 0:
-                if (u > u_min) and (u < u_max) and (v > v_min) and (v < v_max):
-                    pass
-                    # return True
-                else:
+                if not (u > u_min and u < u_max and v > v_min and v < v_max):
                     return False
 
             u_max = int(u) + 1
