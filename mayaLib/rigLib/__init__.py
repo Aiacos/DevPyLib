@@ -14,6 +14,7 @@ Ziva = None
 base = None
 cloth = None
 core = None
+face = None
 facial_rig = None
 matrix = None
 orient_ctrl = None
@@ -31,7 +32,7 @@ def _initialize_riglib():
         bool: True if rigLib was successfully initialized.
     """
     global _riglib_initialized, _riglib_available
-    global Ziva, base, cloth, core, facial_rig, matrix, orient_ctrl, set_muscle_weight, utils
+    global Ziva, base, cloth, core, face, facial_rig, matrix, orient_ctrl, set_muscle_weight, utils
 
     if _riglib_initialized:
         return _riglib_available
@@ -44,6 +45,7 @@ def _initialize_riglib():
         from . import base as _base
         from . import cloth as _cloth
         from . import core as _core
+        from . import face as _face
         from . import facial_rig as _facial_rig
         from . import matrix as _matrix
         from . import orient_ctrl as _orient_ctrl
@@ -55,6 +57,7 @@ def _initialize_riglib():
         base = _base
         cloth = _cloth
         core = _core
+        face = _face
         facial_rig = _facial_rig
         matrix = _matrix
         orient_ctrl = _orient_ctrl
@@ -105,6 +108,7 @@ def __getattr__(name):
         "base",
         "cloth",
         "core",
+        "face",
         "facial_rig",
         "matrix",
         "orient_ctrl",
