@@ -12,9 +12,9 @@ import inspect
 import pymel.core as pm
 
 try:
-    from PySide6 import QtCore, QtWidgets
+    from PySide6 import QtCore, QtGui, QtWidgets
 except ImportError:
-    from PySide2 import QtCore, QtWidgets
+    from PySide2 import QtCore, QtGui, QtWidgets
 
 import mayaLib.pipelineLib.utility.docs as doc
 from mayaLib.guiLib.utils.error_dialog import show_exception_dialog
@@ -95,6 +95,7 @@ class FunctionUI(QtWidgets.QWidget):
                             arg[0], param_annotation, arg[1]
                         )
                         lineedit.setPlaceholderText(placeholder)
+                        self._apply_validator(lineedit, param_annotation)
                 else:
                     lineedit = QtWidgets.QLineEdit("")
                     fill_button = QtWidgets.QPushButton(">")
@@ -102,6 +103,7 @@ class FunctionUI(QtWidgets.QWidget):
                         arg[0], param_annotation, None
                     )
                     lineedit.setPlaceholderText(placeholder)
+                    self._apply_validator(lineedit, param_annotation)
 
                 self.layout.addWidget(labelname, row, 0)
                 self.label_list.append(labelname)
@@ -293,6 +295,52 @@ class FunctionUI(QtWidgets.QWidget):
 
         return "Enter value"
 
+    def _apply_validator(self, lineedit, param_annotation):
+        """Apply a Qt validator to a QLineEdit based on type annotation.
+
+        Sets QIntValidator for int annotations and QDoubleValidator for float
+        annotations. Connects textChanged signal for real-time visual feedback.
+
+        Args:
+            lineedit (QLineEdit): The line edit widget to apply the validator to.
+            param_annotation: The type annotation from the function signature.
+        """
+        if param_annotation is inspect.Parameter.empty:
+            return
+
+        if param_annotation is int:
+            lineedit.setValidator(QtGui.QIntValidator())
+            lineedit.textChanged.connect(self._validate_input)
+        elif param_annotation is float:
+            lineedit.setValidator(QtGui.QDoubleValidator())
+            lineedit.textChanged.connect(self._validate_input)
+
+    def _validate_input(self):
+        """Validate all line edits and update visual feedback.
+
+        Called when any validated field's text changes. Sets a red border on
+        invalid fields and disables the Execute button if any field is invalid.
+        """
+        all_valid = True
+        for lineedit in self.lineedit_list:
+            if not isinstance(lineedit, QtWidgets.QLineEdit):
+                continue
+            validator = lineedit.validator()
+            if validator is None:
+                continue
+            text = lineedit.text()
+            if text == "":
+                # Empty is valid (uses default or None)
+                lineedit.setStyleSheet("")
+            else:
+                state, _, _ = validator.validate(text, 0)
+                if state == QtGui.QValidator.Acceptable:
+                    lineedit.setStyleSheet("")
+                else:
+                    lineedit.setStyleSheet("border: 1px solid red;")
+                    all_valid = False
+        self.exec_button.setEnabled(all_valid)
+
     def get_parameter_list(self):
         """Returns a list of parameters for the UI.
 
@@ -414,7 +462,7 @@ class FunctionUI(QtWidgets.QWidget):
             self.function(*args)
         except Exception as e:
             # Display error dialog with exception details and traceback
-            show_exception_dialog(e, title=self.function.__name__)
+            show_exception_dialog(e, title=self.function.__name__, parent=self)
 
 
 if __name__ == "__main__":
