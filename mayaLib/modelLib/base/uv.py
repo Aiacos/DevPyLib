@@ -189,16 +189,27 @@ class AutoUV:
         for tile in self.check_uv_boundaries(shell):
             tmp_buffer = []
             uvs = pm.polyListComponentConversion(shell, tuv=True)
+            uv_list = pm.ls(uvs, fl=True)
 
-            for uv in pm.ls(uvs, fl=True):
-                u, v = pm.polyEditUV(uv, q=True, u=True, v=True)
+            if not uv_list:
+                continue
+
+            # Batch query all UV coordinates at once (returns flat list: [u1, v1, u2, v2, ...])
+            uv_coords = pm.polyEditUV(uv_list, q=True)
+
+            # Process coordinates in pairs (u, v) and filter by tile boundaries
+            for i in range(0, len(uv_coords), 2):
+                u = uv_coords[i]
+                v = uv_coords[i + 1]
+
                 if u > tile[0] and u < tile[1] and v > tile[2] and v < tile[3]:
-                    tmp_buffer.append(uv)
+                    tmp_buffer.append(uv_list[i // 2])
 
-            faces = pm.polyListComponentConversion(pm.ls(tmp_buffer), tuv=True)
-            pm.select(faces)
-            mel.eval("CreateUVShellAlongBorder;")
-            # pm.polyMapCut(faces, ch=True)
+            if tmp_buffer:
+                faces = pm.polyListComponentConversion(pm.ls(tmp_buffer), tuv=True)
+                pm.select(faces)
+                mel.eval("CreateUVShellAlongBorder;")
+                # pm.polyMapCut(faces, ch=True)
 
     def recursive_cut_uv(self, geo):
         """Recursively cuts the UV shells of the given geometry at tile boundaries.
