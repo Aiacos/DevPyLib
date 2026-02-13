@@ -11,6 +11,7 @@ _face_initialized = False
 _face_available = False
 
 # Module references (initialized on first access)
+arise_face_node = None
 constants = None
 io = None
 operations = None
@@ -29,7 +30,7 @@ def _initialize_face():
         bool: True if face module was successfully initialized.
     """
     global _face_initialized, _face_available
-    global constants, io, operations, skin, utils, widgets
+    global arise_face_node, constants, io, operations, skin, utils, widgets
 
     if _face_initialized:
         return _face_available
@@ -38,6 +39,7 @@ def _initialize_face():
 
     try:
         # Import all submodules
+        from . import arise_face_node as _arise_face_node
         from . import constants as _constants
         from . import io as _io
         from . import operations as _operations
@@ -46,6 +48,7 @@ def _initialize_face():
         from . import widgets as _widgets
 
         # Assign to module-level variables
+        arise_face_node = _arise_face_node
         constants = _constants
         io = _io
         operations = _operations
@@ -93,6 +96,7 @@ def __getattr__(name):
     """
     # List of available submodules
     _submodules = [
+        "arise_face_node",
         "constants",
         "io",
         "operations",
@@ -119,6 +123,7 @@ def __dir__():
         list: Sorted list of available module attributes.
     """
     _submodules = [
+        "arise_face_node",
         "constants",
         "io",
         "operations",
