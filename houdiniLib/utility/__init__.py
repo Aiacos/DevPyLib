@@ -1,16 +1,13 @@
-"""Houdini utilities - Professional DCC tools for Houdini.
+"""Houdini utility modules.
 
-Provides utilities for Houdini rigging, simulation, and pipeline integration.
-
-This module uses lazy loading to defer imports of submodules until first access,
-optimising Houdini startup performance.
+Provides shared utilities for Houdini tool development, including lazy loading
+helpers and Houdini environment introspection.
 """
 
 from importlib import import_module
 
-# Submodules available for lazy loading
 _SUBMODULES = {
-    "utility",
+    "lazy_loader",
 }
 
 __all__ = sorted(_SUBMODULES)
