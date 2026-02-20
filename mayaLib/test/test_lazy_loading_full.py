@@ -29,7 +29,7 @@ def reset_modules():
     """
     # Store modules to remove
     modules_to_remove = [
-        key for key in sys.modules.keys() if key.startswith("mayaLib")
+        key for key in sys.modules if key.startswith("mayaLib")
     ]
 
     yield
