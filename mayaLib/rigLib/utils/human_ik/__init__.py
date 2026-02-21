@@ -7,7 +7,110 @@ maintainability and single responsibility adherence.
 
 This module provides backward compatibility by re-exporting all symbols
 that were previously available from the monolithic human_ik.py file.
+
+Public API:
+    Submodules:
+        - constants: HumanIK joint and control naming constants
+        - rig_templates: Predefined rig templates (Arise, Rokoko, Advanced Skeleton)
+        - mel_interface: MEL command interface for HumanIK operations
+        - pose_utils: Utilities for managing character poses
+        - skeleton_mapper: Skeleton to HumanIK mapping utilities
+        - control_mapper: Control to HumanIK mapping utilities
+
+    Classes:
+        - HumanIK: Unified facade for HumanIK character setup
+
+    Functions:
+        - is_available: Check if HumanIK module is available
+
+    Constants (backward compatibility):
+        Joint defaults, control defaults, mapping dictionaries, and rig templates
+        are re-exported for backward compatibility with the monolithic API.
+
+Example:
+    >>> import mayaLib.rigLib.utils.human_ik as hik
+    >>> # Create HumanIK character using Arise template
+    >>> character = hik.HumanIK("MyCharacter", rig_template="arise")
+    >>> # Access constants
+    >>> joint_map = hik.HUMAN_IK_JOINT_MAP
+    >>> # Use submodules directly
+    >>> hik.skeleton_mapper.SkeletonMapper("character")
 """
+
+# Public exports - comprehensive list for IDE support and documentation
+__all__ = [
+    # Main class
+    "HumanIK",
+    # Utility function
+    "is_available",
+    # Submodules
+    "constants",
+    "rig_templates",
+    "mel_interface",
+    "pose_utils",
+    "skeleton_mapper",
+    "control_mapper",
+    # Joint name constants (backward compatibility)
+    "REFERENCE_JOINT_DEFAULT",
+    "HIP_JOINT_DEFAULT",
+    "SPINE_JOINT_LIST_DEFAULT",
+    "NECK_JOINT_LIST_DEFAULT",
+    "HEAD_JOINT_DEFAULT",
+    "LEFT_ARM_JOINT_LIST_DEFAULT",
+    "LEFT_LEG_JOINT_LIST_DEFAULT",
+    "RIGHT_ARM_JOINT_LIST_DEFAULT",
+    "RIGHT_LEG_JOINT_LIST_DEFAULT",
+    "LEFT_HAND_THUMB_JOINT_LIST_DEFAULT",
+    "LEFT_HAND_INDEX_JOINT_LIST_DEFAULT",
+    "LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT",
+    "LEFT_HAND_RING_JOINT_LIST_DEFAULT",
+    "LEFT_HAND_PINKY_JOINT_LIST_DEFAULT",
+    "RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT",
+    "RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT",
+    "RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT",
+    "RIGHT_HAND_RING_JOINT_LIST_DEFAULT",
+    "RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT",
+    # Control name constants (backward compatibility)
+    "HIP_CTRL_DEFAULT",
+    "SPINE_CTRL_LIST_DEFAULT",
+    "CHEST_CTRL_DEFAULT",
+    "NECK_CTRL_DEFAULT",
+    "HEAD_CTRL_DEFAULT",
+    "LEFT_CLAVICLE_CTRL_DEFAULT",
+    "LEFT_SHOULDER_CTRL_DEFAULT",
+    "LEFT_ELBOW_CTRL_DEFAULT",
+    "LEFT_HAND_FK_CTRL_DEFAULT",
+    "LEFT_HAND_IK_CTRL_DEFAULT",
+    "RIGHT_CLAVICLE_CTRL_DEFAULT",
+    "RIGHT_SHOULDER_CTRL_DEFAULT",
+    "RIGHT_ELBOW_CTRL_DEFAULT",
+    "RIGHT_HAND_FK_CTRL_DEFAULT",
+    "RIGHT_HAND_IK_CTRL_DEFAULT",
+    "LEFT_HIP_CTRL_DEFAULT",
+    "LEFT_KNEE_CTRL_DEFAULT",
+    "LEFT_ANKLE_FK_CTRL_DEFAULT",
+    "LEFT_ANKLE_IK_CTRL_DEFAULT",
+    "RIGHT_HIP_CTRL_DEFAULT",
+    "RIGHT_KNEE_CTRL_DEFAULT",
+    "RIGHT_ANKLE_FK_CTRL_DEFAULT",
+    "RIGHT_ANKLE_IK_CTRL_DEFAULT",
+    "LEFT_HAND_THUMB_CTRL_LIST_DEFAULT",
+    "LEFT_HAND_INDEX_CTRL_LIST_DEFAULT",
+    "LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT",
+    "LEFT_HAND_RING_CTRL_LIST_DEFAULT",
+    "LEFT_HAND_PINKY_CTRL_LIST_DEFAULT",
+    "RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT",
+    "RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT",
+    "RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT",
+    "RIGHT_HAND_RING_CTRL_LIST_DEFAULT",
+    "RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT",
+    # Mapping dictionaries and templates (backward compatibility)
+    "HUMAN_IK_JOINT_MAP",
+    "HUMAN_IK_CTRL_MAP",
+    "ARISE_HIK_DATA",
+    "ROKOKO_HIK_DATA",
+    "ADVANCED_SKELETON_DATA",
+]
 
 # Lazy loading state
 _human_ik_initialized = False
