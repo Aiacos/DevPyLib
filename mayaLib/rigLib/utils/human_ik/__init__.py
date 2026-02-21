@@ -313,17 +313,24 @@ class HumanIK:
 
         self.character_name = str(character_name)
 
+        # Get module references from globals (set by _initialize_human_ik)
+        _mel_interface = globals()["mel_interface"]
+        _pose_utils = globals()["pose_utils"]
+        _skeleton_mapper = globals()["skeleton_mapper"]
+        _control_mapper = globals()["control_mapper"]
+        _rig_templates = globals()["rig_templates"]
+
         # Create component instances
-        self._mel_interface = mel_interface.MelInterface()
-        self._pose_utils = pose_utils.PoseUtils()
-        self._skeleton_mapper = skeleton_mapper.SkeletonMapper(character_name)
-        self._control_mapper = control_mapper.ControlMapper(character_name)
+        self._mel_interface = _mel_interface.MelInterface()
+        self._pose_utils = _pose_utils.PoseUtils()
+        self._skeleton_mapper = _skeleton_mapper.SkeletonMapper(character_name)
+        self._control_mapper = _control_mapper.ControlMapper(character_name)
 
         # Get rig template data
         rig_definition = {
-            "arise": rig_templates.ARISE_HIK_DATA,
-            "rokoko": rig_templates.ROKOKO_HIK_DATA,
-            "advanced_skeleton": rig_templates.ADVANCED_SKELETON_DATA,
+            "arise": _rig_templates.ARISE_HIK_DATA,
+            "rokoko": _rig_templates.ROKOKO_HIK_DATA,
+            "advanced_skeleton": _rig_templates.ADVANCED_SKELETON_DATA,
         }
         self.rig_data = rig_definition.get(rig_template)
         if self.rig_data is None:
