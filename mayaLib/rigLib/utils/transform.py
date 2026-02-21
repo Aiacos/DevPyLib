@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import name as name_utils
+from mayaLib.rigLib.utils import matrix_utils, name as name_utils
 
 __all__ = ["make_offset_group", "make_modify_group"]
 
@@ -32,8 +32,7 @@ def make_offset_group(node, prefix: str | None = None):
     if parent:
         pm.parent(offset_group, parent[0])
 
-    pm.delete(pm.parentConstraint(node, offset_group))
-    pm.delete(pm.scaleConstraint(node, offset_group))
+    matrix_utils.match_transform_with_scale(node, offset_group)
     pm.parent(node, offset_group)
     return offset_group
 
@@ -48,7 +47,6 @@ def make_modify_group(node, prefix: str | None = None):
     if parent:
         pm.parent(modify_group, parent[0])
 
-    pm.delete(pm.parentConstraint(node, modify_group))
-    pm.delete(pm.scaleConstraint(node, modify_group))
+    matrix_utils.match_transform_with_scale(node, modify_group)
     pm.parent(node, modify_group)
     return modify_group
