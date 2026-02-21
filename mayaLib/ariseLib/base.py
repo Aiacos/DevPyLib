@@ -6,8 +6,9 @@ rigging framework.
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import human_ik, joint
+from mayaLib.rigLib.utils import joint
 from mayaLib.rigLib.utils.common import set_driven_key
+from mayaLib.rigLib.utils.human_ik import HumanIK
 from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
@@ -545,7 +546,7 @@ class BaseRig:
 
         # Initialize HumanIK
         human_ik_name = f"{self.character_name}_HIK"
-        human_ik.HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
+        HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
 
     def _rename_skin_cluster(self):
         """Rename skin clusters for each geometry to be more descriptive.
