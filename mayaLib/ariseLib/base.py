@@ -38,7 +38,7 @@ class BaseRig:
         # Connect purpose
         try:
             self.connect_purpose("Base_main_ctrl")
-        except:
+        except Exception:
             print("No purpose found for the character.")
 
         # Set up geometry display overrides
@@ -214,7 +214,11 @@ class BaseRig:
                 geometry_model_set = pm.sets(geometry_geo_list, n="geometry_model_set")
                 model_sets.append(geometry_model_set)
 
-        model_set = pm.sets(model_sets, n="model_set") if model_sets else pm.sets(empty=True, n="model_set")
+        model_set = (
+            pm.sets(model_sets, n="model_set")
+            if model_sets
+            else pm.sets(empty=True, n="model_set")
+        )
 
         # Joints
         body_joint_set = pm.sets(joint_list, n="body_joint_set")

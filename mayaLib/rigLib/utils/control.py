@@ -5,9 +5,8 @@ from __future__ import annotations
 import pymel.core as pm
 
 from mayaLib.pipelineLib.utility import name_check as nc
-from mayaLib.rigLib.utils import common
+from mayaLib.rigLib.utils import common, matrix_utils
 from mayaLib.rigLib.utils import ctrl_shape as ctrl_shape_lib
-from mayaLib.rigLib.utils import matrix_utils
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import matrix_utils, name as name_utils
+from mayaLib.rigLib.utils import matrix_utils
+from mayaLib.rigLib.utils import name as name_utils
 
 __all__ = ["make_offset_group", "make_modify_group"]
 
