@@ -116,8 +116,10 @@ class MenuLibWidget(QtWidgets.QWidget):
         reload_icon_path = lib_path / "mayaLib" / "icons" / "reload.png"
         luna_icon_path = lib_path / "luna" / "res" / "images" / "icons" / "builder.svg"
 
-        self.lib_structure = lm.StructureManager(mayaLib)
-        self.lib_dict = self.lib_structure.get_struct_lib()["mayaLib"]
+        # Defer StructureManager creation for lazy initialization
+        self.lib_structure = None
+        self.lib_dict = None
+        self._structure_initialized = False
 
         # Setup layout
         self.layout = QtWidgets.QVBoxLayout()
@@ -173,12 +175,36 @@ class MenuLibWidget(QtWidgets.QWidget):
 
         self.show()
 
+    def _ensure_structure_initialized(self):
+        """Initialize StructureManager and lib_dict if not already done.
+
+        This method follows the lazy initialization pattern to defer expensive
+        introspection until the menu is actually accessed.
+
+        Returns:
+            bool: True if initialized successfully.
+        """
+        if self._structure_initialized:
+            return True
+
+        # Create StructureManager (not using lazy=True since we need it now)
+        self.lib_structure = lm.StructureManager(mayaLib, lazy=False)
+
+        # Cache the library dictionary structure
+        self.lib_dict = self.lib_structure.get_struct_lib()
+
+        # Mark as initialized
+        self._structure_initialized = True
+
+        return True
+
     def list_widget_button_click(self, item):
         """Handle list widget item click to execute corresponding function.
 
         Args:
             item (QListWidgetItem): The clicked item.
         """
+        self._ensure_structure_initialized()
         libstr = item.toolTip()
         class_string = libstr.split(".")
         module = ".".join(class_string[:-1])
@@ -192,6 +218,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         Args:
             text (str): Search input text.
         """
+        self._ensure_structure_initialized()
         if self.button_list_widget.count() > 0 or text == "":
             self.button_list_widget.clear()
             del self.button_item_list[:]
@@ -273,6 +300,9 @@ class MenuLibWidget(QtWidgets.QWidget):
         discipline = ["Modelling", "Rigging", "Animation", "Vfx", "Lookdev"]
         for disci in discipline:
             file_menu = main_menu.addMenu("&" + disci)
+            # Connect aboutToShow signal to trigger lazy initialization
+            # This ensures StructureManager is created only when menu is opened
+            file_menu.aboutToShow.connect(self._ensure_structure_initialized)
             for action in self.add_multiple_menu_action(file_menu, disci):
                 file_menu.addAction(action)
 
@@ -334,6 +364,7 @@ class MenuLibWidget(QtWidgets.QWidget):
             up_menu (QMenu): The parent menu.
             lib_dict (dict): The dictionary containing library functions.
         """
+        self._ensure_structure_initialized()
         for key, value in lib_dict.items():
             if isinstance(value, dict):
                 sub_menu = self.add_sub_menu(up_menu, key)
@@ -355,6 +386,7 @@ class MenuLibWidget(QtWidgets.QWidget):
         Returns:
             list: A list of actions added.
         """
+        self._ensure_structure_initialized()
         action_list = []
         if discipline == "Modelling":
             lib_menu = self.add_sub_menu(up_menu, "modelLib")

@@ -23,19 +23,66 @@ class StructureManager:
 
     # root_package = ''
 
-    def __init__(self, lib):
-        """Initialize the class with the root package."""
+    def __init__(self, lib, lazy=False):
+        """Initialize the class with the root package.
+
+        Args:
+            lib: The root package to scan for functions and classes.
+            lazy (bool): If True, defer expensive scanning operations until first access.
+                Defaults to False for backwards compatibility.
+        """
         self.root_package = lib
         self.struct_lib = {}
+        self._lazy = lazy
+        self._initialized = False
 
         self.final_class_list = []
         self.module_class_list = []
 
+        # Skip expensive scanning if lazy=True
+        if not lazy:
+            self._initialize()
+
+    def _ensure_initialized(self):
+        """Ensure one-time initialization has occurred.
+
+        This method checks if initialization has already been performed and
+        triggers it if needed. It follows the lazy loading pattern to defer
+        expensive scanning operations until first access.
+
+        Returns:
+            bool: True if initialized successfully, False otherwise.
+        """
+        if self._initialized:
+            return True
+
+        # Trigger initialization
+        self._initialize()
+        return self._initialized
+
+    def _initialize(self):
+        """Perform on-demand scanning of packages, modules, classes and functions.
+
+        This method is called automatically on first access when lazy=True, or
+        immediately during __init__ when lazy=False (backwards compatibility).
+
+        The method scans the root package to build a nested dictionary structure
+        mapping package/module paths to their classes and functions.
+        """
+        # Skip if already initialized
+        if self._initialized:
+            return
+
+        self._initialized = True
+
+        # Scan all packages
         self.package_list = self.list_all_package()
 
+        # Scan all modules and flatten the list
         self.module_list = self.list_all_module()
         self.module_list = sum(self.module_list, [])
 
+        # Build module class list by scanning sub-packages
         self.sub_package_list = []
         for mod in self.module_list:
             try:
@@ -46,6 +93,7 @@ class StructureManager:
             else:
                 self.module_class_list.extend(sub_pack)
 
+        # Build final class list with full paths
         for item in self.module_class_list:
             # Class OR Function Case
 
@@ -58,22 +106,18 @@ class StructureManager:
             for f in self.function_list:
                 self.final_class_list.append(item + "." + f[0])
 
-        # Testing
+        # Build nested dictionary structure
         for item in self.final_class_list:
             split = item.split(".")
             tmp_dict = {}
             for key in reversed(split):
-                tmp_dict = {key: item} if key == split[-1] else self.incapsulate_dict(tmp_dict, key)
+                tmp_dict = (
+                    {key: item}
+                    if key == split[-1]
+                    else self.incapsulate_dict(tmp_dict, key)
+                )
 
-            # print tmp_dict
             self.dict_merge(self.struct_lib, tmp_dict)
-
-        # print(self.struct_lib)
-        # for k, v in self.struct_lib['mayaLib']['fluidLib'].iteritems():
-        #    print(k, v)
-        # func = self.import_and_exec('mayaLib.fluidLib.fire', 'Fire')
-        # print('FUNCTION: ', func)
-        # func()
 
     def dict_merge(self, dct, merge_dct):
         """Recursively merges two dictionaries.
@@ -101,7 +145,16 @@ class StructureManager:
         return {key: dictionary}
 
     def get_struct_lib(self):
-        """Return the structure dictionary."""
+        """Return the structure dictionary.
+
+        If lazy initialization is enabled, this will trigger the scanning
+        process on first access.
+
+        Returns:
+            dict: Nested dictionary mapping package/module paths to classes and functions.
+        """
+        # Ensure initialization happens before returning data
+        self._ensure_initialized()
         return self.struct_lib
 
     def import_and_exec(self, module_string, function):
