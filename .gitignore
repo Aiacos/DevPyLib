@@ -33,3 +33,19 @@ Python/\.idea/
 .worktrees/
 .security-key
 logs/security/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python build artifacts
+*.egg-info/
+dist/
+build/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
