@@ -24,6 +24,7 @@ __all__ = [
     "ikfk_switch",
     "joint",
     "line_of_action",
+    "matrix_utils",
     "meta_human",
     "name",
     "parameter_resolution",
