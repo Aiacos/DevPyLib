@@ -7,6 +7,7 @@ import pymel.core as pm
 from mayaLib.pipelineLib.utility import name_check as nc
 from mayaLib.rigLib.utils import common
 from mayaLib.rigLib.utils import ctrl_shape as ctrl_shape_lib
+from mayaLib.rigLib.utils import matrix_utils
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -132,11 +133,11 @@ class Control:
 
         # translate control
         if translate_to is not None and translate_to != "" and pm.objExists(translate_to):
-            pm.delete(pm.pointConstraint(translate_to, ctrl_offset))
+            matrix_utils.match_translation(translate_to, ctrl_offset)
 
         # rotate control
         if rotate_to is not None and rotate_to != "" and pm.objExists(rotate_to):
-            pm.delete(pm.orientConstraint(rotate_to, ctrl_offset))
+            matrix_utils.match_rotation(rotate_to, ctrl_offset)
 
         # lock control channels
         locked = []
