@@ -6,7 +6,7 @@ rigging framework.
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import human_ik, joint
+from mayaLib.rigLib.utils import human_ik, joint, matrix_utils
 from mayaLib.rigLib.utils.common import set_driven_key
 from mayaLib.rigLib.utils.util import list_objects_under_group
 
@@ -453,9 +453,7 @@ class BaseRig:
     def _connect_via_matrix(self, source, target, maintain_offset=True):
         """Connect source to target using matrix multiplication nodes.
 
-        Creates a matrix-based connection between source and target objects,
-        replacing the need for parent constraints with more efficient
-        matrix multiplication.
+        Delegates to the shared :func:`matrix_utils.connect_via_matrix` utility.
 
         Args:
             source (str): Name of the source object driving the connection.
@@ -463,55 +461,7 @@ class BaseRig:
             maintain_offset (bool): Whether to maintain the current offset
                 between source and target. Defaults to True.
         """
-        if not pm.objExists(source) or not pm.objExists(target):
-            pm.warning(f"Cannot connect: {source} or {target} does not exist.")
-            return
-
-        # Create unique node names based on source and target
-        node_prefix = f"{source}_{target}".replace("|", "_")
-
-        # Create matrix multiplication node
-        mult_matrix = pm.shadingNode(
-            "multMatrix", asUtility=True, name=f"{node_prefix}_multMatrix"
-        )
-
-        # Create decompose matrix node
-        decompose = pm.shadingNode(
-            "decomposeMatrix", asUtility=True, name=f"{node_prefix}_decomposeMatrix"
-        )
-
-        if maintain_offset:
-            # Calculate offset matrix
-            source_world = pm.getAttr(f"{source}.worldMatrix[0]")
-            target_world = pm.getAttr(f"{target}.worldMatrix[0]")
-            offset_matrix = target_world * source_world.inverse()
-
-            # Store offset in a constant matrix (using a compose node)
-            offset_node = pm.shadingNode(
-                "holdMatrix", asUtility=True, name=f"{node_prefix}_offsetMatrix"
-            )
-            pm.setAttr(f"{offset_node}.inMatrix", offset_matrix, type="matrix")
-
-            # Connect: offset * source.worldMatrix * target.parentInverseMatrix
-            pm.connectAttr(f"{offset_node}.outMatrix", f"{mult_matrix}.matrixIn[0]")
-            pm.connectAttr(f"{source}.worldMatrix[0]", f"{mult_matrix}.matrixIn[1]")
-            pm.connectAttr(
-                f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[2]"
-            )
-        else:
-            # Direct connection: source.worldMatrix * target.parentInverseMatrix
-            pm.connectAttr(f"{source}.worldMatrix[0]", f"{mult_matrix}.matrixIn[0]")
-            pm.connectAttr(
-                f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[1]"
-            )
-
-        # Connect mult matrix output to decompose
-        pm.connectAttr(f"{mult_matrix}.matrixSum", f"{decompose}.inputMatrix")
-
-        # Connect decompose outputs to target transform
-        pm.connectAttr(f"{decompose}.outputTranslate", f"{target}.translate", f=True)
-        pm.connectAttr(f"{decompose}.outputRotate", f"{target}.rotate", f=True)
-        pm.connectAttr(f"{decompose}.outputScale", f"{target}.scale", f=True)
+        matrix_utils.connect_via_matrix(source, target, maintain_offset=maintain_offset)
 
     def _setup_human_ik(self):
         """Set up HumanIK for the character.
