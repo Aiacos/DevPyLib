@@ -13,73 +13,8 @@ that were previously available from the monolithic human_ik.py file.
 _human_ik_initialized = False
 _human_ik_available = False
 
-# Module references (initialized on first access)
-constants = None
-rig_templates = None
-mel_interface = None
-pose_utils = None
-skeleton_mapper = None
-control_mapper = None
-
-# Re-export constants for backward compatibility
-# These will be populated during initialization
-REFERENCE_JOINT_DEFAULT = None
-HIP_JOINT_DEFAULT = None
-SPINE_JOINT_LIST_DEFAULT = None
-NECK_JOINT_LIST_DEFAULT = None
-HEAD_JOINT_DEFAULT = None
-LEFT_ARM_JOINT_LIST_DEFAULT = None
-LEFT_LEG_JOINT_LIST_DEFAULT = None
-RIGHT_ARM_JOINT_LIST_DEFAULT = None
-RIGHT_LEG_JOINT_LIST_DEFAULT = None
-LEFT_HAND_THUMB_JOINT_LIST_DEFAULT = None
-LEFT_HAND_INDEX_JOINT_LIST_DEFAULT = None
-LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT = None
-LEFT_HAND_RING_JOINT_LIST_DEFAULT = None
-LEFT_HAND_PINKY_JOINT_LIST_DEFAULT = None
-RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT = None
-RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT = None
-RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT = None
-RIGHT_HAND_RING_JOINT_LIST_DEFAULT = None
-RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT = None
-HIP_CTRL_DEFAULT = None
-SPINE_CTRL_LIST_DEFAULT = None
-CHEST_CTRL_DEFAULT = None
-NECK_CTRL_DEFAULT = None
-HEAD_CTRL_DEFAULT = None
-LEFT_CLAVICLE_CTRL_DEFAULT = None
-LEFT_SHOULDER_CTRL_DEFAULT = None
-LEFT_ELBOW_CTRL_DEFAULT = None
-LEFT_HAND_FK_CTRL_DEFAULT = None
-LEFT_HAND_IK_CTRL_DEFAULT = None
-RIGHT_CLAVICLE_CTRL_DEFAULT = None
-RIGHT_SHOULDER_CTRL_DEFAULT = None
-RIGHT_ELBOW_CTRL_DEFAULT = None
-RIGHT_HAND_FK_CTRL_DEFAULT = None
-RIGHT_HAND_IK_CTRL_DEFAULT = None
-LEFT_HIP_CTRL_DEFAULT = None
-LEFT_KNEE_CTRL_DEFAULT = None
-LEFT_ANKLE_FK_CTRL_DEFAULT = None
-LEFT_ANKLE_IK_CTRL_DEFAULT = None
-RIGHT_HIP_CTRL_DEFAULT = None
-RIGHT_KNEE_CTRL_DEFAULT = None
-RIGHT_ANKLE_FK_CTRL_DEFAULT = None
-RIGHT_ANKLE_IK_CTRL_DEFAULT = None
-LEFT_HAND_THUMB_CTRL_LIST_DEFAULT = None
-LEFT_HAND_INDEX_CTRL_LIST_DEFAULT = None
-LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT = None
-LEFT_HAND_RING_CTRL_LIST_DEFAULT = None
-LEFT_HAND_PINKY_CTRL_LIST_DEFAULT = None
-RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT = None
-RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT = None
-RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT = None
-RIGHT_HAND_RING_CTRL_LIST_DEFAULT = None
-RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT = None
-HUMAN_IK_JOINT_MAP = None
-HUMAN_IK_CTRL_MAP = None
-ARISE_HIK_DATA = None
-ROKOKO_HIK_DATA = None
-ADVANCED_SKELETON_DATA = None
+# Module references (initialized on first access via __getattr__)
+# Note: These are intentionally NOT pre-declared to allow __getattr__ to work
 
 
 def _initialize_human_ik():
@@ -92,37 +27,6 @@ def _initialize_human_ik():
         bool: True if human_ik module was successfully initialized.
     """
     global _human_ik_initialized, _human_ik_available
-    global constants, rig_templates, mel_interface, pose_utils
-    global skeleton_mapper, control_mapper
-    # Backward compatibility exports
-    global REFERENCE_JOINT_DEFAULT, HIP_JOINT_DEFAULT, SPINE_JOINT_LIST_DEFAULT
-    global NECK_JOINT_LIST_DEFAULT, HEAD_JOINT_DEFAULT
-    global LEFT_ARM_JOINT_LIST_DEFAULT, LEFT_LEG_JOINT_LIST_DEFAULT
-    global RIGHT_ARM_JOINT_LIST_DEFAULT, RIGHT_LEG_JOINT_LIST_DEFAULT
-    global LEFT_HAND_THUMB_JOINT_LIST_DEFAULT, LEFT_HAND_INDEX_JOINT_LIST_DEFAULT
-    global LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT, LEFT_HAND_RING_JOINT_LIST_DEFAULT
-    global LEFT_HAND_PINKY_JOINT_LIST_DEFAULT
-    global RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT, RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT
-    global RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT, RIGHT_HAND_RING_JOINT_LIST_DEFAULT
-    global RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT
-    global HIP_CTRL_DEFAULT, SPINE_CTRL_LIST_DEFAULT, CHEST_CTRL_DEFAULT
-    global NECK_CTRL_DEFAULT, HEAD_CTRL_DEFAULT
-    global LEFT_CLAVICLE_CTRL_DEFAULT, LEFT_SHOULDER_CTRL_DEFAULT
-    global LEFT_ELBOW_CTRL_DEFAULT, LEFT_HAND_FK_CTRL_DEFAULT, LEFT_HAND_IK_CTRL_DEFAULT
-    global RIGHT_CLAVICLE_CTRL_DEFAULT, RIGHT_SHOULDER_CTRL_DEFAULT
-    global RIGHT_ELBOW_CTRL_DEFAULT, RIGHT_HAND_FK_CTRL_DEFAULT, RIGHT_HAND_IK_CTRL_DEFAULT
-    global LEFT_HIP_CTRL_DEFAULT, LEFT_KNEE_CTRL_DEFAULT
-    global LEFT_ANKLE_FK_CTRL_DEFAULT, LEFT_ANKLE_IK_CTRL_DEFAULT
-    global RIGHT_HIP_CTRL_DEFAULT, RIGHT_KNEE_CTRL_DEFAULT
-    global RIGHT_ANKLE_FK_CTRL_DEFAULT, RIGHT_ANKLE_IK_CTRL_DEFAULT
-    global LEFT_HAND_THUMB_CTRL_LIST_DEFAULT, LEFT_HAND_INDEX_CTRL_LIST_DEFAULT
-    global LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT, LEFT_HAND_RING_CTRL_LIST_DEFAULT
-    global LEFT_HAND_PINKY_CTRL_LIST_DEFAULT
-    global RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT, RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT
-    global RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT, RIGHT_HAND_RING_CTRL_LIST_DEFAULT
-    global RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT
-    global HUMAN_IK_JOINT_MAP, HUMAN_IK_CTRL_MAP
-    global ARISE_HIK_DATA, ROKOKO_HIK_DATA, ADVANCED_SKELETON_DATA
 
     if _human_ik_initialized:
         return _human_ik_available
@@ -130,84 +34,132 @@ def _initialize_human_ik():
     _human_ik_initialized = True
 
     try:
-        # Import all submodules
+        # Import constants and rig_templates first (no Maya dependencies)
         from . import constants as _constants
-        from . import control_mapper as _control_mapper
-        from . import mel_interface as _mel_interface
-        from . import pose_utils as _pose_utils
         from . import rig_templates as _rig_templates
-        from . import skeleton_mapper as _skeleton_mapper
 
         # Assign to module-level variables
-        constants = _constants
-        rig_templates = _rig_templates
-        mel_interface = _mel_interface
-        pose_utils = _pose_utils
-        skeleton_mapper = _skeleton_mapper
-        control_mapper = _control_mapper
+        globals()["constants"] = _constants
+        globals()["rig_templates"] = _rig_templates
 
-        # Populate backward compatibility exports from constants
-        REFERENCE_JOINT_DEFAULT = _constants.REFERENCE_JOINT_DEFAULT
-        HIP_JOINT_DEFAULT = _constants.HIP_JOINT_DEFAULT
-        SPINE_JOINT_LIST_DEFAULT = _constants.SPINE_JOINT_LIST_DEFAULT
-        NECK_JOINT_LIST_DEFAULT = _constants.NECK_JOINT_LIST_DEFAULT
-        HEAD_JOINT_DEFAULT = _constants.HEAD_JOINT_DEFAULT
-        LEFT_ARM_JOINT_LIST_DEFAULT = _constants.LEFT_ARM_JOINT_LIST_DEFAULT
-        LEFT_LEG_JOINT_LIST_DEFAULT = _constants.LEFT_LEG_JOINT_LIST_DEFAULT
-        RIGHT_ARM_JOINT_LIST_DEFAULT = _constants.RIGHT_ARM_JOINT_LIST_DEFAULT
-        RIGHT_LEG_JOINT_LIST_DEFAULT = _constants.RIGHT_LEG_JOINT_LIST_DEFAULT
-        LEFT_HAND_THUMB_JOINT_LIST_DEFAULT = _constants.LEFT_HAND_THUMB_JOINT_LIST_DEFAULT
-        LEFT_HAND_INDEX_JOINT_LIST_DEFAULT = _constants.LEFT_HAND_INDEX_JOINT_LIST_DEFAULT
-        LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT = _constants.LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT
-        LEFT_HAND_RING_JOINT_LIST_DEFAULT = _constants.LEFT_HAND_RING_JOINT_LIST_DEFAULT
-        LEFT_HAND_PINKY_JOINT_LIST_DEFAULT = _constants.LEFT_HAND_PINKY_JOINT_LIST_DEFAULT
-        RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT = _constants.RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT
-        RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT = _constants.RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT
-        RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT = _constants.RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT
-        RIGHT_HAND_RING_JOINT_LIST_DEFAULT = _constants.RIGHT_HAND_RING_JOINT_LIST_DEFAULT
-        RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT = _constants.RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT
-        HIP_CTRL_DEFAULT = _constants.HIP_CTRL_DEFAULT
-        SPINE_CTRL_LIST_DEFAULT = _constants.SPINE_CTRL_LIST_DEFAULT
-        CHEST_CTRL_DEFAULT = _constants.CHEST_CTRL_DEFAULT
-        NECK_CTRL_DEFAULT = _constants.NECK_CTRL_DEFAULT
-        HEAD_CTRL_DEFAULT = _constants.HEAD_CTRL_DEFAULT
-        LEFT_CLAVICLE_CTRL_DEFAULT = _constants.LEFT_CLAVICLE_CTRL_DEFAULT
-        LEFT_SHOULDER_CTRL_DEFAULT = _constants.LEFT_SHOULDER_CTRL_DEFAULT
-        LEFT_ELBOW_CTRL_DEFAULT = _constants.LEFT_ELBOW_CTRL_DEFAULT
-        LEFT_HAND_FK_CTRL_DEFAULT = _constants.LEFT_HAND_FK_CTRL_DEFAULT
-        LEFT_HAND_IK_CTRL_DEFAULT = _constants.LEFT_HAND_IK_CTRL_DEFAULT
-        RIGHT_CLAVICLE_CTRL_DEFAULT = _constants.RIGHT_CLAVICLE_CTRL_DEFAULT
-        RIGHT_SHOULDER_CTRL_DEFAULT = _constants.RIGHT_SHOULDER_CTRL_DEFAULT
-        RIGHT_ELBOW_CTRL_DEFAULT = _constants.RIGHT_ELBOW_CTRL_DEFAULT
-        RIGHT_HAND_FK_CTRL_DEFAULT = _constants.RIGHT_HAND_FK_CTRL_DEFAULT
-        RIGHT_HAND_IK_CTRL_DEFAULT = _constants.RIGHT_HAND_IK_CTRL_DEFAULT
-        LEFT_HIP_CTRL_DEFAULT = _constants.LEFT_HIP_CTRL_DEFAULT
-        LEFT_KNEE_CTRL_DEFAULT = _constants.LEFT_KNEE_CTRL_DEFAULT
-        LEFT_ANKLE_FK_CTRL_DEFAULT = _constants.LEFT_ANKLE_FK_CTRL_DEFAULT
-        LEFT_ANKLE_IK_CTRL_DEFAULT = _constants.LEFT_ANKLE_IK_CTRL_DEFAULT
-        RIGHT_HIP_CTRL_DEFAULT = _constants.RIGHT_HIP_CTRL_DEFAULT
-        RIGHT_KNEE_CTRL_DEFAULT = _constants.RIGHT_KNEE_CTRL_DEFAULT
-        RIGHT_ANKLE_FK_CTRL_DEFAULT = _constants.RIGHT_ANKLE_FK_CTRL_DEFAULT
-        RIGHT_ANKLE_IK_CTRL_DEFAULT = _constants.RIGHT_ANKLE_IK_CTRL_DEFAULT
-        LEFT_HAND_THUMB_CTRL_LIST_DEFAULT = _constants.LEFT_HAND_THUMB_CTRL_LIST_DEFAULT
-        LEFT_HAND_INDEX_CTRL_LIST_DEFAULT = _constants.LEFT_HAND_INDEX_CTRL_LIST_DEFAULT
-        LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT = _constants.LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT
-        LEFT_HAND_RING_CTRL_LIST_DEFAULT = _constants.LEFT_HAND_RING_CTRL_LIST_DEFAULT
-        LEFT_HAND_PINKY_CTRL_LIST_DEFAULT = _constants.LEFT_HAND_PINKY_CTRL_LIST_DEFAULT
-        RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT = _constants.RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT
-        RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT = _constants.RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT
-        RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT = _constants.RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT
-        RIGHT_HAND_RING_CTRL_LIST_DEFAULT = _constants.RIGHT_HAND_RING_CTRL_LIST_DEFAULT
-        RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT = _constants.RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT
-        HUMAN_IK_JOINT_MAP = _constants.HUMAN_IK_JOINT_MAP
-        HUMAN_IK_CTRL_MAP = _constants.HUMAN_IK_CTRL_MAP
+        # Populate backward compatibility exports from constants using globals()
+        globals()["REFERENCE_JOINT_DEFAULT"] = _constants.REFERENCE_JOINT_DEFAULT
+        globals()["HIP_JOINT_DEFAULT"] = _constants.HIP_JOINT_DEFAULT
+        globals()["SPINE_JOINT_LIST_DEFAULT"] = _constants.SPINE_JOINT_LIST_DEFAULT
+        globals()["NECK_JOINT_LIST_DEFAULT"] = _constants.NECK_JOINT_LIST_DEFAULT
+        globals()["HEAD_JOINT_DEFAULT"] = _constants.HEAD_JOINT_DEFAULT
+        globals()["LEFT_ARM_JOINT_LIST_DEFAULT"] = _constants.LEFT_ARM_JOINT_LIST_DEFAULT
+        globals()["LEFT_LEG_JOINT_LIST_DEFAULT"] = _constants.LEFT_LEG_JOINT_LIST_DEFAULT
+        globals()["RIGHT_ARM_JOINT_LIST_DEFAULT"] = _constants.RIGHT_ARM_JOINT_LIST_DEFAULT
+        globals()["RIGHT_LEG_JOINT_LIST_DEFAULT"] = _constants.RIGHT_LEG_JOINT_LIST_DEFAULT
+        globals()["LEFT_HAND_THUMB_JOINT_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_THUMB_JOINT_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_INDEX_JOINT_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_INDEX_JOINT_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_MIDDLE_JOINT_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_RING_JOINT_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_RING_JOINT_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_PINKY_JOINT_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_PINKY_JOINT_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_THUMB_JOINT_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_INDEX_JOINT_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_MIDDLE_JOINT_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_RING_JOINT_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_RING_JOINT_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_PINKY_JOINT_LIST_DEFAULT
+        )
+        globals()["HIP_CTRL_DEFAULT"] = _constants.HIP_CTRL_DEFAULT
+        globals()["SPINE_CTRL_LIST_DEFAULT"] = _constants.SPINE_CTRL_LIST_DEFAULT
+        globals()["CHEST_CTRL_DEFAULT"] = _constants.CHEST_CTRL_DEFAULT
+        globals()["NECK_CTRL_DEFAULT"] = _constants.NECK_CTRL_DEFAULT
+        globals()["HEAD_CTRL_DEFAULT"] = _constants.HEAD_CTRL_DEFAULT
+        globals()["LEFT_CLAVICLE_CTRL_DEFAULT"] = _constants.LEFT_CLAVICLE_CTRL_DEFAULT
+        globals()["LEFT_SHOULDER_CTRL_DEFAULT"] = _constants.LEFT_SHOULDER_CTRL_DEFAULT
+        globals()["LEFT_ELBOW_CTRL_DEFAULT"] = _constants.LEFT_ELBOW_CTRL_DEFAULT
+        globals()["LEFT_HAND_FK_CTRL_DEFAULT"] = _constants.LEFT_HAND_FK_CTRL_DEFAULT
+        globals()["LEFT_HAND_IK_CTRL_DEFAULT"] = _constants.LEFT_HAND_IK_CTRL_DEFAULT
+        globals()["RIGHT_CLAVICLE_CTRL_DEFAULT"] = _constants.RIGHT_CLAVICLE_CTRL_DEFAULT
+        globals()["RIGHT_SHOULDER_CTRL_DEFAULT"] = _constants.RIGHT_SHOULDER_CTRL_DEFAULT
+        globals()["RIGHT_ELBOW_CTRL_DEFAULT"] = _constants.RIGHT_ELBOW_CTRL_DEFAULT
+        globals()["RIGHT_HAND_FK_CTRL_DEFAULT"] = _constants.RIGHT_HAND_FK_CTRL_DEFAULT
+        globals()["RIGHT_HAND_IK_CTRL_DEFAULT"] = _constants.RIGHT_HAND_IK_CTRL_DEFAULT
+        globals()["LEFT_HIP_CTRL_DEFAULT"] = _constants.LEFT_HIP_CTRL_DEFAULT
+        globals()["LEFT_KNEE_CTRL_DEFAULT"] = _constants.LEFT_KNEE_CTRL_DEFAULT
+        globals()["LEFT_ANKLE_FK_CTRL_DEFAULT"] = _constants.LEFT_ANKLE_FK_CTRL_DEFAULT
+        globals()["LEFT_ANKLE_IK_CTRL_DEFAULT"] = _constants.LEFT_ANKLE_IK_CTRL_DEFAULT
+        globals()["RIGHT_HIP_CTRL_DEFAULT"] = _constants.RIGHT_HIP_CTRL_DEFAULT
+        globals()["RIGHT_KNEE_CTRL_DEFAULT"] = _constants.RIGHT_KNEE_CTRL_DEFAULT
+        globals()["RIGHT_ANKLE_FK_CTRL_DEFAULT"] = _constants.RIGHT_ANKLE_FK_CTRL_DEFAULT
+        globals()["RIGHT_ANKLE_IK_CTRL_DEFAULT"] = _constants.RIGHT_ANKLE_IK_CTRL_DEFAULT
+        globals()["LEFT_HAND_THUMB_CTRL_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_THUMB_CTRL_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_INDEX_CTRL_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_INDEX_CTRL_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_MIDDLE_CTRL_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_RING_CTRL_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_RING_CTRL_LIST_DEFAULT
+        )
+        globals()["LEFT_HAND_PINKY_CTRL_LIST_DEFAULT"] = (
+            _constants.LEFT_HAND_PINKY_CTRL_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_THUMB_CTRL_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_INDEX_CTRL_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_MIDDLE_CTRL_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_RING_CTRL_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_RING_CTRL_LIST_DEFAULT
+        )
+        globals()["RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT"] = (
+            _constants.RIGHT_HAND_PINKY_CTRL_LIST_DEFAULT
+        )
+        globals()["HUMAN_IK_JOINT_MAP"] = _constants.HUMAN_IK_JOINT_MAP
+        globals()["HUMAN_IK_CTRL_MAP"] = _constants.HUMAN_IK_CTRL_MAP
 
         # Populate backward compatibility exports from rig templates
-        ARISE_HIK_DATA = _rig_templates.ARISE_HIK_DATA
-        ROKOKO_HIK_DATA = _rig_templates.ROKOKO_HIK_DATA
-        ADVANCED_SKELETON_DATA = _rig_templates.ADVANCED_SKELETON_DATA
+        globals()["ARISE_HIK_DATA"] = _rig_templates.ARISE_HIK_DATA
+        globals()["ROKOKO_HIK_DATA"] = _rig_templates.ROKOKO_HIK_DATA
+        globals()["ADVANCED_SKELETON_DATA"] = _rig_templates.ADVANCED_SKELETON_DATA
 
-        _human_ik_available = True
+        # Try to import Maya-dependent modules (optional)
+        try:
+            from . import control_mapper as _control_mapper
+            from . import mel_interface as _mel_interface
+            from . import pose_utils as _pose_utils
+            from . import skeleton_mapper as _skeleton_mapper
+
+            globals()["mel_interface"] = _mel_interface
+            globals()["pose_utils"] = _pose_utils
+            globals()["skeleton_mapper"] = _skeleton_mapper
+            globals()["control_mapper"] = _control_mapper
+            _human_ik_available = True
+        except ImportError as e:
+            # Maya modules not available, but constants are still usable
+            print(f"Warning: Maya-dependent human_ik modules unavailable - {e}")
+            _human_ik_available = False
+
         return True
 
     except ImportError as e:
