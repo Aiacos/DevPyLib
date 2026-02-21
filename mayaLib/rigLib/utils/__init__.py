@@ -33,6 +33,7 @@ __all__ = [
     "pxr_control",
     "scapula",
     "skin",
+    "smart_foot_roll",
     "spaces",
     "stretchy_ik_chain",
     "transform",

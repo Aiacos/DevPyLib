@@ -252,12 +252,12 @@ class BaseRig:  # pylint: disable=too-many-instance-attributes
         if spine_driver_joint:
             pm.parentConstraint(
                 spine_driver_joint,
-                limb_rig.getModuleDict()["baseAttachGrp"],
+                limb_rig.get_module_dict()["base_attach_grp"],
                 mo=1,
             )
         pm.parentConstraint(
             spine_rig.getModuleDict()["bodyCtrl"].C,
-            limb_rig.getModuleDict()["bodyAttachGrp"],
+            limb_rig.get_module_dict()["body_attach_grp"],
             mo=1,
         )
 

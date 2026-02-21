@@ -1,30 +1,35 @@
-"""Limb rig construction helpers."""
+"""Limb rig module with FK/IK construction, scapula, and foot roll support.
 
-# pylint: disable=too-many-lines
+Provides stateless builder functions (:func:`build_fk_controls`,
+:func:`build_ik_controls`, etc.) and a stateful orchestrator class
+(:class:`Limb`) that wires them together into a complete limb module
+with IK/FK switching, pole vector, and optional scapula/clavicle controls.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import Any, NamedTuple, cast
 
 import pymel.core as pm
 
 from mayaLib.rigLib.base import module
 from mayaLib.rigLib.utils import (
-    attributes,
-    common,
     control,
     foot_roll,
+    ikfk_switch,
     joint,
     name,
     parameter_resolution,
     pole_vector,  # type: ignore
     scapula,
+    smart_foot_roll,
     spaces,
-    util,
 )
 
 __all__ = [
+    "FKResult",
+    "IKResult",
     "Limb",
     "Arm",
     "build_simple_scapula",
@@ -34,6 +39,52 @@ __all__ = [
     "build_pole_vector",
     "build_ik_controls",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Structured return types
+# ---------------------------------------------------------------------------
+
+
+class FKResult(NamedTuple):
+    """Results from FK control construction.
+
+    Attributes:
+        limb_controls: FK control instances for the main limb chain.
+        limb_constraints: Orient constraints driving limb joints from FK controls.
+        finger_controls: FK control instances for fingers/toes.
+        finger_constraints: Orient constraints driving finger/toe joints.
+    """
+
+    limb_controls: list[control.Control]
+    limb_constraints: list[pm.PyNode]
+    finger_controls: list[control.Control]
+    finger_constraints: list[pm.PyNode]
+
+
+class IKResult(NamedTuple):
+    """Results from IK control construction.
+
+    Attributes:
+        main_ctrl: Main IK control instance for the limb end effector.
+        ik_handle: IK handle driving the limb chain.
+        finger_controls: Tuple of (ball controls, toe IK controls).
+        finger_ik_handles: IK handles for each finger/toe.
+        ball_ik_handles: IK handles for ball joints.
+        orient_constraint: Orient constraint on the hand/foot joint.
+    """
+
+    main_ctrl: control.Control
+    ik_handle: pm.PyNode
+    finger_controls: tuple[list[control.Control], list[control.Control]]
+    finger_ik_handles: list[pm.PyNode]
+    ball_ik_handles: list[pm.PyNode]
+    orient_constraint: pm.PyNode
+
+
+# ---------------------------------------------------------------------------
+# Free functions — stateless builders
+# ---------------------------------------------------------------------------
 
 
 def _build_control_with_ik_handle(
@@ -64,7 +115,7 @@ def _build_control_with_ik_handle(
     pm.pointConstraint(ctrl.get_control(), scapula_joint)
 
 
-def build_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def build_simple_scapula(
     prefix: str,
     limb_joints: Sequence[str],
     scapula_joint: str,
@@ -72,7 +123,19 @@ def build_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positio
     rig_module: module.Module,
     base_attach_group: pm.PyNode,
 ) -> control.Control:
-    """Create a simple scapula control that follows the body attach group."""
+    """Create a simple scapula control that follows the body attach group.
+
+    Args:
+        prefix: Naming prefix for the control (e.g. ``"l_shoulder1"``).
+        limb_joints: Joint chain for the limb.
+        scapula_joint: Name of the scapula joint.
+        rig_scale: Global rig scale factor.
+        rig_module: Parent rig module for hierarchy.
+        base_attach_group: Group to parent-constrain the scapula control to.
+
+    Returns:
+        The created scapula control instance.
+    """
     scapula_ctrl = control.Control(
         prefix=f"{prefix}Scapula",
         translate_to=scapula_joint,
@@ -92,7 +155,7 @@ def build_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positio
     return scapula_ctrl
 
 
-def build_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def build_clavicle(
     prefix: str,
     limb_joints: Sequence[str],
     scapula_joint: str,
@@ -100,7 +163,19 @@ def build_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-ar
     rig_module: module.Module,
     base_attach_group: pm.PyNode,
 ) -> control.Control:
-    """Create a clavicle control that anchors the top of the limb."""
+    """Create a clavicle control that anchors the top of the limb.
+
+    Args:
+        prefix: Naming prefix for the control.
+        limb_joints: Joint chain for the limb.
+        scapula_joint: Name of the clavicle/scapula joint to attach to.
+        rig_scale: Global rig scale factor.
+        rig_module: Parent rig module for hierarchy.
+        base_attach_group: Group to parent-constrain the clavicle control to.
+
+    Returns:
+        The created clavicle control instance.
+    """
     clavicle_ctrl = control.Control(
         prefix=f"{prefix}Clavicle",
         translate_to=scapula_joint,
@@ -120,8 +195,19 @@ def build_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-ar
     return clavicle_ctrl
 
 
-def build_dynamic_scapula(limb_joints: Sequence[str], rig_module: module.Module) -> None:
-    """Create a dynamic scapula rig if a scapula chain exists."""
+def build_dynamic_scapula(
+    limb_joints: Sequence[str], rig_module: module.Module
+) -> None:
+    """Create a dynamic scapula rig if a scapula chain exists.
+
+    Searches the joint hierarchy above the shoulder for a joint whose name
+    contains ``"scapula"`` and, if found, builds a ``Scapula`` module parented
+    under the rig module's parts group.
+
+    Args:
+        limb_joints: Joint chain for the limb (first entry is shoulder).
+        rig_module: Parent rig module for hierarchy.
+    """
     limb_joint_nodes = pm.ls(limb_joints)
     if not limb_joint_nodes:
         return
@@ -146,13 +232,28 @@ def build_dynamic_scapula(limb_joints: Sequence[str], rig_module: module.Module)
     pm.parent(scapula_instance.get_scapula_grp(), rig_module.parts_group)
 
 
-def build_fk_controls(  # pylint: disable=too-many-locals
+def build_fk_controls(
     limb_joints: Sequence[str],
     top_finger_joints: Sequence[str],
     rig_scale: float,
     rig_module: module.Module,
-) -> tuple[list[control.Control], list[pm.PyNode], list[control.Control], list[pm.PyNode]]:
-    """Create FK controls for the limb and optional finger/toe chains."""
+) -> FKResult:
+    """Create FK controls for the limb and optional finger/toe chains.
+
+    Builds one FK control per limb joint with orient constraints, then iterates
+    over finger/toe root joints to create per-chain FK controls parented under
+    a shared offset group.
+
+    Args:
+        limb_joints: Main limb joint names (e.g. shoulder, elbow, wrist).
+        top_finger_joints: Root joints for each finger/toe chain.
+        rig_scale: Global rig scale factor.
+        rig_module: Parent rig module for hierarchy.
+
+    Returns:
+        :class:`FKResult` containing controls and constraints for both limb
+        and finger chains.
+    """
     limb_controls: list[control.Control] = []
     limb_constraints: list[pm.PyNode] = []
     finger_controls: list[control.Control] = []
@@ -160,7 +261,11 @@ def build_fk_controls(  # pylint: disable=too-many-locals
 
     for joint_name in limb_joints:
         prefix = name.remove_suffix(joint_name)
-        parent = rig_module.controls_group if not limb_controls else limb_controls[-1].get_control()
+        parent = (
+            rig_module.controls_group
+            if not limb_controls
+            else limb_controls[-1].get_control()
+        )
         ctrl = control.Control(
             prefix=prefix,
             translate_to=joint_name,
@@ -169,11 +274,7 @@ def build_fk_controls(  # pylint: disable=too-many-locals
             shape="circleX",
             scale=rig_scale,
         )
-        orient_constraint = pm.orientConstraint(
-            ctrl.get_control(),
-            joint_name,
-            mo=True,
-        )
+        orient_constraint = pm.orientConstraint(ctrl.get_control(), joint_name, mo=True)
         limb_controls.append(ctrl)
         limb_constraints.append(orient_constraint)
 
@@ -202,25 +303,38 @@ def build_fk_controls(  # pylint: disable=too-many-locals
                 shape="circleX",
                 scale=rig_scale,
             )
-            orient_constraint = pm.orientConstraint(
-                ctrl.get_control(),
-                joint_name,
-            )
+            orient_constraint = pm.orientConstraint(ctrl.get_control(), joint_name)
             finger_chain_controls.append(ctrl)
             finger_constraints.append(orient_constraint)
         finger_controls.extend(finger_chain_controls)
 
-    return limb_controls, limb_constraints, finger_controls, finger_constraints
+    return FKResult(
+        limb_controls, limb_constraints, finger_controls, finger_constraints
+    )
 
 
-def build_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def build_pole_vector(
     ik_handle: pm.PyNode,
     auto_elbow_ctrl: pm.PyNode,
     rig_scale: float,
     rig_module: module.Module,
     body_attach_group: pm.PyNode,
 ) -> tuple[control.Control, pm.PyNode]:
-    """Create a pole vector control connected to the IK handle."""
+    """Create a pole vector control connected to the IK handle.
+
+    Builds the pole vector locator, a space-switchable control, and a display
+    curve connecting the elbow joint to the pole vector position.
+
+    Args:
+        ik_handle: The IK handle to create the pole vector for.
+        auto_elbow_ctrl: Control used as the secondary space-switch target.
+        rig_scale: Global rig scale factor.
+        rig_module: Parent rig module for hierarchy.
+        body_attach_group: Primary space-switch target for the pole vector.
+
+    Returns:
+        Tuple of (pole_vector_control, pole_vector_locator).
+    """
     prefix = name.remove_suffix(ik_handle)
     pole_vector_instance = pole_vector.PoleVector(ik_handle)
     pole_vector_locator, pole_vector_group = pole_vector_instance.get_pole_vector()
@@ -271,23 +385,34 @@ def build_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional
     return pole_vector_ctrl, pole_vector_locator
 
 
-def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-statements
+def build_ik_controls(
     limb_joints: Sequence[str],
     top_finger_joints: Sequence[str],
     rig_scale: float,
     rig_module: module.Module,
     use_metacarpal_joint: bool = False,
-    smart_foot_roll: bool = True,
+    do_smart_foot_roll: bool = True,
     side_prefix: str = "l_",
-) -> tuple[
-    control.Control,
-    pm.PyNode,
-    tuple[list[control.Control], list[control.Control]],
-    list[pm.PyNode],
-    list[pm.PyNode],
-    pm.PyNode,
-]:
-    """Create IK controls for the limb and optional fingers/toes."""
+) -> IKResult:
+    """Create IK controls for the limb and optional fingers/toes.
+
+    When *top_finger_joints* is empty, builds a simple IK handle with a parent
+    constraint.  Otherwise builds the full foot-roll hierarchy with per-toe
+    IK controls and optionally wires the smart foot roll utility nodes.
+
+    Args:
+        limb_joints: Main limb joint names (shoulder, elbow, wrist/ankle).
+        top_finger_joints: Root joints for each finger/toe chain.
+        rig_scale: Global rig scale factor.
+        rig_module: Parent rig module for hierarchy.
+        use_metacarpal_joint: Skip one joint level to reach the actual finger.
+        do_smart_foot_roll: Wire the smart foot roll node network.
+        side_prefix: Side identifier (e.g. ``"l_"``) for tilt direction.
+
+    Returns:
+        :class:`IKResult` containing the main IK control, handles, finger
+        controls, and orient constraint.
+    """
     finger_roots = pm.ls(top_finger_joints)
     prefix = name.remove_suffix(limb_joints[2])
 
@@ -309,44 +434,34 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         pm.parent(ik_handle, rig_module.parts_no_trans_group)
         pm.parentConstraint(main_ik_ctrl.get_control(), ik_handle, mo=True)
         hand_orient_constraint = pm.orientConstraint(
-            main_ik_ctrl.get_control(),
-            limb_joints[2],
-            mo=True,
+            main_ik_ctrl.get_control(), limb_joints[2], mo=True
         )
-        return main_ik_ctrl, ik_handle, ([], []), [], [], hand_orient_constraint
+        return IKResult(
+            main_ik_ctrl, ik_handle, ([], []), [], [], hand_orient_constraint
+        )
 
-    metacarpal_joint_list = finger_roots
-    top_finger_joint_list: list[pm.PyNode] = []
-    end_finger_joint_list: list[pm.PyNode] = []
-    for metacarpal in metacarpal_joint_list:
-        if use_metacarpal_joint:
-            finger_joint = pm.listRelatives(
-                metacarpal,
-                type="joint",
-                children=True,
-            )[0]
-        else:
-            finger_joint = metacarpal
-        finger_end_joint = joint.list_hierarchy(
-            metacarpal,
-            include_end_joints=True,
-        )[-1]
-        top_finger_joint_list.append(finger_joint)
-        end_finger_joint_list.append(finger_end_joint)
+    # Resolve finger joints
+    top_finger_joint_list, end_finger_joint_list = _resolve_finger_joints(
+        finger_roots, use_metacarpal_joint
+    )
 
     foot_roll_instance = foot_roll.FootRoll(
         limb_joints[0],
         limb_joints[2],
         top_finger_joint_list,
         end_finger_joint_list,
-        do_smart_foot_roll=smart_foot_roll,
+        do_smart_foot_roll=do_smart_foot_roll,
     )
     foot_roll_group_list = foot_roll_instance.get_group_list()
     pm.parent(foot_roll_group_list[-1], rig_module.parts_no_trans_group)
 
-    mid_finger_index = int(round(len(foot_roll_instance.get_ik_finger_list()) / 2.0)) - 1
-    mid_finger_index = max(mid_finger_index, -1)
-    mid_finger_joint = foot_roll_instance.get_ik_finger_list()[mid_finger_index].getJointList()[0]
+    # Ball control at midpoint of finger chain
+    mid_finger_index = max(
+        int(round(len(foot_roll_instance.get_ik_finger_list()) / 2.0)) - 1, -1
+    )
+    mid_finger_joint = foot_roll_instance.get_ik_finger_list()[
+        mid_finger_index
+    ].getJointList()[0]
     ball_ctrl = control.Control(
         prefix=f"{prefix}BallIK",
         translate_to=mid_finger_joint,
@@ -356,6 +471,98 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
         scale=rig_scale,
     )
 
+    # Toe IK controls
+    toe_ik_controls = _build_toe_ik_controls(finger_roots, rig_scale, ball_ctrl)
+
+    for ik_handle_node, toe_ctrl in zip(
+        foot_roll_instance.get_ik_finger_list(), toe_ik_controls, strict=False
+    ):
+        pm.parentConstraint(toe_ctrl.get_control(), ik_handle_node)
+
+    pm.parentConstraint(main_ik_ctrl.get_control(), foot_roll_group_list[-1], mo=True)
+    pm.parentConstraint(foot_roll_group_list[1], ball_ctrl.get_offset_grp(), mo=True)
+    hand_orient_constraint = pm.orientConstraint(
+        main_ik_ctrl.get_control(), limb_joints[2], mo=True
+    )
+
+    # Smart foot roll wiring
+    ball_roll_grp = foot_roll_group_list[0]
+    toe_tap_grp = foot_roll_group_list[1]
+    tippy_toe_grp = foot_roll_group_list[2]
+    (
+        front_roll_grp,
+        back_roll_grp,
+        inner_roll_grp,
+        outer_roll_grp,
+    ) = foot_roll_group_list[3:-1]
+
+    has_roll_groups = (
+        front_roll_grp and ball_roll_grp and inner_roll_grp and outer_roll_grp
+    )
+    if do_smart_foot_roll and has_roll_groups:
+        smart_foot_roll.build(
+            prefix=prefix,
+            side_prefix=side_prefix,
+            ik_ctrl=main_ik_ctrl.get_control(),
+            ball_roll_grp=ball_roll_grp,
+            toe_tap_grp=toe_tap_grp,
+            tippy_toe_grp=tippy_toe_grp,
+            back_roll_grp=back_roll_grp,
+            inner_roll_grp=inner_roll_grp,
+            outer_roll_grp=outer_roll_grp,
+        )
+
+    return IKResult(
+        main_ik_ctrl,
+        foot_roll_instance.get_limb_ik(),
+        ([ball_ctrl], toe_ik_controls),
+        foot_roll_instance.get_ik_finger_list(),
+        foot_roll_instance.get_ik_ball_list(),
+        hand_orient_constraint,
+    )
+
+
+def _resolve_finger_joints(
+    finger_roots: list[pm.PyNode],
+    use_metacarpal_joint: bool,
+) -> tuple[list[pm.PyNode], list[pm.PyNode]]:
+    """Resolve top and end finger joints from metacarpal roots.
+
+    Args:
+        finger_roots: Metacarpal/finger root joints.
+        use_metacarpal_joint: Whether to skip one level to the actual finger joint.
+
+    Returns:
+        Tuple of (top_finger_joints, end_finger_joints).
+    """
+    top_joints: list[pm.PyNode] = []
+    end_joints: list[pm.PyNode] = []
+    for metacarpal in finger_roots:
+        if use_metacarpal_joint:
+            finger_joint = pm.listRelatives(metacarpal, type="joint", children=True)[0]
+        else:
+            finger_joint = metacarpal
+        finger_end = joint.list_hierarchy(metacarpal, include_end_joints=True)[-1]
+        top_joints.append(finger_joint)
+        end_joints.append(finger_end)
+    return top_joints, end_joints
+
+
+def _build_toe_ik_controls(
+    finger_roots: list[pm.PyNode],
+    rig_scale: float,
+    ball_ctrl: control.Control,
+) -> list[control.Control]:
+    """Build individual IK controls for each toe/finger chain.
+
+    Args:
+        finger_roots: Root joints for each finger/toe chain.
+        rig_scale: Scale factor for controls.
+        ball_ctrl: Parent control for toe controls.
+
+    Returns:
+        List of toe IK controls.
+    """
     toe_ik_controls: list[control.Control] = []
     for toe_joint in finger_roots:
         toe_prefix = name.remove_suffix(toe_joint)
@@ -369,217 +576,18 @@ def build_ik_controls(  # pylint: disable=too-many-arguments,too-many-positional
             scale=rig_scale,
         )
         toe_ik_controls.append(toe_ctrl)
-
-    for ik_handle, toe_ctrl in zip(
-        foot_roll_instance.get_ik_finger_list(),
-        toe_ik_controls,
-        strict=False,
-    ):
-        pm.parentConstraint(toe_ctrl.get_control(), ik_handle)
-
-    pm.parentConstraint(main_ik_ctrl.get_control(), foot_roll_group_list[-1], mo=True)
-    pm.parentConstraint(foot_roll_group_list[1], ball_ctrl.get_offset_grp(), mo=True)
-    hand_orient_constraint = pm.orientConstraint(
-        main_ik_ctrl.get_control(),
-        limb_joints[2],
-        mo=True,
-    )
-
-    ball_roll_grp = foot_roll_group_list[0]
-    toe_tap_grp = foot_roll_group_list[1]
-    tippy_toe_grp = foot_roll_group_list[2]
-    front_roll_grp, back_roll_grp, inner_roll_grp, outer_roll_grp = foot_roll_group_list[3:-1]
-
-    if smart_foot_roll and front_roll_grp and ball_roll_grp and inner_roll_grp and outer_roll_grp:
-        roll_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "roll",
-            defaultValue=0,
-            keyable=True,
-            minValue=-120,
-            maxValue=120,
-        )
-        bend_limit_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "bendLimitAngle",
-            defaultValue=45,
-            keyable=False,
-        )
-        straight_angle_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "toeStraightAngle",
-            defaultValue=70,
-            keyable=False,
-        )
-
-        heel_clamp = pm.shadingNode(
-            "clamp",
-            asUtility=True,
-            n=f"{prefix}_heelRotClamp",
-        )
-        pm.connectAttr(roll_attr, heel_clamp.inputR)
-        heel_clamp.minR.set(-90)
-        pm.connectAttr(heel_clamp.outputR, back_roll_grp.rotateX)
-
-        ball_clamp = pm.shadingNode(
-            "clamp",
-            asUtility=True,
-            n=f"{prefix}_zeroToBendClamp",
-        )
-        pm.connectAttr(roll_attr, ball_clamp.inputR)
-
-        bend_to_straight = pm.shadingNode(
-            "clamp",
-            asUtility=True,
-            n=f"{prefix}_bendToStraightClamp",
-        )
-        pm.connectAttr(bend_limit_attr, bend_to_straight.minR)
-        pm.connectAttr(straight_angle_attr, bend_to_straight.maxR)
-        pm.connectAttr(roll_attr, bend_to_straight.inputR)
-
-        bend_to_straight_range = pm.shadingNode(
-            "setRange",
-            asUtility=True,
-            n=f"{prefix}_bendToStraightPercent",
-        )
-        pm.connectAttr(bend_to_straight.minR, bend_to_straight_range.oldMinX)
-        pm.connectAttr(bend_to_straight.maxR, bend_to_straight_range.oldMaxX)
-        bend_to_straight_range.maxX.set(1)
-        pm.connectAttr(bend_to_straight.inputR, bend_to_straight_range.valueX)
-
-        roll_multiplier = pm.shadingNode(
-            "multiplyDivide",
-            asUtility=True,
-            n=f"{prefix}_rollMultDiv",
-        )
-        pm.connectAttr(bend_to_straight_range.outValueX, roll_multiplier.input1X)
-        pm.connectAttr(bend_to_straight.inputR, roll_multiplier.input2X)
-        pm.connectAttr(roll_multiplier.outputX, tippy_toe_grp.rotateX)
-
-        pm.connectAttr(bend_limit_attr, ball_clamp.maxR)
-        zero_to_bend_range = pm.shadingNode(
-            "setRange",
-            asUtility=True,
-            n=f"{prefix}_zeroToBendPercent",
-        )
-        pm.connectAttr(ball_clamp.minR, zero_to_bend_range.oldMinX)
-        pm.connectAttr(ball_clamp.maxR, zero_to_bend_range.oldMaxX)
-        zero_to_bend_range.maxX.set(1)
-        pm.connectAttr(ball_clamp.inputR, zero_to_bend_range.valueX)
-
-        invert_percent = pm.shadingNode(
-            "plusMinusAverage",
-            asUtility=True,
-            n=f"{prefix}_invertPercent",
-        )
-        invert_percent.input1D[0].set(1)
-        invert_percent.input1D[1].set(1)
-        pm.connectAttr(
-            bend_to_straight_range.outValueX,
-            invert_percent.input1D[1],
-        )
-        invert_percent.operation.set(2)
-
-        ball_percent_multiplier = pm.shadingNode(
-            "multiplyDivide",
-            asUtility=True,
-            n=f"{prefix}_ballPercentMultDiv",
-        )
-        pm.connectAttr(zero_to_bend_range.outValueX, ball_percent_multiplier.input1X)
-        pm.connectAttr(invert_percent.output1D, ball_percent_multiplier.input2X)
-
-        ball_roll_multiplier = pm.shadingNode(
-            "multiplyDivide",
-            asUtility=True,
-            n=f"{prefix}_ballRollMultDiv",
-        )
-        pm.connectAttr(
-            ball_percent_multiplier.outputX,
-            ball_roll_multiplier.input1X,
-        )
-        pm.connectAttr(roll_attr, ball_roll_multiplier.input2X)
-        pm.connectAttr(ball_roll_multiplier.outputX, ball_roll_grp.rotateX)
-
-        tilt_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "tilt",
-            defaultValue=0,
-            keyable=True,
-            minValue=-90,
-            maxValue=90,
-        )
-        if side_prefix in prefix:
-            common.set_driven_key(
-                tilt_attr,
-                [-90, 0, 90],
-                inner_roll_grp.rotateZ,
-                [90, 0, 0],
-            )
-            common.set_driven_key(
-                tilt_attr,
-                [-90, 0, 90],
-                outer_roll_grp.rotateZ,
-                [0, 0, -90],
-            )
-        else:
-            common.set_driven_key(
-                tilt_attr,
-                [-90, 0, 90],
-                inner_roll_grp.rotateZ,
-                [-90, 0, 0],
-            )
-            common.set_driven_key(
-                tilt_attr,
-                [-90, 0, 90],
-                outer_roll_grp.rotateZ,
-                [0, 0, 90],
-            )
-
-        lean_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "lean",
-            defaultValue=0,
-            keyable=True,
-            minValue=-90,
-            maxValue=90,
-        )
-        pm.connectAttr(lean_attr, ball_roll_grp.rotateZ)
-
-        toe_spin_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "toeSpin",
-            defaultValue=0,
-            keyable=True,
-            minValue=-90,
-            maxValue=90,
-        )
-        pm.connectAttr(toe_spin_attr, tippy_toe_grp.rotateY)
-        tippy_toe_grp.rotateOrder.set(2)
-
-        toe_wiggle_attr = attributes.add_float_attribute(
-            main_ik_ctrl.get_control(),
-            "toeWiggle",
-            defaultValue=0,
-            keyable=True,
-            minValue=-90,
-            maxValue=90,
-        )
-        pm.connectAttr(toe_wiggle_attr, toe_tap_grp.rotateX)
-
-    return (
-        main_ik_ctrl,
-        foot_roll_instance.get_limb_ik(),
-        ([ball_ctrl], toe_ik_controls),
-        foot_roll_instance.get_ik_finger_list(),
-        foot_roll_instance.get_ik_ball_list(),
-        hand_orient_constraint,
-    )
+    return toe_ik_controls
 
 
-class Limb:  # pylint: disable=too-many-instance-attributes
+# ---------------------------------------------------------------------------
+# Limb class — stateful orchestrator
+# ---------------------------------------------------------------------------
+
+
+class Limb:
     """Construct an FK/IK limb module with optional scapula and clavicle controls."""
 
-    def __init__(  # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements,too-many-boolean-expressions
+    def __init__(
         self,
         limb_joints: Sequence[str] | None = None,
         top_finger_joints: Sequence[str] | None = None,
@@ -597,71 +605,136 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         base_rig: module.Base | None = None,
         **legacy_kwargs: Any,
     ) -> None:
-        """Initialise the limb rig builder."""
+        """Initialise the limb rig builder.
+
+        Orchestrates FK/IK construction through five phases: parameter
+        resolution, scaffold creation, FK build, IK build, and switching setup.
+        Legacy camelCase keyword arguments are accepted for backwards
+        compatibility.
+
+        Args:
+            limb_joints: Main limb joint names (e.g. shoulder, elbow, wrist).
+            top_finger_joints: Root joints for finger/toe chains.
+            clavicle_joint: Clavicle joint name (arm rigs only).
+            scapula_joint: Scapula joint name for scapula control.
+            visibility_ik_fk_ctrl: Name of the IK/FK visibility switch control.
+            do_fk: Whether to build FK controls.
+            do_ik: Whether to build IK controls.
+            part: Part label (``"Hand"`` or ``"Foot"``).
+            use_metacarpal_joint: Skip one joint level for fingers.
+            do_smart_foot_roll: Wire smart foot roll node network.
+            prefix: Naming prefix (auto-derived from first joint if omitted).
+            rig_scale: Global rig scale factor.
+            base_rig: Base rig instance for module attachment.
+            **legacy_kwargs: CamelCase aliases for backwards compatibility.
+        """
+        params = self._resolve_params(
+            limb_joints,
+            top_finger_joints,
+            clavicle_joint,
+            scapula_joint,
+            visibility_ik_fk_ctrl,
+            do_fk,
+            do_ik,
+            part,
+            use_metacarpal_joint,
+            do_smart_foot_roll,
+            prefix,
+            rig_scale,
+            base_rig,
+            legacy_kwargs,
+        )
+
+        self._build_scaffold(params["prefix"], params["base_rig"])
+
+        fk = self._build_fk(params)
+        ik, pv = self._build_ik(params)
+        self._setup_switching(params, fk, ik, pv)
+        self._setup_scapula_clavicle(params, fk)
+
+        self.limb_ik = ik.ik_handle if ik else None
+        self.main_ik_control = ik.main_ctrl if ik else None
+        self.pole_vector_control = pv
+        self.pole_vector_locator = None
+
+    def _resolve_params(
+        self,
+        limb_joints,
+        top_finger_joints,
+        clavicle_joint,
+        scapula_joint,
+        visibility_ik_fk_ctrl,
+        do_fk,
+        do_ik,
+        part,
+        use_metacarpal_joint,
+        do_smart_foot_roll,
+        prefix,
+        rig_scale,
+        base_rig,
+        legacy_kwargs,
+    ) -> dict[str, Any]:
+        """Resolve and validate all constructor parameters.
+
+        Handles legacy camelCase keyword arguments for backwards compatibility.
+
+        Returns:
+            Dictionary of resolved parameter values.
+        """
         legacy_kwargs = dict(legacy_kwargs)
         limb_joints = parameter_resolution.resolve_required(
-            limb_joints,
-            legacy_kwargs,
-            ("limbJoints",),
-            "limb_joints",
+            limb_joints, legacy_kwargs, ("limbJoints",), "limb_joints"
         )
         top_finger_joints = parameter_resolution.resolve_optional(
-            top_finger_joints,
-            legacy_kwargs,
-            ("topFingerJoints",),
-            [],
+            top_finger_joints, legacy_kwargs, ("topFingerJoints",), []
         )
         clavicle_joint = parameter_resolution.resolve_optional(
-            clavicle_joint,
-            legacy_kwargs,
-            ("clavicleJoint",),
-            "",
+            clavicle_joint, legacy_kwargs, ("clavicleJoint",), ""
         )
         scapula_joint = parameter_resolution.resolve_optional(
-            scapula_joint,
-            legacy_kwargs,
-            ("scapulaJnt",),
-            "",
+            scapula_joint, legacy_kwargs, ("scapulaJnt",), ""
         )
         visibility_ik_fk_ctrl = parameter_resolution.resolve_optional(
-            visibility_ik_fk_ctrl,
-            legacy_kwargs,
-            ("visibilityIKFKCtrl",),
-            "ikfk_CTRL",
+            visibility_ik_fk_ctrl, legacy_kwargs, ("visibilityIKFKCtrl",), "ikfk_CTRL"
         )
-        do_fk = parameter_resolution.resolve_optional(do_fk, legacy_kwargs, ("doFK",), True)
-        do_ik = parameter_resolution.resolve_optional(do_ik, legacy_kwargs, ("doIK",), True)
+        do_fk = parameter_resolution.resolve_optional(
+            do_fk, legacy_kwargs, ("doFK",), True
+        )
+        do_ik = parameter_resolution.resolve_optional(
+            do_ik, legacy_kwargs, ("doIK",), True
+        )
         part = cast(
-            str, parameter_resolution.resolve_optional(part, legacy_kwargs, ("part",), "Hand")
+            str,
+            parameter_resolution.resolve_optional(
+                part, legacy_kwargs, ("part",), "Hand"
+            ),
         )
         use_metacarpal_joint = cast(
             bool,
             parameter_resolution.resolve_optional(
-                use_metacarpal_joint,
-                legacy_kwargs,
-                ("useMetacarpalJoint",),
-                False,
+                use_metacarpal_joint, legacy_kwargs, ("useMetacarpalJoint",), False
             ),
         )
         do_smart_foot_roll = cast(
             bool,
             parameter_resolution.resolve_optional(
-                do_smart_foot_roll,
-                legacy_kwargs,
-                ("doSmartFootRool",),
-                True,
+                do_smart_foot_roll, legacy_kwargs, ("doSmartFootRool",), True
             ),
         )
         rig_scale = cast(
             float,
-            parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ("rigScale",), 1.0),
+            parameter_resolution.resolve_optional(
+                rig_scale, legacy_kwargs, ("rigScale",), 1.0
+            ),
         )
         base_rig = parameter_resolution.resolve_optional(
             base_rig, legacy_kwargs, ("baseRig",), None
         )
 
         if legacy_kwargs:
-            raise ValueError(f"Unexpected arguments for Limb: {tuple(legacy_kwargs.keys())}")
+            raise ValueError(
+                f"Unexpected arguments for Limb: {tuple(legacy_kwargs.keys())}"
+            )
 
         limb_joints = list(cast(Sequence[str], limb_joints))
         top_finger_joints = list(cast(Sequence[str], top_finger_joints))
@@ -671,119 +744,145 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         if not prefix:
             prefix = name.remove_suffix(limb_joints[0])
 
-        rig_module = module.Module(prefix=prefix, base_obj=base_rig)
-        body_attach_group = pm.group(
-            n=f"{prefix}BodyAttach_GRP",
-            em=True,
-            p=rig_module.parts_group,
+        return {
+            "limb_joints": limb_joints,
+            "top_finger_joints": top_finger_joints,
+            "clavicle_joint": clavicle_joint,
+            "scapula_joint": scapula_joint,
+            "visibility_ik_fk_ctrl": visibility_ik_fk_ctrl,
+            "do_fk": do_fk,
+            "do_ik": do_ik,
+            "part": part,
+            "use_metacarpal_joint": use_metacarpal_joint,
+            "do_smart_foot_roll": do_smart_foot_roll,
+            "prefix": prefix,
+            "rig_scale": rig_scale,
+            "base_rig": base_rig,
+        }
+
+    def _build_scaffold(self, prefix: str, base_rig: module.Base | None) -> None:
+        """Create the rig module and attach groups.
+
+        Sets ``self.rig_module``, ``self.body_attach_group``, and ``self.base_attach_group``.
+        """
+        self.rig_module = module.Module(prefix=prefix, base_obj=base_rig)
+        self.body_attach_group = pm.group(
+            n=f"{prefix}BodyAttach_GRP", em=True, p=self.rig_module.parts_group
         )
-        base_attach_group = pm.group(
-            n=f"{prefix}BaseAttach_GRP",
-            em=True,
-            p=rig_module.parts_group,
+        self.base_attach_group = pm.group(
+            n=f"{prefix}BaseAttach_GRP", em=True, p=self.rig_module.parts_group
         )
 
-        self.rig_module = rig_module
-        self.body_attach_group = body_attach_group
-        self.base_attach_group = base_attach_group
+    def _build_fk(self, params: dict[str, Any]) -> FKResult | None:
+        """Build FK controls if requested.
 
-        fk_limb_controls: list[control.Control] = []
-        fk_limb_constraints: list[pm.PyNode] = []
-        fk_hand_controls: list[control.Control] = []
-        fk_hand_constraints: list[pm.PyNode] = []
+        Returns:
+            FKResult or None if FK was not requested.
+        """
+        if not params["do_fk"]:
+            return None
+        return self.make_fk(
+            params["limb_joints"],
+            params["top_finger_joints"],
+            params["rig_scale"],
+            self.rig_module,
+        )
 
-        if do_fk:
-            (
-                fk_limb_controls,
-                fk_limb_constraints,
-                fk_hand_controls,
-                fk_hand_constraints,
-            ) = self.make_fk(
-                limb_joints,
-                top_finger_joints,
-                rig_scale,
-                rig_module,
+    def _build_ik(
+        self, params: dict[str, Any]
+    ) -> tuple[IKResult | None, control.Control | None]:
+        """Build IK controls and pole vector if requested.
+
+        Returns:
+            Tuple of (IKResult, pole_vector_ctrl) or (None, None).
+        """
+        if not params["do_ik"]:
+            return None, None
+        ik = self.make_ik(
+            params["limb_joints"],
+            params["top_finger_joints"],
+            params["rig_scale"],
+            self.rig_module,
+            use_metacarpal_joint=params["use_metacarpal_joint"],
+            smart_foot_roll=params["do_smart_foot_roll"],
+        )
+        pv, pv_loc = self.make_pole_vector(
+            ik.ik_handle,
+            ik.main_ctrl.get_control(),
+            params["rig_scale"],
+            self.rig_module,
+        )
+        self.pole_vector_locator = pv_loc
+        return ik, pv
+
+    def _setup_switching(
+        self,
+        params: dict[str, Any],
+        fk: FKResult | None,
+        ik: IKResult | None,
+        pole_vector_ctrl: control.Control | None,
+    ) -> None:
+        """Wire IK/FK switching if both systems were built.
+
+        Args:
+            params: Resolved parameter dictionary from :meth:`_resolve_params`.
+            fk: FK build results, or ``None`` if FK was skipped.
+            ik: IK build results, or ``None`` if IK was skipped.
+            pole_vector_ctrl: Pole vector control, or ``None`` if IK was skipped.
+        """
+        if not (params["do_fk"] and params["do_ik"] and ik and fk and pole_vector_ctrl):
+            return
+
+        visibility_nodes = pm.ls(params["visibility_ik_fk_ctrl"])
+        if not visibility_nodes:
+            return
+
+        self.switch_ik_fk(
+            params["prefix"],
+            params["part"],
+            visibility_nodes[0],
+            fk.limb_controls,
+            fk.limb_constraints,
+            fk.finger_controls,
+            fk.finger_constraints,
+            ik.main_ctrl,
+            ik.ik_handle,
+            ik.finger_controls,
+            ik.finger_ik_handles,
+            ik.ball_ik_handles,
+            pole_vector_ctrl,
+            ik.orient_constraint,
+        )
+
+    def _setup_scapula_clavicle(
+        self, params: dict[str, Any], fk: FKResult | None
+    ) -> None:
+        """Attach clavicle and/or scapula controls to the FK chain.
+
+        Args:
+            params: Resolved parameter dictionary from :meth:`_resolve_params`.
+            fk: FK build results, or ``None`` if FK was skipped.
+        """
+        if not params["do_fk"] or not fk or not fk.limb_controls:
+            return
+
+        clavicle_joint = params["clavicle_joint"]
+        scapula_joint = params["scapula_joint"]
+        prefix = params["prefix"]
+        limb_joints = params["limb_joints"]
+        rig_scale = params["rig_scale"]
+
+        if clavicle_joint and pm.objExists(clavicle_joint):
+            clavicle_ctrl = self.make_clavicle(
+                prefix, limb_joints, clavicle_joint, rig_scale, self.rig_module
             )
-
-        main_ik_ctrl: control.Control | None = None
-        ik_handle: pm.PyNode | None = None
-        finger_controls: tuple[list[control.Control], list[control.Control]] = ([], [])
-        finger_ik_handles: list[pm.PyNode] = []
-        ball_ik_handles: list[pm.PyNode] = []
-        hand_ik_orient_constraint: pm.PyNode | None = None
-        pole_vector_ctrl: control.Control | None = None
-        pole_vector_locator: pm.PyNode | None = None
-
-        if do_ik:
-            (
-                main_ik_ctrl,
-                ik_handle,
-                finger_controls,
-                finger_ik_handles,
-                ball_ik_handles,
-                hand_ik_orient_constraint,
-            ) = self.make_ik(
-                limb_joints,
-                top_finger_joints,
-                rig_scale,
-                rig_module,
-                use_metacarpal_joint=use_metacarpal_joint,
-                smart_foot_roll=do_smart_foot_roll,
+            pm.parentConstraint(
+                clavicle_ctrl.get_control(), fk.limb_controls[0].get_top(), mo=True
             )
-            pole_vector_ctrl, pole_vector_locator = self.make_pole_vector(
-                ik_handle,
-                main_ik_ctrl.get_control(),
-                rig_scale,
-                rig_module,
+        else:
+            pm.parentConstraint(
+                self.base_attach_group, fk.limb_controls[0].get_top(), mo=True
             )
-
-        if (
-            do_fk
-            and do_ik
-            and main_ik_ctrl
-            and ik_handle
-            and hand_ik_orient_constraint
-            and pole_vector_ctrl
-        ):
-            visibility_nodes = pm.ls(visibility_ik_fk_ctrl)
-            if visibility_nodes:
-                self.switch_ik_fk(
-                    prefix,
-                    part,
-                    visibility_nodes[0],
-                    fk_limb_controls,
-                    fk_limb_constraints,
-                    fk_hand_controls,
-                    fk_hand_constraints,
-                    main_ik_ctrl,
-                    ik_handle,
-                    finger_controls,
-                    finger_ik_handles,
-                    ball_ik_handles,
-                    pole_vector_ctrl,
-                    hand_ik_orient_constraint,
-                )
-
-        if do_fk and fk_limb_controls:
-            if clavicle_joint and pm.objExists(clavicle_joint):
-                clavicle_ctrl = self.make_clavicle(
-                    prefix,
-                    limb_joints,
-                    clavicle_joint,
-                    rig_scale,
-                    rig_module,
-                )
-                pm.parentConstraint(
-                    clavicle_ctrl.get_control(),
-                    fk_limb_controls[0].get_top(),
-                    mo=True,
-                )
-            else:
-                pm.parentConstraint(
-                    self.base_attach_group,
-                    fk_limb_controls[0].get_top(),
-                    mo=True,
-                )
 
         if scapula_joint and pm.objExists(scapula_joint):
             limb_joint_nodes = pm.ls(limb_joints)
@@ -793,26 +892,17 @@ class Limb:  # pylint: disable=too-many-instance-attributes
                 target_joint = pm.ls(scapula_joint)
                 if target_joint and shoulder_parent.name() == target_joint[0].name():
                     scapula_ctrl = self.make_simple_scapula(
-                        prefix,
-                        limb_joints,
-                        scapula_joint,
-                        rig_scale,
-                        rig_module,
+                        prefix, limb_joints, scapula_joint, rig_scale, self.rig_module
                     )
                 else:
-                    self.make_dynamic_scapula(limb_joints, rig_module)
+                    self.make_dynamic_scapula(limb_joints, self.rig_module)
 
-            if scapula_ctrl and fk_limb_controls:
+            if scapula_ctrl and fk.limb_controls:
                 pm.parentConstraint(
-                    scapula_ctrl.get_control(),
-                    fk_limb_controls[0].get_top(),
-                    mo=True,
+                    scapula_ctrl.get_control(), fk.limb_controls[0].get_top(), mo=True
                 )
 
-        self.limb_ik = ik_handle
-        self.main_ik_control = main_ik_ctrl
-        self.pole_vector_control = pole_vector_ctrl
-        self.pole_vector_locator = pole_vector_locator
+    # --- Public accessors ---
 
     def get_main_limb_ik(self) -> pm.PyNode | None:
         """Return the main IK handle created for the limb."""
@@ -823,16 +913,25 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         return self.main_ik_control
 
     def get_module_dict(self) -> dict[str, Any]:
-        """Return rig module bookkeeping data."""
+        """Return rig module bookkeeping data.
+
+        Keys use snake_case with camelCase aliases for backwards compatibility.
+        """
         return {
+            # snake_case (preferred)
             "module": self.rig_module,
-            "module_obj": self.rig_module,
             "rig_module": self.rig_module,
             "base_attach_grp": self.base_attach_group,
             "body_attach_grp": self.body_attach_group,
+            # camelCase (backwards compat)
+            "module_obj": self.rig_module,
+            "baseAttachGrp": self.base_attach_group,
+            "bodyAttachGrp": self.body_attach_group,
         }
 
-    def switch_ik_fk(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches,too-many-boolean-expressions
+    # --- Delegates to free functions ---
+
+    def switch_ik_fk(
         self,
         prefix: str,
         part: str,
@@ -849,142 +948,29 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         pole_vector_ctrl: control.Control,
         hand_ik_orient_constraint: pm.PyNode,
     ) -> None:
-        """Wire IK/FK switch attributes and visibility toggles."""
-        if not pm.objExists("switchIKFK_LOC"):
-            switch_locator = pm.spaceLocator(n="switchIKFK_LOC")[0]
-            pm.parent(switch_locator, "rig_GRP")
-            pm.hide(switch_locator)
-            util.lock_and_hide_all(switch_locator)
-        else:
-            switch_locator = pm.ls("switchIKFK_LOC")[0]
+        """Wire IK/FK switch attributes and visibility toggles.
 
-        control_attr = prefix
-        part_control_attr = f"{prefix}{part}"
-
-        for node in (switch_locator, visibility_ctrl):
-            if not node.hasAttr(control_attr):
-                pm.addAttr(
-                    node,
-                    longName=control_attr,
-                    attributeType="double",
-                    defaultValue=0,
-                    minValue=0,
-                    maxValue=1,
-                    k=True,
-                )
-            if not node.hasAttr(part_control_attr):
-                pm.addAttr(
-                    node,
-                    longName=part_control_attr,
-                    attributeType="double",
-                    defaultValue=1 if part == "Hand" and node is switch_locator else 0,
-                    minValue=0,
-                    maxValue=1,
-                    k=True,
-                )
-
-        pm.connectAttr(
-            f"{visibility_ctrl}.{control_attr}",
-            f"{switch_locator}.{control_attr}",
-            f=True,
-        )
-        pm.connectAttr(
-            f"{visibility_ctrl}.{part_control_attr}",
-            f"{switch_locator}.{part_control_attr}",
-            f=True,
+        Delegates to :func:`ikfk_switch.wire_ikfk_switch` to create the
+        attribute network and visibility connections.
+        """
+        ikfk_switch.wire_ikfk_switch(
+            prefix=prefix,
+            part=part,
+            visibility_ctrl=visibility_ctrl,
+            fk_limb_controls=fk_limb_controls,
+            fk_limb_constraints=fk_limb_constraints,
+            fk_hand_controls=fk_hand_controls,
+            fk_hand_constraints=fk_hand_constraints,
+            main_ik_ctrl=main_ik_ctrl,
+            ik_handle=ik_handle,
+            finger_controls=finger_controls,
+            finger_ik_handles=finger_ik_handles,
+            ball_ik_handles=ball_ik_handles,
+            pole_vector_ctrl=pole_vector_ctrl,
+            hand_ik_orient_constraint=hand_ik_orient_constraint,
         )
 
-        reverse_node = pm.shadingNode(
-            "reverse",
-            asUtility=True,
-            n=f"{prefix}ReverseNode",
-        )
-        part_reverse_node = pm.shadingNode(
-            "reverse",
-            asUtility=True,
-            n=f"{prefix}{part}ReverseNode",
-        )
-        pm.connectAttr(f"{switch_locator}.{control_attr}", reverse_node.inputX)
-        pm.connectAttr(
-            f"{switch_locator}.{part_control_attr}",
-            part_reverse_node.inputX,
-        )
-
-        pm.connectAttr(reverse_node.outputX, main_ik_ctrl.get_top().visibility)
-        pm.connectAttr(reverse_node.outputX, ik_handle.ikBlend)
-        ik_constraint_attr = pm.listConnections(
-            hand_ik_orient_constraint.target[1].targetWeight,
-            p=True,
-            s=True,
-        )[0]
-        pm.connectAttr(reverse_node.outputX, ik_constraint_attr)
-
-        for ctrl in finger_controls[0]:
-            pm.connectAttr(
-                part_reverse_node.outputX,
-                ctrl.get_top().visibility,
-            )
-        for ctrl in finger_controls[1]:
-            pm.connectAttr(
-                part_reverse_node.outputX,
-                ctrl.get_top().visibility,
-            )
-
-        for ik_node in finger_ik_handles:
-            pm.connectAttr(part_reverse_node.outputX, ik_node.ikBlend)
-        for ball_ik in ball_ik_handles:
-            pm.connectAttr(part_reverse_node.outputX, ball_ik.ikBlend)
-
-        pm.connectAttr(
-            reverse_node.outputX,
-            pole_vector_ctrl.get_top().visibility,
-        )
-
-        for ctrl in fk_limb_controls:
-            pm.connectAttr(
-                f"{switch_locator}.{control_attr}",
-                ctrl.get_top().visibility,
-            )
-        for constraint in fk_limb_constraints:
-            attr = pm.listConnections(
-                constraint.target[0].targetWeight,
-                p=True,
-                s=True,
-            )[0]
-            pm.connectAttr(f"{switch_locator}.{control_attr}", attr)
-
-        for ctrl in fk_hand_controls:
-            pm.connectAttr(
-                f"{switch_locator}.{part_control_attr}",
-                ctrl.get_top().visibility,
-            )
-        for constraint in fk_hand_constraints:
-            attr = pm.listConnections(
-                constraint.target[0].targetWeight,
-                p=True,
-                s=True,
-            )[0]
-            pm.connectAttr(f"{switch_locator}.{part_control_attr}", attr)
-
-        if fk_limb_controls and fk_hand_controls and fk_hand_constraints:
-            fk_finger_constraint = pm.parentConstraint(
-                main_ik_ctrl.get_control(),
-                fk_hand_controls[0].get_top().getParent(),
-                mo=True,
-            )
-            target_names = fk_finger_constraint.getTargetList()
-            pm.connectAttr(
-                reverse_node.outputX,
-                f"{fk_finger_constraint}.{target_names[1]}W1",
-                f=True,
-            )
-            pm.connectAttr(
-                f"{switch_locator}.{control_attr}",
-                f"{fk_finger_constraint}.{target_names[0]}W0",
-                f=True,
-            )
-
-    def make_simple_scapula(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def make_simple_scapula(
         self,
         prefix: str,
         limb_joints: Sequence[str],
@@ -1002,7 +988,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
             self.base_attach_group,
         )
 
-    def make_clavicle(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def make_clavicle(
         self,
         prefix: str,
         limb_joints: Sequence[str],
@@ -1034,16 +1020,11 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         top_finger_joints: Sequence[str],
         rig_scale: float,
         rig_module: module.Module,
-    ) -> tuple[list[control.Control], list[pm.PyNode], list[control.Control], list[pm.PyNode]]:
+    ) -> FKResult:
         """Build FK controls for the limb."""
-        return build_fk_controls(
-            limb_joints,
-            top_finger_joints,
-            rig_scale,
-            rig_module,
-        )
+        return build_fk_controls(limb_joints, top_finger_joints, rig_scale, rig_module)
 
-    def make_pole_vector(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def make_pole_vector(
         self,
         ik_handle: pm.PyNode,
         auto_elbow_ctrl: pm.PyNode,
@@ -1052,14 +1033,10 @@ class Limb:  # pylint: disable=too-many-instance-attributes
     ) -> tuple[control.Control, pm.PyNode]:
         """Create the pole vector control."""
         return build_pole_vector(
-            ik_handle,
-            auto_elbow_ctrl,
-            rig_scale,
-            rig_module,
-            self.body_attach_group,
+            ik_handle, auto_elbow_ctrl, rig_scale, rig_module, self.body_attach_group
         )
 
-    def make_ik(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
+    def make_ik(
         self,
         limb_joints: Sequence[str],
         top_finger_joints: Sequence[str],
@@ -1068,14 +1045,7 @@ class Limb:  # pylint: disable=too-many-instance-attributes
         *,
         use_metacarpal_joint: bool = False,
         smart_foot_roll: bool = True,
-    ) -> tuple[
-        control.Control,
-        pm.PyNode,
-        tuple[list[control.Control], list[control.Control]],
-        list[pm.PyNode],
-        list[pm.PyNode],
-        pm.PyNode,
-    ]:
+    ) -> IKResult:
         """Build IK controls for the limb."""
         return build_ik_controls(
             limb_joints,
@@ -1083,14 +1053,19 @@ class Limb:  # pylint: disable=too-many-instance-attributes
             rig_scale,
             rig_module,
             use_metacarpal_joint=use_metacarpal_joint,
-            smart_foot_roll=smart_foot_roll,
+            do_smart_foot_roll=smart_foot_roll,
         )
 
 
 class Arm(Limb):
-    """Backwards-compatible wrapper around :class:`Limb` for arm rigs."""
+    """Backwards-compatible wrapper around :class:`Limb` for arm rigs.
 
-    def __init__(  # pylint: disable=too-many-arguments,too-many-locals
+    Translates the explicit joint arguments (clavicle, shoulder, forearm,
+    wrist) into the generic ``limb_joints`` sequence expected by
+    :class:`Limb`.
+    """
+
+    def __init__(
         self,
         clavicle_joint: str,
         shoulder_joint: str,
@@ -1107,7 +1082,23 @@ class Arm(Limb):
         base_rig: module.Base | None = None,
         **legacy_kwargs: Any,
     ) -> None:
-        """Initialise the arm rig builder."""
+        """Initialise the arm rig builder.
+
+        Args:
+            clavicle_joint: Name of the clavicle joint.
+            shoulder_joint: Name of the shoulder joint.
+            forearm_joint: Name of the forearm/elbow joint.
+            wrist_joint: Name of the wrist joint.
+            top_finger_joints: Root joints for each finger chain.
+            scapula_joint: Optional scapula joint name.
+            visibility_ik_fk_ctrl: Name of the IK/FK visibility switch control.
+            do_fk: Whether to build FK controls.
+            do_ik: Whether to build IK controls.
+            prefix: Naming prefix (auto-derived if omitted).
+            rig_scale: Global rig scale factor.
+            base_rig: Base rig instance for module attachment.
+            **legacy_kwargs: CamelCase aliases for backwards compatibility.
+        """
         legacy_kwargs = dict(legacy_kwargs)
         if "clavicleJoint" in legacy_kwargs and not clavicle_joint:
             clavicle_joint = legacy_kwargs.pop("clavicleJoint")
@@ -1120,12 +1111,16 @@ class Arm(Limb):
         if "scapulaJnt" in legacy_kwargs and not scapula_joint:
             scapula_joint = legacy_kwargs.pop("scapulaJnt")
 
-        top_finger_joints = list(top_finger_joints or legacy_kwargs.pop("topFingerJoints", []))
+        top_finger_joints = list(
+            top_finger_joints or legacy_kwargs.pop("topFingerJoints", [])
+        )
         use_metacarpal_joint = legacy_kwargs.pop("useMetacarpalJoint", False)
         do_smart_foot_roll = legacy_kwargs.pop("doSmartFootRool", True)
 
         if legacy_kwargs:
-            raise ValueError(f"Unexpected arguments for Arm: {tuple(legacy_kwargs.keys())}")
+            raise ValueError(
+                f"Unexpected arguments for Arm: {tuple(legacy_kwargs.keys())}"
+            )
 
         super().__init__(
             limb_joints=[shoulder_joint, forearm_joint, wrist_joint],
@@ -1155,7 +1150,3 @@ Limb.makeDynamicScapula = Limb.make_dynamic_scapula
 Limb.makeFK = Limb.make_fk
 Limb.makePoleVector = Limb.make_pole_vector
 Limb.makeIK = Limb.make_ik
-
-
-if __name__ == "__main__":
-    raise SystemExit("Invoke within Maya to construct limb rigs.")
