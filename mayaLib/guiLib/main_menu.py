@@ -191,7 +191,11 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.lib_structure = lm.StructureManager(mayaLib, lazy=False)
 
         # Cache the library dictionary structure
-        self.lib_dict = self.lib_structure.get_struct_lib()
+        # Unwrap root package level so subpackages (modelLib, rigLib, etc.)
+        # are accessible as top-level keys
+        full_dict = self.lib_structure.get_struct_lib()
+        root_name = self.lib_structure.root_package.__name__
+        self.lib_dict = full_dict.get(root_name, full_dict)
 
         # Mark as initialized
         self._structure_initialized = True
