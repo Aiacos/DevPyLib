@@ -321,7 +321,7 @@ class HumanIK:
         _rig_templates = globals()["rig_templates"]
 
         # Create component instances
-        self._mel_interface = _mel_interface.MelInterface()
+        self._mel_interface = _mel_interface.MelInterface(character_name)
         self._pose_utils = _pose_utils.PoseUtils()
         self._skeleton_mapper = _skeleton_mapper.SkeletonMapper(character_name)
         self._control_mapper = _control_mapper.ControlMapper(character_name)

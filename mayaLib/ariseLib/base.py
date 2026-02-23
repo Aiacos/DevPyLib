@@ -120,13 +120,12 @@ class BaseRig:
             [0, 0, 1],
         )
 
-    def create_display_layer(self, obj_list, layer_name, idx=0):
+    def create_display_layer(self, obj_list, layer_name):
         """Create a display layer with the given name and objects.
 
         Args:
             obj_list (list): List of objects to add to the layer.
             layer_name (str): Name of the display layer.
-            idx (int): Display layer index.
 
         Returns:
             PyNode: The created display layer.
@@ -144,7 +143,7 @@ class BaseRig:
             return existing_layer[0]
 
         pm.select(obj_list)
-        layer = pm.createDisplayLayer(name=layer_name, nr=True, number=idx)
+        layer = pm.createDisplayLayer(name=layer_name, nr=True)
 
         # Set layer color and visibility based on name
         color_mapping = {
