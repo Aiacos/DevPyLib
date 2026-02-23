@@ -6,9 +6,8 @@ rigging framework.
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import joint, matrix_utils
+from mayaLib.rigLib.utils import human_ik, joint, matrix_utils
 from mayaLib.rigLib.utils.common import set_driven_key
-from mayaLib.rigLib.utils.human_ik import HumanIK
 from mayaLib.rigLib.utils.util import list_objects_under_group
 
 
@@ -120,13 +119,12 @@ class BaseRig:
             [0, 0, 1],
         )
 
-    def create_display_layer(self, obj_list, layer_name, idx=0):
+    def create_display_layer(self, obj_list, layer_name):
         """Create a display layer with the given name and objects.
 
         Args:
             obj_list (list): List of objects to add to the layer.
             layer_name (str): Name of the display layer.
-            idx (int): Display layer index.
 
         Returns:
             PyNode: The created display layer.
@@ -144,7 +142,7 @@ class BaseRig:
             return existing_layer[0]
 
         pm.select(obj_list)
-        layer = pm.createDisplayLayer(name=layer_name, nr=True, number=idx)
+        layer = pm.createDisplayLayer(name=layer_name, nr=True)
 
         # Set layer color and visibility based on name
         color_mapping = {
@@ -500,7 +498,7 @@ class BaseRig:
 
         # Initialize HumanIK
         human_ik_name = f"{self.character_name}_HIK"
-        HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
+        human_ik.HumanIK(human_ik_name, auto_t_pose=self.auto_t_pose)
 
     def _rename_skin_cluster(self):
         """Rename skin clusters for each geometry to be more descriptive.
