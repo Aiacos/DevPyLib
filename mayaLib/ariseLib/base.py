@@ -6,7 +6,7 @@ rigging framework.
 
 import pymel.core as pm
 
-from mayaLib.rigLib.utils import human_ik, joint, matrix_utils
+from mayaLib.rigLib.utils import human_ik, joint
 from mayaLib.rigLib.utils.common import set_driven_key
 from mayaLib.rigLib.utils.util import list_objects_under_group
 
@@ -330,12 +330,22 @@ class BaseRig:
     def _setup_face_rig(self):
         """Set up Advanced Skeleton face rig components.
 
-        Connects control objects for eye aim and face joint setup.
-        Also establishes scale connections for the main face rig components.
+        Parents ``FaceJoint_M`` under the head joint, rebuilds the eye-aim
+        follow system (multMatrix + parentConstraint + setRange), connects
+        Arise eye-aim controls (L/M/R) via multiplyDivide nodes for
+        translation, rotation and scale, and wires the main-ctrl scale
+        into the face motion system.
+
+        Prerequisites:
+            The scene must contain the Advanced Skeleton face rig hierarchy
+            (``FaceJoint_M``, ``AimEye_*``, ``AimEyeFollow_M``, etc.) and
+            the Arise eye-aim controls (``L_Eye_eye_aim_at_ctrl``,
+            ``M_Eyes_Aim_01_ctrl``, ``R_Eye_eye_aim_at_ctrl``).
         """
-        # ADV Face Connection
+        # Advanced Skeleton face connection
         if pm.objExists("FaceJoint_M"):
             pm.parent("FaceJoint_M", "M_Head_head_FS_jnt")
+            pm.parent("FaceGroup", "rig_root_grp")
 
             # delete AimEyeFollowMMStatic_M if exist
             if pm.objExists("AimEyeFollowMMStatic_M"):
@@ -351,6 +361,7 @@ class BaseRig:
                 mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True
             )
 
+            # Rebuild eye-aim follow constraint and setRange blend
             if pm.objExists("eyeAimFollowSetRange"):
                 pm.delete("eyeAimFollowSetRange")
             if pm.objExists("AimEyeFollow_M_parentConstraint1"):
@@ -358,9 +369,7 @@ class BaseRig:
             pm.parentConstraint(
                 "EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True
             )
-            set_range = pm.shadingNode(
-                "setRange", asUtility=True, name="eyeAimFollowSetRange"
-            )
+            pm.shadingNode("setRange", asUtility=True, name="eyeAimFollowSetRange")
             pm.connectAttr(
                 "AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True
             )
@@ -420,72 +429,72 @@ class BaseRig:
                     "R_EyeRotation",
                 )
 
-            multiply_translate_node_R = pm.shadingNode(
+            multiply_translate_node_r = pm.shadingNode(
                 "multiplyDivide", asUtility=True, n="R_EyeTranslation"
             )
-            multiply_translate_node_M = pm.shadingNode(
+            multiply_translate_node_m = pm.shadingNode(
                 "multiplyDivide", asUtility=True, n="M_EyeTranslation"
             )
-            multiply_translate_node_L = pm.shadingNode(
+            multiply_translate_node_l = pm.shadingNode(
                 "multiplyDivide", asUtility=True, n="L_EyeTranslation"
             )
 
             aim_eye_offset = pm.ls("AimEyeOffset_M")[-1]
             scale_value = aim_eye_offset.scaleX.get()
 
-            # traslazioni
+            # Translation connections (Arise eye ctrls -> ADV AimEye targets)
             pm.connectAttr(
                 "R_Eye_eye_aim_at_ctrl.translate",
-                multiply_translate_node_R.input1,
+                multiply_translate_node_r.input1,
                 f=True,
             )
             pm.connectAttr(
-                multiply_translate_node_R.output, "AimEye_R.translate", f=True
+                multiply_translate_node_r.output, "AimEye_R.translate", f=True
             )
-            pm.setAttr(multiply_translate_node_R.input2X, (1 / scale_value) * -1)
-            pm.setAttr(multiply_translate_node_R.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_R.input2Z, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_r.input2X, (1 / scale_value) * -1)
+            pm.setAttr(multiply_translate_node_r.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_r.input2Z, (1 / scale_value))
 
             pm.connectAttr(
                 "M_Eyes_Aim_01_ctrl.translate",
-                multiply_translate_node_M.input1,
+                multiply_translate_node_m.input1,
                 f=True,
             )
             pm.connectAttr(
-                multiply_translate_node_M.output, "AimEye_M.translate", f=True
+                multiply_translate_node_m.output, "AimEye_M.translate", f=True
             )
-            pm.setAttr(multiply_translate_node_M.input2X, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_M.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_M.input2Z, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_m.input2X, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_m.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_m.input2Z, (1 / scale_value))
 
             pm.connectAttr(
                 "L_Eye_eye_aim_at_ctrl.translate",
-                multiply_translate_node_L.input1,
+                multiply_translate_node_l.input1,
                 f=True,
             )
             pm.connectAttr(
-                multiply_translate_node_L.output, "AimEye_L.translate", f=True
+                multiply_translate_node_l.output, "AimEye_L.translate", f=True
             )
-            pm.setAttr(multiply_translate_node_L.input2X, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_L.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_L.input2Z, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_l.input2X, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_l.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_l.input2Z, (1 / scale_value))
 
-            # rotazioni
+            # Rotation connections
             pm.connectAttr("L_Eye_eye_aim_at_ctrl.rotate", "AimEye_L.rotate", f=True)
             pm.connectAttr("M_Eyes_Aim_01_ctrl.rotate", "AimEye_M.rotate", f=True)
 
-            multiply_rotate_node_R = pm.shadingNode(
+            multiply_rotate_node_r = pm.shadingNode(
                 "multiplyDivide", asUtility=True, n="R_EyeRotation"
             )
             pm.connectAttr(
                 "R_Eye_eye_aim_at_ctrl.rotate",
-                multiply_rotate_node_R.input1,
+                multiply_rotate_node_r.input1,
                 f=True,
             )
-            pm.connectAttr(multiply_rotate_node_R.output, "AimEye_R.rotate", f=True)
-            pm.setAttr(multiply_rotate_node_R.input2Z, -1)
+            pm.connectAttr(multiply_rotate_node_r.output, "AimEye_R.rotate", f=True)
+            pm.setAttr(multiply_rotate_node_r.input2Z, -1)
 
-            # scala
+            # Scale connections
             pm.connectAttr("L_Eye_eye_aim_at_ctrl.scale", "AimEye_L.scale", f=True)
             pm.connectAttr("M_Eyes_Aim_01_ctrl.scale", "AimEye_M.scale", f=True)
             pm.connectAttr("R_Eye_eye_aim_at_ctrl.scale", "AimEye_R.scale", f=True)
@@ -493,17 +502,7 @@ class BaseRig:
             hide_ctrl_list = pm.ls("AimEye_M")
             pm.hide(hide_ctrl_list)
 
-            # pm.connectAttr(
-            #     "ctrlBox.AimCtrlVis", "L_Eye_eye_aim_at_ctrl.visibility", f=True
-            # )
-            # pm.connectAttr(
-            #     "ctrlBox.AimCtrlVis", "R_Eye_eye_aim_at_ctrl.visibility", f=True
-            # )
-            # pm.connectAttr(
-            #     "ctrlBox.AimCtrlVis", "M_Eyes_Aim_01_ctrl.visibility", f=True
-            # )
-
-            # prima disconnetto e imposto la scala a uno altrimenti implode
+            # Disconnect and reset scale to 1 first, otherwise the rig collapses
             if pm.isConnected(
                 "Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"
             ):
@@ -519,19 +518,6 @@ class BaseRig:
                 "MainAndHeadScaleMultiplyDivide.input1",
                 f=True,
             )
-
-    def _connect_via_matrix(self, source, target, maintain_offset=True):
-        """Connect source to target using matrix multiplication nodes.
-
-        Delegates to the shared :func:`matrix_utils.connect_via_matrix` utility.
-
-        Args:
-            source (str): Name of the source object driving the connection.
-            target (str): Name of the target object to be driven.
-            maintain_offset (bool): Whether to maintain the current offset
-                between source and target. Defaults to True.
-        """
-        matrix_utils.connect_via_matrix(source, target, maintain_offset=maintain_offset)
 
     def _setup_human_ik(self):
         """Set up HumanIK for the character.
