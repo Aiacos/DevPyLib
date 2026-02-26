@@ -236,11 +236,11 @@ def save_skin_weights(
 
         # save skin weight file
         pm.select(obj)
-        b_skin_saver.bSaveSkinValues(wt_file)
+        b_skin_saver.b_save_skin_values(wt_file)
 
 
 def load_skin_weights(
-    geo_list,
+    geo_list=None,
     project_path=None,
     sw_ext=".swt",
 ):
@@ -259,14 +259,20 @@ def load_skin_weights(
         print("Path to load SkinCluster not found!")
         return
 
-    geo_list = pm.ls(geo_list)
+    if geo_list is None:
+        name_list = [str(f).split(".")[0] for f in directory.rglob("*" + sw_ext)]
+        geo_list = pm.ls(name_list)
+    else:
+        geo_list = pm.ls(geo_list)
 
     for geo in geo_list:
         wt_file = str(geo.name()) + sw_ext
         fullpath_wt_file = directory / wt_file
         if fullpath_wt_file.exists():
             print("file to read: ", fullpath_wt_file)
-            b_skin_saver.bLoadSkinValues(loadOnSelection=False, inputFile=fullpath_wt_file)
+            b_skin_saver.b_load_skin_values(
+                load_on_selection=False, input_file=fullpath_wt_file
+            )
 
 
 def ng_batch_export(geo_list, path):

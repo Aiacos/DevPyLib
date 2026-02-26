@@ -9,7 +9,7 @@ __author__ = "Lorenzo Argentieri"
 import importlib
 import os
 import pathlib
-import types
+import sys
 
 import maya.OpenMayaUI as OpenMayaUI
 from maya import mel
@@ -484,34 +484,40 @@ class MainMenu(QtWidgets.QWidget):
 
 
 def reload_package(package):
-    """Recursively reload a package and its submodules.
+    """Reload a package and all its loaded submodules from sys.modules.
+
+    Uses sys.modules to discover every submodule that was loaded under the
+    package prefix, which works reliably with lazy-loading __init__.py files
+    (the old vars()-based traversal missed lazily-loaded submodules).
+
+    Submodules are reloaded leaf-first (deepest nesting first) so that parent
+    packages always pick up the freshly reloaded children.
 
     Args:
-        package (module): The package to reload.
+        package (module): The top-level package to reload.
     """
-    assert hasattr(package, "__package__")
-    fn = package.__file__
-    fn_dir = os.path.dirname(fn) + os.sep
-    module_visit = {fn}
-    del fn
+    pkg_name = package.__name__
+    pkg_prefix = pkg_name + "."
 
-    def reload_recursive_ex(module):
-        """Helper function to reload modules.
+    # Collect every loaded submodule under this package
+    sub_modules = {
+        name: mod
+        for name, mod in list(sys.modules.items())
+        if (name == pkg_name or name.startswith(pkg_prefix)) and mod is not None
+    }
 
-        Args:
-            module (module): The module to reload.
-        """
-        importlib.reload(module)
+    # Sort deepest-first so leaves reload before parents
+    sorted_names = sorted(sub_modules, key=lambda n: n.count("."), reverse=True)
 
-        for module_child in list(vars(module).values()):
-            if isinstance(module_child, types.ModuleType):
-                fn_child = getattr(module_child, "__file__", None)
-                if (fn_child is not None) and fn_child.startswith(fn_dir):
-                    if fn_child not in module_visit:
-                        module_visit.add(fn_child)
-                        reload_recursive_ex(module_child)
-
-    return reload_recursive_ex(package)
+    for name in sorted_names:
+        mod = sub_modules[name]
+        try:
+            importlib.reload(mod)
+        except (ModuleNotFoundError, ImportError):
+            # Source was removed (e.g. deleted subpackage). Drop the stale entry.
+            sys.modules.pop(name, None)
+        except Exception as exc:
+            print(f"Warning: failed to reload {name}: {exc}")
 
 
 if __name__ == "__main__":

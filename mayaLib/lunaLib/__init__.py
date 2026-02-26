@@ -132,6 +132,49 @@ def _create_directories_module(pm):
     sys.modules["luna.static.directories"] = directories_module
 
 
+def _install_pyside2_shim():
+    """Install a PySide2 compatibility shim that redirects to PySide6.
+
+    Maya 2025+ ships with PySide6 only. Luna hardcodes PySide2 imports,
+    so we inject fake PySide2/shiboken2 modules into sys.modules that
+    proxy to PySide6/shiboken6. This is a no-op if PySide2 is already available.
+    """
+    try:
+        import PySide2  # noqa: F401
+        return  # PySide2 genuinely available, no shim needed
+    except ImportError:
+        pass
+
+    try:
+        import PySide6
+    except ImportError:
+        return  # Neither available, let the import fail naturally
+
+    # Map PySide2 top-level to PySide6
+    sys.modules["PySide2"] = PySide6
+
+    # Map each PySide2 submodule Luna uses to its PySide6 equivalent
+    _submodules = [
+        "QtCore", "QtGui", "QtWidgets", "QtNetwork", "QtSvg",
+        "QtUiTools", "QtXml",
+    ]
+    for submod in _submodules:
+        pyside6_submod = getattr(PySide6, submod, None)
+        if pyside6_submod is None:
+            try:
+                pyside6_submod = __import__(f"PySide6.{submod}", fromlist=[submod])
+            except ImportError:
+                continue
+        sys.modules[f"PySide2.{submod}"] = pyside6_submod
+
+    # Map shiboken2 → shiboken6
+    try:
+        import shiboken6
+        sys.modules["shiboken2"] = shiboken6
+    except ImportError:
+        pass
+
+
 def _initialize_luna():
     """Initialize Luna modules (lazy loading).
 
@@ -155,6 +198,10 @@ def _initialize_luna():
     if not _setup_luna_integration():
         print("Warning: Luna setup failed - _setup_luna_integration() returned False")
         return False
+
+    # Install PySide2 compatibility shim for Maya 2025+ (which ships PySide6 only).
+    # Luna hardcodes `from PySide2 import ...` so we redirect to PySide6.
+    _install_pyside2_shim()
 
     try:
         # Now we can safely import Luna - moduleInfo is patched and
