@@ -191,9 +191,15 @@ class BaseRig:
         ctrl_set = pm.sets(pm.ls(body_ctrl_set, face_ctrl_set), n="ctrls_set")
 
         # Meshes
-        render_geo_list = list_objects_under_group("render") if pm.objExists("render") else []
-        proxy_geo_list = list_objects_under_group("proxy") if pm.objExists("proxy") else []
-        guide_geo_list = list_objects_under_group("guide") if pm.objExists("guide") else []
+        render_geo_list = (
+            list_objects_under_group("render") if pm.objExists("render") else []
+        )
+        proxy_geo_list = (
+            list_objects_under_group("proxy") if pm.objExists("proxy") else []
+        )
+        guide_geo_list = (
+            list_objects_under_group("guide") if pm.objExists("guide") else []
+        )
 
         model_sets = []
         if render_geo_list:
@@ -327,131 +333,192 @@ class BaseRig:
         Connects control objects for eye aim and face joint setup.
         Also establishes scale connections for the main face rig components.
         """
-        # Eye aim setup
-        if pm.objExists("AimEye_M"):
-            # Connect middle eye aim control
-            if pm.objExists("M_Eyes_Aim_01_ctrl"):
-                pm.parentConstraint("M_Eyes_Aim_01_ctrl", "AimEye_M", mo=True)
-            else:
-                pm.parentConstraint("M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True)
-                pm.connectAttr(
-                    "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2",
-                    "AimEyeFollow_M_parentConstraint1.target[2].targetWeight",
-                    f=True,
-                )
-                pm.connectAttr(
-                    "eyeAimFollowSetRange.outValueX",
-                    "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2",
-                    f=True,
-                )
-            # Connect left eye aim control
-            if pm.objExists("L_Eye_eye_aim_at_ctrl"):
-                pm.parentConstraint("L_Eye_eye_aim_at_ctrl", "AimEye_L", mo=True)
-            # Connect right eye aim control
-            if pm.objExists("R_Eye_eye_aim_at_ctrl"):
-                pm.parentConstraint("R_Eye_eye_aim_at_ctrl", "AimEye_R", mo=True)
-
-            # Hide specified controls if they exist
-            hide_ctrl_list = [
-                ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)
-            ]
-            if hide_ctrl_list:
-                pm.hide(hide_ctrl_list)
-
-        # Face joint setup
-        if pm.objExists("FaceJoint_M") and pm.objExists("M_Head_head_FS_jnt"):
-            # Parent face joint under head joint
+        # ADV Face Connection
+        if pm.objExists("FaceJoint_M"):
             pm.parent("FaceJoint_M", "M_Head_head_FS_jnt")
 
-            # Parent constraint face motion targets to the head joint
-            for target in [
-                "FaceMotionSystem",
-                "FaceDeformationFollowHead",
-                "LipFollowHead",
-            ]:
-                if pm.objExists(target):
-                    pm.parentConstraint("M_Head_head_FS_jnt", target, mo=True)
+            # delete AimEyeFollowMMStatic_M if exist
+            if pm.objExists("AimEyeFollowMMStatic_M"):
+                pm.delete("AimEyeFollowMMStatic_M")
 
-            # Set up scale connection if not already connected
-            if not pm.isConnected(
-                "Base_main_ctrl.worldMatrix", "MainAndHeadScaleMultiplyDivide.input1"
+            mult_matrix = pm.shadingNode(
+                "multMatrix", asUtility=True, name="AimEyeFollowMMStatic_M"
+            )
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix", mult_matrix.matrixIn[1], f=True
+            )
+            pm.connectAttr(
+                mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True
+            )
+
+            if pm.objExists("eyeAimFollowSetRange"):
+                pm.delete("eyeAimFollowSetRange")
+            if pm.objExists("AimEyeFollow_M_parentConstraint1"):
+                pm.delete("AimEyeFollow_M_parentConstraint1")
+            pm.parentConstraint(
+                "EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True
+            )
+            set_range = pm.shadingNode(
+                "setRange", asUtility=True, name="eyeAimFollowSetRange"
+            )
+            pm.connectAttr(
+                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True
+            )
+            pm.connectAttr(
+                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True
+            )
+            pm.connectAttr(
+                "eyeAimFollowSetRange.outValue.outValueX",
+                "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW1",
+                f=True,
+            )
+            pm.connectAttr(
+                "eyeAimFollowSetRange.outValue.outValueY",
+                "AimEyeFollow_M_parentConstraint1.EyeAimStaticW0",
+                f=True,
+            )
+            pm.setAttr("eyeAimFollowSetRange.minY", 1)
+            pm.setAttr("eyeAimFollowSetRange.maxX", 1)
+            pm.setAttr("eyeAimFollowSetRange.oldMaxY", 10)
+            pm.setAttr("eyeAimFollowSetRange.oldMaxX", 10)
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "EyeAimFollowHeadMM_EyeAimFollowHead.matrixIn[0]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "FaceMotionSystemMM_FaceMotionSystem.matrixIn[1]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "LipFollowHeadMM_LipFollowHead.matrixIn[0]",
+                f=True,
+            )
+
+            pm.connectAttr(
+                "M_Head_head_FS_jnt.worldMatrix[0]",
+                "FaceDeformationFollowHeadMM_FaceDeformationFollowHead.matrixIn[1]",
+                f=True,
+            )
+
+            # Connect to Arise Eye Aim Ctrls
+            if (
+                pm.objExists("R_EyeTranslation")
+                and pm.objExists("M_EyeTranslation")
+                and pm.objExists("L_EyeTranslation")
+                and pm.objExists("R_EyeRotation")
             ):
-                decompose_matrix = pm.shadingNode("decomposeMatrix", asUtility=True)
-                pm.connectAttr(
-                    "Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True
-                )
-                pm.connectAttr(
-                    decompose_matrix.outputScale,
-                    "MainAndHeadScaleMultiplyDivide.input1",
-                    f=True,
+                pm.delete(
+                    "R_EyeTranslation",
+                    "M_EyeTranslation",
+                    "L_EyeTranslation",
+                    "R_EyeRotation",
                 )
 
-    def _setup_face_rig_matrix(self):
-        """Set up Advanced Skeleton face rig using matrix multiplication nodes.
+            multiply_translate_node_R = pm.shadingNode(
+                "multiplyDivide", asUtility=True, n="R_EyeTranslation"
+            )
+            multiply_translate_node_M = pm.shadingNode(
+                "multiplyDivide", asUtility=True, n="M_EyeTranslation"
+            )
+            multiply_translate_node_L = pm.shadingNode(
+                "multiplyDivide", asUtility=True, n="L_EyeTranslation"
+            )
 
-        This method provides an alternative to `_setup_face_rig()` by using
-        matrix multiplication nodes instead of parent constraints for connecting
-        facial rig components. Matrix-based connections offer better performance
-        and more predictable behavior in complex rig setups.
+            aim_eye_offset = pm.ls("AimEyeOffset_M")[-1]
+            scale_value = aim_eye_offset.scaleX.get()
 
-        The approach uses multMatrix nodes to combine world matrices and
-        decomposeMatrix nodes to extract the final transform values, avoiding
-        the overhead of constraint evaluation.
-        """
-        # Eye aim setup using matrix connections
-        if pm.objExists("AimEye_M"):
-            # Connect middle eye aim control
-            if pm.objExists("M_Eyes_Aim_01_ctrl"):
-                self._connect_via_matrix("M_Eyes_Aim_01_ctrl", "AimEye_M")
-            else:
-                self._connect_via_matrix("M_Head_head_FS_jnt", "AimEyeFollow_M")
-                if pm.objExists("eyeAimFollowSetRange"):
-                    pm.connectAttr(
-                        "eyeAimFollowSetRange.outValueX",
-                        "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW2",
-                        f=True,
-                    )
-            # Connect left eye aim control
-            if pm.objExists("L_Eye_eye_aim_at_ctrl"):
-                self._connect_via_matrix("L_Eye_eye_aim_at_ctrl", "AimEye_L")
-            # Connect right eye aim control
-            if pm.objExists("R_Eye_eye_aim_at_ctrl"):
-                self._connect_via_matrix("R_Eye_eye_aim_at_ctrl", "AimEye_R")
+            # traslazioni
+            pm.connectAttr(
+                "R_Eye_eye_aim_at_ctrl.translate",
+                multiply_translate_node_R.input1,
+                f=True,
+            )
+            pm.connectAttr(
+                multiply_translate_node_R.output, "AimEye_R.translate", f=True
+            )
+            pm.setAttr(multiply_translate_node_R.input2X, (1 / scale_value) * -1)
+            pm.setAttr(multiply_translate_node_R.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_R.input2Z, (1 / scale_value))
 
-            # Hide specified controls if they exist
-            hide_ctrl_list = [
-                ctrl for ctrl in ["AimEye_M", "FKHead_M"] if pm.objExists(ctrl)
-            ]
-            if hide_ctrl_list:
-                pm.hide(hide_ctrl_list)
+            pm.connectAttr(
+                "M_Eyes_Aim_01_ctrl.translate",
+                multiply_translate_node_M.input1,
+                f=True,
+            )
+            pm.connectAttr(
+                multiply_translate_node_M.output, "AimEye_M.translate", f=True
+            )
+            pm.setAttr(multiply_translate_node_M.input2X, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_M.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_M.input2Z, (1 / scale_value))
 
-        # Face joint setup
-        if pm.objExists("FaceJoint_M") and pm.objExists("M_Head_head_FS_jnt"):
-            # Parent face joint under head joint
-            pm.parent("FaceJoint_M", "M_Head_head_FS_jnt")
+            pm.connectAttr(
+                "L_Eye_eye_aim_at_ctrl.translate",
+                multiply_translate_node_L.input1,
+                f=True,
+            )
+            pm.connectAttr(
+                multiply_translate_node_L.output, "AimEye_L.translate", f=True
+            )
+            pm.setAttr(multiply_translate_node_L.input2X, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_L.input2Y, (1 / scale_value))
+            pm.setAttr(multiply_translate_node_L.input2Z, (1 / scale_value))
 
-            # Matrix-based constraint connections for face motion targets
-            for target in [
-                "FaceMotionSystem",
-                "FaceDeformationFollowHead",
-                "LipFollowHead",
-            ]:
-                if pm.objExists(target):
-                    self._connect_via_matrix("M_Head_head_FS_jnt", target)
+            # rotazioni
+            pm.connectAttr("L_Eye_eye_aim_at_ctrl.rotate", "AimEye_L.rotate", f=True)
+            pm.connectAttr("M_Eyes_Aim_01_ctrl.rotate", "AimEye_M.rotate", f=True)
 
-            # Set up scale connection if not already connected
-            if not pm.isConnected(
-                "Base_main_ctrl.worldMatrix", "MainAndHeadScaleMultiplyDivide.input1"
+            multiply_rotate_node_R = pm.shadingNode(
+                "multiplyDivide", asUtility=True, n="R_EyeRotation"
+            )
+            pm.connectAttr(
+                "R_Eye_eye_aim_at_ctrl.rotate",
+                multiply_rotate_node_R.input1,
+                f=True,
+            )
+            pm.connectAttr(multiply_rotate_node_R.output, "AimEye_R.rotate", f=True)
+            pm.setAttr(multiply_rotate_node_R.input2Z, -1)
+
+            # scala
+            pm.connectAttr("L_Eye_eye_aim_at_ctrl.scale", "AimEye_L.scale", f=True)
+            pm.connectAttr("M_Eyes_Aim_01_ctrl.scale", "AimEye_M.scale", f=True)
+            pm.connectAttr("R_Eye_eye_aim_at_ctrl.scale", "AimEye_R.scale", f=True)
+
+            hide_ctrl_list = pm.ls("AimEye_M")
+            pm.hide(hide_ctrl_list)
+
+            # pm.connectAttr(
+            #     "ctrlBox.AimCtrlVis", "L_Eye_eye_aim_at_ctrl.visibility", f=True
+            # )
+            # pm.connectAttr(
+            #     "ctrlBox.AimCtrlVis", "R_Eye_eye_aim_at_ctrl.visibility", f=True
+            # )
+            # pm.connectAttr(
+            #     "ctrlBox.AimCtrlVis", "M_Eyes_Aim_01_ctrl.visibility", f=True
+            # )
+
+            # prima disconnetto e imposto la scala a uno altrimenti implode
+            if pm.isConnected(
+                "Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"
             ):
-                decompose_matrix = pm.shadingNode("decomposeMatrix", asUtility=True)
-                pm.connectAttr(
-                    "Base_main_ctrl.worldMatrix", decompose_matrix.inputMatrix, f=True
+                pm.disconnectAttr(
+                    "Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"
                 )
-                pm.connectAttr(
-                    decompose_matrix.outputScale,
-                    "MainAndHeadScaleMultiplyDivide.input1",
-                    f=True,
-                )
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1X", 1)
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Y", 1)
+                pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Z", 1)
+
+            pm.connectAttr(
+                "Base_main_ctrl.scale",
+                "MainAndHeadScaleMultiplyDivide.input1",
+                f=True,
+            )
 
     def _connect_via_matrix(self, source, target, maintain_offset=True):
         """Connect source to target using matrix multiplication nodes.
