@@ -47,7 +47,7 @@ def _initialize_riglib():
         from . import core as _core
         from . import face as _face
         from . import facial_rig as _facial_rig
-        from . import matrix as _matrix
+        from . import math as _matrix
         from . import orient_ctrl as _orient_ctrl
         from . import set_muscle_weight as _set_muscle_weight
         from . import utils as _utils

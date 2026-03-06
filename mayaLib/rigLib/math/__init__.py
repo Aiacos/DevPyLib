@@ -6,7 +6,7 @@ for efficient rigging workflows.
 
 from typing import Any
 
-__all__ = ["collision"]
+__all__ = ["collision", "vector", "matrix", "rbf"]
 
 
 def __getattr__(name: str) -> Any:

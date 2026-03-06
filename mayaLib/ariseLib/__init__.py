@@ -9,6 +9,7 @@ import importlib
 # Define submodules to lazily load
 _submodules = {
     "base": ".base",
+    "ik_fk": ".ik_fk",
 }
 
 

@@ -17,7 +17,17 @@ import pymel.core as pm
 
 from mayaLib.rigLib.utils import util
 
-__all__ = ["IKFKSwitch", "install_ikfk", "wire_ikfk_switch"]
+__all__ = [
+    "IKFKSwitch",
+    "install_ikfk",
+    "wire_ikfk_switch",
+    "create_mult_matrix",
+    "create_blend_matrix",
+    "create_decompose_matrix",
+    "connect_blend_to_joint",
+    "create_ik_fk_blend",
+    "build_ik_fk_hybrid",
+]
 
 
 def _get_single_output(node, **kwargs):
@@ -71,7 +81,9 @@ class IKFKSwitch:
                 et=True,
             )[0]
             self.ik_ctrl = util.get_driver_driven_from_constraint(ik_constraint)[0][0]
-            self.pole_vector = util.get_driver_driven_from_constraint(pole_constraint)[0][0]
+            self.pole_vector = util.get_driver_driven_from_constraint(pole_constraint)[
+                0
+            ][0]
         else:
             peel_heel_grp = self.ik_handle.getParent()
             tippy_toe_grp = peel_heel_grp.getParent()
@@ -83,7 +95,9 @@ class IKFKSwitch:
                 type="poleVectorConstraint",
                 et=True,
             )[0]
-            pole_vector_loc = util.get_driver_driven_from_constraint(pole_constraint)[0][0]
+            pole_vector_loc = util.get_driver_driven_from_constraint(pole_constraint)[
+                0
+            ][0]
             pole_vector_constraint = pole_vector_loc.getChildren()[1]
 
             self.ik_ctrl = util.get_driver_driven_from_constraint(ik_constraint)[0][0]
@@ -267,9 +281,7 @@ def wire_ikfk_switch(  # noqa: PLR0913
     )
 
     # Create reverse nodes
-    reverse_node = pm.shadingNode(
-        "reverse", asUtility=True, n=f"{prefix}ReverseNode"
-    )
+    reverse_node = pm.shadingNode("reverse", asUtility=True, n=f"{prefix}ReverseNode")
     part_reverse_node = pm.shadingNode(
         "reverse", asUtility=True, n=f"{prefix}{part}ReverseNode"
     )
@@ -363,9 +375,7 @@ def _wire_fk_visibility(
     for ctrl in fk_limb_controls:
         pm.connectAttr(f"{switch_locator}.{control_attr}", ctrl.get_top().visibility)
     for constraint in fk_limb_constraints:
-        attr = pm.listConnections(
-            constraint.target[0].targetWeight, p=True, s=True
-        )[0]
+        attr = pm.listConnections(constraint.target[0].targetWeight, p=True, s=True)[0]
         pm.connectAttr(f"{switch_locator}.{control_attr}", attr)
 
     for ctrl in fk_hand_controls:
@@ -373,9 +383,7 @@ def _wire_fk_visibility(
             f"{switch_locator}.{part_control_attr}", ctrl.get_top().visibility
         )
     for constraint in fk_hand_constraints:
-        attr = pm.listConnections(
-            constraint.target[0].targetWeight, p=True, s=True
-        )[0]
+        attr = pm.listConnections(constraint.target[0].targetWeight, p=True, s=True)[0]
         pm.connectAttr(f"{switch_locator}.{part_control_attr}", attr)
 
     if fk_limb_controls and fk_hand_controls and fk_hand_constraints:
@@ -395,6 +403,190 @@ def _wire_fk_visibility(
             f"{fk_finger_constraint}.{target_names[0]}W0",
             f=True,
         )
+
+
+# ---------------------------------------------------------------------------
+# Matrix-based IK/FK hybrid blending (Maya 2020+)
+# ---------------------------------------------------------------------------
+
+
+def create_blend_matrix(name=""):
+    """Create a blendMatrix node for matrix interpolation.
+
+    Args:
+        name (str): Base name for the node.
+
+    Returns:
+        The blendMatrix node.
+    """
+    return pm.createNode("blendMatrix", n=f"{name}_blendMatrix")
+
+
+def create_mult_matrix(source, target=None, name=""):
+    """Create a multMatrix node converting a source worldMatrix to target local space.
+
+    Computes: source.worldMatrix * target.parentInverseMatrix, which converts the
+    source's world-space matrix into the target's parent space. This prevents
+    double-transformation when the target has a parent.
+
+    If target is None, only the source worldMatrix is connected (world-space output).
+
+    Args:
+        source: Transform node whose worldMatrix[0] drives the multMatrix.
+        target: Optional transform node whose parentInverseMatrix[0] is used
+            to convert the result into local space.
+        name (str): Base name for the node.
+
+    Returns:
+        The multMatrix node.
+    """
+    mm = pm.createNode("multMatrix", n=f"{name}_multMatrix")
+    pm.connectAttr(source.worldMatrix[0], mm.matrixIn[0], f=True)
+    if target is not None:
+        pm.connectAttr(target.parentInverseMatrix[0], mm.matrixIn[1], f=True)
+    return mm
+
+
+def create_decompose_matrix(name=""):
+    """Create a decomposeMatrix node to extract translate, rotate, and scale.
+
+    Args:
+        name (str): Base name for the node.
+
+    Returns:
+        The decomposeMatrix node.
+    """
+    return pm.createNode("decomposeMatrix", n=f"{name}_decomposeMatrix")
+
+
+def connect_blend_to_joint(blend_node, joint, debug=False):
+    """Connect a blendMatrix output to a bind joint via decomposeMatrix.
+
+    Creates a decomposeMatrix node and wires outputMatrix -> TRS on the joint.
+
+    Args:
+        blend_node: The blendMatrix node.
+        joint: The bind joint to drive.
+        debug (bool): Print diagnostic info to Script Editor.
+
+    Returns:
+        The decomposeMatrix node.
+    """
+    dcmp = create_decompose_matrix(name=str(joint))
+
+    connections = [
+        (blend_node.outputMatrix, dcmp.inputMatrix, "outputMatrix -> inputMatrix"),
+        (dcmp.outputTranslate, joint.translate, "outputTranslate -> translate"),
+        (dcmp.outputRotate, joint.rotate, "outputRotate -> rotate"),
+        (dcmp.outputScale, joint.scale, "outputScale -> scale"),
+    ]
+
+    for src, dst, label in connections:
+        try:
+            pm.connectAttr(src, dst, f=True)
+            if debug:
+                print(f"  [connect_blend_to_joint] OK: {label} ({src} -> {dst})")
+        except Exception as e:
+            print(f"  [connect_blend_to_joint] FAILED: {label} ({src} -> {dst}): {e}")
+
+    return dcmp
+
+
+def create_ik_fk_blend(
+    fk_source, ik_source, bind_joint, blend_attr=None, name="", debug=False
+):
+    """Create an IK/FK matrix blend for a single joint.
+
+    Connects FK and IK world matrices into a blendMatrix node, then drives
+    the bind joint. FK is the base input (inputMatrix), IK is the target
+    (target[0].targetMatrix).
+
+    Args:
+        fk_source: FK transform whose worldMatrix provides the FK pose.
+        ik_source: IK transform whose worldMatrix provides the IK pose.
+        bind_joint: Bind joint to receive the blended result.
+        blend_attr: Optional attribute to drive the IK blend weight
+            (0.0 = full FK, 1.0 = full IK). If None, defaults to 0.0.
+        name (str): Base name prefix for created nodes.
+
+    Returns:
+        dict: Created nodes with keys 'blend', 'fk_mm', 'ik_mm', 'decompose'.
+    """
+    prefix = name or str(bind_joint)
+
+    fk_mm = create_mult_matrix(fk_source, target=bind_joint, name=f"{prefix}_fk")
+    ik_mm = create_mult_matrix(ik_source, target=bind_joint, name=f"{prefix}_ik")
+
+    blend = create_blend_matrix(name=prefix)
+
+    # FK as base input, IK as blend target
+    pm.connectAttr(fk_mm.matrixSum, blend.inputMatrix, f=True)
+    pm.connectAttr(ik_mm.matrixSum, blend.target[0].targetMatrix, f=True)
+
+    # Connect blend weight if provided
+    if blend_attr is not None:
+        pm.connectAttr(blend_attr, blend.target[0].weight, f=True)
+
+    dcmp = connect_blend_to_joint(blend, bind_joint, debug=debug)
+
+    return {
+        "blend": blend,
+        "fk_mm": fk_mm,
+        "ik_mm": ik_mm,
+        "decompose": dcmp,
+    }
+
+
+def build_ik_fk_hybrid(
+    fk_joints, ik_joints, bind_joints, blend_attr=None, name="", debug=False
+):
+    """Build a full IK/FK hybrid system for a joint chain using matrix blending.
+
+    For each triplet (FK, IK, bind), creates a blendMatrix network that
+    blends the FK and IK world matrices and drives the bind joint.
+    Requires Maya 2020+ for the blendMatrix node.
+
+    Args:
+        fk_joints (list): FK joint/control transforms, ordered root to tip.
+        ik_joints (list): IK joint transforms (driven by ikHandle), same order.
+        bind_joints (list): Bind joints to receive the blended result.
+        blend_attr: Optional attribute to drive IK weight on all joints
+            (0.0 = full FK, 1.0 = full IK). Typically a float attr on a
+            control, e.g. ``ctrl.ikFkBlend``.
+        name (str): Base name prefix for all created nodes.
+
+    Returns:
+        list[dict]: One dict per joint with keys 'blend', 'fk_mm', 'ik_mm', 'decompose'.
+
+    Example::
+
+        # Create the blend attribute on a control
+        pm.addAttr(settings_ctrl, ln="ikFkBlend", at="float", min=0, max=1, dv=0, k=True)
+
+        # Build the hybrid system
+        nodes = build_ik_fk_hybrid(
+            fk_joints=[pm.PyNode("fk_shoulder"), pm.PyNode("fk_elbow"), pm.PyNode("fk_wrist")],
+            ik_joints=[pm.PyNode("ik_shoulder"), pm.PyNode("ik_elbow"), pm.PyNode("ik_wrist")],
+            bind_joints=[pm.PyNode("bind_shoulder"), pm.PyNode("bind_elbow"), pm.PyNode("bind_wrist")],
+            blend_attr=settings_ctrl.ikFkBlend,
+            name="arm",
+        )
+    """
+    results = []
+
+    for fk, ik, bind in zip(fk_joints, ik_joints, bind_joints):
+        prefix = f"{name}_{bind}" if name else str(bind)
+        nodes = create_ik_fk_blend(
+            fk_source=fk,
+            ik_source=ik,
+            bind_joint=bind,
+            blend_attr=blend_attr,
+            name=prefix,
+            debug=debug,
+        )
+        results.append(nodes)
+
+    return results
 
 
 def _demo() -> None:
