@@ -1,0 +1,8 @@
+{
+  "libs": [
+    { "path": "rigging/compounds" },
+    { "path": "simulation/compounds" },
+    { "path": "usd/compounds" },
+    { "path": "utilities/compounds" }
+  ]
+}
