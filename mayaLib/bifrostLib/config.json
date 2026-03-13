@@ -1,8 +1,44 @@
 {
-  "libs": [
-    { "path": "rigging/compounds" },
-    { "path": "simulation/compounds" },
-    { "path": "usd/compounds" },
-    { "path": "utilities/compounds" }
+  "AminoConfigurations": [
+    {
+      "libraryName": "StudioLibrary::Rigging",
+      "libraryVersion": "1.0.0",
+      "jsonLibs": [
+        {
+          "path": "rigging/compounds",
+          "files": []
+        }
+      ]
+    },
+    {
+      "libraryName": "StudioLibrary::Simulation",
+      "libraryVersion": "1.0.0",
+      "jsonLibs": [
+        {
+          "path": "simulation/compounds",
+          "files": []
+        }
+      ]
+    },
+    {
+      "libraryName": "StudioLibrary::USD",
+      "libraryVersion": "1.0.0",
+      "jsonLibs": [
+        {
+          "path": "usd/compounds",
+          "files": []
+        }
+      ]
+    },
+    {
+      "libraryName": "StudioLibrary::Utilities",
+      "libraryVersion": "1.0.0",
+      "jsonLibs": [
+        {
+          "path": "utilities/compounds",
+          "files": []
+        }
+      ]
+    }
   ]
 }

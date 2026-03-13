@@ -1,0 +1,361 @@
+{
+    "header": {
+        "metadata": [
+            {
+                "metaName": "adskFileFormatVersion",
+                "metaValue": "100L"
+            }
+        ]
+    },
+    "namespaces": [],
+    "types": [],
+    "compounds": [
+        {
+            "name": "StudioLibrary::Utilities::Remesh_from_Volume",
+            "uriImported": "stream:/bifrostGraphShape1",
+            "metadata": [
+                {
+                    "metaName": "io_nodes",
+                    "metadata": [
+                        {
+                            "metaName": "io_inodes",
+                            "metadata": [
+                                {
+                                    "metaName": "input",
+                                    "metadata": [
+                                        {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
+                                            "metaName": "LayoutPos",
+                                            "metaType": "string",
+                                            "metaValue": "-449.75 -60.75"
+                                        },
+                                        {
+                                            "metaName": "zValue",
+                                            "metaType": "string",
+                                            "metaValue": "31.000000"
+                                        },
+                                        {
+                                            "metaName": "io_ports",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "in_mesh"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "metaName": "io_onodes",
+                            "metadata": [
+                                {
+                                    "metaName": "output",
+                                    "metadata": [
+                                        {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
+                                            "metaName": "zValue",
+                                            "metaType": "string",
+                                            "metaValue": "36.000000"
+                                        },
+                                        {
+                                            "metaName": "LayoutPos",
+                                            "metaType": "string",
+                                            "metaValue": "816.857 -23.8541"
+                                        },
+                                        {
+                                            "metaName": "io_ports",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "mesh"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "metaName": "ViewportRect",
+                    "metaType": "string",
+                    "metaValue": "-481.283 -488.161 1765.7 946.849"
+                },
+                {
+                    "metaName": "DisplayMode",
+                    "metaType": "string",
+                    "metaValue": "2"
+                },
+                {
+                    "metaName": "LayoutPos",
+                    "metaType": "string",
+                    "metaValue": "117.365 -387.711"
+                },
+                {
+                    "metaName": "zValue",
+                    "metaType": "string",
+                    "metaValue": "38.000000"
+                }
+            ],
+            "terminalStates": [
+                {
+                    "name": "Core::Graph::terminal::final",
+                    "enabled": "false"
+                },
+                {
+                    "name": "Core::Graph::terminal::proxy",
+                    "enabled": "false"
+                },
+                {
+                    "name": "Core::Graph::terminal::diagnostic",
+                    "enabled": "false"
+                }
+            ],
+            "ports": [
+                {
+                    "portName": "in_mesh",
+                    "portDirection": "input",
+                    "portType": "Object"
+                },
+                {
+                    "portName": "mesh",
+                    "portDirection": "output"
+                }
+            ],
+            "compoundNodes": [
+                {
+                    "nodeName": "contour_dual_marching_cubes",
+                    "nodeType": "Geometry::Converters::contour_dual_marching_cubes",
+                    "terminalStates": [
+                        {
+                            "name": "Core::Graph::terminal::final",
+                            "enabled": "false"
+                        },
+                        {
+                            "name": "Core::Graph::terminal::proxy",
+                            "enabled": "false"
+                        },
+                        {
+                            "name": "Core::Graph::terminal::diagnostic",
+                            "enabled": "false"
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "501.995 -23.8221"
+                        },
+                        {
+                            "metaName": "PortExpandedState",
+                            "metadata": [
+                                {
+                                    "metaName": "General",
+                                    "metaType": "string",
+                                    "metaValue": "0"
+                                }
+                            ]
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "34.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "convert_to_volume",
+                    "nodeType": "Modeling::Converters::convert_to_volume",
+                    "fanInPortNames": {
+                        "geometry": [
+                            "merged"
+                        ],
+                        "base_resolution": [],
+                        "half_resolution": [],
+                        "quarter_resolution": [],
+                        "eighth_resolution": []
+                    },
+                    "terminalStates": [
+                        {
+                            "name": "Core::Graph::terminal::final",
+                            "enabled": "false"
+                        },
+                        {
+                            "name": "Core::Graph::terminal::proxy",
+                            "enabled": "false"
+                        },
+                        {
+                            "name": "Core::Graph::terminal::diagnostic",
+                            "enabled": "false"
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "252.2 0.613693"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "33.000000"
+                        }
+                    ]
+                }
+            ],
+            "connections": [
+                {
+                    "source": "convert_to_volume.volume",
+                    "target": "contour_dual_marching_cubes.volume"
+                },
+                {
+                    "source": ".in_mesh",
+                    "target": "convert_to_volume.geometry.merged"
+                },
+                {
+                    "source": "contour_dual_marching_cubes.mesh",
+                    "target": ".mesh"
+                }
+            ],
+            "values": [
+                {
+                    "valueName": "contour_dual_marching_cubes.mesh_mode",
+                    "valueType": "Geometry::Converters::MeshMode",
+                    "value": "Automatic"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.custom_mesh_property",
+                    "valueType": "string",
+                    "value": "voxel_fog_density"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.property_threshold",
+                    "valueType": "float",
+                    "value": "0.0500000007f"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.custom_interior_mode",
+                    "valueType": "Geometry::Converters::Interior",
+                    "value": "Greater"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.detail_size_scale",
+                    "valueType": "float",
+                    "value": "1f"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.adaptivity",
+                    "valueType": "Geometry::Common::Adaptivity",
+                    "value": "Automatic"
+                },
+                {
+                    "valueName": "contour_dual_marching_cubes.adaptivity_property",
+                    "valueType": "string",
+                    "value": "voxel_detail_size"
+                },
+                {
+                    "valueName": "convert_to_volume.volume_mode",
+                    "valueType": "Geometry::Converters::VolumeMode",
+                    "value": "Solid"
+                },
+                {
+                    "valueName": "convert_to_volume.offset",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "convert_to_volume.store_level_set",
+                    "valueType": "bool",
+                    "value": "true"
+                },
+                {
+                    "valueName": "convert_to_volume.store_fog_density",
+                    "valueType": "bool",
+                    "value": "false"
+                },
+                {
+                    "valueName": "convert_to_volume.fog_density",
+                    "valueType": "float",
+                    "value": "1f"
+                },
+                {
+                    "valueName": "convert_to_volume.min_hole_radius",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "convert_to_volume.properties",
+                    "valueType": "string",
+                    "value": "* !point_position !point_normal"
+                },
+                {
+                    "valueName": "convert_to_volume.resolution_mode",
+                    "valueType": "Geometry::Volume::AutoResolutionType",
+                    "value": "Automatic"
+                },
+                {
+                    "valueName": "convert_to_volume.detail_size",
+                    "valueType": "float",
+                    "value": "0.00499999989f"
+                },
+                {
+                    "valueName": "convert_to_volume.adaptivity",
+                    "valueType": "Geometry::Volume::Adaptivity",
+                    "value": "Off"
+                },
+                {
+                    "valueName": "convert_to_volume.max_relative_error",
+                    "valueType": "float",
+                    "value": "0.00499999989f"
+                },
+                {
+                    "valueName": "convert_to_volume.enable_resolution_bounds",
+                    "valueType": "bool",
+                    "value": "false"
+                },
+                {
+                    "valueName": "convert_to_volume.enable_bandwidth",
+                    "valueType": "bool",
+                    "value": "false"
+                },
+                {
+                    "valueName": "convert_to_volume.bandwidth",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "convert_to_volume.volume_subdivision_structure",
+                    "valueType": "Geometry::Volume::AutoSubdivisionStructure",
+                    "value": "Automatic"
+                }
+            ],
+            "reservedNodeNames": [
+                {
+                    "name": "input"
+                },
+                {
+                    "name": "output"
+                }
+            ]
+        }
+    ]
+}
