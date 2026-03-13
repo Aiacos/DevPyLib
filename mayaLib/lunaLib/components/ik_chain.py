@@ -37,8 +37,7 @@ def create_ik_chain(
         ... )
 
     """
-    from luna_rig.components import IKComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, IKComponent
 
     # Get character if exists
     character = None

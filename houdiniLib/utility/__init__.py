@@ -32,9 +32,7 @@ def __getattr__(name):
             globals()[name] = module
             return module
         except ImportError as e:
-            raise ImportError(
-                f"Failed to import {__name__}.{name}: {e}"
-            ) from e
+            raise ImportError(f"Failed to import {__name__}.{name}: {e}") from e
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 

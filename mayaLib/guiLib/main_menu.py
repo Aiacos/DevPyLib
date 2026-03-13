@@ -415,9 +415,7 @@ class MenuLibWidget(QtWidgets.QWidget):
 class MainMenu(QtWidgets.QWidget):
     """Main menu widget to display the library in Maya."""
 
-    def __init__(
-        self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True
-    ):
+    def __init__(self, lib_path, menu_name="MayaLib", parent=None, auto_update_on_load=True):
         """Initialize the MainMenu.
 
         Args:

@@ -9,12 +9,11 @@ Run this script in Maya to see various progress callback examples.
 
 __author__ = "Lorenzo Argentieri"
 
+import contextlib
 import time
 
-try:
-    from PySide6 import QtWidgets
-except ImportError:
-    from PySide2 import QtWidgets
+with contextlib.suppress(ImportError):
+    pass
 
 from mayaLib.guiLib.base.base_ui import FunctionUI
 

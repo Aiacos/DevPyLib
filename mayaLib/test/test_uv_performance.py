@@ -12,8 +12,7 @@ for meshes with 10,000+ UVs.
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 # Add parent directories to path for imports
 _test_dir = Path(__file__).parent.resolve()
@@ -61,7 +60,7 @@ class MockUVData:
         self.multi_tile = multi_tile
         self.uv_coords = self._generate_uv_coords()
 
-    def _generate_uv_coords(self) -> List[float]:
+    def _generate_uv_coords(self) -> list[float]:
         """Generate mock UV coordinates.
 
         Returns:
@@ -163,9 +162,7 @@ class MockPyMel:
         return [self.uv_data.uv_coords[idx * 2], self.uv_data.uv_coords[idx * 2 + 1]]
 
 
-def benchmark_old_per_vertex_approach(
-    mock_pm: MockPyMel, shell: str
-) -> Tuple[float, int]:
+def benchmark_old_per_vertex_approach(mock_pm: MockPyMel, shell: str) -> tuple[float, int]:
     """Benchmark the old per-vertex approach (multiple API calls).
 
     This simulates the old implementation where each UV was queried individually
@@ -201,10 +198,10 @@ def benchmark_old_per_vertex_approach(
         u = uv_coords_list[i]
         v = uv_coords_list[i + 1]
         # Simulate boundary checking logic
-        u_max = int(u) + 1
-        u_min = int(u)
-        v_max = int(v) + 1
-        v_min = int(v)
+        int(u) + 1
+        int(u)
+        int(v) + 1
+        int(v)
 
     end_time = time.perf_counter()
 
@@ -215,7 +212,7 @@ def benchmark_old_per_vertex_approach(
     return total_time, mock_pm.api_call_count
 
 
-def benchmark_new_batch_approach(mock_pm: MockPyMel, shell: str) -> Tuple[float, int]:
+def benchmark_new_batch_approach(mock_pm: MockPyMel, shell: str) -> tuple[float, int]:
     """Benchmark the new batch approach (single API call).
 
     This simulates the optimized implementation where all UVs are queried
@@ -248,10 +245,10 @@ def benchmark_new_batch_approach(mock_pm: MockPyMel, shell: str) -> Tuple[float,
         u = uv_coords[i]
         v = uv_coords[i + 1]
         # Simulate boundary checking logic
-        u_max = int(u) + 1
-        u_min = int(u)
-        v_max = int(v) + 1
-        v_min = int(v)
+        int(u) + 1
+        int(u)
+        int(v) + 1
+        int(v)
 
     end_time = time.perf_counter()
 
@@ -314,7 +311,7 @@ def print_section_header(title: str):
 
 def run_benchmark_test(
     num_uvs: int, multi_tile: bool = False, iterations: int = 5
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Run benchmark test for a specific UV count.
 
     Args:
@@ -373,15 +370,9 @@ def run_benchmark() -> bool:
     """
     print_section_header("UV Batch Operations Performance Benchmark")
 
-    print(
-        f"{Colors.BOLD}Testing UV coordinate retrieval optimization{Colors.ENDC}\n"
-    )
-    print(
-        "Old approach: Individual pm.polyEditUV() calls in loop (O(n) API calls)"
-    )
-    print(
-        "New approach: Single batch pm.polyEditUV() call (O(1) API calls)\n"
-    )
+    print(f"{Colors.BOLD}Testing UV coordinate retrieval optimization{Colors.ENDC}\n")
+    print("Old approach: Individual pm.polyEditUV() calls in loop (O(n) API calls)")
+    print("New approach: Single batch pm.polyEditUV() call (O(1) API calls)\n")
 
     # Test configurations
     # Note: Sizes chosen to demonstrate scaling behavior without excessive test time
@@ -416,9 +407,7 @@ def run_benchmark() -> bool:
         old_time_str = format_time(result["old_time"])
         new_time_str = format_time(result["new_time"])
         speedup_str = format_speedup(result["speedup"])
-        api_calls_str = (
-            f"{result['old_api_calls']} → {result['new_api_calls']}"
-        )
+        api_calls_str = f"{result['old_api_calls']} → {result['new_api_calls']}"
 
         print(
             f"{description:<30} {old_time_str:<15} {new_time_str:<15} "
@@ -426,58 +415,35 @@ def run_benchmark() -> bool:
         )
 
         # Check if 10K+ UV tests achieve 10x speedup
-        if result["num_uvs"] >= 10000:
-            if result["speedup"] < 10.0:
-                target_achieved = False
+        if result["num_uvs"] >= 10000 and result["speedup"] < 10.0:
+            target_achieved = False
 
     # Summary
     print_section_header("Performance Summary")
 
     print(f"{Colors.BOLD}API Call Reduction:{Colors.ENDC}")
-    print(
-        f"  • Old approach: {Colors.FAIL}O(n){Colors.ENDC} API calls "
-        f"(one per UV)"
-    )
-    print(
-        f"  • New approach: {Colors.OKGREEN}O(1){Colors.ENDC} API calls "
-        f"(single batch query)"
-    )
+    print(f"  • Old approach: {Colors.FAIL}O(n){Colors.ENDC} API calls (one per UV)")
+    print(f"  • New approach: {Colors.OKGREEN}O(1){Colors.ENDC} API calls (single batch query)")
 
     print(f"\n{Colors.BOLD}Speedup Analysis:{Colors.ENDC}")
     for description, result in results:
         speedup_str = format_speedup(result["speedup"])
-        api_reduction = (
-            result["old_api_calls"] - result["new_api_calls"]
-        )
-        print(
-            f"  • {description}: {speedup_str} "
-            f"(reduced {api_reduction:,} API calls)"
-        )
+        api_reduction = result["old_api_calls"] - result["new_api_calls"]
+        print(f"  • {description}: {speedup_str} (reduced {api_reduction:,} API calls)")
 
     print(f"\n{Colors.BOLD}Target Achievement:{Colors.ENDC}")
     if target_achieved:
-        print(
-            f"  {Colors.OKGREEN}✓ SUCCESS{Colors.ENDC}: "
-            f"Achieved 10x+ speedup for 10K+ UV meshes"
-        )
+        print(f"  {Colors.OKGREEN}✓ SUCCESS{Colors.ENDC}: Achieved 10x+ speedup for 10K+ UV meshes")
     else:
         print(
-            f"  {Colors.FAIL}✗ FAILED{Colors.ENDC}: "
-            f"Did not achieve 10x+ speedup for 10K+ UV meshes"
+            f"  {Colors.FAIL}✗ FAILED{Colors.ENDC}: Did not achieve 10x+ speedup for 10K+ UV meshes"
         )
 
     print(f"\n{Colors.BOLD}Performance Impact:{Colors.ENDC}")
+    print("  • Small meshes (<1K UVs): Moderate improvement (API overhead less significant)")
+    print("  • Medium meshes (1K-10K UVs): Significant improvement (10x+ speedup)")
     print(
-        "  • Small meshes (<1K UVs): Moderate improvement "
-        "(API overhead less significant)"
-    )
-    print(
-        "  • Medium meshes (1K-10K UVs): Significant improvement "
-        "(10x+ speedup)"
-    )
-    print(
-        "  • Large meshes (10K+ UVs): Dramatic improvement "
-        "(10x+ speedup, critical for production)"
+        "  • Large meshes (10K+ UVs): Dramatic improvement (10x+ speedup, critical for production)"
     )
 
     print(f"\n{Colors.BOLD}Methods Optimized:{Colors.ENDC}")
@@ -485,9 +451,7 @@ def run_benchmark() -> bool:
     print("  • check_uv_boundaries()")
     print("  • cut_uv_tile()")
 
-    print(
-        f"\n{Colors.BOLD}{Colors.HEADER}{'=' * 70}{Colors.ENDC}\n"
-    )
+    print(f"\n{Colors.BOLD}{Colors.HEADER}{'=' * 70}{Colors.ENDC}\n")
 
     return target_achieved
 

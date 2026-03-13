@@ -290,6 +290,7 @@ def find_edge_up_down(head_geo, direction, enable_loop_mode=True):
 
     # Set component selection mode
     import contextlib
+
     with contextlib.suppress(Exception):
         pm.catch(lambda: pm.mel.doMenuComponentSelection(head_geo, "edge"))
 

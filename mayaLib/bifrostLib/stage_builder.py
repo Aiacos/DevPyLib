@@ -4,6 +4,8 @@ Provides high-level composition of Bifrost graphs with Maya
 USD proxy stages.
 """
 
+import contextlib
+
 import maya.cmds as cmds
 
 from mayaLib.bifrostLib import bifrost_api as bifrost
@@ -210,11 +212,8 @@ class USDCharacterBuild:
         )
 
         bifrost.bf_add_input_port(self.bifrost_shape, "output", "out_stage", "BifrostUsd::Stage")
-        try:
+        with contextlib.suppress(RuntimeError):
             bifrost.bf_add_input_port(self.bifrost_shape, "output", "id_array", "array<long>")
-        except RuntimeError:
-            # Port may already exist
-            pass
 
         bifrost.bf_connect(
             self.bifrost_shape, self.preview_compound + ".out_stage", "output.out_stage"

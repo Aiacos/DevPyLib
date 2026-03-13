@@ -134,8 +134,5 @@ def show_exception_dialog(exception, title="Error", parent=None):
     detailed_text = traceback.format_exc()
 
     return show_error_dialog(
-        title=title,
-        message=message,
-        detailed_text=detailed_text,
-        parent=parent
+        title=title, message=message, detailed_text=detailed_text, parent=parent
     )

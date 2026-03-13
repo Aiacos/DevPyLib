@@ -1,8 +1,10 @@
+"""Object-along-curve utilities for distributing joints and locators along NURBS curves."""
+
 import maya.cmds as cmds
 import pymel.core as pm
 
 
-class CurvesFromEdge(object):
+class CurvesFromEdge:
     """Create NURBS curves from polygon mesh edge loops with optional rebuild."""
 
     def __init__(self, geo, edge, rebuild=True):
@@ -119,7 +121,7 @@ class CurvesFromEdge(object):
         return self.deformer_node
 
 
-class JointChainCurve(object):
+class JointChainCurve:
     """Calculate spacing for joint chains distributed along curves."""
 
     def __init__(self, pointsNumber=5):
@@ -145,12 +147,12 @@ def extract_feather_curves(geo, edge_idx_list):
         list: List of rebuilt NURBS curves extracted from edge loops.
     """
     cv_list = []
-    for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list))):
-        tmp_loop_idx = pm.polySelect(geo, edgeLoop=loop_idx)
+    for loop_idx, i in zip(edge_idx_list, range(0, len(edge_idx_list)), strict=False):
+        pm.polySelect(geo, edgeLoop=loop_idx)
         # min_edge = min(tmp_loop_idx)
         # max_edge = max(tmp_loop_idx)
         # pm.polySelect(geo, edgeLoopPath=[min_edge, max_edge])
-        loop = pm.ls(sl=True)
+        pm.ls(sl=True)
         cv = pm.polyToCurve(form=2, degree=3, conformToSmoothMeshPreview=1)[0]
 
         if i % 2:
@@ -182,7 +184,7 @@ curve = cmds.ls(sl=True)
 
 
 ## Main --wip
-class ObjectAlongCurve(object):
+class ObjectAlongCurve:
     """Create joint chains along a curve path using motion path animation."""
 
     def __init__(self, path_crv, n_jnt=12, offset_driver=None):
@@ -293,7 +295,7 @@ def pathMode(path):
         list: List of created locator transform names.
     """
     nameBuilder_locator = path + "_loc"
-    nameBuilder_joint = path + "_jnt"
+    path + "_jnt"
     locatorList = []
     for p in range(1, pointsNumber):
         if p == 1:

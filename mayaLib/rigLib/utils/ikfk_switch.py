@@ -81,9 +81,7 @@ class IKFKSwitch:
                 et=True,
             )[0]
             self.ik_ctrl = util.get_driver_driven_from_constraint(ik_constraint)[0][0]
-            self.pole_vector = util.get_driver_driven_from_constraint(pole_constraint)[
-                0
-            ][0]
+            self.pole_vector = util.get_driver_driven_from_constraint(pole_constraint)[0][0]
         else:
             peel_heel_grp = self.ik_handle.getParent()
             tippy_toe_grp = peel_heel_grp.getParent()
@@ -95,9 +93,7 @@ class IKFKSwitch:
                 type="poleVectorConstraint",
                 et=True,
             )[0]
-            pole_vector_loc = util.get_driver_driven_from_constraint(pole_constraint)[
-                0
-            ][0]
+            pole_vector_loc = util.get_driver_driven_from_constraint(pole_constraint)[0][0]
             pole_vector_constraint = pole_vector_loc.getChildren()[1]
 
             self.ik_ctrl = util.get_driver_driven_from_constraint(ik_constraint)[0][0]
@@ -282,9 +278,7 @@ def wire_ikfk_switch(  # noqa: PLR0913
 
     # Create reverse nodes
     reverse_node = pm.shadingNode("reverse", asUtility=True, n=f"{prefix}ReverseNode")
-    part_reverse_node = pm.shadingNode(
-        "reverse", asUtility=True, n=f"{prefix}{part}ReverseNode"
-    )
+    part_reverse_node = pm.shadingNode("reverse", asUtility=True, n=f"{prefix}{part}ReverseNode")
     pm.connectAttr(f"{switch_locator}.{control_attr}", reverse_node.inputX)
     pm.connectAttr(f"{switch_locator}.{part_control_attr}", part_reverse_node.inputX)
 
@@ -379,9 +373,7 @@ def _wire_fk_visibility(
         pm.connectAttr(f"{switch_locator}.{control_attr}", attr)
 
     for ctrl in fk_hand_controls:
-        pm.connectAttr(
-            f"{switch_locator}.{part_control_attr}", ctrl.get_top().visibility
-        )
+        pm.connectAttr(f"{switch_locator}.{part_control_attr}", ctrl.get_top().visibility)
     for constraint in fk_hand_constraints:
         attr = pm.listConnections(constraint.target[0].targetWeight, p=True, s=True)[0]
         pm.connectAttr(f"{switch_locator}.{part_control_attr}", attr)
@@ -492,9 +484,7 @@ def connect_blend_to_joint(blend_node, joint, debug=False):
     return dcmp
 
 
-def create_ik_fk_blend(
-    fk_source, ik_source, bind_joint, blend_attr=None, name="", debug=False
-):
+def create_ik_fk_blend(fk_source, ik_source, bind_joint, blend_attr=None, name="", debug=False):
     """Create an IK/FK matrix blend for a single joint.
 
     Connects FK and IK world matrices into a blendMatrix node, then drives
@@ -508,6 +498,7 @@ def create_ik_fk_blend(
         blend_attr: Optional attribute to drive the IK blend weight
             (0.0 = full FK, 1.0 = full IK). If None, defaults to 0.0.
         name (str): Base name prefix for created nodes.
+        debug (bool): If True, print diagnostic connection info.
 
     Returns:
         dict: Created nodes with keys 'blend', 'fk_mm', 'ik_mm', 'decompose'.
@@ -537,9 +528,7 @@ def create_ik_fk_blend(
     }
 
 
-def build_ik_fk_hybrid(
-    fk_joints, ik_joints, bind_joints, blend_attr=None, name="", debug=False
-):
+def build_ik_fk_hybrid(fk_joints, ik_joints, bind_joints, blend_attr=None, name="", debug=False):
     """Build a full IK/FK hybrid system for a joint chain using matrix blending.
 
     For each triplet (FK, IK, bind), creates a blendMatrix network that
@@ -554,6 +543,7 @@ def build_ik_fk_hybrid(
             (0.0 = full FK, 1.0 = full IK). Typically a float attr on a
             control, e.g. ``ctrl.ikFkBlend``.
         name (str): Base name prefix for all created nodes.
+        debug (bool): If True, print diagnostic connection info.
 
     Returns:
         list[dict]: One dict per joint with keys 'blend', 'fk_mm', 'ik_mm', 'decompose'.
@@ -574,7 +564,7 @@ def build_ik_fk_hybrid(
     """
     results = []
 
-    for fk, ik, bind in zip(fk_joints, ik_joints, bind_joints):
+    for fk, ik, bind in zip(fk_joints, ik_joints, bind_joints, strict=False):
         prefix = f"{name}_{bind}" if name else str(bind)
         nodes = create_ik_fk_blend(
             fk_source=fk,

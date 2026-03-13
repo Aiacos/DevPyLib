@@ -44,8 +44,7 @@ def create_fkik_chain(
         ... )
 
     """
-    from luna_rig.components import FKIKComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, FKIKComponent
 
     # Get character if exists
     character = None

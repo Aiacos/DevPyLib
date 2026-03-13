@@ -4,8 +4,6 @@ Provides a wrapper around Luna's Character component for creating
 the root character rig structure.
 """
 
-import pymel.core as pm
-
 
 def create_character(name: str = "character", tag: str = "character"):
     """Create a Luna Character rig component.

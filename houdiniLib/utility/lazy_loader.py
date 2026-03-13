@@ -67,9 +67,7 @@ def create_lazy_loader(submodules, package_name, globals_dict=None):
                     globals_dict[name] = module
                 return module
             except ImportError as e:
-                raise ImportError(
-                    f"Failed to import {package_name}.{name}: {e}"
-                ) from e
+                raise ImportError(f"Failed to import {package_name}.{name}: {e}") from e
         raise AttributeError(f"module {package_name!r} has no attribute {name!r}")
 
     return __getattr__

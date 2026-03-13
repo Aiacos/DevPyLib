@@ -26,9 +26,10 @@ def set_muscle_weight(selection=None, jiggle=0.2):
     if selection is None:
         selection = pm.ls("iControlMid*")
     for item in selection:
-        if "_crossSection" not in item.name().encode("utf8"):
-            if "Constraint" not in item.name().encode("utf8"):
-                item.jiggle.set(jiggle)
+        if "_crossSection" not in item.name().encode(
+            "utf8"
+        ) and "Constraint" not in item.name().encode("utf8"):
+            item.jiggle.set(jiggle)
 
 
 if __name__ == "__main__":

@@ -78,9 +78,7 @@ def _find_blend_attr(node_name, ctrls_list):
     for ctrl in ctrls_list:
         ctrl_name = str(ctrl)
         for search in search_names:
-            if search in ctrl_name and pm.attributeQuery(
-                "ik_fk_switch", node=ctrl, exists=True
-            ):
+            if search in ctrl_name and pm.attributeQuery("ik_fk_switch", node=ctrl, exists=True):
                 return pm.PyNode(f"{ctrl}.ik_fk_switch")
 
     return None
@@ -220,8 +218,9 @@ def _drive_ctrl_offset(source_joint, ctrl, blend_attr, follow_on_ik=True, name="
     pm.connectAttr(dcmp.outputRotate, offset_grp.rotate, f=True)
     pm.connectAttr(dcmp.outputScale, offset_grp.scale, f=True)
 
-    print(f"  [sync] {offset_grp} follows {source_joint} "
-          f"(active_on={'IK' if follow_on_ik else 'FK'})")
+    print(
+        f"  [sync] {offset_grp} follows {source_joint} (active_on={'IK' if follow_on_ik else 'FK'})"
+    )
 
 
 def sync_ik_fk_controls(node_name, ctrls_list, ik_joints, fk_joints, blend_attr):

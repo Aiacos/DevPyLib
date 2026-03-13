@@ -99,11 +99,8 @@ def register_mayalib_utilities():
     """
     try:
         # Import mayaLib modules
-        from mayaLib.rigLib.utils import control
-        from mayaLib.rigLib.utils import joint
-        from mayaLib.rigLib.utils import deform
-        from mayaLib.rigLib.utils import skin
         from mayaLib.pipelineLib.utility import naming_utils
+        from mayaLib.rigLib.utils import control, deform, joint, skin
 
         # Register with bridge
         MayaLibBridge.register("control", control)

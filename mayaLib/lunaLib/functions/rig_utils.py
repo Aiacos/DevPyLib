@@ -3,8 +3,6 @@
 Provides wrapper functions around Luna's rig management utilities.
 """
 
-import pymel.core as pm
-
 
 def list_controls(tag: str = ""):
     """List all controls in the current Luna character.

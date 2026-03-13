@@ -28,6 +28,7 @@ Author: Jan Lachauer (janlachauer@googlemail.com)
 Support: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7KFXBVDNNMWHW
 """
 
+import contextlib
 import copy
 import sys
 
@@ -217,13 +218,10 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
             )
             new_collider_points.append(new_collider_point)
 
-        try:
+        with contextlib.suppress(RuntimeError):
             collider_fn.createInPlace(
                 collider_points.length(), polycount, new_collider_points, pcounts, pconnect
             )
-        except RuntimeError:
-            # Can't create offset copy
-            pass
 
         return base_collider_points
 
@@ -541,13 +539,10 @@ class CollisionDeformer(OpenMayaMPx.MPxDeformerNode):
 
         # Restore collider to original position if offset was applied
         if offset_value != 0 and base_collider_points is not None:
-            try:
+            with contextlib.suppress(RuntimeError):
                 collider_fn.createInPlace(
                     collider_points.length(), polycount, base_collider_points, pcounts, pconnect
                 )
-            except RuntimeError:
-                # Can't reset offset copy
-                pass
 
     # accessoryNodeSetup used to initialize the ramp attributes
     def accessoryNodeSetup(self, cmd):  # noqa: N802

@@ -4,8 +4,7 @@ Tests the error dialog functionality for displaying user-friendly error messages
 when operations fail in Maya GUI applications.
 """
 
-import traceback
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -55,8 +54,10 @@ class TestFormatException:
 
     def test_format_exception_custom_exception(self):
         """Test formatting a custom exception class."""
+
         class CustomError(Exception):
             """Custom exception for testing."""
+
             pass
 
         exception = CustomError("Custom error message")
@@ -70,8 +71,8 @@ class TestFormatException:
 class TestGetMayaMainWindow:
     """Test suite for get_maya_main_window function."""
 
-    @patch('mayaLib.guiLib.utils.error_dialog.OpenMayaUI.MQtUtil.mainWindow')
-    @patch('mayaLib.guiLib.utils.error_dialog.wrapInstance')
+    @patch("mayaLib.guiLib.utils.error_dialog.OpenMayaUI.MQtUtil.mainWindow")
+    @patch("mayaLib.guiLib.utils.error_dialog.wrapInstance")
     def test_get_maya_main_window_success(self, mock_wrap, mock_main_window):
         """Test successfully getting Maya main window."""
         # Setup mocks
@@ -87,7 +88,7 @@ class TestGetMayaMainWindow:
         mock_main_window.assert_called_once()
         mock_wrap.assert_called_once()
 
-    @patch('mayaLib.guiLib.utils.error_dialog.OpenMayaUI.MQtUtil.mainWindow')
+    @patch("mayaLib.guiLib.utils.error_dialog.OpenMayaUI.MQtUtil.mainWindow")
     def test_get_maya_main_window_unavailable(self, mock_main_window):
         """Test when Maya main window is unavailable."""
         mock_main_window.return_value = None
@@ -105,7 +106,7 @@ class TestShowErrorDialog:
     @pytest.fixture
     def mock_message_box(self):
         """Create a mock QMessageBox for testing."""
-        with patch('mayaLib.guiLib.utils.error_dialog.QtWidgets.QMessageBox') as mock_box:
+        with patch("mayaLib.guiLib.utils.error_dialog.QtWidgets.QMessageBox") as mock_box:
             mock_instance = MagicMock()
             mock_box.return_value = mock_instance
             mock_box.Critical = 2  # QMessageBox.Critical enum value
@@ -115,7 +116,7 @@ class TestShowErrorDialog:
     @pytest.fixture
     def mock_maya_window(self):
         """Create a mock Maya main window."""
-        with patch('mayaLib.guiLib.utils.error_dialog.get_maya_main_window') as mock_get:
+        with patch("mayaLib.guiLib.utils.error_dialog.get_maya_main_window") as mock_get:
             mock_window = MagicMock()
             mock_get.return_value = mock_window
             yield mock_window
@@ -125,10 +126,7 @@ class TestShowErrorDialog:
         mock_box_class, mock_instance = mock_message_box
         mock_instance.exec_.return_value = 1024  # QMessageBox.Ok
 
-        result = show_error_dialog(
-            title="Test Error",
-            message="Something went wrong"
-        )
+        result = show_error_dialog(title="Test Error", message="Something went wrong")
 
         # Verify dialog was created with Maya window as parent
         mock_box_class.assert_called_once_with(mock_maya_window)
@@ -156,7 +154,7 @@ class TestShowErrorDialog:
         result = show_error_dialog(
             title="Operation Failed",
             message="ValueError: Invalid input",
-            detailed_text=detailed_text
+            detailed_text=detailed_text,
         )
 
         # Verify detailed text was set
@@ -168,11 +166,7 @@ class TestShowErrorDialog:
         mock_box_class, mock_instance = mock_message_box
         custom_parent = MagicMock()
 
-        show_error_dialog(
-            title="Error",
-            message="Test message",
-            parent=custom_parent
-        )
+        show_error_dialog(title="Error", message="Test message", parent=custom_parent)
 
         # Verify dialog was created with custom parent (not Maya window)
         mock_box_class.assert_called_once_with(custom_parent)
@@ -181,10 +175,7 @@ class TestShowErrorDialog:
         """Test error dialog with empty title and message."""
         mock_box_class, mock_instance = mock_message_box
 
-        show_error_dialog(
-            title="",
-            message=""
-        )
+        show_error_dialog(title="", message="")
 
         mock_instance.setWindowTitle.assert_called_once_with("")
         mock_instance.setText.assert_called_once_with("")
@@ -197,7 +188,7 @@ class TestShowExceptionDialog:
     @pytest.fixture
     def mock_show_error_dialog(self):
         """Mock the show_error_dialog function."""
-        with patch('mayaLib.guiLib.utils.error_dialog.show_error_dialog') as mock_show:
+        with patch("mayaLib.guiLib.utils.error_dialog.show_error_dialog") as mock_show:
             mock_show.return_value = 1024  # QMessageBox.Ok
             yield mock_show
 
@@ -216,11 +207,11 @@ class TestShowExceptionDialog:
 
         # Get the call arguments
         call_args = mock_show_error_dialog.call_args
-        assert call_args.kwargs['title'] == "Error"
-        assert "ValueError: Invalid parameter" in call_args.kwargs['message']
-        assert call_args.kwargs['detailed_text'] is not None
-        assert "Traceback" in call_args.kwargs['detailed_text']
-        assert call_args.kwargs['parent'] is None
+        assert call_args.kwargs["title"] == "Error"
+        assert "ValueError: Invalid parameter" in call_args.kwargs["message"]
+        assert call_args.kwargs["detailed_text"] is not None
+        assert "Traceback" in call_args.kwargs["detailed_text"]
+        assert call_args.kwargs["parent"] is None
         assert result == 1024
 
     def test_show_exception_dialog_custom_title(self, mock_show_error_dialog):
@@ -233,8 +224,8 @@ class TestShowExceptionDialog:
             show_exception_dialog(e, title="Critical Failure")
 
         call_args = mock_show_error_dialog.call_args
-        assert call_args.kwargs['title'] == "Critical Failure"
-        assert "RuntimeError: Operation failed" in call_args.kwargs['message']
+        assert call_args.kwargs["title"] == "Critical Failure"
+        assert "RuntimeError: Operation failed" in call_args.kwargs["message"]
 
     def test_show_exception_dialog_custom_parent(self, mock_show_error_dialog):
         """Test showing exception dialog with custom parent widget."""
@@ -247,10 +238,11 @@ class TestShowExceptionDialog:
             show_exception_dialog(e, parent=custom_parent)
 
         call_args = mock_show_error_dialog.call_args
-        assert call_args.kwargs['parent'] == custom_parent
+        assert call_args.kwargs["parent"] == custom_parent
 
     def test_show_exception_dialog_traceback_content(self, mock_show_error_dialog):
         """Test that detailed traceback contains relevant information."""
+
         def nested_function():
             raise ValueError("Nested error")
 
@@ -260,7 +252,7 @@ class TestShowExceptionDialog:
             show_exception_dialog(e, title="Nested Function Error")
 
         call_args = mock_show_error_dialog.call_args
-        detailed_text = call_args.kwargs['detailed_text']
+        detailed_text = call_args.kwargs["detailed_text"]
 
         # Verify traceback contains function name and error message
         assert "nested_function" in detailed_text
@@ -278,7 +270,7 @@ class TestShowExceptionDialog:
 
         call_args = mock_show_error_dialog.call_args
         # Should show "Exception: " (with empty message after colon)
-        assert call_args.kwargs['message'] == "Exception: "
+        assert call_args.kwargs["message"] == "Exception: "
 
 
 @pytest.mark.integration
@@ -288,19 +280,17 @@ class TestFunctionUIErrorHandling:
     @pytest.fixture
     def mock_show_exception_dialog(self):
         """Mock the show_exception_dialog function."""
-        with patch('mayaLib.guiLib.base.base_ui.show_exception_dialog') as mock_show:
+        with patch("mayaLib.guiLib.base.base_ui.show_exception_dialog") as mock_show:
             yield mock_show
 
     @pytest.fixture
     def mock_pymel(self):
         """Mock PyMEL selection commands."""
-        with patch('mayaLib.guiLib.base.base_ui.pm') as mock_pm:
+        with patch("mayaLib.guiLib.base.base_ui.pm") as mock_pm:
             mock_pm.ls.return_value = []
             yield mock_pm
 
-    def test_function_ui_error_handling(
-        self, qtbot, mock_show_exception_dialog, mock_pymel
-    ):
+    def test_function_ui_error_handling(self, qtbot, mock_show_exception_dialog, mock_pymel):
         """Test that FunctionUI displays error dialog when function raises exception."""
         # Import FunctionUI after mocking dependencies
         from mayaLib.guiLib.base.base_ui import FunctionUI
@@ -315,9 +305,9 @@ class TestFunctionUIErrorHandling:
 
         # Mock the lineedits to return test values
         for lineedit in ui.lineedit_list:
-            if hasattr(lineedit, 'text'):
+            if hasattr(lineedit, "text"):
                 lineedit.text = MagicMock(return_value="test_value")
-            elif hasattr(lineedit, 'isChecked'):
+            elif hasattr(lineedit, "isChecked"):
                 lineedit.isChecked = MagicMock(return_value=True)
 
         # Execute the function (should trigger error handling)
@@ -335,11 +325,9 @@ class TestFunctionUIErrorHandling:
         assert str(exception_arg) == "Test error message"
 
         # Verify title matches function name
-        assert call_args.kwargs['title'] == 'failing_function'
+        assert call_args.kwargs["title"] == "failing_function"
 
-    def test_function_ui_successful_execution(
-        self, qtbot, mock_show_exception_dialog, mock_pymel
-    ):
+    def test_function_ui_successful_execution(self, qtbot, mock_show_exception_dialog, mock_pymel):
         """Test that FunctionUI doesn't show error dialog when function succeeds."""
         from mayaLib.guiLib.base.base_ui import FunctionUI
 
@@ -356,9 +344,9 @@ class TestFunctionUIErrorHandling:
 
         # Mock the lineedits to return test values
         for i, lineedit in enumerate(ui.lineedit_list):
-            if hasattr(lineedit, 'text'):
+            if hasattr(lineedit, "text"):
                 lineedit.text = MagicMock(return_value=f"value_{i}")
-            elif hasattr(lineedit, 'isChecked'):
+            elif hasattr(lineedit, "isChecked"):
                 lineedit.isChecked = MagicMock(return_value=False)
 
         # Execute the function (should succeed without error dialog)
@@ -370,9 +358,7 @@ class TestFunctionUIErrorHandling:
         # Verify the function was actually called
         assert len(success_calls) == 1
 
-    def test_function_ui_type_error_handling(
-        self, qtbot, mock_show_exception_dialog, mock_pymel
-    ):
+    def test_function_ui_type_error_handling(self, qtbot, mock_show_exception_dialog, mock_pymel):
         """Test that FunctionUI handles TypeError exceptions correctly."""
         from mayaLib.guiLib.base.base_ui import FunctionUI
 
@@ -386,7 +372,7 @@ class TestFunctionUIErrorHandling:
 
         # Mock the lineedits to return test values
         for lineedit in ui.lineedit_list:
-            if hasattr(lineedit, 'text'):
+            if hasattr(lineedit, "text"):
                 lineedit.text = MagicMock(return_value="not_a_number")
 
         # Execute the function (should trigger error handling)

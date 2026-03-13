@@ -44,8 +44,7 @@ def create_biped_leg(
         ... )
 
     """
-    from luna_rig.components import BipedLegComponent
-    from luna_rig.components import Character
+    from luna_rig.components import BipedLegComponent, Character
 
     # Get character if exists
     character = None

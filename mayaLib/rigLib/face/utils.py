@@ -103,12 +103,7 @@ def get_license_string():
         + pr_check_test_6[5]
     )
     word_c = str(3)
-    word_d = (
-        pr_check_test_3[8]
-        + pr_check_test_3[9]
-        + pr_check_test_1[0]
-        + pr_check_test_5[5]
-    )
+    word_d = pr_check_test_3[8] + pr_check_test_3[9] + pr_check_test_1[0] + pr_check_test_5[5]
     word_e = (
         pr_check_test_8[5]
         + pr_check_test_6[3]
@@ -147,12 +142,7 @@ def get_license_string():
         + pr_check_test_8[1]
         + pr_check_test_4[0]
     )
-    word_k = (
-        pr_check_test_2[19]
-        + pr_check_test_3[19]
-        + pr_check_test_2[19]
-        + pr_check_test_7[4]
-    )
+    word_k = pr_check_test_2[19] + pr_check_test_3[19] + pr_check_test_2[19] + pr_check_test_7[4]
     word_l = (
         pr_check_test_1[0]
         + pr_check_test_1[4]
@@ -171,12 +161,7 @@ def get_license_string():
         + pr_check_test_10[15]
         + pr_check_test_6[5]
     )
-    word_n = (
-        pr_check_test_9[4]
-        + pr_check_test_3[0]
-        + pr_check_test_3[9]
-        + pr_check_test_2[7]
-    )
+    word_n = pr_check_test_9[4] + pr_check_test_3[0] + pr_check_test_3[9] + pr_check_test_2[7]
     word_space = pr_check_test_2[28]
 
     result = (
@@ -251,12 +236,7 @@ def get_short_license_string():
         + "QtWidgets.QPushButton"[5]
     )
     word_c = str(3)
-    word_o = (
-        pr_check_test_10[12]
-        + pr_check_test_10[13]
-        + pr_check_test_9[7]
-        + pr_check_test_4[1]
-    )
+    word_o = pr_check_test_10[12] + pr_check_test_10[13] + pr_check_test_9[7] + pr_check_test_4[1]
     word_space = pr_check_test_2[28]
 
     result = (
@@ -276,6 +256,7 @@ def get_short_license_string():
 # Legacy function names for backward compatibility
 # These aliases maintain compatibility with existing code that uses
 # the original function names from facial3.py
+
 
 def findMainName():  # noqa: N802 - Legacy name for backward compatibility
     """Generate obfuscated license string for UI.

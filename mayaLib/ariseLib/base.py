@@ -18,9 +18,7 @@ class BaseRig:
     and managing rig components like HumanIK and facial rigs.
     """
 
-    def __init__(
-        self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False
-    ):
+    def __init__(self, character_name="Male_Human", do_human_ik=True, auto_t_pose=False):
         """Initialize the BaseRig class with character settings.
 
         Args:
@@ -73,12 +71,8 @@ class BaseRig:
             pm.setAttr("geo.overrideEnabled", 1)
             # Connect the geometry_display attribute to the overrideDisplayType
             # attribute of the geometry group if it's not already connected.
-            if not pm.isConnected(
-                "Base_main_ctrl.geometry_display", "geo.overrideDisplayType"
-            ):
-                pm.connectAttr(
-                    "Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True
-                )
+            if not pm.isConnected("Base_main_ctrl.geometry_display", "geo.overrideDisplayType"):
+                pm.connectAttr("Base_main_ctrl.geometry_display", "geo.overrideDisplayType", f=True)
 
     def connect_purpose(self, source, destination_list=None):
         """Connect purpose attribute to visibility of destination objects.
@@ -191,15 +185,9 @@ class BaseRig:
         ctrl_set = pm.sets(pm.ls(body_ctrl_set, face_ctrl_set), n="ctrls_set")
 
         # Meshes
-        render_geo_list = (
-            list_objects_under_group("render") if pm.objExists("render") else []
-        )
-        proxy_geo_list = (
-            list_objects_under_group("proxy") if pm.objExists("proxy") else []
-        )
-        guide_geo_list = (
-            list_objects_under_group("guide") if pm.objExists("guide") else []
-        )
+        render_geo_list = list_objects_under_group("render") if pm.objExists("render") else []
+        proxy_geo_list = list_objects_under_group("proxy") if pm.objExists("proxy") else []
+        guide_geo_list = list_objects_under_group("guide") if pm.objExists("guide") else []
 
         model_sets = []
         if render_geo_list:
@@ -220,9 +208,7 @@ class BaseRig:
                 model_sets.append(geometry_model_set)
 
         model_set = (
-            pm.sets(model_sets, n="model_set")
-            if model_sets
-            else pm.sets(empty=True, n="model_set")
+            pm.sets(model_sets, n="model_set") if model_sets else pm.sets(empty=True, n="model_set")
         )
 
         # Joints
@@ -354,28 +340,18 @@ class BaseRig:
             mult_matrix = pm.shadingNode(
                 "multMatrix", asUtility=True, name="AimEyeFollowMMStatic_M"
             )
-            pm.connectAttr(
-                "M_Head_head_FS_jnt.worldMatrix", mult_matrix.matrixIn[1], f=True
-            )
-            pm.connectAttr(
-                mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True
-            )
+            pm.connectAttr("M_Head_head_FS_jnt.worldMatrix", mult_matrix.matrixIn[1], f=True)
+            pm.connectAttr(mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True)
 
             # Rebuild eye-aim follow constraint and setRange blend
             if pm.objExists("eyeAimFollowSetRange"):
                 pm.delete("eyeAimFollowSetRange")
             if pm.objExists("AimEyeFollow_M_parentConstraint1"):
                 pm.delete("AimEyeFollow_M_parentConstraint1")
-            pm.parentConstraint(
-                "EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True
-            )
+            pm.parentConstraint("EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True)
             pm.shadingNode("setRange", asUtility=True, name="eyeAimFollowSetRange")
-            pm.connectAttr(
-                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True
-            )
-            pm.connectAttr(
-                "AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True
-            )
+            pm.connectAttr("AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True)
+            pm.connectAttr("AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True)
             pm.connectAttr(
                 "eyeAimFollowSetRange.outValue.outValueX",
                 "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW1",
@@ -448,9 +424,7 @@ class BaseRig:
                 multiply_translate_node_r.input1,
                 f=True,
             )
-            pm.connectAttr(
-                multiply_translate_node_r.output, "AimEye_R.translate", f=True
-            )
+            pm.connectAttr(multiply_translate_node_r.output, "AimEye_R.translate", f=True)
             pm.setAttr(multiply_translate_node_r.input2X, (1 / scale_value) * -1)
             pm.setAttr(multiply_translate_node_r.input2Y, (1 / scale_value))
             pm.setAttr(multiply_translate_node_r.input2Z, (1 / scale_value))
@@ -460,9 +434,7 @@ class BaseRig:
                 multiply_translate_node_m.input1,
                 f=True,
             )
-            pm.connectAttr(
-                multiply_translate_node_m.output, "AimEye_M.translate", f=True
-            )
+            pm.connectAttr(multiply_translate_node_m.output, "AimEye_M.translate", f=True)
             pm.setAttr(multiply_translate_node_m.input2X, (1 / scale_value))
             pm.setAttr(multiply_translate_node_m.input2Y, (1 / scale_value))
             pm.setAttr(multiply_translate_node_m.input2Z, (1 / scale_value))
@@ -472,9 +444,7 @@ class BaseRig:
                 multiply_translate_node_l.input1,
                 f=True,
             )
-            pm.connectAttr(
-                multiply_translate_node_l.output, "AimEye_L.translate", f=True
-            )
+            pm.connectAttr(multiply_translate_node_l.output, "AimEye_L.translate", f=True)
             pm.setAttr(multiply_translate_node_l.input2X, (1 / scale_value))
             pm.setAttr(multiply_translate_node_l.input2Y, (1 / scale_value))
             pm.setAttr(multiply_translate_node_l.input2Z, (1 / scale_value))
@@ -503,12 +473,8 @@ class BaseRig:
             pm.hide(hide_ctrl_list)
 
             # Disconnect and reset scale to 1 first, otherwise the rig collapses
-            if pm.isConnected(
-                "Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"
-            ):
-                pm.disconnectAttr(
-                    "Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"
-                )
+            if pm.isConnected("Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"):
+                pm.disconnectAttr("Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1")
                 pm.setAttr("MainAndHeadScaleMultiplyDivide.input1X", 1)
                 pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Y", 1)
                 pm.setAttr("MainAndHeadScaleMultiplyDivide.input1Z", 1)

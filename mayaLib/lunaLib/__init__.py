@@ -57,10 +57,8 @@ def _setup_luna_integration():
     def _patched_module_info(*args, **kwargs):
         """Patched moduleInfo that returns Luna path for luna module queries."""
         module_name = kwargs.get("moduleName") or (args[0] if args else None)
-        if module_name == "luna":
-            # Check if path (p) flag is requested
-            if kwargs.get("p") or kwargs.get("path"):
-                return LUNA_ROOT_PATH
+        if module_name == "luna" and (kwargs.get("p") or kwargs.get("path")):
+            return LUNA_ROOT_PATH
         # For all other cases, call the original function
         return _original_module_info(*args, **kwargs)
 
@@ -94,9 +92,7 @@ def _create_directories_module(pm):
     directories_module.EMPTY_SCENES_PATH = os.path.join(
         directories_module.TEMPLATES_PATH, "emptyScenes"
     )
-    directories_module.ICONS_PATH = os.path.join(
-        LUNA_ROOT_PATH, "res", "images", "icons"
-    )
+    directories_module.ICONS_PATH = os.path.join(LUNA_ROOT_PATH, "res", "images", "icons")
     directories_module.FALLBACK_IMG_PATH = os.path.join(
         LUNA_ROOT_PATH, "res", "images", "fallbacks"
     )
@@ -106,9 +102,7 @@ def _create_directories_module(pm):
     directories_module.DEFAULT_CONFIG_PATH = os.path.join(
         LUNA_ROOT_PATH, "configs", "default_config.json"
     )
-    directories_module.CONFIG_PATH = os.path.join(
-        LUNA_ROOT_PATH, "configs", "config.json"
-    )
+    directories_module.CONFIG_PATH = os.path.join(LUNA_ROOT_PATH, "configs", "config.json")
     directories_module.EXTERNAL_TOOLS_REGISTER = os.path.join(
         LUNA_ROOT_PATH, "configs", "external_tools.json"
     )
@@ -141,6 +135,7 @@ def _install_pyside2_shim():
     """
     try:
         import PySide2  # noqa: F401
+
         return  # PySide2 genuinely available, no shim needed
     except ImportError:
         pass
@@ -155,8 +150,13 @@ def _install_pyside2_shim():
 
     # Map each PySide2 submodule Luna uses to its PySide6 equivalent
     _submodules = [
-        "QtCore", "QtGui", "QtWidgets", "QtNetwork", "QtSvg",
-        "QtUiTools", "QtXml",
+        "QtCore",
+        "QtGui",
+        "QtWidgets",
+        "QtNetwork",
+        "QtSvg",
+        "QtUiTools",
+        "QtXml",
     ]
     for submod in _submodules:
         pyside6_submod = getattr(PySide6, submod, None)
@@ -170,6 +170,7 @@ def _install_pyside2_shim():
     # Map shiboken2 → shiboken6
     try:
         import shiboken6
+
         sys.modules["shiboken2"] = shiboken6
     except ImportError:
         pass
@@ -212,8 +213,8 @@ def _initialize_luna():
         # Now we can safely import Luna - moduleInfo is patched and
         # directories module is pre-created in sys.modules
         import luna as _luna
-        import luna_rig as _luna_rig
         import luna_builder as _luna_builder
+        import luna_rig as _luna_rig
 
         luna = _luna
         luna_rig = _luna_rig
@@ -221,9 +222,7 @@ def _initialize_luna():
         _luna_available = True
 
         # Import submodules
-        from . import components
-        from . import functions
-        from . import tools
+        from . import components, functions, tools
 
         return True
 
@@ -281,6 +280,9 @@ def deferred_autostart():
 # Auto-start Luna on Maya startup (deferred to ensure PyMEL is ready)
 try:
     import maya.cmds as cmds
-    cmds.evalDeferred("from mayaLib.lunaLib import deferred_autostart; deferred_autostart()", lowestPriority=True)
+
+    cmds.evalDeferred(
+        "from mayaLib.lunaLib import deferred_autostart; deferred_autostart()", lowestPriority=True
+    )
 except ImportError:
     pass  # Not in Maya environment

@@ -1,3 +1,5 @@
+"""Vector math utilities using Maya node networks (PyMEL)."""
+
 import pymel.core as pm
 
 
@@ -15,9 +17,7 @@ def add(v1, v2, output, name=""):
     Returns:
         The plusMinusAverage node.
     """
-    node = pm.shadingNode(
-        "plusMinusAverage", asUtility=True, n=f"{name}_add_plusMinusAverage"
-    )
+    node = pm.shadingNode("plusMinusAverage", asUtility=True, n=f"{name}_add_plusMinusAverage")
     pm.setAttr(node.operation, 1)  # Sum
 
     pm.connectAttr(v1.translate, node.input3D[0], f=True)
@@ -41,9 +41,7 @@ def subtract(v1, v2, output, name=""):
     Returns:
         The plusMinusAverage node.
     """
-    node = pm.shadingNode(
-        "plusMinusAverage", asUtility=True, n=f"{name}_sub_plusMinusAverage"
-    )
+    node = pm.shadingNode("plusMinusAverage", asUtility=True, n=f"{name}_sub_plusMinusAverage")
     pm.setAttr(node.operation, 2)  # Subtract
 
     pm.connectAttr(v1.translate, node.input3D[0], f=True)
@@ -67,9 +65,7 @@ def multiply(v1, v2, output, name=""):
     Returns:
         The multiplyDivide node.
     """
-    node = pm.shadingNode(
-        "multiplyDivide", asUtility=True, n=f"{name}_mul_multiplyDivide"
-    )
+    node = pm.shadingNode("multiplyDivide", asUtility=True, n=f"{name}_mul_multiplyDivide")
     pm.setAttr(node.operation, 1)  # Multiply
 
     pm.connectAttr(v1.translate, node.input1, f=True)
@@ -135,9 +131,7 @@ def length(v1, name=""):
     Returns:
         The distanceBetween node. Access the scalar result via node.distance.
     """
-    node = pm.shadingNode(
-        "distanceBetween", asUtility=True, n=f"{name}_len_distanceBetween"
-    )
+    node = pm.shadingNode("distanceBetween", asUtility=True, n=f"{name}_len_distanceBetween")
 
     # point1 defaults to (0,0,0) — distance from origin = vector length
     pm.connectAttr(v1.translate, node.point2, f=True)
@@ -159,9 +153,7 @@ def normalize(v1, output, name=""):
     Returns:
         The vectorProduct node.
     """
-    node = pm.shadingNode(
-        "vectorProduct", asUtility=True, n=f"{name}_norm_vectorProduct"
-    )
+    node = pm.shadingNode("vectorProduct", asUtility=True, n=f"{name}_norm_vectorProduct")
     pm.setAttr(node.operation, 0)  # No Operation (pass-through)
     pm.setAttr(node.normalizeOutput, True)
 
@@ -184,9 +176,7 @@ def dot_product(v1, v2, name=""):
     Returns:
         The vectorProduct node. Access the scalar result via node.outputX.
     """
-    node = pm.shadingNode(
-        "vectorProduct", asUtility=True, n=f"{name}_dot_vectorProduct"
-    )
+    node = pm.shadingNode("vectorProduct", asUtility=True, n=f"{name}_dot_vectorProduct")
     pm.setAttr(node.operation, 1)  # Dot Product
 
     pm.connectAttr(v1.translate, node.input1, f=True)
@@ -209,9 +199,7 @@ def cross_product(v1, v2, output, name=""):
     Returns:
         The vectorProduct node.
     """
-    node = pm.shadingNode(
-        "vectorProduct", asUtility=True, n=f"{name}_cross_vectorProduct"
-    )
+    node = pm.shadingNode("vectorProduct", asUtility=True, n=f"{name}_cross_vectorProduct")
     pm.setAttr(node.operation, 2)  # Cross Product
 
     pm.connectAttr(v1.translate, node.input1, f=True)

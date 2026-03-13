@@ -867,13 +867,12 @@ def initiate(edges):
     for _count in range(m_it_edge.count()):
         while not m_it_edge.isDone():
             # Check if the edge is connected to the current edge
-            if m_it_edge.connectedToEdge(current_edge):
-                if m_it_edge.index() not in checked_edge:
-                    # Add the edge to the ordered list and mark it as checked
-                    ordered_list.append(m_it_edge.index())
-                    current_edge = m_it_edge.index()
-                    checked_edge.append(int(m_it_edge.index()))
-                    break
+            if m_it_edge.connectedToEdge(current_edge) and m_it_edge.index() not in checked_edge:
+                # Add the edge to the ordered list and mark it as checked
+                ordered_list.append(m_it_edge.index())
+                current_edge = m_it_edge.index()
+                checked_edge.append(int(m_it_edge.index()))
+                break
             m_it_edge.next()
         m_it_edge.reset()
     return ordered_list

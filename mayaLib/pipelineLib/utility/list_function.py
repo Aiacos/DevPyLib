@@ -115,11 +115,7 @@ class StructureManager:
             split = item.split(".")
             tmp_dict = {}
             for key in reversed(split):
-                tmp_dict = (
-                    {key: item}
-                    if key == split[-1]
-                    else self.incapsulate_dict(tmp_dict, key)
-                )
+                tmp_dict = {key: item} if key == split[-1] else self.incapsulate_dict(tmp_dict, key)
 
             self.dict_merge(self.struct_lib, tmp_dict)
 

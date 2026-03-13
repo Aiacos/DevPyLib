@@ -99,9 +99,7 @@ class FunctionUI(QtWidgets.QWidget):
                 else:
                     lineedit = QtWidgets.QLineEdit("")
                     fill_button = QtWidgets.QPushButton(">")
-                    placeholder = self.generate_placeholder_text(
-                        arg[0], param_annotation, None
-                    )
+                    placeholder = self.generate_placeholder_text(arg[0], param_annotation, None)
                     lineedit.setPlaceholderText(placeholder)
                     self._apply_validator(lineedit, param_annotation)
 
@@ -211,7 +209,10 @@ class FunctionUI(QtWidgets.QWidget):
 
         # Rigging-specific reference parameters
         if param_lower.endswith("_to") or param_lower in [
-            "parent", "target", "driver", "driven",
+            "parent",
+            "target",
+            "driver",
+            "driven",
         ]:
             return "Select reference object"
 
@@ -259,17 +260,13 @@ class FunctionUI(QtWidgets.QWidget):
         # Numeric parameters
         elif "scale" in param_lower:
             return "Enter scale value (e.g., 1.0)"
-        elif any(
-            keyword in param_lower for keyword in ["count", "number", "num", "index", "idx"]
-        ):
+        elif any(keyword in param_lower for keyword in ["count", "number", "num", "index", "idx"]):
             return "Enter integer"
         elif any(keyword in param_lower for keyword in ["value", "val", "amount"]):
             return "Enter numeric value"
         elif any(keyword in param_lower for keyword in ["factor", "weight", "blend"]):
             return "Enter value (0.0-1.0)"
-        elif any(
-            keyword in param_lower for keyword in ["radius", "distance", "dist", "length"]
-        ):
+        elif any(keyword in param_lower for keyword in ["radius", "distance", "dist", "length"]):
             return "Enter distance value"
         elif any(keyword in param_lower for keyword in ["angle", "rotation", "rot"]):
             return "Enter angle (degrees)"

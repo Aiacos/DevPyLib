@@ -95,9 +95,7 @@ def connect_via_matrix(source, target, maintain_offset=True) -> None:
     node_prefix = f"{source}_{target}".replace("|", "_")
 
     # Create matrix multiplication node
-    mult_matrix = pm.shadingNode(
-        "multMatrix", asUtility=True, name=f"{node_prefix}_multMatrix"
-    )
+    mult_matrix = pm.shadingNode("multMatrix", asUtility=True, name=f"{node_prefix}_multMatrix")
 
     # Create decompose matrix node
     decompose = pm.shadingNode(
@@ -119,15 +117,11 @@ def connect_via_matrix(source, target, maintain_offset=True) -> None:
         # Connect: offset * source.worldMatrix * target.parentInverseMatrix
         pm.connectAttr(f"{offset_node}.outMatrix", f"{mult_matrix}.matrixIn[0]")
         pm.connectAttr(f"{source}.worldMatrix[0]", f"{mult_matrix}.matrixIn[1]")
-        pm.connectAttr(
-            f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[2]"
-        )
+        pm.connectAttr(f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[2]")
     else:
         # Direct connection: source.worldMatrix * target.parentInverseMatrix
         pm.connectAttr(f"{source}.worldMatrix[0]", f"{mult_matrix}.matrixIn[0]")
-        pm.connectAttr(
-            f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[1]"
-        )
+        pm.connectAttr(f"{target}.parentInverseMatrix[0]", f"{mult_matrix}.matrixIn[1]")
 
     # Connect mult matrix output to decompose
     pm.connectAttr(f"{mult_matrix}.matrixSum", f"{decompose}.inputMatrix")

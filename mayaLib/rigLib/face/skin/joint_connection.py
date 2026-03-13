@@ -187,14 +187,10 @@ def attach_bind_joints():
     import pymel.all as pm
 
     all_joints = pm.ls(type=pm.nt.Joint)
-    bind_joints = [
-        joint for joint in all_joints if joint.hasAttr(CONNECTION_ATTR_NAME)
-    ]
+    bind_joints = [joint for joint in all_joints if joint.hasAttr(CONNECTION_ATTR_NAME)]
 
     if not bind_joints:
-        raise RuntimeError(
-            "No joints found to re-attach rig! Detach bind joints first!"
-        )
+        raise RuntimeError("No joints found to re-attach rig! Detach bind joints first!")
 
     for joint in bind_joints:
         connection_data = decode_data_from_attr(joint, CONNECTION_ATTR_NAME)

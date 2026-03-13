@@ -1,3 +1,5 @@
+"""Vector math utilities using Maya API (OpenMaya 2.0)."""
+
 import math
 
 import maya.api.OpenMaya as om2
@@ -7,48 +9,40 @@ tmp = om2.MVector()
 
 
 def add(v1, v2):
-    """
+    """Add two vectors.
 
     Args:
-        v1:
-        v2:
-        output:
-        name:
+        v1: First vector.
+        v2: Second vector.
 
     Returns:
-
+        The sum of the two vectors.
     """
-
     return v1 + v2
 
 
 def subtract(v1, v2):
-    """
+    """Subtract two vectors.
 
     Args:
-        v1:
-        v2:
-        output:
-        name:
+        v1: First vector (minuend).
+        v2: Second vector (subtrahend).
 
     Returns:
-
+        The difference v1 - v2.
     """
-
     return v1 - v2
 
 
 def multiply(v1, v2):
-    """
+    """Multiply two vectors component-wise.
 
     Args:
-        v1:
-        v2:
-        output:
-        name:
+        v1: First vector.
+        v2: Second vector.
 
     Returns:
-
+        The component-wise product.
     """
     pass
 
@@ -65,7 +59,6 @@ def midpoint(v1, v2, output, scale=0.5):
         output: Transform node to receive the resulting translation.
         scale (float): Blend factor between v1 and v2. 0.0 = v1, 1.0 = v2.
     """
-
     delta = v2 - v1
     envelope = delta * scale
     final = v1 + envelope
@@ -74,85 +67,75 @@ def midpoint(v1, v2, output, scale=0.5):
 
 
 def lenght(v1):
-    """
-    Compute the length of a vector using Maya nodes.
+    """Compute the length of a vector using Maya nodes.
 
     Args:
-        v1:
-        output:
-        name:
+        v1: The input vector.
 
     Returns:
-
+        The length of the vector.
     """
-
     return v1.lenght()
 
 
 def normalize(v1):
-    """
-    Normalize a vector using Maya nodes.
+    """Normalize a vector using Maya nodes.
 
     Args:
-        v1:
-        output:
-        name:
+        v1: The input vector.
 
     Returns:
-
+        The normalized vector.
     """
-
     pass
 
 
 def dot_product(v1, v2):
-    """
-    Compute the dot product of two vectors using Maya nodes.
+    """Compute the dot product of two vectors using Maya nodes.
 
     Args:
-        v1:
-        v2:
-        output:
-        name:
+        v1: First vector.
+        v2: Second vector.
 
     Returns:
-
+        The scalar dot product.
     """
-
     return v1 * v2
 
 
 def cross_product(v1, v2):
-    """
-    Compute the cross product of two vectors using Maya nodes.
+    """Compute the cross product of two vectors using Maya nodes.
 
     Args:
-        v1:
-        v2:
-        output:
-        name:
+        v1: First vector.
+        v2: Second vector.
 
     Returns:
-
+        The cross product vector perpendicular to both inputs.
     """
-
     return v1 ^ v2
 
 
 def get_angle_between(v1, v2):
-    """
+    """Compute the angle between two vectors in degrees.
 
     Args:
-        v1:
-        v2:
+        v1: First vector.
+        v2: Second vector.
 
     Returns:
-
+        The angle in degrees.
     """
     return math.degrees(v1.angle(v2))
 
 
 def rotate(v1, angle_degree):
+    """Rotate a vector by the given angle.
+
+    Args:
+        v1: The input vector.
+        angle_degree: Rotation angle in degrees.
+    """
     # ToDo: Cleanup and add condition to manage bot method based on input provided
     # rotate vector
     radians = om2.MVector(math.radians(90), 0, 0)  # degrees to radians
@@ -164,6 +147,12 @@ def rotate(v1, angle_degree):
 
 
 def get_pole_vector_position():
+    """Compute and place a pole vector control for an IK chain.
+
+    Demonstrates multiple approaches for computing a stable pole vector
+    position from arm, elbow, and wrist joints, from simple midpoint
+    projection to a bulletproof cross-product fallback method.
+    """
     # ToDo: usar euno switch per selezionare la soluzione da usare (default l'ultima la piu robusta)
     # Get world space positions of the three joints
     arm_pos = om2.MVector(cmds.xform("arm", q=True, rp=True, ws=True))
@@ -395,10 +384,7 @@ def get_pole_vector_position():
     perp = elbow_pos - P
 
     # If the arm is almost straight, fallback to cross product
-    if perp.length() < 0.001:
-        direction = (AB ^ AC).normal()  # cross product
-    else:
-        direction = perp.normal()
+    direction = (AB ^ AC).normal() if perp.length() < 0.001 else perp.normal()
 
     # Stable pole vector distance
     dist = (AB.length() + BC.length()) * 0.5

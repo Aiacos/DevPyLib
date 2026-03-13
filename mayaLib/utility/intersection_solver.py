@@ -55,8 +55,7 @@ def create_pfx_toon(arg=None):
     else:
         pfx_toon_node = "pfxToonCollisionDetectShape"
 
-    i = 0
-    for each in target:
+    for i, each in enumerate(target):
         mc.connectAttr(
             each + ".outMesh", pfx_toon_node + ".inputSurface[" + str(i) + "].surface", f=True
         )
@@ -65,7 +64,6 @@ def create_pfx_toon(arg=None):
             pfx_toon_node + ".inputSurface[" + str(i) + "].inputWorldMatrix",
             f=True,
         )
-        i += 1
 
 
 def remove_pfx_toon(arg=None):
@@ -259,7 +257,7 @@ def apply_collision(none):
         mc.GrowPolygonSelectionRegion()
         verts = mc.ls(sl=True, fl=True)
         verts_move_dist = []
-        for i in range(0, len(verts)):
+        for _i in range(0, len(verts)):
             verts_move_dist.append(gap_distance_float)
         mc.moveVertexAlongDirection(verts, n=(verts_move_dist))
 

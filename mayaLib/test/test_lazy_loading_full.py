@@ -11,7 +11,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 # ============================================================================
 # Fixtures
 # ============================================================================
@@ -28,9 +27,7 @@ def reset_modules():
         None
     """
     # Store modules to remove
-    modules_to_remove = [
-        key for key in sys.modules if key.startswith("mayaLib")
-    ]
+    modules_to_remove = [key for key in sys.modules if key.startswith("mayaLib")]
 
     yield
 
@@ -396,8 +393,7 @@ class TestMultipleImportPatterns:
         sys.modules.pop("mayaLib.fluidLib", None)
 
         # Sequential imports
-        from mayaLib import rigLib
-        from mayaLib import fluidLib
+        from mayaLib import fluidLib, rigLib
 
         assert rigLib is not None
         assert fluidLib is not None
@@ -411,7 +407,7 @@ class TestMultipleImportPatterns:
         sys.modules.pop("mayaLib.pipelineLib", None)
 
         # Single line import
-        from mayaLib import utility, pipelineLib
+        from mayaLib import pipelineLib, utility
 
         assert utility is not None
         assert pipelineLib is not None
@@ -445,7 +441,7 @@ class TestMultipleImportPatterns:
         import mayaLib
 
         # Dynamic import using getattr
-        utility = getattr(mayaLib, "utility")
+        utility = mayaLib.utility
 
         assert utility is not None
         assert "mayaLib.utility" in sys.modules
@@ -558,10 +554,9 @@ class TestCrossModuleDependencies:
         sys.modules.pop("mayaLib.utility", None)
 
         # First import
-        from mayaLib import utility as util1
-
         # Second import using different pattern
         import mayaLib.utility as util2
+        from mayaLib import utility as util1
 
         # Should be the same module
         assert util1 is util2
@@ -840,7 +835,7 @@ class TestBackwardsCompatibilityIntegration:
         assert hasattr(mayaLib, "utility")
 
         # getattr should work
-        util = getattr(mayaLib, "utility")
+        util = mayaLib.utility
         assert util is not None
 
         # Multiple accesses should return same object

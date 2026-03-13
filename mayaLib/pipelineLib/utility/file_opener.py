@@ -102,9 +102,7 @@ class SecureFileOpener:
         )
 
         self.allowed_directories = (
-            [Path(d).resolve() for d in allowed_directories]
-            if allowed_directories
-            else None
+            [Path(d).resolve() for d in allowed_directories] if allowed_directories else None
         )
 
         self.timeout = timeout
@@ -147,13 +145,10 @@ class SecureFileOpener:
         # Validate directory if restrictions are set
         if self.allowed_directories:
             is_allowed = any(
-                self._is_subpath(path, allowed_dir)
-                for allowed_dir in self.allowed_directories
+                self._is_subpath(path, allowed_dir) for allowed_dir in self.allowed_directories
             )
             if not is_allowed:
-                raise PathValidationError(
-                    f"File is not in allowed directories: {path}"
-                )
+                raise PathValidationError(f"File is not in allowed directories: {path}")
 
         return path
 

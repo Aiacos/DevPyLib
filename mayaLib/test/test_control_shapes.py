@@ -44,7 +44,6 @@ if "pymel.core" not in sys.modules:
 
 from mayaLib.rigLib.utils import ctrl_shape
 
-
 # ============================================================================
 # Test Data
 # ============================================================================
@@ -228,9 +227,7 @@ class TestControlShapeFunctionSignatures:
         shape_func = getattr(ctrl_shape, shape_func_name)
 
         assert shape_func.__doc__ is not None, f"{shape_func_name} missing docstring"
-        assert len(shape_func.__doc__.strip()) > 0, (
-            f"{shape_func_name} has empty docstring"
-        )
+        assert len(shape_func.__doc__.strip()) > 0, f"{shape_func_name} has empty docstring"
 
 
 # ============================================================================
@@ -316,7 +313,7 @@ class TestControlClassIntegration:
                     # Create control with shape type
                     # Note: Control class initialization will use the mocked functions
                     try:
-                        ctrl = Control(prefix="test", shape=shape_type)
+                        Control(prefix="test", shape=shape_type)
                         # If we get here, the shape type is recognized
                         assert True
                     except AttributeError:
@@ -443,9 +440,7 @@ class TestSummary:
     def test_shape_count_matches_spec(self):
         """Test that shape count matches specification."""
         # Spec requires: 8 existing + 5 new = 13 total
-        assert len(SHAPE_FUNCTIONS) == 13, (
-            f"Expected 13 shapes, found {len(SHAPE_FUNCTIONS)}"
-        )
+        assert len(SHAPE_FUNCTIONS) == 13, f"Expected 13 shapes, found {len(SHAPE_FUNCTIONS)}"
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ import traceback
 from importlib import import_module
 
 # Define submodules for lazy loading
-_SUBMODULES = ['blenderLib', 'houdiniLib', 'mayaLib', 'prismLib']
+_SUBMODULES = ["blenderLib", "houdiniLib", "mayaLib", "prismLib"]
 
 
 def __getattr__(name):

@@ -17,7 +17,6 @@ Test scenarios:
 
 import sys
 from pathlib import Path
-from typing import List, Tuple
 from unittest.mock import MagicMock
 
 # Add parent directories to path for imports
@@ -40,7 +39,7 @@ sys.modules["pymel.core"] = MagicMock()
 class MockUVDataset:
     """Mock UV dataset for correctness testing."""
 
-    def __init__(self, uv_coords: List[float]):
+    def __init__(self, uv_coords: list[float]):
         """Initialize mock UV dataset.
 
         Args:
@@ -198,9 +197,8 @@ def old_check_uv_in_boundaries(mock_pm: MockPyMelCorrectness, shell: str) -> boo
     for i, uv in enumerate(uv_list):
         u, v = mock_pm.polyEditUV(uv, q=True)
 
-        if i > 0:
-            if not (u > u_min and u < u_max and v > v_min and v < v_max):
-                return False
+        if i > 0 and not (u > u_min and u < u_max and v > v_min and v < v_max):
+            return False
 
         u_max = int(u) + 1
         u_min = int(u)
@@ -240,9 +238,8 @@ def new_check_uv_in_boundaries(mock_pm: MockPyMelCorrectness, shell: str) -> boo
         u = uv_coords[i]
         v = uv_coords[i + 1]
 
-        if i > 0:
-            if not (u > u_min and u < u_max and v > v_min and v < v_max):
-                return False
+        if i > 0 and not (u > u_min and u < u_max and v > v_min and v < v_max):
+            return False
 
         u_max = int(u) + 1
         u_min = int(u)
@@ -253,9 +250,7 @@ def new_check_uv_in_boundaries(mock_pm: MockPyMelCorrectness, shell: str) -> boo
     return True
 
 
-def old_check_uv_boundaries(
-    mock_pm: MockPyMelCorrectness, shell: str
-) -> List[List[int]]:
+def old_check_uv_boundaries(mock_pm: MockPyMelCorrectness, shell: str) -> list[list[int]]:
     """Old implementation: determine UV tile boundaries (per-vertex).
 
     Args:
@@ -289,9 +284,7 @@ def old_check_uv_boundaries(
     return uv_tile_range
 
 
-def new_check_uv_boundaries(
-    mock_pm: MockPyMelCorrectness, shell: str
-) -> List[List[int]]:
+def new_check_uv_boundaries(mock_pm: MockPyMelCorrectness, shell: str) -> list[list[int]]:
     """New implementation: determine UV tile boundaries (batch).
 
     Args:
@@ -329,9 +322,7 @@ def new_check_uv_boundaries(
     return uv_tile_range
 
 
-def old_cut_uv_tile(
-    mock_pm: MockPyMelCorrectness, shell: str, tile: List[int]
-) -> List[str]:
+def old_cut_uv_tile(mock_pm: MockPyMelCorrectness, shell: str, tile: list[int]) -> list[str]:
     """Old implementation: filter UVs within tile boundaries (per-vertex).
 
     Args:
@@ -359,9 +350,7 @@ def old_cut_uv_tile(
     return tmp_buffer
 
 
-def new_cut_uv_tile(
-    mock_pm: MockPyMelCorrectness, shell: str, tile: List[int]
-) -> List[str]:
+def new_cut_uv_tile(mock_pm: MockPyMelCorrectness, shell: str, tile: list[int]) -> list[str]:
     """New implementation: filter UVs within tile boundaries (batch).
 
     Args:
@@ -411,9 +400,7 @@ def test_check_uv_in_boundaries_single_tile():
     old_result = old_check_uv_in_boundaries(mock_pm, shell)
     new_result = new_check_uv_in_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_in_boundaries_multi_tile():
@@ -429,9 +416,7 @@ def test_check_uv_in_boundaries_multi_tile():
     old_result = old_check_uv_in_boundaries(mock_pm, shell)
     new_result = new_check_uv_in_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_in_boundaries_negative():
@@ -446,9 +431,7 @@ def test_check_uv_in_boundaries_negative():
     old_result = old_check_uv_in_boundaries(mock_pm, shell)
     new_result = new_check_uv_in_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_in_boundaries_empty():
@@ -463,9 +446,7 @@ def test_check_uv_in_boundaries_empty():
     old_result = old_check_uv_in_boundaries(mock_pm, shell)
     new_result = new_check_uv_in_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
     assert old_result is True, "Empty UV set should return True"
 
 
@@ -481,9 +462,7 @@ def test_check_uv_in_boundaries_single():
     old_result = old_check_uv_in_boundaries(mock_pm, shell)
     new_result = new_check_uv_in_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_boundaries_single_tile():
@@ -498,9 +477,7 @@ def test_check_uv_boundaries_single_tile():
     old_result = old_check_uv_boundaries(mock_pm, shell)
     new_result = new_check_uv_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_boundaries_multi_tile():
@@ -515,9 +492,7 @@ def test_check_uv_boundaries_multi_tile():
     old_result = old_check_uv_boundaries(mock_pm, shell)
     new_result = new_check_uv_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
     # Should detect 4 different tiles
     assert len(old_result) == 4, f"Expected 4 tiles, got {len(old_result)}"
 
@@ -534,9 +509,7 @@ def test_check_uv_boundaries_negative():
     old_result = old_check_uv_boundaries(mock_pm, shell)
     new_result = new_check_uv_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_check_uv_boundaries_empty():
@@ -551,9 +524,7 @@ def test_check_uv_boundaries_empty():
     old_result = old_check_uv_boundaries(mock_pm, shell)
     new_result = new_check_uv_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
     assert old_result == [], "Empty UV set should return empty list"
 
 
@@ -570,9 +541,7 @@ def test_check_uv_boundaries_tile_boundary():
     old_result = old_check_uv_boundaries(mock_pm, shell)
     new_result = new_check_uv_boundaries(mock_pm, shell)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_cut_uv_tile_single_tile():
@@ -589,9 +558,7 @@ def test_cut_uv_tile_single_tile():
     old_result = old_cut_uv_tile(mock_pm, shell, tile)
     new_result = new_cut_uv_tile(mock_pm, shell, tile)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
 
 
 def test_cut_uv_tile_multi_tile():
@@ -615,13 +582,11 @@ def test_cut_uv_tile_multi_tile():
         old_result = old_cut_uv_tile(mock_pm, shell, tile)
         new_result = new_cut_uv_tile(mock_pm, shell, tile)
 
-        assert (
-            old_result == new_result
-        ), f"Results differ for tile {tile}: old={old_result}, new={new_result}"
+        assert old_result == new_result, (
+            f"Results differ for tile {tile}: old={old_result}, new={new_result}"
+        )
         # Each tile should have exactly 1 UV
-        assert (
-            len(old_result) == 1
-        ), f"Expected 1 UV in tile {tile}, got {len(old_result)}"
+        assert len(old_result) == 1, f"Expected 1 UV in tile {tile}, got {len(old_result)}"
 
 
 def test_cut_uv_tile_empty():
@@ -637,9 +602,7 @@ def test_cut_uv_tile_empty():
     old_result = old_cut_uv_tile(mock_pm, shell, tile)
     new_result = new_cut_uv_tile(mock_pm, shell, tile)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
     assert old_result == [], "Empty UV set should return empty list"
 
 
@@ -657,9 +620,7 @@ def test_cut_uv_tile_no_uvs_in_tile():
     old_result = old_cut_uv_tile(mock_pm, shell, tile)
     new_result = new_cut_uv_tile(mock_pm, shell, tile)
 
-    assert (
-        old_result == new_result
-    ), f"Results differ: old={old_result}, new={new_result}"
+    assert old_result == new_result, f"Results differ: old={old_result}, new={new_result}"
     assert old_result == [], "No UVs in tile should return empty list"
 
 

@@ -65,22 +65,17 @@ def _install_requirements_thread(requirements_dir):
         )
 
         if result.returncode == 0:
-            maya.utils.executeDeferred(
-                lambda: print("All requirements installed successfully!")
-            )
+            maya.utils.executeDeferred(lambda: print("All requirements installed successfully!"))
         else:
             maya.utils.executeDeferred(
                 lambda: print(f"Error installing requirements: {result.stderr}")
             )
 
     except subprocess.TimeoutExpired:
-        maya.utils.executeDeferred(
-            lambda: print("Error: pip install timed out after 5 minutes")
-        )
+        maya.utils.executeDeferred(lambda: print("Error: pip install timed out after 5 minutes"))
     except (OSError, subprocess.SubprocessError) as e:
-        maya.utils.executeDeferred(
-            lambda: print(f"An error occurred during installation: {e}")
-        )
+        err = e
+        maya.utils.executeDeferred(lambda: print(f"An error occurred during installation: {err}"))
 
 
 def install_requirements_async(requirements_dir):

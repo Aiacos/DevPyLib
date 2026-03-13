@@ -11,8 +11,8 @@ Can be run both standalone (with Maya) or with pytest (mocked).
 """
 
 import time
-from typing import Dict, List, Tuple
 from unittest.mock import MagicMock, patch
+
 
 # ANSI color codes for output
 class Colors:
@@ -55,7 +55,7 @@ class MockMesh:
 class MockUVShell:
     """Mock UV shell for testing."""
 
-    def __init__(self, shell_id: int, uv_coords: List[Tuple[float, float]]):
+    def __init__(self, shell_id: int, uv_coords: list[tuple[float, float]]):
         """Initialize mock UV shell.
 
         Args:
@@ -69,7 +69,7 @@ class MockUVShell:
 class MockPyMelIntegration:
     """Mock PyMEL API for integration testing."""
 
-    def __init__(self, mesh: MockMesh, shells: List[MockUVShell]):
+    def __init__(self, mesh: MockMesh, shells: list[MockUVShell]):
         """Initialize mock PyMEL.
 
         Args:
@@ -90,7 +90,7 @@ class MockPyMelIntegration:
         if kwargs.get("fl"):
             result = []
             for shell in self.shells:
-                for i, (u, v) in enumerate(shell.uv_coords):
+                for i, (_u, _v) in enumerate(shell.uv_coords):
                     result.append(f"mesh.map[{shell.shell_id}.{i}]")
             return result
 
@@ -152,7 +152,9 @@ class MockPyMelIntegration:
             return len(self.shells)
         elif "uvsInShell" in kwargs:
             shell_id = kwargs["uvsInShell"]
-            return [f"mesh.map[{shell_id}.{i}]" for i in range(len(self.shells[shell_id].uv_coords))]
+            return [
+                f"mesh.map[{shell_id}.{i}]" for i in range(len(self.shells[shell_id].uv_coords))
+            ]
         elif "uvArea" in kwargs:
             # Return approximate UV area
             return len(self.shells) * 0.5
@@ -199,7 +201,7 @@ class MockPyMelIntegration:
         self.api_call_log.append(("polyMapSewMove", args, kwargs))
 
 
-def generate_test_uv_shells(num_uvs: int) -> List[MockUVShell]:
+def generate_test_uv_shells(num_uvs: int) -> list[MockUVShell]:
     """Generate test UV shells spanning multiple UDIM tiles.
 
     Creates shells that span multiple UV tiles to trigger the recursive
@@ -217,18 +219,15 @@ def generate_test_uv_shells(num_uvs: int) -> List[MockUVShell]:
     uvs_per_shell = num_uvs // 3
 
     # Shell 0: Single tile (1001) - UVs in 0-1 range
-    shell_0_coords = [(0.1 + (i % 10) * 0.08, 0.1 + (i // 10) * 0.08)
-                      for i in range(uvs_per_shell)]
+    shell_0_coords = [(0.1 + (i % 10) * 0.08, 0.1 + (i // 10) * 0.08) for i in range(uvs_per_shell)]
     shells.append(MockUVShell(0, shell_0_coords))
 
     # Shell 1: Spanning 2 tiles (1001 and 1002) - UVs from 0-2 in U
-    shell_1_coords = [(0.0 + (i % 20) * 0.1, 0.2 + (i // 20) * 0.08)
-                      for i in range(uvs_per_shell)]
+    shell_1_coords = [(0.0 + (i % 20) * 0.1, 0.2 + (i // 20) * 0.08) for i in range(uvs_per_shell)]
     shells.append(MockUVShell(1, shell_1_coords))
 
     # Shell 2: Spanning 4 tiles (1001, 1002, 1011, 1012) - UVs from 0-2 in both U and V
-    shell_2_coords = [(0.0 + (i % 20) * 0.1, 0.0 + (i // 20) * 0.1)
-                      for i in range(uvs_per_shell)]
+    shell_2_coords = [(0.0 + (i % 20) * 0.1, 0.0 + (i // 20) * 0.1) for i in range(uvs_per_shell)]
     shells.append(MockUVShell(2, shell_2_coords))
 
     return shells
@@ -253,7 +252,7 @@ def test_autouv_workflow_integration():
     shells = generate_test_uv_shells(num_uvs)
     mesh = MockMesh("test_mesh_pCube1", num_uvs)
 
-    print(f"Test Configuration:")
+    print("Test Configuration:")
     print(f"  - Total UVs: {num_uvs:,}")
     print(f"  - UV Shells: {len(shells)}")
     print(f"  - Shell 0: {len(shells[0].uv_coords)} UVs (single tile: 1001)")
@@ -268,9 +267,10 @@ def test_autouv_workflow_integration():
     mock_mel_eval = MagicMock()
 
     # Import and patch AutoUV
-    with patch("mayaLib.modelLib.base.uv.pm", mock_pm), \
-         patch("mayaLib.modelLib.base.uv.mel.eval", mock_mel_eval):
-
+    with (
+        patch("mayaLib.modelLib.base.uv.pm", mock_pm),
+        patch("mayaLib.modelLib.base.uv.mel.eval", mock_mel_eval),
+    ):
         from mayaLib.modelLib.base.uv import AutoUV
 
         print(f"{Colors.OKCYAN}Running AutoUV workflow...{Colors.ENDC}\n")
@@ -279,14 +279,14 @@ def test_autouv_workflow_integration():
         try:
             # Run AutoUV with all optimizations enabled
             # This will trigger check_uv_in_boundaries, check_uv_boundaries, cut_uv_tile
-            auto_uv = AutoUV(
+            AutoUV(
                 geo_list=[mesh],
                 map_res=2048,
                 texel_density=16.0,
                 auto_seam_angle=0,
                 auto_project=True,
                 auto_seam=True,
-                auto_cut_uv=True  # This enables recursive_cut_uv (uses our optimized methods)
+                auto_cut_uv=True,  # This enables recursive_cut_uv (uses our optimized methods)
             )
 
             end_time = time.perf_counter()
@@ -307,7 +307,9 @@ def test_autouv_workflow_integration():
     # Count specific call types
     polyedit_calls = sum(1 for call in mock_pm.api_call_log if call[0] == "polyEditUV")
     ls_calls = sum(1 for call in mock_pm.api_call_log if call[0] == "ls")
-    conversion_calls = sum(1 for call in mock_pm.api_call_log if call[0] == "polyListComponentConversion")
+    conversion_calls = sum(
+        1 for call in mock_pm.api_call_log if call[0] == "polyListComponentConversion"
+    )
 
     print(f"  - polyEditUV calls: {polyedit_calls}")
     print(f"  - ls calls: {ls_calls}")
@@ -340,13 +342,15 @@ def test_autouv_workflow_integration():
     shells_within_bounds = 0
     shells_spanning_tiles = 0
 
-    with patch("mayaLib.modelLib.base.uv.pm", mock_pm), \
-         patch("mayaLib.modelLib.base.uv.mel.eval", mock_mel_eval):
+    with (
+        patch("mayaLib.modelLib.base.uv.pm", mock_pm),
+        patch("mayaLib.modelLib.base.uv.mel.eval", mock_mel_eval),
+    ):
         from mayaLib.modelLib.base.uv import AutoUV
 
         test_auto_uv = AutoUV.__new__(AutoUV)
 
-        for i, shell in enumerate(shells):
+        for i, _shell in enumerate(shells):
             shell_faces = f"shell_{i}"
             within_bounds = test_auto_uv.check_uv_in_boundaries(shell_faces)
 
@@ -377,10 +381,12 @@ def test_autouv_workflow_integration():
 
     improvement = old_time_estimate / new_time_actual if new_time_actual > 0 else 0
 
-    print(f"Theoretical Performance (API overhead only):")
+    print("Theoretical Performance (API overhead only):")
     print(f"  Old implementation: {old_time_estimate:.1f} ms ({old_api_calls:,} API calls)")
     print(f"  New implementation: {new_time_actual:.1f} ms ({new_api_calls} API calls)")
-    print(f"  {Colors.BOLD}{Colors.OKGREEN}Performance improvement: {improvement:.1f}x faster{Colors.ENDC}\n")
+    print(
+        f"  {Colors.BOLD}{Colors.OKGREEN}Performance improvement: {improvement:.1f}x faster{Colors.ENDC}\n"
+    )
 
     # Final verdict
     print(f"{Colors.BOLD}Integration Test Result:{Colors.ENDC}")
@@ -435,5 +441,6 @@ if __name__ == "__main__":
         print(f"{Colors.BOLD}{Colors.FAIL}Integration test ERROR{Colors.ENDC}")
         print(f"{Colors.FAIL}{str(e)}{Colors.ENDC}\n")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

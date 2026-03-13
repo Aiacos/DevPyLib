@@ -181,9 +181,7 @@ class TestPathValidation:
 
     def test_validate_disallowed_extension(self, secure_opener, executable_file):
         """Test validation rejects files with disallowed extensions."""
-        with pytest.raises(
-            ExtensionNotAllowedError, match="File extension '.exe' not allowed"
-        ):
+        with pytest.raises(ExtensionNotAllowedError, match="File extension '.exe' not allowed"):
             secure_opener.validate_path(executable_file)
 
     def test_validate_outside_allowed_directory(self, restricted_opener, temp_dir):
@@ -193,9 +191,7 @@ class TestPathValidation:
             other_file = Path(other_dir) / "file.txt"
             other_file.write_text("content")
 
-            with pytest.raises(
-                PathValidationError, match="File is not in allowed directories"
-            ):
+            with pytest.raises(PathValidationError, match="File is not in allowed directories"):
                 restricted_opener.validate_path(other_file)
 
     def test_validate_inside_allowed_directory(self, restricted_opener, test_file):
@@ -288,9 +284,7 @@ class TestFileOpening:
     @patch("subprocess.run")
     def test_open_file_subprocess_error(self, mock_run, secure_opener, test_file):
         """Test file opening subprocess error handling."""
-        mock_run.side_effect = subprocess.CalledProcessError(
-            returncode=1, cmd=[], stderr=b"error"
-        )
+        mock_run.side_effect = subprocess.CalledProcessError(returncode=1, cmd=[], stderr=b"error")
 
         with pytest.raises(subprocess.SubprocessError, match="Failed to open file"):
             secure_opener.open_file(test_file)

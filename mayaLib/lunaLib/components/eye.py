@@ -37,8 +37,7 @@ def create_eye(
         ... )
 
     """
-    from luna_rig.components import EyeComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, EyeComponent
 
     # Get character if exists
     character = None

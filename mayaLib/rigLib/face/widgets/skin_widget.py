@@ -118,12 +118,8 @@ class SkinWidget(QtWidgets.QWidget):
         self.connectBlendShapeD = QtWidgets.QPushButton(
             "Add Space Switch for Eye Aim Ctrl.(Select some Controllers from Body Rig)"
         )
-        self.detachSkinJntConnection = QtWidgets.QPushButton(
-            "Detach Skin Joints Connection"
-        )
-        self.attachSkinJntConnection = QtWidgets.QPushButton(
-            "Attach Skin Joints Connection"
-        )
+        self.detachSkinJntConnection = QtWidgets.QPushButton("Detach Skin Joints Connection")
+        self.attachSkinJntConnection = QtWidgets.QPushButton("Attach Skin Joints Connection")
 
         # Face to body connection layout
         self.perseusDLayout = QtWidgets.QVBoxLayout()
@@ -135,9 +131,7 @@ class SkinWidget(QtWidgets.QWidget):
         self.perseusDLayout.addWidget(self.connectBlendShapeD)
         self.perseusDLayout.addWidget(self.detachSkinJntConnection)
         self.perseusDLayout.addWidget(self.attachSkinJntConnection)
-        self.perseusDLayoutGrp = QtWidgets.QGroupBox(
-            "Create Connection From Face --> Body"
-        )
+        self.perseusDLayoutGrp = QtWidgets.QGroupBox("Create Connection From Face --> Body")
         self.perseusDLayoutGrp.setLayout(self.perseusDLayout)
 
         # License/info label

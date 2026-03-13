@@ -30,6 +30,7 @@ def __getattr__(name):
         if name not in _submodules_loaded:
             # Lazy import the submodule
             from importlib import import_module
+
             module = import_module(f".{name}", package=__name__)
             _submodules_loaded[name] = module
             # Add to module's globals so subsequent access is direct

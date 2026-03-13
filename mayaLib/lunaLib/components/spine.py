@@ -39,8 +39,7 @@ def create_fkik_spine(
         ... )
 
     """
-    from luna_rig.components import FKIKSpineComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, FKIKSpineComponent
 
     # Get character if exists
     character = None
@@ -91,8 +90,7 @@ def create_ribbon_spine(
         ... )
 
     """
-    from luna_rig.components import RibbonSpineComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, RibbonSpineComponent
 
     # Get character if exists
     character = None

@@ -9,7 +9,7 @@ import pathlib
 import tempfile
 import urllib.error
 import zipfile
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -256,9 +256,7 @@ class TestDownloadWithVerification:
         mock_urlretrieve.side_effect = create_zip_file
 
         # Mock _verify_file_hash to raise OSError
-        with patch.object(
-            installer, "_verify_file_hash", side_effect=OSError("Permission denied")
-        ):
+        with patch.object(installer, "_verify_file_hash", side_effect=OSError("Permission denied")):
             # Execute
             installer.download()
 

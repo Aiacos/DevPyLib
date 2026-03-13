@@ -20,7 +20,6 @@ def launch_configer():
         >>> launch_configer()
 
     """
-    import luna
     from luna.interface.commands import tool_cmds
 
     tool_cmds.open_configer()

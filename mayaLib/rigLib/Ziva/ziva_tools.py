@@ -37,7 +37,6 @@ def harmonic_warp(source, destination, transfer_geos, tet_size=1):
         tet_size (int): The size of the tetrahedral mesh.
 
     Returns:
-
         The resulting harmonic warp node.
     """
     source_string = str(pm.ls(source)[-1].name())
@@ -76,7 +75,6 @@ def bone_warp(source, destination, transfer_geos, tet_size=1):
         tet_size (int): The size of the tetrahedral mesh.
 
     Returns:
-
         The resulting bone warp node.
     """
     source_string = str(pm.ls(source)[-1].name())

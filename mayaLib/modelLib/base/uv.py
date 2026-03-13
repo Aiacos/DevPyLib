@@ -4,6 +4,7 @@ Provides functions for UV unwrapping, layout, and manipulation
 of UV coordinates.
 """
 
+import contextlib
 import math
 
 import maya.mel as mel
@@ -136,9 +137,8 @@ class AutoUV:
             u = uv_coords[i]
             v = uv_coords[i + 1]
 
-            if i > 0:
-                if not (u > u_min and u < u_max and v > v_min and v < v_max):
-                    return False
+            if i > 0 and not (u > u_min and u < u_max and v > v_min and v < v_max):
+                return False
 
             u_max = int(u) + 1
             u_min = int(u)
@@ -407,11 +407,8 @@ class AutoUV:
             geo (str): The name of the geometry to create seams for.
             angle (float): The angle threshold for creating seams. Defaults to 0.
         """
-        try:
+        with contextlib.suppress(RuntimeError):
             pm.u3dAutoSeam(geo, s=angle, p=1)
-        except RuntimeError:
-            # Maya may fail to create seams on invalid geometry
-            pass
 
     def unfold_optimize_uv(self, geo, normalize_shell=False):
         """Unfold and optimize the UVs of the given geometry.

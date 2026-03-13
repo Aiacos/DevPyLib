@@ -118,9 +118,7 @@ def skin_copy(source_mesh=None, target_mesh=None, *args):
             source_mesh = pm.ls(sl=1)[0]
             target_meshes = pm.ls(sl=1)[1:]
         else:
-            pm.displayWarning(
-                "Please select target mesh/meshes and source mesh with skinCluster."
-            )
+            pm.displayWarning("Please select target mesh/meshes and source mesh with skinCluster.")
             return
     else:
         target_meshes = [target_mesh]
@@ -150,9 +148,7 @@ def skin_copy(source_mesh=None, target_mesh=None, *args):
                 nr=True,
             )
         else:
-            pm.displayError(
-                f"Source Mesh: {source_mesh.name()} doesn't have skinCluster"
-            )
+            pm.displayError(f"Source Mesh: {source_mesh.name()} doesn't have skinCluster")
 
 
 def source_define():

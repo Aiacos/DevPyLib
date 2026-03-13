@@ -17,6 +17,7 @@ def pytest_configure(config):
 
     # Ensure user site-packages is in path
     import site
+
     user_site = site.getusersitepackages()
     if user_site not in sys.path:
         sys.path.insert(0, user_site)

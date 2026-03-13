@@ -154,8 +154,7 @@ class AriseFaceNode:
 
         if not pm.objExists(self.main_ctrl):
             pm.warning(
-                f"Main control '{self.main_ctrl}' not found. "
-                "Scale connections will be skipped."
+                f"Main control '{self.main_ctrl}' not found. Scale connections will be skipped."
             )
 
         if not pm.objExists(self.face_joint_root):
@@ -186,9 +185,7 @@ class AriseFaceNode:
         # Parent face joint under head joint
         try:
             pm.parent(self.face_joint_root, self.head_joint)
-            pm.displayInfo(
-                f"Parented {self.face_joint_root} under {self.head_joint}"
-            )
+            pm.displayInfo(f"Parented {self.face_joint_root} under {self.head_joint}")
         except Exception as e:
             pm.warning(f"Failed to parent face joint: {e}")
 
@@ -202,24 +199,18 @@ class AriseFaceNode:
         # Middle eye aim
         if pm.objExists(self.DEFAULT_EYE_AIM_M):
             if pm.objExists(self.EYE_CONTROLS["M"]):
-                self._create_parent_constraint_safe(
-                    self.EYE_CONTROLS["M"], self.DEFAULT_EYE_AIM_M
-                )
+                self._create_parent_constraint_safe(self.EYE_CONTROLS["M"], self.DEFAULT_EYE_AIM_M)
             else:
                 # Fallback: connect to head joint
                 self._setup_eye_aim_fallback()
 
         # Left eye aim
         if pm.objExists(self.DEFAULT_EYE_AIM_L) and pm.objExists(self.EYE_CONTROLS["L"]):
-            self._create_parent_constraint_safe(
-                self.EYE_CONTROLS["L"], self.DEFAULT_EYE_AIM_L
-            )
+            self._create_parent_constraint_safe(self.EYE_CONTROLS["L"], self.DEFAULT_EYE_AIM_L)
 
         # Right eye aim
         if pm.objExists(self.DEFAULT_EYE_AIM_R) and pm.objExists(self.EYE_CONTROLS["R"]):
-            self._create_parent_constraint_safe(
-                self.EYE_CONTROLS["R"], self.DEFAULT_EYE_AIM_R
-            )
+            self._create_parent_constraint_safe(self.EYE_CONTROLS["R"], self.DEFAULT_EYE_AIM_R)
 
         # Hide internal aim controls
         self._hide_internal_controls()
@@ -271,9 +262,7 @@ class AriseFaceNode:
         """
         try:
             # Check if constraint already exists
-            existing = pm.listConnections(
-                f"{target}.parentMatrix", type="parentConstraint"
-            )
+            existing = pm.listConnections(f"{target}.parentMatrix", type="parentConstraint")
             if existing:
                 return existing[0]
 
@@ -330,9 +319,7 @@ class AriseFaceNode:
             return
 
         # Check if already connected
-        if pm.isConnected(
-            f"{self.main_ctrl}.worldMatrix", f"{scale_node}.input1"
-        ):
+        if pm.isConnected(f"{self.main_ctrl}.worldMatrix", f"{scale_node}.input1"):
             return
 
         try:
@@ -341,19 +328,13 @@ class AriseFaceNode:
             if pm.objExists(decompose_name):
                 decompose = pm.PyNode(decompose_name)
             else:
-                decompose = pm.shadingNode(
-                    "decomposeMatrix", asUtility=True, name=decompose_name
-                )
+                decompose = pm.shadingNode("decomposeMatrix", asUtility=True, name=decompose_name)
 
             # Connect main ctrl world matrix to decompose
-            pm.connectAttr(
-                f"{self.main_ctrl}.worldMatrix", f"{decompose}.inputMatrix", f=True
-            )
+            pm.connectAttr(f"{self.main_ctrl}.worldMatrix", f"{decompose}.inputMatrix", f=True)
 
             # Connect decompose output scale to multiply divide
-            pm.connectAttr(
-                f"{decompose}.outputScale", f"{scale_node}.input1", f=True
-            )
+            pm.connectAttr(f"{decompose}.outputScale", f"{scale_node}.input1", f=True)
 
             pm.displayInfo("Face scale connections established")
 
@@ -433,9 +414,7 @@ class AriseFaceNode:
 
         try:
             pm.select(face_joints)
-            self.face_display_layer = pm.createDisplayLayer(
-                name=layer_name, nr=True, number=1
-            )
+            self.face_display_layer = pm.createDisplayLayer(name=layer_name, nr=True, number=1)
 
             # Set display layer color (yellow for face)
             pm.setAttr(f"{self.face_display_layer}.color", 17)

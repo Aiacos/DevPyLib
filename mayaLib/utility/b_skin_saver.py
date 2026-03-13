@@ -494,7 +494,7 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
         inf_count = OpenMaya.MScriptUtil.getUint(inf_count_ptr)
 
         weight_check_array = []
-        for i in range(inf_count):
+        for _i in range(inf_count):
             weight_check_array.append(False)
 
         for i in range(vertex_count):
@@ -511,7 +511,6 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
 
         output.write("============\n")
 
-        counter = 0
         weight_array_string = []
         for i in range(len(vert_ids)):
             vert_id = vert_ids[i]
@@ -529,7 +528,6 @@ def b_save_vertex_skin_values(input_file, ignore_soft_selection):
             weight_array_string = f"{vert_id}:{soft_weight}{weights_string}"
 
             output.write(weight_array_string + "\n")
-            counter += 1
             next(mesh_iter)
 
     print(("done, it took", (time.time() - time_before), " seconds"))
@@ -783,7 +781,7 @@ def b_skin_object(object_name, file_joints, weights):
         weight_strings = weights[counter_value].split(" ")
         for i in range(len(weight_strings)):
             weight_doubles.append(float(weight_strings[i]))
-        for i in range(len(object_empty_joints)):
+        for _i in range(len(object_empty_joints)):
             weight_doubles.append(0)
 
         counter_value += 1
@@ -830,11 +828,10 @@ def b_load_skin_values(load_on_selection, input_file):
             selection_list.getDagPath(0, node, component)
             if node.hasFn(OpenMaya.MFn.kTransform):
                 new_transform = OpenMaya.MFnTransform(node)
-                if new_transform.childCount():
-                    if new_transform.child(0).hasFn(OpenMaya.MFn.kMesh):
-                        polygon_object = str(
-                            OpenMaya.MFnDagNode(new_transform.child(0)).partialPathName()
-                        )
+                if new_transform.childCount() and new_transform.child(0).hasFn(OpenMaya.MFn.kMesh):
+                    polygon_object = str(
+                        OpenMaya.MFnDagNode(new_transform.child(0)).partialPathName()
+                    )
 
     if load_on_selection and len(polygon_object) == 0:
         print("You need to select a polygon object")

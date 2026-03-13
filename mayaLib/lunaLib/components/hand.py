@@ -35,8 +35,7 @@ def create_hand(
         ... )
 
     """
-    from luna_rig.components import HandComponent
-    from luna_rig.components import Character
+    from luna_rig.components import Character, HandComponent
 
     # Get character if exists
     character = None

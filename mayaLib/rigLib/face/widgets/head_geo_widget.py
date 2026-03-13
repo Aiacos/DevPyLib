@@ -338,12 +338,8 @@ class HeadGeoWidget(QtWidgets.QWidget):
 
         # Curve guide buttons
         self.AdjustmentBoxButton = QtWidgets.QPushButton("Create Jaw Curve *")
-        self.AdjustmentBBoxButton = QtWidgets.QPushButton(
-            "Create Facial Curve Guide *"
-        )
-        self.ProjectBoxButton = QtWidgets.QPushButton(
-            "Project Curves On face model *"
-        )
+        self.AdjustmentBBoxButton = QtWidgets.QPushButton("Create Facial Curve Guide *")
+        self.ProjectBoxButton = QtWidgets.QPushButton("Project Curves On face model *")
 
         # Setup layouts
         self._setup_layouts()

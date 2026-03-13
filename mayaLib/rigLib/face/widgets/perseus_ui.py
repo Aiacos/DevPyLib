@@ -885,16 +885,12 @@ class PerseusUI(MayaQWidgetDockableMixin, QtWidgets.QDialog):
         """Toggle edge loop selection constraint."""
         if not self.headGeo_wdg.edgeLoopToggle:
             pm.mel.dR_selConstraintEdgeLoop()
-            self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(
-                self.headGeo_wdg.darkColorB
-            )
+            self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(self.headGeo_wdg.darkColorB)
             self.headGeo_wdg.selConstraintEdgeLoop.setText("Edge Loop On")
             self.headGeo_wdg.edgeLoopToggle = True
         else:
             pm.mel.dR_selConstraintOff()
-            self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(
-                self.headGeo_wdg.defaultColor
-            )
+            self.headGeo_wdg.selConstraintEdgeLoop.setStyleSheet(self.headGeo_wdg.defaultColor)
             self.headGeo_wdg.selConstraintEdgeLoop.setText("Edge Loop Off")
             self.headGeo_wdg.edgeLoopToggle = False
 

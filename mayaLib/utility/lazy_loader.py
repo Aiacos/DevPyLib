@@ -42,7 +42,6 @@ Example:
     ```
 """
 
-import sys
 import traceback
 from importlib import import_module
 
@@ -122,9 +121,7 @@ def create_lazy_loader(
                 if error_mode == "raise":
                     raise
                 if error_mode == "warn":
-                    print(
-                        f"Warning: Error during import of {package_name}.{name}: {e}"
-                    )
+                    print(f"Warning: Error during import of {package_name}.{name}: {e}")
                     traceback.print_exc()
                 return None
 
@@ -244,9 +241,7 @@ class LazyModuleLoader:
         """
         # Check if this is a known submodule
         if name not in self.submodules:
-            raise AttributeError(
-                f"module {self.package_name!r} has no attribute {name!r}"
-            )
+            raise AttributeError(f"module {self.package_name!r} has no attribute {name!r}")
 
         # Ensure initialization has run
         if not self._ensure_initialized():

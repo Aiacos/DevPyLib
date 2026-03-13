@@ -16,7 +16,6 @@ import importlib
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Add parent directories to path for imports
 _test_dir = Path(__file__).parent.resolve()
@@ -25,6 +24,7 @@ _root_dir = _mayalib_dir.parent
 
 if str(_root_dir) not in sys.path:
     sys.path.insert(0, str(_root_dir))
+
 
 # ANSI color codes for output
 class Colors:
@@ -59,10 +59,7 @@ class TestResult:
             details: Optional details about the test.
         """
         self.passed.append((test_name, details))
-        print(
-            f"{Colors.OKGREEN}✓{Colors.ENDC} {test_name}"
-            + (f" - {details}" if details else "")
-        )
+        print(f"{Colors.OKGREEN}✓{Colors.ENDC} {test_name}" + (f" - {details}" if details else ""))
 
     def add_fail(self, test_name: str, error: str):
         """Add a failing test.
@@ -100,17 +97,11 @@ class TestResult:
         print(f"\n{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}Test Summary{Colors.ENDC}")
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
-        print(
-            f"{Colors.OKGREEN}Passed:{Colors.ENDC}  {len(self.passed)}/{total}"
-        )
+        print(f"{Colors.OKGREEN}Passed:{Colors.ENDC}  {len(self.passed)}/{total}")
         print(f"{Colors.FAIL}Failed:{Colors.ENDC}  {len(self.failed)}/{total}")
-        print(
-            f"{Colors.WARNING}Skipped:{Colors.ENDC} {len(self.skipped)}/{total}"
-        )
+        print(f"{Colors.WARNING}Skipped:{Colors.ENDC} {len(self.skipped)}/{total}")
         if self.warnings:
-            print(
-                f"{Colors.WARNING}Warnings:{Colors.ENDC} {len(self.warnings)}"
-            )
+            print(f"{Colors.WARNING}Warnings:{Colors.ENDC} {len(self.warnings)}")
 
         if self.failed:
             print(f"\n{Colors.FAIL}{Colors.BOLD}Failed Tests:{Colors.ENDC}")
@@ -125,14 +116,10 @@ class TestResult:
         print(f"\n{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
 
         if len(self.failed) == 0:
-            print(
-                f"{Colors.OKGREEN}{Colors.BOLD}✓ ALL TESTS PASSED!{Colors.ENDC}"
-            )
+            print(f"{Colors.OKGREEN}{Colors.BOLD}✓ ALL TESTS PASSED!{Colors.ENDC}")
             return True
         else:
-            print(
-                f"{Colors.FAIL}{Colors.BOLD}✗ SOME TESTS FAILED{Colors.ENDC}"
-            )
+            print(f"{Colors.FAIL}{Colors.BOLD}✗ SOME TESTS FAILED{Colors.ENDC}")
             return False
 
 
@@ -163,12 +150,9 @@ def test_library_import(result: TestResult) -> bool:
     """
     try:
         start_time = time.perf_counter()
-        import mayaLib
 
         elapsed = (time.perf_counter() - start_time) * 1000
-        result.add_pass(
-            "Library Import", f"mayaLib imported in {elapsed:.2f}ms"
-        )
+        result.add_pass("Library Import", f"mayaLib imported in {elapsed:.2f}ms")
         return True
     except Exception as e:
         result.add_fail("Library Import", str(e))
@@ -182,9 +166,7 @@ def test_lazy_loading_behavior(result: TestResult):
         result: TestResult object to track results.
     """
     # Remove mayaLib from cache to test fresh import
-    modules_to_remove = [
-        key for key in list(sys.modules.keys()) if key.startswith("mayaLib")
-    ]
+    modules_to_remove = [key for key in list(sys.modules.keys()) if key.startswith("mayaLib")]
     for module in modules_to_remove:
         del sys.modules[module]
 
@@ -226,9 +208,7 @@ def test_lazy_loading_behavior(result: TestResult):
 
         # Check that it's now loaded
         if "mayaLib.rigLib" in sys.modules:
-            result.add_pass(
-                "On-Demand Loading", f"rigLib loaded on access in {elapsed:.2f}ms"
-            )
+            result.add_pass("On-Demand Loading", f"rigLib loaded on access in {elapsed:.2f}ms")
         else:
             result.add_fail("On-Demand Loading", "rigLib not loaded after access")
 
@@ -257,7 +237,7 @@ def test_submodule_access(result: TestResult):
 
     for submodule_name, description in submodules:
         try:
-            submodule = getattr(mayaLib, submodule_name)
+            getattr(mayaLib, submodule_name)
             result.add_pass(f"Access {submodule_name}", description)
         except Exception as e:
             result.add_fail(f"Access {submodule_name}", str(e))
@@ -279,7 +259,7 @@ def test_nested_imports(result: TestResult):
 
     for module_path, description in test_cases:
         try:
-            module = importlib.import_module(module_path)
+            importlib.import_module(module_path)
             result.add_pass(f"Import {module_path}", description)
         except Exception as e:
             # Some modules may fail due to Maya dependencies
@@ -296,8 +276,6 @@ def test_rig_tools(result: TestResult):
         result: TestResult object to track results.
     """
     try:
-        from mayaLib.rigLib import base
-
         result.add_pass("RigLib Base Access", "rigLib.base imported successfully")
     except Exception as e:
         if "maya" in str(e).lower() or "pymel" in str(e).lower():
@@ -306,8 +284,6 @@ def test_rig_tools(result: TestResult):
             result.add_fail("RigLib Base Access", str(e))
 
     try:
-        from mayaLib.rigLib import utils
-
         result.add_pass("RigLib Utils Access", "rigLib.utils imported successfully")
     except Exception as e:
         if "maya" in str(e).lower() or "pymel" in str(e).lower():
@@ -323,8 +299,6 @@ def test_fluid_tools(result: TestResult):
         result: TestResult object to track results.
     """
     try:
-        from mayaLib.fluidLib import base
-
         result.add_pass("FluidLib Base Access", "fluidLib.base imported successfully")
     except Exception as e:
         if "maya" in str(e).lower() or "pymel" in str(e).lower():
@@ -333,8 +307,6 @@ def test_fluid_tools(result: TestResult):
             result.add_fail("FluidLib Base Access", str(e))
 
     try:
-        from mayaLib.fluidLib import fire
-
         result.add_pass("FluidLib Fire Access", "fluidLib.fire imported successfully")
     except Exception as e:
         if "maya" in str(e).lower() or "pymel" in str(e).lower():
@@ -357,9 +329,7 @@ def test_gui_system(result: TestResult):
             result.add_pass("GUI Main Menu", "MainMenu class is available")
         else:
             # Module loaded but class not available (Maya not running)
-            result.add_skip(
-                "GUI Main Menu", "MainMenu class requires Maya environment"
-            )
+            result.add_skip("GUI Main Menu", "MainMenu class requires Maya environment")
 
     except Exception as e:
         if "maya" in str(e).lower() or "pyside" in str(e).lower():
@@ -376,32 +346,24 @@ def test_backwards_compatibility(result: TestResult):
     """
     # Pattern 1: import mayaLib
     try:
-        import mayaLib
-
         result.add_pass("Import Pattern 1", "import mayaLib")
     except Exception as e:
         result.add_fail("Import Pattern 1", str(e))
 
     # Pattern 2: from mayaLib import rigLib
     try:
-        from mayaLib import rigLib
-
         result.add_pass("Import Pattern 2", "from mayaLib import rigLib")
     except Exception as e:
         result.add_fail("Import Pattern 2", str(e))
 
     # Pattern 3: import mayaLib.rigLib
     try:
-        import mayaLib.rigLib
-
         result.add_pass("Import Pattern 3", "import mayaLib.rigLib")
     except Exception as e:
         result.add_fail("Import Pattern 3", str(e))
 
     # Pattern 4: from mayaLib.rigLib import base
     try:
-        from mayaLib.rigLib import base
-
         result.add_pass("Import Pattern 4", "from mayaLib.rigLib import base")
     except Exception as e:
         if "maya" in str(e).lower():
@@ -421,9 +383,7 @@ def test_special_modules(result: TestResult):
         import mayaLib.rigLib
 
         if hasattr(mayaLib.rigLib, "is_available"):
-            result.add_pass(
-                "RigLib Availability", "rigLib.is_available() function present"
-            )
+            result.add_pass("RigLib Availability", "rigLib.is_available() function present")
     except Exception as e:
         result.add_fail("RigLib Availability", str(e))
 
@@ -450,9 +410,7 @@ def test_special_modules(result: TestResult):
         from mayaLib import bifrostLib
 
         if hasattr(bifrostLib, "is_available"):
-            result.add_pass(
-                "Bifrost Module", "bifrostLib with is_available() loaded"
-            )
+            result.add_pass("Bifrost Module", "bifrostLib with is_available() loaded")
         else:
             result.add_warning(
                 "Bifrost Module",
@@ -481,13 +439,9 @@ def test_module_introspection(result: TestResult):
         missing = [attr for attr in expected_attrs if attr not in attrs]
 
         if not missing:
-            result.add_pass(
-                "Module Introspection", f"__dir__ works correctly ({len(attrs)} attrs)"
-            )
+            result.add_pass("Module Introspection", f"__dir__ works correctly ({len(attrs)} attrs)")
         else:
-            result.add_fail(
-                "Module Introspection", f"Missing attributes: {missing}"
-            )
+            result.add_fail("Module Introspection", f"Missing attributes: {missing}")
 
     except Exception as e:
         result.add_fail("Module Introspection", str(e))
@@ -497,22 +451,16 @@ def run_verification():
     """Run all verification tests and print results."""
     print(f"\n{Colors.BOLD}{Colors.HEADER}{'=' * 70}{Colors.ENDC}")
     print(
-        f"{Colors.BOLD}{Colors.HEADER}DevPyLib Lazy Loading - "
-        f"End-to-End Verification{Colors.ENDC}"
+        f"{Colors.BOLD}{Colors.HEADER}DevPyLib Lazy Loading - End-to-End Verification{Colors.ENDC}"
     )
     print(f"{Colors.BOLD}{Colors.HEADER}{'=' * 70}{Colors.ENDC}\n")
 
     # Check if running in Maya
     in_maya = check_maya_available()
     if in_maya:
-        print(
-            f"{Colors.OKGREEN}✓ Running inside Maya environment{Colors.ENDC}\n"
-        )
+        print(f"{Colors.OKGREEN}✓ Running inside Maya environment{Colors.ENDC}\n")
     else:
-        print(
-            f"{Colors.WARNING}⚠ Running outside Maya - "
-            f"some tests will be skipped{Colors.ENDC}\n"
-        )
+        print(f"{Colors.WARNING}⚠ Running outside Maya - some tests will be skipped{Colors.ENDC}\n")
 
     result = TestResult()
 
@@ -561,18 +509,13 @@ def run_verification():
     success = result.print_summary()
 
     if in_maya and success:
-        print(
-            f"\n{Colors.OKGREEN}{Colors.BOLD}✓ Ready for production use in "
-            f"Maya!{Colors.ENDC}"
-        )
+        print(f"\n{Colors.OKGREEN}{Colors.BOLD}✓ Ready for production use in Maya!{Colors.ENDC}")
     elif success:
         print(
-            f"\n{Colors.OKGREEN}{Colors.BOLD}✓ Lazy loading implementation "
-            f"verified!{Colors.ENDC}"
+            f"\n{Colors.OKGREEN}{Colors.BOLD}✓ Lazy loading implementation verified!{Colors.ENDC}"
         )
         print(
-            f"{Colors.WARNING}Note: Run this script inside Maya for full "
-            f"verification{Colors.ENDC}"
+            f"{Colors.WARNING}Note: Run this script inside Maya for full verification{Colors.ENDC}"
         )
 
     return success

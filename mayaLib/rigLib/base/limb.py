@@ -195,9 +195,7 @@ def build_clavicle(
     return clavicle_ctrl
 
 
-def build_dynamic_scapula(
-    limb_joints: Sequence[str], rig_module: module.Module
-) -> None:
+def build_dynamic_scapula(limb_joints: Sequence[str], rig_module: module.Module) -> None:
     """Create a dynamic scapula rig if a scapula chain exists.
 
     Searches the joint hierarchy above the shoulder for a joint whose name
@@ -261,11 +259,7 @@ def build_fk_controls(
 
     for joint_name in limb_joints:
         prefix = name.remove_suffix(joint_name)
-        parent = (
-            rig_module.controls_group
-            if not limb_controls
-            else limb_controls[-1].get_control()
-        )
+        parent = rig_module.controls_group if not limb_controls else limb_controls[-1].get_control()
         ctrl = control.Control(
             prefix=prefix,
             translate_to=joint_name,
@@ -308,9 +302,7 @@ def build_fk_controls(
             finger_constraints.append(orient_constraint)
         finger_controls.extend(finger_chain_controls)
 
-    return FKResult(
-        limb_controls, limb_constraints, finger_controls, finger_constraints
-    )
+    return FKResult(limb_controls, limb_constraints, finger_controls, finger_constraints)
 
 
 def build_pole_vector(
@@ -436,9 +428,7 @@ def build_ik_controls(
         hand_orient_constraint = pm.orientConstraint(
             main_ik_ctrl.get_control(), limb_joints[2], mo=True
         )
-        return IKResult(
-            main_ik_ctrl, ik_handle, ([], []), [], [], hand_orient_constraint
-        )
+        return IKResult(main_ik_ctrl, ik_handle, ([], []), [], [], hand_orient_constraint)
 
     # Resolve finger joints
     top_finger_joint_list, end_finger_joint_list = _resolve_finger_joints(
@@ -456,12 +446,8 @@ def build_ik_controls(
     pm.parent(foot_roll_group_list[-1], rig_module.parts_no_trans_group)
 
     # Ball control at midpoint of finger chain
-    mid_finger_index = max(
-        int(round(len(foot_roll_instance.get_ik_finger_list()) / 2.0)) - 1, -1
-    )
-    mid_finger_joint = foot_roll_instance.get_ik_finger_list()[
-        mid_finger_index
-    ].getJointList()[0]
+    mid_finger_index = max(int(round(len(foot_roll_instance.get_ik_finger_list()) / 2.0)) - 1, -1)
+    mid_finger_joint = foot_roll_instance.get_ik_finger_list()[mid_finger_index].getJointList()[0]
     ball_ctrl = control.Control(
         prefix=f"{prefix}BallIK",
         translate_to=mid_finger_joint,
@@ -496,9 +482,7 @@ def build_ik_controls(
         outer_roll_grp,
     ) = foot_roll_group_list[3:-1]
 
-    has_roll_groups = (
-        front_roll_grp and ball_roll_grp and inner_roll_grp and outer_roll_grp
-    )
+    has_roll_groups = front_roll_grp and ball_roll_grp and inner_roll_grp and outer_roll_grp
     if do_smart_foot_roll and has_roll_groups:
         smart_foot_roll.build(
             prefix=prefix,
@@ -697,17 +681,11 @@ class Limb:
         visibility_ik_fk_ctrl = parameter_resolution.resolve_optional(
             visibility_ik_fk_ctrl, legacy_kwargs, ("visibilityIKFKCtrl",), "ikfk_CTRL"
         )
-        do_fk = parameter_resolution.resolve_optional(
-            do_fk, legacy_kwargs, ("doFK",), True
-        )
-        do_ik = parameter_resolution.resolve_optional(
-            do_ik, legacy_kwargs, ("doIK",), True
-        )
+        do_fk = parameter_resolution.resolve_optional(do_fk, legacy_kwargs, ("doFK",), True)
+        do_ik = parameter_resolution.resolve_optional(do_ik, legacy_kwargs, ("doIK",), True)
         part = cast(
             str,
-            parameter_resolution.resolve_optional(
-                part, legacy_kwargs, ("part",), "Hand"
-            ),
+            parameter_resolution.resolve_optional(part, legacy_kwargs, ("part",), "Hand"),
         )
         use_metacarpal_joint = cast(
             bool,
@@ -723,18 +701,14 @@ class Limb:
         )
         rig_scale = cast(
             float,
-            parameter_resolution.resolve_optional(
-                rig_scale, legacy_kwargs, ("rigScale",), 1.0
-            ),
+            parameter_resolution.resolve_optional(rig_scale, legacy_kwargs, ("rigScale",), 1.0),
         )
         base_rig = parameter_resolution.resolve_optional(
             base_rig, legacy_kwargs, ("baseRig",), None
         )
 
         if legacy_kwargs:
-            raise ValueError(
-                f"Unexpected arguments for Limb: {tuple(legacy_kwargs.keys())}"
-            )
+            raise ValueError(f"Unexpected arguments for Limb: {tuple(legacy_kwargs.keys())}")
 
         limb_joints = list(cast(Sequence[str], limb_joints))
         top_finger_joints = list(cast(Sequence[str], top_finger_joints))
@@ -788,9 +762,7 @@ class Limb:
             self.rig_module,
         )
 
-    def _build_ik(
-        self, params: dict[str, Any]
-    ) -> tuple[IKResult | None, control.Control | None]:
+    def _build_ik(self, params: dict[str, Any]) -> tuple[IKResult | None, control.Control | None]:
         """Build IK controls and pole vector if requested.
 
         Returns:
@@ -854,9 +826,7 @@ class Limb:
             ik.orient_constraint,
         )
 
-    def _setup_scapula_clavicle(
-        self, params: dict[str, Any], fk: FKResult | None
-    ) -> None:
+    def _setup_scapula_clavicle(self, params: dict[str, Any], fk: FKResult | None) -> None:
         """Attach clavicle and/or scapula controls to the FK chain.
 
         Args:
@@ -876,13 +846,9 @@ class Limb:
             clavicle_ctrl = self.make_clavicle(
                 prefix, limb_joints, clavicle_joint, rig_scale, self.rig_module
             )
-            pm.parentConstraint(
-                clavicle_ctrl.get_control(), fk.limb_controls[0].get_top(), mo=True
-            )
+            pm.parentConstraint(clavicle_ctrl.get_control(), fk.limb_controls[0].get_top(), mo=True)
         else:
-            pm.parentConstraint(
-                self.base_attach_group, fk.limb_controls[0].get_top(), mo=True
-            )
+            pm.parentConstraint(self.base_attach_group, fk.limb_controls[0].get_top(), mo=True)
 
         if scapula_joint and pm.objExists(scapula_joint):
             limb_joint_nodes = pm.ls(limb_joints)
@@ -1111,16 +1077,12 @@ class Arm(Limb):
         if "scapulaJnt" in legacy_kwargs and not scapula_joint:
             scapula_joint = legacy_kwargs.pop("scapulaJnt")
 
-        top_finger_joints = list(
-            top_finger_joints or legacy_kwargs.pop("topFingerJoints", [])
-        )
+        top_finger_joints = list(top_finger_joints or legacy_kwargs.pop("topFingerJoints", []))
         use_metacarpal_joint = legacy_kwargs.pop("useMetacarpalJoint", False)
         do_smart_foot_roll = legacy_kwargs.pop("doSmartFootRool", True)
 
         if legacy_kwargs:
-            raise ValueError(
-                f"Unexpected arguments for Arm: {tuple(legacy_kwargs.keys())}"
-            )
+            raise ValueError(f"Unexpected arguments for Arm: {tuple(legacy_kwargs.keys())}")
 
         super().__init__(
             limb_joints=[shoulder_joint, forearm_joint, wrist_joint],

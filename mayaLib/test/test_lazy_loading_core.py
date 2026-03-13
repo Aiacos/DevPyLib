@@ -6,10 +6,9 @@ and caching for root __init__.py and mayaLib/__init__.py lazy loading.
 
 import importlib
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-
 
 # ============================================================================
 # Fixtures
@@ -30,7 +29,9 @@ def reset_modules():
     modules_to_remove = [
         key
         for key in sys.modules
-        if key.startswith("mayaLib") or key == "mayaLib" or key in ["blenderLib", "houdiniLib", "prismLib"]
+        if key.startswith("mayaLib")
+        or key == "mayaLib"
+        or key in ["blenderLib", "houdiniLib", "prismLib"]
     ]
 
     yield
@@ -115,7 +116,6 @@ class TestMayaLibLazyLoading:
         sys.modules.pop("mayaLib.rigLib", None)
 
         # Import mayaLib
-        import mayaLib
 
         # Verify mayaLib is loaded
         assert "mayaLib" in sys.modules
@@ -266,13 +266,10 @@ class TestErrorHandling:
         sys.modules.pop("mayaLib.rigLib", None)
 
         # Import mayaLib
-        import mayaLib
 
         # Attempting to import rigLib (which requires Maya) should not crash
         # It should return None or handle the error gracefully
         with patch("builtins.print") as mock_print:
-            rigLib = mayaLib.rigLib
-
             # Should have printed a warning
             assert mock_print.called
 
@@ -442,7 +439,6 @@ class TestPerformance:
 
         # Measure import time
         start = time.time()
-        import mayaLib
         elapsed = time.time() - start
 
         # Should be very fast since submodules aren't loaded

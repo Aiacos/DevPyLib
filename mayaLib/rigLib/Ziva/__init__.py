@@ -115,9 +115,7 @@ def __dir__():
 
     # Add Ziva submodules if available
     if _ziva_available:
-        attrs.extend(
-            ["ziva_attachments_tools", "ziva_fiber_tools", "ziva_tools"]
-        )
+        attrs.extend(["ziva_attachments_tools", "ziva_fiber_tools", "ziva_tools"])
 
     return attrs
 

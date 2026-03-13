@@ -7,11 +7,9 @@ This script measures the performance improvement from lazy loading by comparing:
 The benchmark verifies that lazy loading reduces import time by at least 30%.
 """
 
-import importlib
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Add parent directories to path for imports
 _test_dir = Path(__file__).parent.resolve()
@@ -42,9 +40,7 @@ def clean_module_cache():
 
     This ensures we get accurate timing for fresh imports.
     """
-    modules_to_remove = [
-        key for key in list(sys.modules.keys()) if key.startswith("mayaLib")
-    ]
+    modules_to_remove = [key for key in list(sys.modules.keys()) if key.startswith("mayaLib")]
     for module in modules_to_remove:
         del sys.modules[module]
 
@@ -59,12 +55,13 @@ def measure_lazy_import() -> float:
 
     start_time = time.perf_counter()
     import mayaLib  # noqa: F401
+
     end_time = time.perf_counter()
 
     return end_time - start_time
 
 
-def measure_eager_import() -> Tuple[float, Dict[str, bool]]:
+def measure_eager_import() -> tuple[float, dict[str, bool]]:
     """Measure time to import mayaLib and access all submodules (simulates eager loading).
 
     Returns:
@@ -100,9 +97,7 @@ def measure_eager_import() -> Tuple[float, Dict[str, bool]]:
             submodule = getattr(mayaLib, submodule_name)
             submodule_status[submodule_name] = submodule is not None
         except (ImportError, AttributeError) as e:
-            print(
-                f"{Colors.WARNING}Warning: Failed to load {submodule_name}: {e}{Colors.ENDC}"
-            )
+            print(f"{Colors.WARNING}Warning: Failed to load {submodule_name}: {e}{Colors.ENDC}")
             submodule_status[submodule_name] = False
 
     end_time = time.perf_counter()
@@ -110,7 +105,7 @@ def measure_eager_import() -> Tuple[float, Dict[str, bool]]:
     return end_time - start_time, submodule_status
 
 
-def measure_nested_imports() -> Tuple[float, Dict[str, bool]]:
+def measure_nested_imports() -> tuple[float, dict[str, bool]]:
     """Measure time to import common nested submodules (realistic usage).
 
     Returns:
@@ -147,13 +142,9 @@ def measure_nested_imports() -> Tuple[float, Dict[str, bool]]:
                 except (ImportError, AttributeError) as e:
                     key = f"{parent}.{child}"
                     import_status[key] = False
-                    print(
-                        f"{Colors.WARNING}Warning: Failed to load {key}: {e}{Colors.ENDC}"
-                    )
+                    print(f"{Colors.WARNING}Warning: Failed to load {key}: {e}{Colors.ENDC}")
         except (ImportError, AttributeError) as e:
-            print(
-                f"{Colors.WARNING}Warning: Failed to load {parent}: {e}{Colors.ENDC}"
-            )
+            print(f"{Colors.WARNING}Warning: Failed to load {parent}: {e}{Colors.ENDC}")
             for child in children:
                 import_status[f"{parent}.{child}"] = False
 
@@ -210,9 +201,7 @@ def run_benchmark() -> bool:
         print(f"  Lazy import run {i + 1}: {format_time(lazy_time)}")
 
     avg_lazy = sum(lazy_times) / len(lazy_times)
-    print(
-        f"\n{Colors.OKBLUE}Average lazy import time: {format_time(avg_lazy)}{Colors.ENDC}"
-    )
+    print(f"\n{Colors.OKBLUE}Average lazy import time: {format_time(avg_lazy)}{Colors.ENDC}")
 
     # Measure eager import (multiple runs)
     print(f"\n{Colors.OKCYAN}Simulating eager loading (accessing all submodules)...{Colors.ENDC}")
@@ -226,9 +215,7 @@ def run_benchmark() -> bool:
         print(f"  Eager import run {i + 1}: {format_time(eager_time)}")
 
     avg_eager = sum(eager_times) / len(eager_times)
-    print(
-        f"\n{Colors.OKBLUE}Average eager import time: {format_time(avg_eager)}{Colors.ENDC}"
-    )
+    print(f"\n{Colors.OKBLUE}Average eager import time: {format_time(avg_eager)}{Colors.ENDC}")
 
     # Measure nested imports (realistic usage)
     print(f"\n{Colors.OKCYAN}Measuring realistic nested imports...{Colors.ENDC}")
@@ -242,9 +229,7 @@ def run_benchmark() -> bool:
         print(f"  Nested import run {i + 1}: {format_time(nested_time)}")
 
     avg_nested = sum(nested_times) / len(nested_times)
-    print(
-        f"\n{Colors.OKBLUE}Average nested import time: {format_time(avg_nested)}{Colors.ENDC}"
-    )
+    print(f"\n{Colors.OKBLUE}Average nested import time: {format_time(avg_nested)}{Colors.ENDC}")
 
     # Calculate improvement
     print_section_header("Performance Analysis")
@@ -256,21 +241,17 @@ def run_benchmark() -> bool:
     print(f"Lazy loading time:       {format_time(avg_lazy)}")
     print(f"Eager loading time:      {format_time(avg_eager)}")
     print(f"Time saved:              {format_time(time_saved)}")
-    print(
-        f"Performance improvement: {Colors.BOLD}{improvement_percentage:.1f}%{Colors.ENDC}"
-    )
+    print(f"Performance improvement: {Colors.BOLD}{improvement_percentage:.1f}%{Colors.ENDC}")
 
     # Lazy vs Nested comparison (more realistic)
     nested_saved = avg_nested - avg_lazy
     nested_improvement = (nested_saved / avg_nested) * 100 if avg_nested > 0 else 0
 
-    print(f"\nRealistic usage (nested imports):")
+    print("\nRealistic usage (nested imports):")
     print(f"Lazy loading time:       {format_time(avg_lazy)}")
     print(f"With nested imports:     {format_time(avg_nested)}")
     print(f"Time saved:              {format_time(nested_saved)}")
-    print(
-        f"Performance improvement: {Colors.BOLD}{nested_improvement:.1f}%{Colors.ENDC}"
-    )
+    print(f"Performance improvement: {Colors.BOLD}{nested_improvement:.1f}%{Colors.ENDC}")
 
     # Module availability report
     print_section_header("Module Availability")
@@ -278,9 +259,7 @@ def run_benchmark() -> bool:
     successful_modules = sum(1 for available in submodule_status.values() if available)
     total_modules = len(submodule_status)
 
-    print(
-        f"Successfully loaded: {successful_modules}/{total_modules} submodules\n"
-    )
+    print(f"Successfully loaded: {successful_modules}/{total_modules} submodules\n")
 
     if successful_modules < total_modules:
         print(f"{Colors.WARNING}Failed to load:{Colors.ENDC}")
@@ -293,9 +272,7 @@ def run_benchmark() -> bool:
     successful_nested = sum(1 for available in nested_status.values() if available)
     total_nested = len(nested_status)
 
-    print(
-        f"Successfully loaded: {successful_nested}/{total_nested} nested modules\n"
-    )
+    print(f"Successfully loaded: {successful_nested}/{total_nested} nested modules\n")
 
     if successful_nested < total_nested:
         print(f"{Colors.WARNING}Failed to load:{Colors.ENDC}")
@@ -315,32 +292,20 @@ def run_benchmark() -> bool:
             f"{Colors.OKGREEN}{Colors.BOLD}✓ PASSED{Colors.ENDC}{Colors.OKGREEN}"
             f" - Lazy loading achieves {improvement_percentage:.1f}% improvement{Colors.ENDC}"
         )
-        print(
-            f"{Colors.OKGREEN}  (Target: >= {target_improvement}% improvement){Colors.ENDC}\n"
-        )
+        print(f"{Colors.OKGREEN}  (Target: >= {target_improvement}% improvement){Colors.ENDC}\n")
     else:
         print(
             f"{Colors.FAIL}{Colors.BOLD}✗ FAILED{Colors.ENDC}{Colors.FAIL}"
             f" - Lazy loading achieves only {improvement_percentage:.1f}% improvement{Colors.ENDC}"
         )
-        print(
-            f"{Colors.FAIL}  (Target: >= {target_improvement}% improvement){Colors.ENDC}\n"
-        )
+        print(f"{Colors.FAIL}  (Target: >= {target_improvement}% improvement){Colors.ENDC}\n")
 
     # Additional notes
     print(f"{Colors.OKCYAN}Notes:{Colors.ENDC}")
-    print(
-        f"  - Lazy loading defers all submodule imports until first access"
-    )
-    print(
-        f"  - This benchmark simulates the worst case (accessing ALL submodules)"
-    )
-    print(
-        f"  - In real usage, artists typically use only 1-2 submodules per session"
-    )
-    print(
-        f"  - Actual startup time improvement will be even greater than measured"
-    )
+    print("  - Lazy loading defers all submodule imports until first access")
+    print("  - This benchmark simulates the worst case (accessing ALL submodules)")
+    print("  - In real usage, artists typically use only 1-2 submodules per session")
+    print("  - Actual startup time improvement will be even greater than measured")
     print()
 
     return passed

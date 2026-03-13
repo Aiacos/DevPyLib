@@ -110,9 +110,7 @@ def _build_roll(
     pm.connectAttr(roll_attr, ball_clamp.inputR)
 
     # Toe: clamp roll to [bendLimit, straightAngle]
-    bend_to_straight = pm.shadingNode(
-        "clamp", asUtility=True, n=f"{prefix}_bendToStraightClamp"
-    )
+    bend_to_straight = pm.shadingNode("clamp", asUtility=True, n=f"{prefix}_bendToStraightClamp")
     pm.connectAttr(bend_limit_attr, bend_to_straight.minR)
     pm.connectAttr(straight_angle_attr, bend_to_straight.maxR)
     pm.connectAttr(roll_attr, bend_to_straight.inputR)
@@ -127,26 +125,20 @@ def _build_roll(
     pm.connectAttr(bend_to_straight.inputR, bend_to_straight_range.valueX)
 
     # Toe roll = percentage * roll angle
-    roll_multiplier = pm.shadingNode(
-        "multiplyDivide", asUtility=True, n=f"{prefix}_rollMultDiv"
-    )
+    roll_multiplier = pm.shadingNode("multiplyDivide", asUtility=True, n=f"{prefix}_rollMultDiv")
     pm.connectAttr(bend_to_straight_range.outValueX, roll_multiplier.input1X)
     pm.connectAttr(bend_to_straight.inputR, roll_multiplier.input2X)
     pm.connectAttr(roll_multiplier.outputX, tippy_toe_grp.rotateX)
 
     # Ball roll: (1 - toe%) * ball% * roll
     pm.connectAttr(bend_limit_attr, ball_clamp.maxR)
-    zero_to_bend_range = pm.shadingNode(
-        "setRange", asUtility=True, n=f"{prefix}_zeroToBendPercent"
-    )
+    zero_to_bend_range = pm.shadingNode("setRange", asUtility=True, n=f"{prefix}_zeroToBendPercent")
     pm.connectAttr(ball_clamp.minR, zero_to_bend_range.oldMinX)
     pm.connectAttr(ball_clamp.maxR, zero_to_bend_range.oldMaxX)
     zero_to_bend_range.maxX.set(1)
     pm.connectAttr(ball_clamp.inputR, zero_to_bend_range.valueX)
 
-    invert_percent = pm.shadingNode(
-        "plusMinusAverage", asUtility=True, n=f"{prefix}_invertPercent"
-    )
+    invert_percent = pm.shadingNode("plusMinusAverage", asUtility=True, n=f"{prefix}_invertPercent")
     invert_percent.input1D[0].set(1)
     invert_percent.input1D[1].set(1)
     pm.connectAttr(bend_to_straight_range.outValueX, invert_percent.input1D[1])
