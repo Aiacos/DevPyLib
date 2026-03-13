@@ -73,8 +73,8 @@ from mayaLib.rigLib.utils import control
 
 ## 📋 Requirements
 
-- **Autodesk Maya** 2020+ (tested on 2022-2025)
-- **Python** 3.7+ (included with Maya)
+- **Autodesk Maya** 2022-2026
+- **Python** 3.9+ (included with Maya)
 - **Git** (to clone the repository)
 
 ### Python Dependencies
@@ -83,10 +83,11 @@ Dependencies are installed automatically on first Maya startup:
 
 ```
 numpy
-pathlib
 pymel
 GitPython (optional)
 ```
+
+> **Note for Maya 2026**: PyMEL 1.5.0 (PyPI) does not support Maya 2026. Install [pymel 1.6.0rc2](https://github.com/iamsleepy/pymel/releases/tag/1.6.0rc2) from iamsleepy's fork instead.
 
 ---
 
@@ -111,60 +112,38 @@ cd DevPyLib
 git submodule update --init --recursive
 ```
 
-### 2. Create Symlink to userSetup.py
+### 2. Install Configuration Files
 
-Link `userSetup.py` to your Maya scripts folder for automatic loading.
-
-#### Linux
-
-```bash
-# Create directory if it doesn't exist
-mkdir -p ~/maya/scripts
-
-# Create symlink (recommended - auto-updates)
-ln -s ~/Documents/workspace/DevPyLib/userSetup.py ~/maya/scripts/userSetup.py
-
-# Alternative: if Maya uses ~/Documents/maya
-mkdir -p ~/Documents/maya/scripts
-ln -s ~/Documents/workspace/DevPyLib/userSetup.py ~/Documents/maya/scripts/userSetup.py
-```
-
-#### macOS
-
-```bash
-# Create directory if it doesn't exist
-mkdir -p ~/Library/Preferences/Autodesk/maya/scripts
-
-# Create symlink
-ln -s ~/Documents/workspace/DevPyLib/userSetup.py \
-      ~/Library/Preferences/Autodesk/maya/scripts/userSetup.py
-```
+Use the included installer scripts to copy `Maya.env` and `userSetup.py` to the correct Maya directories:
 
 #### Windows
 
-**Option A: PowerShell (Administrator) - Symlink (Recommended)**
-
-```powershell
-# Open PowerShell as Administrator
-# Create directory if it doesn't exist
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\Documents\maya\scripts"
-
-# Create symlink (change source path if needed)
-New-Item -ItemType SymbolicLink `
-         -Path "$env:USERPROFILE\Documents\maya\scripts\userSetup.py" `
-         -Target "$env:USERPROFILE\Documents\workspace\DevPyLib\userSetup.py"
+```batch
+cd DevPyLib
+install.bat
 ```
 
-**Option B: Manual Copy**
+#### Linux / macOS
 
-If you cannot create symlinks, simply copy the file:
-
-```powershell
-Copy-Item "$env:USERPROFILE\Documents\workspace\DevPyLib\userSetup.py" `
-          "$env:USERPROFILE\Documents\maya\scripts\userSetup.py"
+```bash
+cd DevPyLib
+./install.sh
 ```
 
-⚠️ **Note**: With manual copy, you'll need to update the file whenever there are changes.
+The installer will:
+- Detect installed Maya versions (2024-2026)
+- Copy `Maya.env` to each version's directory (`maya/{version}/Maya.env`)
+- Copy `userSetup.py` to the shared scripts directory (`maya/scripts/userSetup.py`)
+- Ask before overwriting existing files
+
+#### Manual Installation
+
+If you prefer to install manually, copy the files yourself:
+
+| Source | Destination |
+|--------|------------|
+| `mayaLib/Maya.env` | `~/Documents/maya/{version}/Maya.env` |
+| `mayaLib/userSetup.py` | `~/Documents/maya/scripts/userSetup.py` |
 
 ### 3. Launch Maya
 
@@ -214,7 +193,8 @@ DevPyLib/
 │   ├── MayaLib/             # MayaLib documentation
 │   ├── HoudiniLib/          # HoudiniLib documentation
 │   └── BlenderLib/          # BlenderLib documentation
-├── userSetup.py              # Maya auto-loader
+├── install.bat               # Windows installer (copies Maya.env + userSetup.py)
+├── install.sh                # Linux/macOS installer
 └── requirements.txt          # Python dependencies
 ```
 
@@ -275,20 +255,27 @@ stage = bifrost_api.get_maya_usd_stage()
 
 ## 🔧 Advanced Configuration
 
-### Environment Variables (Optional)
+### Environment Variables
 
-If you want to manually configure `Maya.env`:
+The `mayaLib/Maya.env` file configures environment variables per Maya version. Key variables:
 
-**Linux/macOS**: `~/maya/<version>/Maya.env`
-**Windows**: `%USERPROFILE%\Documents\maya\<version>\Maya.env`
+| Variable | Purpose |
+|----------|---------|
+| `DEVPYLIB_PATH` | Path to DevPyLib root directory |
+| `PYTHONPATH` | Set to `DEVPYLIB_PATH` for Python imports |
+| `BIFROST_LIB_CONFIG_FILES` | Path to custom Bifrost compound libraries |
+| `DEVPYLIB_DISABLE_LUNA` | Set to `1` to disable Luna loading at startup |
 
-```bash
-# Add to Maya.env
-MAYA_APP_DIR = /path/to/DevPyLib
-PYTHONPATH = /path/to/DevPyLib
+### Disabling Luna
+
+To prevent Luna from loading at startup (recommended if not using Luna):
+
+```env
+# In Maya.env
+DEVPYLIB_DISABLE_LUNA=1
 ```
 
-⚠️ **Not required** if using userSetup.py (recommended).
+This blocks Luna at all levels: Python import, menu discovery, and UI button.
 
 ### Auto-Update from Git
 
@@ -527,10 +514,10 @@ Get-Item $env:USERPROFILE\Documents\maya\scripts\userSetup.py | Select-Object Ta
 
 | Operating System | Maya Version | Status |
 |------------------|--------------|--------|
-| Windows 10/11    | 2020-2025    | ✅ Tested |
-| Linux (Ubuntu/CentOS/Rocky) | 2020-2025 | ✅ Tested |
-| macOS (Intel)    | 2020-2025    | ✅ Tested |
-| macOS (Apple Silicon) | 2022-2025 | ✅ Tested (Rosetta) |
+| Windows 10/11    | 2022-2026    | ✅ Tested |
+| Linux (Ubuntu/CentOS/Rocky) | 2022-2026 | ✅ Tested |
+| macOS (Intel)    | 2022-2025    | ✅ Tested |
+| macOS (Apple Silicon) | 2022-2026 | ✅ Tested (Rosetta) |
 
 ---
 

@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Ongoing documentation improvements and wiki updates
 - **HumanIK Modular Architecture**: Comprehensive README documentation for the new human_ik subpackage structure
+- **Installer scripts**: `install.bat` (Windows) and `install.sh` (Linux/macOS) to copy Maya.env and userSetup.py to correct Maya directories
+- **Luna disable flag**: `DEVPYLIB_DISABLE_LUNA=1` environment variable in Maya.env to fully disable Luna loading (import block, menu discovery exclusion, UI button hidden)
+- **Pip install skip**: userSetup.py checks if all requirements are already importable before calling pip, avoiding network timeouts on startup
+
+### Fixed
+- **Maya 2026 compatibility**: Documented pymel 1.6.0rc2 requirement (PyPI pymel 1.5.0 does not support Maya 2026)
+- **Menu KeyError on missing libraries**: `add_multiple_menu_action` now uses dict-based discipline mapping with graceful fallback for missing library keys
+- **Module discovery crash**: `get_all_class` and `get_all_function` in StructureManager now catch import errors instead of crashing the entire menu system
+- **Leaf modules skipped**: Fixed regression where leaf modules (explosion.py, fire.py, smoke.py, etc.) were silently excluded from menu discovery after `list_sub_packages` guard was added
+- **userSetup.py as package**: Fixed `__path__` AttributeError when `list_function.py` tried to iterate `mayaLib.userSetup` as a sub-package
+- **Removed `pathlib`** from requirements.txt (built-in since Python 3.4)
 
 ### Changed
 - **HumanIK Refactoring**: Split monolithic 1692-line class into modular subpackage architecture

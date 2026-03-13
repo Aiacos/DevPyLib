@@ -27,10 +27,11 @@ This guide will help you install and configure MayaLib for use in Autodesk Maya.
 
 ```
 numpy
-pathlib
 pymel
 GitPython
 ```
+
+> **Maya 2026**: PyMEL 1.5.0 (PyPI) does not support Maya 2026. Install [pymel 1.6.0rc2](https://github.com/iamsleepy/pymel/releases/tag/1.6.0rc2) instead.
 
 ### Optional Dependencies
 
@@ -44,61 +45,44 @@ AdonisFX           # Muscle simulation
 
 ## Installation Methods
 
-### Method 1: Git Clone (Recommended)
+### Method 1: Installer Script (Recommended)
 
 1. **Clone the repository** with submodules:
    ```bash
-   git clone --recursive https://github.com/your-repo/DevPyLib.git
-   ```
-
-2. **If submodules were not cloned**, update them:
-   ```bash
+   git clone --recursive https://github.com/Aiacos/DevPyLib.git
    cd DevPyLib
-   git submodule update --init --recursive
    ```
 
-3. **Create a symlink** from `userSetup.py` to Maya's scripts directory:
+2. **Run the installer** to copy `Maya.env` and `userSetup.py`:
 
-   **Windows (PowerShell as Administrator):**
-   ```powershell
-   New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\Documents\maya\scripts\userSetup.py" -Target "C:\path\to\DevPyLib\userSetup.py"
+   **Windows:**
+   ```batch
+   install.bat
    ```
 
    **Linux/macOS:**
    ```bash
-   ln -s /path/to/DevPyLib/userSetup.py ~/maya/scripts/userSetup.py
+   ./install.sh
    ```
 
-4. **Start Maya** - Dependencies will auto-install on first startup.
+   The installer automatically:
+   - Detects installed Maya versions (2024-2026)
+   - Copies `Maya.env` to `maya/{version}/Maya.env`
+   - Copies `userSetup.py` to `maya/scripts/userSetup.py`
+
+3. **Start Maya** - Dependencies will auto-install on first startup.
 
 ### Method 2: Manual Copy
 
-1. **Download or clone** the repository
-2. **Copy** `userSetup.py` to Maya's scripts directory:
+1. **Clone** the repository
+2. **Copy** `mayaLib/userSetup.py` to Maya's scripts directory:
    - **Windows**: `%USERPROFILE%\Documents\maya\scripts\`
    - **Linux**: `~/maya/scripts/`
    - **macOS**: `~/Library/Preferences/Autodesk/maya/scripts/`
-3. **Edit** `userSetup.py` to set the correct path to DevPyLib
+3. **Copy** `mayaLib/Maya.env` to the Maya version directory:
+   - **Windows**: `%USERPROFILE%\Documents\maya\{version}\Maya.env`
+   - **Linux**: `~/maya/{version}/Maya.env`
 4. **Start Maya**
-
-### Method 3: Environment Variables
-
-1. **Set PYTHONPATH** to include DevPyLib:
-   ```bash
-   # Windows
-   set PYTHONPATH=C:\path\to\DevPyLib;%PYTHONPATH%
-
-   # Linux/macOS
-   export PYTHONPATH=/path/to/DevPyLib:$PYTHONPATH
-   ```
-
-2. **Optionally** use `Maya.env`:
-   ```
-   MAYA_APP_DIR = C:/path/to/DevPyLib/mayaLib
-   PYTHONPATH = C:/path/to/DevPyLib
-   MAYA_MODULE_PATH = C:/path/to/DevPyLib/mayaLib
-   MAYA_PLUG_IN_PATH = C:/path/to/DevPyLib/mayaLib/plugin
-   ```
 
 ---
 
@@ -125,15 +109,14 @@ This means you can install DevPyLib anywhere on your system without modifying ha
 
 ### Maya.env Configuration
 
-Example `Maya.env` for Windows:
+The `mayaLib/Maya.env` file is pre-configured. Key variables:
 
-```env
-// DevPyLib Environment Configuration
-MAYA_APP_DIR = C:/Users/YourUser/Documents/workspace/DevPyLib/mayaLib
-PYTHONPATH = C:/Users/YourUser/Documents/workspace/DevPyLib
-MAYA_MODULE_PATH = C:/Users/YourUser/Documents/workspace/DevPyLib/mayaLib
-MAYA_PLUG_IN_PATH = C:/Users/YourUser/Documents/workspace/DevPyLib/mayaLib/plugin
-```
+| Variable | Purpose |
+|----------|---------|
+| `DEVPYLIB_PATH` | Path to DevPyLib root directory |
+| `PYTHONPATH` | Python import path (set to DEVPYLIB_PATH) |
+| `BIFROST_LIB_CONFIG_FILES` | Custom Bifrost compound library path |
+| `DEVPYLIB_DISABLE_LUNA` | Set to `1` to disable Luna at startup |
 
 ### Loading Plugins
 
@@ -296,10 +279,18 @@ ui.show()
 **Problem**: `ImportError: No module named 'pymel'`
 
 **Solution**:
-```python
-import sys
-import subprocess
-subprocess.run([sys.executable, "-m", "pip", "install", "pymel"])
+```bash
+mayapy -m pip install pymel
+```
+
+### PyMEL Cannot Find Maya Documentation (Maya 2026)
+
+**Problem**: `OSError: Cannot find maya documentation. Expected to find it at ...\docs\Maya2026\en_US`
+
+**Solution**: PyMEL 1.5.0 does not support Maya 2026. Install the community fork:
+```bash
+mayapy -m pip uninstall pymel
+mayapy -m pip install git+https://github.com/iamsleepy/pymel.git@1.6.0rc2
 ```
 
 ### Qt Import Errors
@@ -366,4 +357,4 @@ git submodule update --init --recursive
 
 ---
 
-*Last updated: January 2026*
+*Last updated: March 2026*

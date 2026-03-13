@@ -26,6 +26,7 @@ Luna is a rigging system that allows creating rigs via Python or a node-based ed
 - **Bridge utilities**: Connect DevPyLib rigs with Luna components
 - **Component wrappers**: Expose Luna components through DevPyLib patterns
 - **Automatic detection**: Luna availability checked at import time
+- **Disable flag**: Set `DEVPYLIB_DISABLE_LUNA=1` in `Maya.env` to fully disable Luna (blocks import, menu discovery, and UI button)
 
 ### Module Structure
 

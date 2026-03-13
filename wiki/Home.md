@@ -160,11 +160,12 @@ After installation, DevPyLib adds a **MayaLib** menu to Maya's main menu bar wit
 ### Dependencies
 ```
 numpy
-pathlib
 pymel
 GitPython
 ngSkinTools2 (optional, for advanced skin weighting)
 ```
+
+> **Maya 2026**: Use [pymel 1.6.0rc2](https://github.com/iamsleepy/pymel/releases/tag/1.6.0rc2) instead of PyPI pymel.
 
 ### Step-by-Step Installation
 
@@ -280,4 +281,4 @@ For issues, feature requests, or contributions, please visit the project reposit
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
