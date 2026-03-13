@@ -38,6 +38,12 @@ case "$(uname -s)" in
         fi
         MAYA_SCRIPTS_DIR="$MAYA_BASE/scripts"
         ;;
+    MINGW*|MSYS*|CYGWIN*)
+        MAYA_BASE="$USERPROFILE/Documents/maya"
+        # Convert backslashes if needed
+        MAYA_BASE="${MAYA_BASE//\\//}"
+        MAYA_SCRIPTS_DIR="$MAYA_BASE/scripts"
+        ;;
     *)
         echo "[!!] Unsupported OS: $(uname -s)"
         exit 1
