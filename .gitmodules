@@ -1,6 +1,6 @@
-[submodule "pyfrost"]
-	path = pyfrost
-	url = https://github.com/BenoitGielly/pyfrost.git
-[submodule "luna"]
-	path = luna
+[submodule "mayaLib/luna"]
+	path = mayaLib/luna
 	url = https://github.com/Aiacos/luna.git
+[submodule "mayaLib/pyfrost"]
+	path = mayaLib/pyfrost
+	url = https://github.com/BenoitGielly/pyfrost.git
