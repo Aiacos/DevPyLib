@@ -13,6 +13,7 @@ if pm.about(version=True) == "2022":
 else:
     import collections.abc as collection
 import inspect
+import os
 import pkgutil
 
 import mayaLib as mLib
@@ -86,12 +87,15 @@ class StructureManager:
         self.sub_package_list = []
         for mod in self.module_list:
             try:
-                # Module Case
                 sub_pack = self.list_sub_packages(mod)
             except (AttributeError, ImportError):
                 self.module_class_list.append(mod)
             else:
-                self.module_class_list.extend(sub_pack)
+                if sub_pack:
+                    self.module_class_list.extend(sub_pack)
+                else:
+                    # Leaf module with no sub-packages — include it directly
+                    self.module_class_list.append(mod)
 
         # Build final class list with full paths
         for item in self.module_class_list:
@@ -163,11 +167,20 @@ class StructureManager:
         func = getattr(module, function)
         return func
 
+    # Packages to always exclude from discovery
+    _EXCLUDED_PACKAGES = {"utility", "userSetup"}
+
     def list_all_package(self):
         """Return a list of all packages in the root package."""
+        excluded = set(self._EXCLUDED_PACKAGES)
+
+        # Exclude lunaLib when disabled via environment variable
+        if os.environ.get("DEVPYLIB_DISABLE_LUNA", "0") == "1":
+            excluded.add("lunaLib")
+
         package_list = []
         for p in pkgutil.walk_packages(self.root_package.__path__):
-            if "utility" not in p[1]:
+            if not any(ex in p[1] for ex in excluded):
                 package_list.append(p[1])
 
         return package_list
@@ -189,6 +202,8 @@ class StructureManager:
         """Return a list of all sub packages in the given package."""
         package_list = []
         package = __import__(package_str, fromlist=[""])
+        if not hasattr(package, "__path__"):
+            return package_list
         for p in pkgutil.iter_modules(package.__path__):
             package_list.append(package_str + "." + p[1])
 
@@ -220,6 +235,13 @@ class StructureManager:
 
         return module_list
 
+    # Modules to skip during introspection
+    _SKIP_MODULES = {"licenseRegister", "fix_loa_connection", "paintable_maps"}
+
+    def _should_skip_module(self, module_str):
+        """Check if a module should be skipped during introspection."""
+        return any(skip in module_str for skip in self._SKIP_MODULES)
+
     def get_all_class(self, module_str):
         """Return a list of all classes in the given module.
 
@@ -229,22 +251,16 @@ class StructureManager:
         Returns:
             list: A list of tuples where each tuple contains the class name
                   and the class object.
-
-        Note:
-            The function will not inspect modules named 'licenseRegister',
-            'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
-            an empty string.
         """
-        if (
-            ("licenseRegister" not in module_str)
-            and ("fix_loa_connection" not in module_str)
-            and ("paintable_maps" not in module_str)
-        ):
+        if self._should_skip_module(module_str):
+            return []
+        try:
             module = __import__(module_str, fromlist=[""])
             class_list = [o for o in inspect.getmembers(module) if inspect.isclass(o[1])]
             return class_list
-        else:
-            return ""
+        except Exception as e:
+            print(f"Warning: Could not inspect classes in {module_str}: {e}")
+            return []
 
     def get_all_method(self, module_str):
         """Return a list of all methods in the given module."""
@@ -261,22 +277,16 @@ class StructureManager:
         Returns:
             list: A list of tuples where each tuple contains the function name
                   and the function object.
-
-        Note:
-            The function will not inspect modules named 'licenseRegister',
-            'fix_loa_connection', or 'paintable_maps'. In these cases, it returns
-            an empty string.
         """
-        if (
-            ("licenseRegister" not in module_str)
-            and ("fix_loa_connection" not in module_str)
-            and ("paintable_maps" not in module_str)
-        ):
+        if self._should_skip_module(module_str):
+            return []
+        try:
             module = __import__(module_str, fromlist=[""])
             functions_list = [o for o in inspect.getmembers(module) if inspect.isfunction(o[1])]
             return functions_list
-        else:
-            return ""
+        except Exception as e:
+            print(f"Warning: Could not inspect functions in {module_str}: {e}")
+            return []
 
     def explore_package(self, module_name):
         """Explore the given package and return a list of all sub packages."""

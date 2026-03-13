@@ -154,18 +154,21 @@ class MenuLibWidget(QtWidgets.QWidget):
         self.doc_label.setText("")
 
         # Luna, Update, and Reload Buttons
-        self.luna_button = self.add_icon_button("Luna Builder", str(luna_icon_path))
         self.update_button = self.add_icon_button("update", str(update_icon_path))
         self.reload_button = self.add_icon_button("reload", str(reload_icon_path))
 
         self.button_layout = QtWidgets.QHBoxLayout()
-        self.button_layout.addWidget(self.luna_button)
+
+        # Only show Luna button when not disabled
+        luna_disabled = os.environ.get("DEVPYLIB_DISABLE_LUNA", "0") == "1"
+        if not luna_disabled:
+            self.luna_button = self.add_icon_button("Luna Builder", str(luna_icon_path))
+            self.button_layout.addWidget(self.luna_button)
+            self.luna_button.clicked.connect(self.open_luna_builder)
+
         self.button_layout.addWidget(self.reload_button)
         self.button_layout.addWidget(self.update_button)
         self.layout.addLayout(self.button_layout)
-
-        # Connect signals
-        self.luna_button.clicked.connect(self.open_luna_builder)
         self.reload_button.clicked.connect(self.reloaded)
         self.update_button.clicked.connect(self.download)
         self.search_line_edit.speak.connect(
@@ -392,23 +395,19 @@ class MenuLibWidget(QtWidgets.QWidget):
         """
         self._ensure_structure_initialized()
         action_list = []
-        if discipline == "Modelling":
-            lib_menu = self.add_sub_menu(up_menu, "modelLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["modelLib"])
-        elif discipline == "Rigging":
-            lib_menu = self.add_sub_menu(up_menu, "rigLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["rigLib"])
-        elif discipline == "Animation":
-            lib_menu = self.add_sub_menu(up_menu, "animationLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["animationLib"])
-        elif discipline == "Vfx":
-            lib_menu = self.add_sub_menu(up_menu, "fluidLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["fluidLib"])
-        elif discipline == "Lookdev":
-            lib_menu = self.add_sub_menu(up_menu, "lookdevLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["lookdevLib"])
-            lib_menu = self.add_sub_menu(up_menu, "shaderLib")
-            self.add_recursive_menu(lib_menu, self.lib_dict["shaderLib"])
+        discipline_libs = {
+            "Modelling": ["modelLib"],
+            "Rigging": ["rigLib"],
+            "Animation": ["animationLib"],
+            "Vfx": ["fluidLib"],
+            "Lookdev": ["lookdevLib", "shaderLib"],
+        }
+        for lib_name in discipline_libs.get(discipline, []):
+            if lib_name not in self.lib_dict:
+                print(f"Warning: {lib_name} not found in library structure, skipping menu entry")
+                continue
+            lib_menu = self.add_sub_menu(up_menu, lib_name)
+            self.add_recursive_menu(lib_menu, self.lib_dict[lib_name])
 
         return action_list
 

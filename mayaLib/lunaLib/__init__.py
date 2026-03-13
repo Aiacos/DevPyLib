@@ -191,6 +191,11 @@ def _initialize_luna():
 
     _luna_initialized = True
 
+    # Respect the disable flag from Maya.env / userSetup.py
+    if os.environ.get("DEVPYLIB_DISABLE_LUNA", "0") == "1":
+        _luna_available = False
+        return False
+
     if not LUNA_ROOT_PATH:
         print(f"Warning: Luna path not found at {_luna_path}")
         return False

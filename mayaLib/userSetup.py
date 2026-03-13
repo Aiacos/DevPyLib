@@ -157,6 +157,16 @@ if lib_dir:
         sys.path.append(lib_dir)
         print(f"Added {lib_dir} to sys.path")
 
+    # Block Luna from auto-loading if DEVPYLIB_DISABLE_LUNA=1
+    if os.environ.get("DEVPYLIB_DISABLE_LUNA", "0") == "1":
+        # Prevent Python from finding the luna package in DevPyLib
+        luna_path = str(Path(lib_dir) / "luna")
+        sys.modules["luna"] = None  # Block any future import luna
+        sys.modules["luna_builder"] = None
+        sys.modules["luna_configer"] = None
+        sys.modules["luna_rig"] = None
+        print("Luna disabled via DEVPYLIB_DISABLE_LUNA=1")
+
     try:
         if lib_name in sys.modules:
             importlib.reload(sys.modules[lib_name])
