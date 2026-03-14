@@ -1,0 +1,218 @@
+{
+    "header": {
+        "metadata": [
+            {
+                "metaName": "adskFileFormatVersion",
+                "metaValue": "100L"
+            }
+        ]
+    },
+    "namespaces": [],
+    "types": [],
+    "compounds": [
+        {
+            "name": "DevPyLib::TensionMap::vertex_tension",
+            "metadata": [
+                {
+                    "metaName": "icon",
+                    "metaType": "string",
+                    "metaValue": "<NATIVE>../icons/LoopForEach.svg"
+                },
+                {
+                    "metaName": "icon",
+                    "metaType": "string",
+                    "metaValue": "<NATIVE>../icons/LoopForEach.svg"
+                },
+                {
+                    "metaName": "icon",
+                    "metaType": "string",
+                    "metaValue": "<NATIVE>../icons/LoopForEach.svg"
+                }
+            ],
+            "ports": [
+                {
+                    "portName": "max_iterations",
+                    "portDirection": "input",
+                    "portType": "long",
+                    "portIterationLimit": "true"
+                },
+                {
+                    "portName": "current_index",
+                    "portDirection": "input",
+                    "portType": "long",
+                    "portIterationCounter": "true"
+                },
+                {
+                    "portName": "face_vertex",
+                    "portDirection": "input"
+                },
+                {
+                    "portName": "rest_fv_len",
+                    "portDirection": "input"
+                },
+                {
+                    "portName": "def_fv_len",
+                    "portDirection": "input"
+                },
+                {
+                    "portName": "sensitivity",
+                    "portDirection": "input",
+                    "portType": "float"
+                },
+                {
+                    "portName": "offset",
+                    "portDirection": "input",
+                    "portType": "float"
+                },
+                {
+                    "portName": "epsilon",
+                    "portDirection": "input",
+                    "portType": "float"
+                },
+                {
+                    "portName": "tension",
+                    "portDirection": "output",
+                    "portIterationTarget": "true"
+                }
+            ],
+            "compoundNodes": [
+                {
+                    "nodeName": "equal",
+                    "nodeType": "Core::Logic::equal"
+                },
+                {
+                    "nodeName": "filter_rest",
+                    "nodeType": "Core::Array::filter_array"
+                },
+                {
+                    "nodeName": "filter_def",
+                    "nodeType": "Core::Array::filter_array"
+                },
+                {
+                    "nodeName": "sum_rest",
+                    "nodeType": "Core::Array::sum_array"
+                },
+                {
+                    "nodeName": "sum_def",
+                    "nodeType": "Core::Array::sum_array"
+                },
+                {
+                    "nodeName": "count",
+                    "nodeType": "Core::Array::array_size"
+                },
+                {
+                    "nodeName": "count_float",
+                    "nodeType": "Core::Type_Conversion::to_float"
+                },
+                {
+                    "nodeName": "one_const",
+                    "nodeType": "Core::Constants::float"
+                },
+                {
+                    "nodeName": "safe_count",
+                    "nodeType": "Core::Math::max",
+                    "multiInPortNames": ["count", "one"]
+                },
+                {
+                    "nodeName": "rest_avg",
+                    "nodeType": "Core::Math::divide",
+                    "multiInPortNames": ["total", "cnt"]
+                },
+                {
+                    "nodeName": "def_avg",
+                    "nodeType": "Core::Math::divide",
+                    "multiInPortNames": ["total", "cnt"]
+                },
+                {
+                    "nodeName": "safe_rest",
+                    "nodeType": "Core::Math::max",
+                    "multiInPortNames": ["rest", "eps"]
+                },
+                {
+                    "nodeName": "edge_diff",
+                    "nodeType": "Core::Math::subtract",
+                    "multiInPortNames": ["rest", "deformed"]
+                },
+                {
+                    "nodeName": "edge_ratio",
+                    "nodeType": "Core::Math::divide",
+                    "multiInPortNames": ["diff", "safe"]
+                },
+                {
+                    "nodeName": "scaled",
+                    "nodeType": "Core::Math::multiply",
+                    "multiInPortNames": ["ratio", "sensitivity"]
+                },
+                {
+                    "nodeName": "tension_raw",
+                    "nodeType": "Core::Math::add",
+                    "multiInPortNames": ["value", "off"]
+                },
+                {
+                    "nodeName": "tension_clamped",
+                    "nodeType": "Core::Math::clamp"
+                }
+            ],
+            "connections": [
+                {"source": ".face_vertex",                "target": "equal.first"},
+                {"source": ".current_index",              "target": "equal.second"},
+
+                {"source": ".rest_fv_len",                "target": "filter_rest.array"},
+                {"source": "equal.output",                "target": "filter_rest.boolean_array"},
+                {"source": ".def_fv_len",                 "target": "filter_def.array"},
+                {"source": "equal.output",                "target": "filter_def.boolean_array"},
+
+                {"source": "filter_rest.filtered_array",  "target": "sum_rest.array"},
+                {"source": "filter_def.filtered_array",   "target": "sum_def.array"},
+                {"source": "filter_rest.filtered_array",  "target": "count.array"},
+
+                {"source": "count.size",                  "target": "count_float.from"},
+                {"source": "count_float.float",           "target": "safe_count.first.count"},
+                {"source": "one_const.output",            "target": "safe_count.first.one"},
+
+                {"source": "sum_rest.sum",                "target": "rest_avg.first.total"},
+                {"source": "safe_count.maximum",          "target": "rest_avg.first.cnt"},
+                {"source": "sum_def.sum",                 "target": "def_avg.first.total"},
+                {"source": "safe_count.maximum",          "target": "def_avg.first.cnt"},
+
+                {"source": "rest_avg.output",             "target": "safe_rest.first.rest"},
+                {"source": ".epsilon",                    "target": "safe_rest.first.eps"},
+
+                {"source": "rest_avg.output",             "target": "edge_diff.first.rest"},
+                {"source": "def_avg.output",              "target": "edge_diff.first.deformed"},
+
+                {"source": "edge_diff.output",            "target": "edge_ratio.first.diff"},
+                {"source": "safe_rest.maximum",           "target": "edge_ratio.first.safe"},
+
+                {"source": "edge_ratio.output",           "target": "scaled.first.ratio"},
+                {"source": ".sensitivity",                "target": "scaled.first.sensitivity"},
+
+                {"source": "scaled.output",               "target": "tension_raw.first.value"},
+                {"source": ".offset",                     "target": "tension_raw.first.off"},
+
+                {"source": "tension_raw.output",          "target": "tension_clamped.value"},
+                {"source": "tension_clamped.clamped",     "target": ".tension"}
+            ],
+            "values": [
+                {
+                    "valueName": "one_const.output",
+                    "valueType": "float",
+                    "value": "1.0f"
+                },
+                {
+                    "valueName": "tension_clamped.min",
+                    "valueType": "float",
+                    "value": "0.0f"
+                },
+                {
+                    "valueName": "tension_clamped.max",
+                    "valueType": "float",
+                    "value": "1.0f"
+                }
+            ],
+            "forEachCompound": {
+                "ports": []
+            }
+        }
+    ]
+}
