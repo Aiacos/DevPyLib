@@ -3,4 +3,4 @@
 	url = https://github.com/Aiacos/luna.git
 [submodule "mayaLib/pyfrost"]
 	path = mayaLib/pyfrost
-	url = https://github.com/BenoitGielly/pyfrost.git
+	url = https://github.com/Aiacos/pyfrost.git
