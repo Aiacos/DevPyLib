@@ -1,0 +1,1168 @@
+{
+    "header": {
+        "metadata": [
+            {
+                "metaName": "adskFileFormatVersion",
+                "metaValue": "100L"
+            }
+        ]
+    },
+    "namespaces": [],
+    "types": [],
+    "compounds": [
+        {
+            "name": "StudioLibrary::Utilities::Tension_map",
+            "metadata": [
+                {
+                    "metaName": "io_nodes",
+                    "metadata": [
+                        {
+                            "metaName": "io_inodes",
+                            "metadata": [
+                                {
+                                    "metaName": "input",
+                                    "metadata": [
+                                        {
+                                            "metaName": "io_ports",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "deformed_mesh"
+                                                },
+                                                {
+                                                    "metaName": "rest_mesh"
+                                                },
+                                                {
+                                                    "metaName": "face_size"
+                                                },
+                                                {
+                                                    "metaName": "sensitivity"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
+                                            "metaName": "LayoutPos",
+                                            "metaType": "string",
+                                            "metaValue": "10 442"
+                                        },
+                                        {
+                                            "metaName": "zValue",
+                                            "metaType": "string",
+                                            "metaValue": "31.000000"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "metaName": "io_onodes",
+                            "metadata": [
+                                {
+                                    "metaName": "output",
+                                    "metadata": [
+                                        {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
+                                            "metaName": "LayoutPos",
+                                            "metaType": "string",
+                                            "metaValue": "5805 1117"
+                                        },
+                                        {
+                                            "metaName": "io_ports",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "out_geometry"
+                                                },
+                                                {
+                                                    "metaName": "tension_weights"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "metaName": "zValue",
+                                            "metaType": "string",
+                                            "metaValue": "32.000000"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "metaName": "ViewportRect",
+                    "metaType": "string",
+                    "metaValue": "4194.42 214.024 2502.57 1432.06"
+                },
+                {
+                    "metaName": "DisplayMode",
+                    "metaType": "string",
+                    "metaValue": "2"
+                },
+                {
+                    "metaName": "UILayout",
+                    "metaType": "string",
+                    "metaValue": "{\n    \"NodeLayout\": {\n        \"hideUndeclaredPorts\": false,\n        \"items\": [\n            {\n                \"port\": \"deformed_mesh\"\n            },\n            {\n                \"port\": \"rest_mesh\"\n            },\n            {\n                \"condition\": {\n                    \"op\": \"\",\n                    \"port\": \"\",\n                    \"value\": null\n                },\n                \"group\": \"Conditional Display Rule\",\n                \"items\": [\n                    {\n                        \"condition\": {\n                            \"action\": \"disable\",\n                            \"op\": \"\",\n                            \"port\": \"\",\n                            \"value\": \"\"\n                        },\n                        \"group\": \"Disable based on: \",\n                        \"items\": [\n                            {\n                                \"port\": \"face_size\"\n                            }\n                        ],\n                        \"unique_id\": 5\n                    }\n                ],\n                \"unique_id\": 10\n            },\n            {\n                \"port\": \"sensitivity\"\n            }\n        ]\n    }\n}\n"
+                },
+                {
+                    "metaName": "LayoutPos",
+                    "metaType": "string",
+                    "metaValue": "-3624.6 812.035"
+                },
+                {
+                    "metaName": "zValue",
+                    "metaType": "string",
+                    "metaValue": "39.000000"
+                }
+            ],
+            "ports": [
+                {
+                    "portName": "deformed_mesh",
+                    "portDirection": "input",
+                    "portType": "Object",
+                    "portDefault": {}
+                },
+                {
+                    "portName": "rest_mesh",
+                    "portDirection": "input",
+                    "portType": "Object",
+                    "portDefault": {}
+                },
+                {
+                    "portName": "face_size",
+                    "portDirection": "input",
+                    "portType": "long",
+                    "portDefault": "4"
+                },
+                {
+                    "portName": "sensitivity",
+                    "portDirection": "input",
+                    "portType": "float",
+                    "portDefault": "10f"
+                },
+                {
+                    "portName": "out_geometry",
+                    "portDirection": "output",
+                    "portType": "Object"
+                },
+                {
+                    "portName": "tension_weights",
+                    "portDirection": "output"
+                }
+            ],
+            "compoundNodes": [
+                {
+                    "nodeName": "def_edge",
+                    "nodeType": "Core::Math::subtract",
+                    "multiInPortNames": [
+                        "next_pos",
+                        "curr_pos"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "81639CCE-C57F-44A7-8DE9-6F9D95550023"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2755 223"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "48.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "def_fv_pos",
+                    "nodeType": "Core::Array::get_from_array",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "5A61384B-4816-4426-B96A-5FEDD04ABAF1"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2450 239"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "44.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "def_len",
+                    "nodeType": "Core::Math::length",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "05080D02-AF04-4890-83F5-7A6092D0145B"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3060 368"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "49.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "def_next_pos",
+                    "nodeType": "Core::Array::get_from_array",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "D33597B6-C46C-4955-9645-94A5AEAD7076"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2450 21"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "45.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "edge_diff",
+                    "nodeType": "Core::Math::subtract",
+                    "multiInPortNames": [
+                        "rest",
+                        "deformed"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "57D6AD5F-2292-464F-8789-C5E462EA1EA2"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3365 486"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "51.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "edge_ratio",
+                    "nodeType": "Core::Math::divide",
+                    "multiInPortNames": [
+                        "diff",
+                        "safe"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "48106E97-F0A7-4705-B43D-DF491D5246EF"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3670 734"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "52.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "face_start",
+                    "nodeType": "Core::Math::subtract",
+                    "multiInPortNames": [
+                        "indices",
+                        "local"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "ADB4460C-7E12-4FE9-BF99-0E33EF284BE1"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "1535 10"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "37.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "fv_indices",
+                    "nodeType": "Core::Array::get_array_indices",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "B98B66CC-C593-401D-8026-2B239AA7DFFB"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "620 188"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "35.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "get_def_pos",
+                    "nodeType": "Geometry::Properties::get_point_position",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "27F35A5A-96D1-4E2C-9DFA-5942FE734137"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2145 58"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "34.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "get_rest_struct",
+                    "nodeType": "Geometry::Mesh::get_mesh_structure",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "12F1371F-BB3A-4EF7-9B92-F7A8475CE81A"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "315 347"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "33.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "green_ramp",
+                    "nodeType": "Core::Math::change_range",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "21319D73-E80D-4B47-8D40-B3EE7404DFB1"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "4890 990"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "57.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "local_idx",
+                    "nodeType": "Core::Math::modulo",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "ACB7197D-0A06-4F7B-80FD-42962423134C"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "925 156"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "36.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "local_plus1",
+                    "nodeType": "Core::Math::add",
+                    "multiInPortNames": [
+                        "local",
+                        "one"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "C434FB80-C3D9-42DD-B032-D9D62C1C715F"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "1230 155"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "38.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "next_fv_idx",
+                    "nodeType": "Core::Math::add",
+                    "multiInPortNames": [
+                        "fs",
+                        "nl"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "E4D60C2B-D959-4242-9DEB-B01BAB49BC12"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "1840 314"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "40.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "next_local",
+                    "nodeType": "Core::Math::modulo",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "3CA4509F-2950-42BA-90C6-A3B631AD43BC"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "1535 252"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "39.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "next_vert",
+                    "nodeType": "Core::Array::get_from_array",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "FA0843B4-CC4B-4BDC-8C21-2AE0BC2D90F7"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2145 252"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "41.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "red_ramp",
+                    "nodeType": "Core::Math::change_range",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "CC15B6A1-7D41-4350-9A42-B21C2ECD1C1E"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "4890 675"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "56.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "rest_edge",
+                    "nodeType": "Core::Math::subtract",
+                    "multiInPortNames": [
+                        "next_pos",
+                        "curr_pos"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "CC27108F-F8A5-465D-994F-EDA218E19B42"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2755 563"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "46.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "rest_fv_pos",
+                    "nodeType": "Core::Array::get_from_array",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "9BA2DAAA-707A-43C7-BB08-266B754263B3"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2450 677"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "42.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "rest_len",
+                    "nodeType": "Core::Math::length",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "C8543DE9-8621-45BF-BE3E-7AC7D04EABA0"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3060 563"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "47.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "rest_next_pos",
+                    "nodeType": "Core::Array::get_from_array",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "C56D95BA-CA35-440E-846B-993A541D569E"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "2450 458"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "43.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "safe_rest",
+                    "nodeType": "Core::Math::max",
+                    "multiInPortNames": [
+                        "rest_len",
+                        "epsilon"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "6190D556-6444-4F87-911D-2E00409EA3F4"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3365 729"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "50.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "scale_ratio",
+                    "nodeType": "Core::Math::multiply",
+                    "multiInPortNames": [
+                        "ratio",
+                        "sensitivity"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "370B8250-2354-4467-8617-11FE43EDCC10"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "3975 888"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "53.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "set_color",
+                    "nodeType": "Geometry::Properties::set_geo_property",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "6DCE0AD1-1BCC-4AB8-A9A5-A945D1404AD8"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "61.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "5503.72 885.985"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "tension_clamped",
+                    "nodeType": "Core::Math::clamp",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "DCE69430-B688-4E54-9FE4-1E0F06EBAF20"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "4585 953"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "55.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "tension_color",
+                    "nodeType": "Core::Conversion::scalar_to_vector3",
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "E77CE6F4-9F16-4527-BB30-EBCB0D561A3E"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "5195 1052"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "58.000000"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "tension_raw",
+                    "nodeType": "Core::Math::add",
+                    "multiInPortNames": [
+                        "scaled",
+                        "offset"
+                    ],
+                    "metadata": [
+                        {
+                            "metaName": "UUID",
+                            "metaType": "string",
+                            "metaValue": "E526D486-2E0D-4DF3-B4C0-700B70A0B1B6"
+                        },
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "4280 918"
+                        },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "54.000000"
+                        }
+                    ]
+                }
+            ],
+            "connections": [
+                {
+                    "source": "def_next_pos.value",
+                    "target": "def_edge.first.next_pos"
+                },
+                {
+                    "source": "def_fv_pos.value",
+                    "target": "def_edge.first.curr_pos"
+                },
+                {
+                    "source": "def_edge.output",
+                    "target": "def_len.vector"
+                },
+                {
+                    "source": "get_def_pos.point_position",
+                    "target": "def_fv_pos.array"
+                },
+                {
+                    "source": "get_rest_struct.face_vertex",
+                    "target": "def_fv_pos.index"
+                },
+                {
+                    "source": "def_len.length",
+                    "target": "edge_diff.first.deformed"
+                },
+                {
+                    "source": "get_def_pos.point_position",
+                    "target": "def_next_pos.array"
+                },
+                {
+                    "source": "next_vert.value",
+                    "target": "def_next_pos.index"
+                },
+                {
+                    "source": "rest_len.length",
+                    "target": "edge_diff.first.rest"
+                },
+                {
+                    "source": "edge_diff.output",
+                    "target": "edge_ratio.first.diff"
+                },
+                {
+                    "source": "safe_rest.maximum",
+                    "target": "edge_ratio.first.safe"
+                },
+                {
+                    "source": "edge_ratio.output",
+                    "target": "scale_ratio.first.ratio"
+                },
+                {
+                    "source": "fv_indices.indices",
+                    "target": "face_start.first.indices"
+                },
+                {
+                    "source": "local_idx.remainder",
+                    "target": "face_start.first.local"
+                },
+                {
+                    "source": "face_start.output",
+                    "target": "next_fv_idx.first.fs"
+                },
+                {
+                    "source": "get_rest_struct.face_vertex",
+                    "target": "fv_indices.array"
+                },
+                {
+                    "source": "fv_indices.indices",
+                    "target": "local_idx.value"
+                },
+                {
+                    "source": ".deformed_mesh",
+                    "target": "get_def_pos.geometry"
+                },
+                {
+                    "source": ".rest_mesh",
+                    "target": "get_rest_struct.mesh"
+                },
+                {
+                    "source": "get_rest_struct.point_position",
+                    "target": "rest_fv_pos.array"
+                },
+                {
+                    "source": "get_rest_struct.point_position",
+                    "target": "rest_next_pos.array"
+                },
+                {
+                    "source": "get_rest_struct.face_vertex",
+                    "target": "next_vert.array"
+                },
+                {
+                    "source": "get_rest_struct.face_vertex",
+                    "target": "rest_fv_pos.index"
+                },
+                {
+                    "source": "tension_clamped.clamped",
+                    "target": "green_ramp.value"
+                },
+                {
+                    "source": "green_ramp.result",
+                    "target": "tension_color.y"
+                },
+                {
+                    "source": ".face_size",
+                    "target": "local_idx.divisor"
+                },
+                {
+                    "source": "local_idx.remainder",
+                    "target": "local_plus1.first.local"
+                },
+                {
+                    "source": "local_plus1.output",
+                    "target": "next_local.value"
+                },
+                {
+                    "source": "next_local.remainder",
+                    "target": "next_fv_idx.first.nl"
+                },
+                {
+                    "source": "next_fv_idx.output",
+                    "target": "next_vert.index"
+                },
+                {
+                    "source": ".face_size",
+                    "target": "next_local.divisor"
+                },
+                {
+                    "source": "next_vert.value",
+                    "target": "rest_next_pos.index"
+                },
+                {
+                    "source": "tension_clamped.clamped",
+                    "target": "red_ramp.value"
+                },
+                {
+                    "source": "red_ramp.result",
+                    "target": "tension_color.x"
+                },
+                {
+                    "source": "rest_next_pos.value",
+                    "target": "rest_edge.first.next_pos"
+                },
+                {
+                    "source": "rest_fv_pos.value",
+                    "target": "rest_edge.first.curr_pos"
+                },
+                {
+                    "source": "rest_edge.output",
+                    "target": "rest_len.vector"
+                },
+                {
+                    "source": "rest_len.length",
+                    "target": "safe_rest.first.rest_len"
+                },
+                {
+                    "source": ".sensitivity",
+                    "target": "scale_ratio.first.sensitivity"
+                },
+                {
+                    "source": "scale_ratio.output",
+                    "target": "tension_raw.first.scaled"
+                },
+                {
+                    "source": ".deformed_mesh",
+                    "target": "set_color.geometry"
+                },
+                {
+                    "source": "tension_color.vector3",
+                    "target": "set_color.data"
+                },
+                {
+                    "source": "set_color.out_geometry",
+                    "target": ".out_geometry"
+                },
+                {
+                    "source": "tension_raw.output",
+                    "target": "tension_clamped.value"
+                },
+                {
+                    "source": "tension_clamped.clamped",
+                    "target": ".tension_weights"
+                }
+            ],
+            "values": [
+                {
+                    "valueName": "green_ramp.from_start",
+                    "valueType": "float",
+                    "value": "0.5f"
+                },
+                {
+                    "valueName": "green_ramp.from_end",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "green_ramp.to_start",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "green_ramp.to_end",
+                    "valueType": "float",
+                    "value": "1f"
+                },
+                {
+                    "valueName": "green_ramp.clamp",
+                    "valueType": "bool",
+                    "value": "true"
+                },
+                {
+                    "valueName": "red_ramp.from_start",
+                    "valueType": "float",
+                    "value": "0.5f"
+                },
+                {
+                    "valueName": "red_ramp.from_end",
+                    "valueType": "float",
+                    "value": "1f"
+                },
+                {
+                    "valueName": "red_ramp.to_start",
+                    "valueType": "float",
+                    "value": "0f"
+                },
+                {
+                    "valueName": "red_ramp.to_end",
+                    "valueType": "float",
+                    "value": "1f"
+                },
+                {
+                    "valueName": "red_ramp.clamp",
+                    "valueType": "bool",
+                    "value": "true"
+                },
+                {
+                    "valueName": "set_color.property",
+                    "valueType": "string",
+                    "value": "color"
+                },
+                {
+                    "valueName": "set_color.target",
+                    "valueType": "string",
+                    "value": "face_vertex_component"
+                },
+                {
+                    "valueName": "set_color.interpolation_mode",
+                    "valueType": "Geometry::Common::DataInterpolationMode",
+                    "value": "Linear"
+                },
+                {
+                    "valueName": "tension_clamped.max",
+                    "valueType": "float",
+                    "value": "1f"
+                }
+            ],
+            "reservedNodeNames": [
+                {
+                    "name": "input"
+                },
+                {
+                    "name": "output"
+                }
+            ]
+        }
+    ]
+}
