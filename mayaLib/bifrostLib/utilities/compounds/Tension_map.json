@@ -23,16 +23,23 @@
                                     "metaName": "input",
                                     "metadata": [
                                         {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
+                                            "metaName": "zValue",
+                                            "metaType": "string",
+                                            "metaValue": "55.000000"
+                                        },
+                                        {
                                             "metaName": "io_ports",
                                             "metadata": [
-                                                {
-                                                    "metaName": "deformed_mesh"
-                                                },
                                                 {
                                                     "metaName": "rest_mesh"
                                                 },
                                                 {
-                                                    "metaName": "face_size"
+                                                    "metaName": "deformed_mesh"
                                                 },
                                                 {
                                                     "metaName": "sensitivity"
@@ -40,19 +47,9 @@
                                             ]
                                         },
                                         {
-                                            "metaName": "DisplayMode",
-                                            "metaType": "string",
-                                            "metaValue": "2"
-                                        },
-                                        {
                                             "metaName": "LayoutPos",
                                             "metaType": "string",
-                                            "metaValue": "10 442"
-                                        },
-                                        {
-                                            "metaName": "zValue",
-                                            "metaType": "string",
-                                            "metaValue": "31.000000"
+                                            "metaValue": "10 1082"
                                         }
                                     ]
                                 }
@@ -65,20 +62,10 @@
                                     "metaName": "output",
                                     "metadata": [
                                         {
-                                            "metaName": "DisplayMode",
-                                            "metaType": "string",
-                                            "metaValue": "2"
-                                        },
-                                        {
-                                            "metaName": "LayoutPos",
-                                            "metaType": "string",
-                                            "metaValue": "5805 1117"
-                                        },
-                                        {
                                             "metaName": "io_ports",
                                             "metadata": [
                                                 {
-                                                    "metaName": "out_geometry"
+                                                    "metaName": "out_mesh"
                                                 },
                                                 {
                                                     "metaName": "tension_weights"
@@ -86,9 +73,19 @@
                                             ]
                                         },
                                         {
+                                            "metaName": "DisplayMode",
+                                            "metaType": "string",
+                                            "metaValue": "2"
+                                        },
+                                        {
                                             "metaName": "zValue",
                                             "metaType": "string",
                                             "metaValue": "32.000000"
+                                        },
+                                        {
+                                            "metaName": "LayoutPos",
+                                            "metaType": "string",
+                                            "metaValue": "1840 773"
                                         }
                                     ]
                                 }
@@ -99,7 +96,12 @@
                 {
                     "metaName": "ViewportRect",
                     "metaType": "string",
-                    "metaValue": "4194.42 214.024 2502.57 1432.06"
+                    "metaValue": "-135.631 -288.824 2216.67 2279.58"
+                },
+                {
+                    "metaName": "UUID",
+                    "metaType": "string",
+                    "metaValue": "74FE9A19-61DE-4B10-947A-3D9CAFC7B536"
                 },
                 {
                     "metaName": "DisplayMode",
@@ -107,48 +109,35 @@
                     "metaValue": "2"
                 },
                 {
-                    "metaName": "UILayout",
-                    "metaType": "string",
-                    "metaValue": "{\n    \"NodeLayout\": {\n        \"hideUndeclaredPorts\": false,\n        \"items\": [\n            {\n                \"port\": \"deformed_mesh\"\n            },\n            {\n                \"port\": \"rest_mesh\"\n            },\n            {\n                \"condition\": {\n                    \"op\": \"\",\n                    \"port\": \"\",\n                    \"value\": null\n                },\n                \"group\": \"Conditional Display Rule\",\n                \"items\": [\n                    {\n                        \"condition\": {\n                            \"action\": \"disable\",\n                            \"op\": \"\",\n                            \"port\": \"\",\n                            \"value\": \"\"\n                        },\n                        \"group\": \"Disable based on: \",\n                        \"items\": [\n                            {\n                                \"port\": \"face_size\"\n                            }\n                        ],\n                        \"unique_id\": 5\n                    }\n                ],\n                \"unique_id\": 10\n            },\n            {\n                \"port\": \"sensitivity\"\n            }\n        ]\n    }\n}\n"
-                },
-                {
                     "metaName": "LayoutPos",
                     "metaType": "string",
-                    "metaValue": "-3624.6 812.035"
+                    "metaValue": "-124.667 -224.667"
                 },
                 {
                     "metaName": "zValue",
                     "metaType": "string",
-                    "metaValue": "39.000000"
+                    "metaValue": "36.000000"
                 }
             ],
             "ports": [
                 {
-                    "portName": "deformed_mesh",
-                    "portDirection": "input",
-                    "portType": "Object",
-                    "portDefault": {}
-                },
-                {
                     "portName": "rest_mesh",
                     "portDirection": "input",
-                    "portType": "Object",
-                    "portDefault": {}
+                    "portType": "Object"
                 },
                 {
-                    "portName": "face_size",
+                    "portName": "deformed_mesh",
                     "portDirection": "input",
-                    "portType": "long",
-                    "portDefault": "4"
+                    "portType": "Object"
                 },
                 {
                     "portName": "sensitivity",
                     "portDirection": "input",
                     "portType": "float",
-                    "portDefault": "10f"
+                    "portDefault": "1f"
                 },
                 {
-                    "portName": "out_geometry",
+                    "portName": "out_mesh",
                     "portDirection": "output",
                     "portType": "Object"
                 },
@@ -157,649 +146,1796 @@
                     "portDirection": "output"
                 }
             ],
+            "compounds": [
+                {
+                    "name": "mesh_data",
+                    "metadata": [
+                        {
+                            "metaName": "io_nodes",
+                            "metadata": [
+                                {
+                                    "metaName": "io_inodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "input",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "rest_mesh"
+                                                        },
+                                                        {
+                                                            "metaName": "deformed_mesh"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "metaName": "io_onodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "output",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "rest_positions"
+                                                        },
+                                                        {
+                                                            "metaName": "face_vertex"
+                                                        },
+                                                        {
+                                                            "metaName": "face_vertex_count"
+                                                        },
+                                                        {
+                                                            "metaName": "def_positions"
+                                                        },
+                                                        {
+                                                            "metaName": "point_count"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "portName": "rest_mesh",
+                            "portDirection": "input",
+                            "portType": "Object"
+                        },
+                        {
+                            "portName": "deformed_mesh",
+                            "portDirection": "input",
+                            "portType": "Object"
+                        },
+                        {
+                            "portName": "rest_positions",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "face_vertex",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "face_vertex_count",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "def_positions",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "point_count",
+                            "portDirection": "output"
+                        }
+                    ],
+                    "compoundNodes": [
+                        {
+                            "nodeName": "get_rest",
+                            "nodeType": "Geometry::Mesh::get_mesh_structure",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "3D38C659-20B5-40CC-9B3E-C4C4B0B2E07E"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "get_def",
+                            "nodeType": "Geometry::Properties::get_point_position",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "F24C5D59-C8D9-4E64-9A1A-C021E5C2F5EF"
+                                }
+                            ]
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "source": ".rest_mesh",
+                            "target": "get_rest.mesh"
+                        },
+                        {
+                            "source": ".deformed_mesh",
+                            "target": "get_def.geometry"
+                        },
+                        {
+                            "source": "get_rest.point_position",
+                            "target": ".rest_positions"
+                        },
+                        {
+                            "source": "get_rest.face_vertex",
+                            "target": ".face_vertex"
+                        },
+                        {
+                            "source": "get_rest.face_vertex_count",
+                            "target": ".face_vertex_count"
+                        },
+                        {
+                            "source": "get_def.point_position",
+                            "target": ".def_positions"
+                        },
+                        {
+                            "source": "get_rest.point_count",
+                            "target": ".point_count"
+                        }
+                    ],
+                    "values": [],
+                    "reservedNodeNames": [
+                        {
+                            "name": "input"
+                        },
+                        {
+                            "name": "output"
+                        }
+                    ]
+                },
+                {
+                    "name": "next_vertex",
+                    "metadata": [
+                        {
+                            "metaName": "io_nodes",
+                            "metadata": [
+                                {
+                                    "metaName": "io_inodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "input",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "face_vertex"
+                                                        },
+                                                        {
+                                                            "metaName": "face_vertex_count"
+                                                        },
+                                                        {
+                                                            "metaName": "face_size"
+                                                        },
+                                                        {
+                                                            "metaName": "plus_one"
+                                                        },
+                                                        {
+                                                            "metaName": "face_size_minus_one"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "metaName": "io_onodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "output",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "next_vert_index"
+                                                        },
+                                                        {
+                                                            "metaName": "prev_vert_index"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "portName": "face_vertex",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "face_vertex_count",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "face_size",
+                            "portDirection": "input",
+                            "portType": "long"
+                        },
+                        {
+                            "portName": "plus_one",
+                            "portDirection": "input",
+                            "portType": "long"
+                        },
+                        {
+                            "portName": "face_size_minus_one",
+                            "portDirection": "input",
+                            "portType": "long"
+                        },
+                        {
+                            "portName": "next_vert_index",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "prev_vert_index",
+                            "portDirection": "output"
+                        }
+                    ],
+                    "compoundNodes": [
+                        {
+                            "nodeName": "fv_indices",
+                            "nodeType": "Core::Array::get_array_indices",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "DE6BE96B-77A9-477A-92E9-D55E7956C7D7"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "local_idx",
+                            "nodeType": "Core::Math::modulo",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "25256F3F-C4FB-4708-84C5-284A2EEDC496"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "face_start",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "indices",
+                                "local"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "CB04471B-D64E-4A40-AFF7-35966EC60A0B"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "local_plus1",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "local",
+                                "one"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "00416869-7946-45E0-91B4-7638AD059224"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "next_local",
+                            "nodeType": "Core::Math::modulo",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "116177C5-6983-46DA-AC72-A6F55A4C0127"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "next_fv_idx",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "fs",
+                                "nl"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "5FDC57AD-7E42-4D8D-A1A1-FC82842067A5"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "next_idx_uint",
+                            "nodeType": "Core::Math::modulo",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "EF0C2B8A-EB1A-4209-A0FF-6E29F4B71BD9"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "next_vert",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "79D7BCF6-A20D-4A51-9E6D-1C1A50C1099C"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "local_plus_fsm1",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "local",
+                                "fsm1"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "6D110FFF-40BE-4C43-865A-755130299F80"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "prev_local",
+                            "nodeType": "Core::Math::modulo",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "EB83DDEA-A81A-428E-B381-996AE8D4B8CA"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "prev_fv_idx",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "fs",
+                                "pl"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "039067F6-091C-487F-AAA9-208F43471D04"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "prev_idx_uint",
+                            "nodeType": "Core::Math::modulo",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "2861626F-746F-4560-84CA-329F761D4631"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "prev_vert",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "83790B8C-864D-41B5-9C65-BFCCC3DBD42C"
+                                }
+                            ]
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "source": ".face_vertex",
+                            "target": "fv_indices.array"
+                        },
+                        {
+                            "source": "fv_indices.indices",
+                            "target": "local_idx.value"
+                        },
+                        {
+                            "source": ".face_size",
+                            "target": "local_idx.divisor"
+                        },
+                        {
+                            "source": "fv_indices.indices",
+                            "target": "face_start.first.indices"
+                        },
+                        {
+                            "source": "local_idx.remainder",
+                            "target": "face_start.first.local"
+                        },
+                        {
+                            "source": "local_idx.remainder",
+                            "target": "local_plus1.first.local"
+                        },
+                        {
+                            "source": ".plus_one",
+                            "target": "local_plus1.first.one"
+                        },
+                        {
+                            "source": "local_plus1.output",
+                            "target": "next_local.value"
+                        },
+                        {
+                            "source": ".face_size",
+                            "target": "next_local.divisor"
+                        },
+                        {
+                            "source": "face_start.output",
+                            "target": "next_fv_idx.first.fs"
+                        },
+                        {
+                            "source": "next_local.remainder",
+                            "target": "next_fv_idx.first.nl"
+                        },
+                        {
+                            "source": "next_fv_idx.output",
+                            "target": "next_idx_uint.value"
+                        },
+                        {
+                            "source": ".face_vertex_count",
+                            "target": "next_idx_uint.divisor"
+                        },
+                        {
+                            "source": ".face_vertex",
+                            "target": "next_vert.array"
+                        },
+                        {
+                            "source": "next_idx_uint.remainder",
+                            "target": "next_vert.index"
+                        },
+                        {
+                            "source": "local_idx.remainder",
+                            "target": "local_plus_fsm1.first.local"
+                        },
+                        {
+                            "source": ".face_size_minus_one",
+                            "target": "local_plus_fsm1.first.fsm1"
+                        },
+                        {
+                            "source": "local_plus_fsm1.output",
+                            "target": "prev_local.value"
+                        },
+                        {
+                            "source": ".face_size",
+                            "target": "prev_local.divisor"
+                        },
+                        {
+                            "source": "face_start.output",
+                            "target": "prev_fv_idx.first.fs"
+                        },
+                        {
+                            "source": "prev_local.remainder",
+                            "target": "prev_fv_idx.first.pl"
+                        },
+                        {
+                            "source": "prev_fv_idx.output",
+                            "target": "prev_idx_uint.value"
+                        },
+                        {
+                            "source": ".face_vertex_count",
+                            "target": "prev_idx_uint.divisor"
+                        },
+                        {
+                            "source": ".face_vertex",
+                            "target": "prev_vert.array"
+                        },
+                        {
+                            "source": "prev_idx_uint.remainder",
+                            "target": "prev_vert.index"
+                        },
+                        {
+                            "source": "next_vert.value",
+                            "target": ".next_vert_index"
+                        },
+                        {
+                            "source": "prev_vert.value",
+                            "target": ".prev_vert_index"
+                        }
+                    ],
+                    "values": [],
+                    "reservedNodeNames": [
+                        {
+                            "name": "input"
+                        },
+                        {
+                            "name": "output"
+                        }
+                    ]
+                },
+                {
+                    "name": "edge_lengths",
+                    "metadata": [
+                        {
+                            "metaName": "io_nodes",
+                            "metadata": [
+                                {
+                                    "metaName": "io_inodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "input",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "rest_positions"
+                                                        },
+                                                        {
+                                                            "metaName": "def_positions"
+                                                        },
+                                                        {
+                                                            "metaName": "face_vertex"
+                                                        },
+                                                        {
+                                                            "metaName": "next_vert_index"
+                                                        },
+                                                        {
+                                                            "metaName": "prev_vert_index"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "metaName": "io_onodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "output",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "rest_len"
+                                                        },
+                                                        {
+                                                            "metaName": "def_len"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "portName": "rest_positions",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "def_positions",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "face_vertex",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "next_vert_index",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "prev_vert_index",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "rest_len",
+                            "portDirection": "output"
+                        },
+                        {
+                            "portName": "def_len",
+                            "portDirection": "output"
+                        }
+                    ],
+                    "compoundNodes": [
+                        {
+                            "nodeName": "rest_fv_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "30369164-81EE-44F0-907A-7DE099EF7B47"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_fv_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "CC7428A9-CC41-4CCA-BB66-100EA5C950BD"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_next_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "5B9B66DD-281D-46E0-97BE-FBC859C61B65"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_next_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "462981C1-BDF1-44E9-AF6F-0AC2BD56A71F"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_prev_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "C11B4FE1-CAC8-4559-AEC2-8AD5660E14EF"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_prev_pos",
+                            "nodeType": "Core::Array::get_from_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "E32222EC-6F23-4604-B9A9-A5DCAC5250BC"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_fwd_edge",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "a",
+                                "b"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "CD5F3827-4973-47E5-872A-E820D53AE4A7"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_fwd_len",
+                            "nodeType": "Core::Math::length",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "F68EDE57-117D-41D1-B013-C2B4C71FB281"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_fwd_edge",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "a",
+                                "b"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "309268DE-6CA1-451F-A34B-9A82AC538FE9"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_fwd_len",
+                            "nodeType": "Core::Math::length",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "9C966CEA-B86F-4CEB-8C84-F2376CB07F9D"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_bwd_edge",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "a",
+                                "b"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "FDC0F580-3054-4D57-B5EE-7922CCE1BFB9"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_bwd_len",
+                            "nodeType": "Core::Math::length",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "B655256E-EA60-4FBB-BD61-9C699E3FBB87"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_bwd_edge",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "a",
+                                "b"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "F43E2177-933B-4DBE-ABFC-E880D2FB5E1A"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_bwd_len",
+                            "nodeType": "Core::Math::length",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "DCFEB1EB-5AC0-427D-BF8C-244C2D8C91D1"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_sum",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "fwd",
+                                "bwd"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "25635423-2070-4BD4-B10C-A92230A460D3"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_avg",
+                            "nodeType": "Core::Math::half_of",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "6D45BC43-43AB-4484-BED8-C29C92CA5EC3"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_sum",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "fwd",
+                                "bwd"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "64938D20-5FB6-46AB-A411-EC59FEB23660"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_avg",
+                            "nodeType": "Core::Math::half_of",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "63547392-4B67-45D2-9E99-65B3BFE8BC46"
+                                }
+                            ]
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "source": ".rest_positions",
+                            "target": "rest_fv_pos.array"
+                        },
+                        {
+                            "source": ".face_vertex",
+                            "target": "rest_fv_pos.index"
+                        },
+                        {
+                            "source": ".def_positions",
+                            "target": "def_fv_pos.array"
+                        },
+                        {
+                            "source": ".face_vertex",
+                            "target": "def_fv_pos.index"
+                        },
+                        {
+                            "source": ".rest_positions",
+                            "target": "rest_next_pos.array"
+                        },
+                        {
+                            "source": ".next_vert_index",
+                            "target": "rest_next_pos.index"
+                        },
+                        {
+                            "source": ".def_positions",
+                            "target": "def_next_pos.array"
+                        },
+                        {
+                            "source": ".next_vert_index",
+                            "target": "def_next_pos.index"
+                        },
+                        {
+                            "source": ".rest_positions",
+                            "target": "rest_prev_pos.array"
+                        },
+                        {
+                            "source": ".prev_vert_index",
+                            "target": "rest_prev_pos.index"
+                        },
+                        {
+                            "source": ".def_positions",
+                            "target": "def_prev_pos.array"
+                        },
+                        {
+                            "source": ".prev_vert_index",
+                            "target": "def_prev_pos.index"
+                        },
+                        {
+                            "source": "rest_next_pos.value",
+                            "target": "rest_fwd_edge.first.a"
+                        },
+                        {
+                            "source": "rest_fv_pos.value",
+                            "target": "rest_fwd_edge.first.b"
+                        },
+                        {
+                            "source": "rest_fwd_edge.output",
+                            "target": "rest_fwd_len.vector"
+                        },
+                        {
+                            "source": "def_next_pos.value",
+                            "target": "def_fwd_edge.first.a"
+                        },
+                        {
+                            "source": "def_fv_pos.value",
+                            "target": "def_fwd_edge.first.b"
+                        },
+                        {
+                            "source": "def_fwd_edge.output",
+                            "target": "def_fwd_len.vector"
+                        },
+                        {
+                            "source": "rest_prev_pos.value",
+                            "target": "rest_bwd_edge.first.a"
+                        },
+                        {
+                            "source": "rest_fv_pos.value",
+                            "target": "rest_bwd_edge.first.b"
+                        },
+                        {
+                            "source": "rest_bwd_edge.output",
+                            "target": "rest_bwd_len.vector"
+                        },
+                        {
+                            "source": "def_prev_pos.value",
+                            "target": "def_bwd_edge.first.a"
+                        },
+                        {
+                            "source": "def_fv_pos.value",
+                            "target": "def_bwd_edge.first.b"
+                        },
+                        {
+                            "source": "def_bwd_edge.output",
+                            "target": "def_bwd_len.vector"
+                        },
+                        {
+                            "source": "rest_fwd_len.length",
+                            "target": "rest_sum.first.fwd"
+                        },
+                        {
+                            "source": "rest_bwd_len.length",
+                            "target": "rest_sum.first.bwd"
+                        },
+                        {
+                            "source": "rest_sum.output",
+                            "target": "rest_avg.value"
+                        },
+                        {
+                            "source": "def_fwd_len.length",
+                            "target": "def_sum.first.fwd"
+                        },
+                        {
+                            "source": "def_bwd_len.length",
+                            "target": "def_sum.first.bwd"
+                        },
+                        {
+                            "source": "def_sum.output",
+                            "target": "def_avg.value"
+                        },
+                        {
+                            "source": "rest_avg.half_value",
+                            "target": ".rest_len"
+                        },
+                        {
+                            "source": "def_avg.half_value",
+                            "target": ".def_len"
+                        }
+                    ],
+                    "values": [],
+                    "reservedNodeNames": [
+                        {
+                            "name": "input"
+                        },
+                        {
+                            "name": "output"
+                        }
+                    ]
+                },
+                {
+                    "name": "vertex_tension",
+                    "metadata": [
+                        {
+                            "metaName": "icon",
+                            "metaType": "string",
+                            "metaValue": "<NATIVE>../icons/LoopForEach.svg"
+                        },
+                        {
+                            "metaName": "icon",
+                            "metaType": "string",
+                            "metaValue": "<NATIVE>../icons/LoopForEach.svg"
+                        },
+                        {
+                            "metaName": "io_nodes",
+                            "metadata": [
+                                {
+                                    "metaName": "io_inodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "input",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "max_iterations"
+                                                        },
+                                                        {
+                                                            "metaName": "current_index"
+                                                        },
+                                                        {
+                                                            "metaName": "face_vertex"
+                                                        },
+                                                        {
+                                                            "metaName": "rest_fv_len"
+                                                        },
+                                                        {
+                                                            "metaName": "def_fv_len"
+                                                        },
+                                                        {
+                                                            "metaName": "sensitivity"
+                                                        },
+                                                        {
+                                                            "metaName": "offset"
+                                                        },
+                                                        {
+                                                            "metaName": "epsilon"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "metaName": "io_onodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "output",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "tension"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "portName": "max_iterations",
+                            "portDirection": "input",
+                            "portType": "long",
+                            "portIterationLimit": "true"
+                        },
+                        {
+                            "portName": "current_index",
+                            "portDirection": "input",
+                            "portType": "long",
+                            "portIterationCounter": "true"
+                        },
+                        {
+                            "portName": "face_vertex",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "rest_fv_len",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "def_fv_len",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "sensitivity",
+                            "portDirection": "input",
+                            "portType": "float"
+                        },
+                        {
+                            "portName": "offset",
+                            "portDirection": "input",
+                            "portType": "float"
+                        },
+                        {
+                            "portName": "epsilon",
+                            "portDirection": "input",
+                            "portType": "float"
+                        },
+                        {
+                            "portName": "tension",
+                            "portDirection": "output",
+                            "portIterationTarget": "true"
+                        }
+                    ],
+                    "compoundNodes": [
+                        {
+                            "nodeName": "fv_to_long",
+                            "nodeType": "Core::Type_Conversion::to_long",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "299FF66C-7E46-4EA9-9E16-10020B5442BB"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "equal",
+                            "nodeType": "Core::Logic::equal",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "AA982DD0-6FF1-4620-9B2F-EC49ECB1F678"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "filter_rest",
+                            "nodeType": "Core::Array::filter_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "84649E15-2FCD-499C-8546-958EDB8E0913"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "filter_def",
+                            "nodeType": "Core::Array::filter_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "DC4F3009-ECBA-4750-BC17-A2AE5D6FA305"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "sum_rest",
+                            "nodeType": "Core::Array::sum_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "A4FEBD97-AAD1-4105-9C47-615F1896D130"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "sum_def",
+                            "nodeType": "Core::Array::sum_array",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "A729FBC4-C1EA-4E3E-975D-177870BF67AA"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "count",
+                            "nodeType": "Core::Array::array_size",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "53E81832-4865-4F21-A826-4983916C1205"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "count_float",
+                            "nodeType": "Core::Type_Conversion::to_float",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "6E83E658-05D7-49BD-8FB7-52AB12ECB47D"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "one_const",
+                            "valueType": "float",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "597B2770-87D3-42D6-BAD0-EC7B8D412741"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "safe_count",
+                            "nodeType": "Core::Math::max",
+                            "multiInPortNames": [
+                                "count",
+                                "one"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "009E46A3-BC00-4231-8170-7F07F0F23CDE"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "rest_avg",
+                            "nodeType": "Core::Math::divide",
+                            "multiInPortNames": [
+                                "total",
+                                "cnt"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "419F889D-F8CF-4E10-A5AC-A609405C7CEB"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "def_avg",
+                            "nodeType": "Core::Math::divide",
+                            "multiInPortNames": [
+                                "total",
+                                "cnt"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "E7FD0AEE-90DD-4D54-A8B7-70724CCC31ED"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "safe_rest",
+                            "nodeType": "Core::Math::max",
+                            "multiInPortNames": [
+                                "rest",
+                                "eps"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "1FDA718A-ADF1-4B80-91E0-F4965056CBD8"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "edge_diff",
+                            "nodeType": "Core::Math::subtract",
+                            "multiInPortNames": [
+                                "rest",
+                                "deformed"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "3AA6972C-0072-440A-A792-6DEE85E3033C"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "edge_ratio",
+                            "nodeType": "Core::Math::divide",
+                            "multiInPortNames": [
+                                "diff",
+                                "safe"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "1F0B8226-7E9E-4BE9-A709-7356F5BC9DEF"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "scaled",
+                            "nodeType": "Core::Math::multiply",
+                            "multiInPortNames": [
+                                "ratio",
+                                "sensitivity"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "8C45213C-90C6-4090-8183-EDE51B098249"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "tension_raw",
+                            "nodeType": "Core::Math::add",
+                            "multiInPortNames": [
+                                "value",
+                                "off"
+                            ],
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "94775539-BB35-4987-9018-56AA8DEBBD86"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "tension_clamped",
+                            "nodeType": "Core::Math::clamp",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "482AAE07-41BA-4D0F-B4D2-3EAF58C87D1C"
+                                }
+                            ]
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "source": ".face_vertex",
+                            "target": "fv_to_long.from"
+                        },
+                        {
+                            "source": "fv_to_long.long",
+                            "target": "equal.first"
+                        },
+                        {
+                            "source": ".current_index",
+                            "target": "equal.second"
+                        },
+                        {
+                            "source": ".rest_fv_len",
+                            "target": "filter_rest.array"
+                        },
+                        {
+                            "source": "equal.output",
+                            "target": "filter_rest.boolean_array"
+                        },
+                        {
+                            "source": ".def_fv_len",
+                            "target": "filter_def.array"
+                        },
+                        {
+                            "source": "equal.output",
+                            "target": "filter_def.boolean_array"
+                        },
+                        {
+                            "source": "filter_rest.filtered_array",
+                            "target": "sum_rest.array"
+                        },
+                        {
+                            "source": "filter_def.filtered_array",
+                            "target": "sum_def.array"
+                        },
+                        {
+                            "source": "filter_rest.filtered_array",
+                            "target": "count.array"
+                        },
+                        {
+                            "source": "count.size",
+                            "target": "count_float.from"
+                        },
+                        {
+                            "source": "count_float.float",
+                            "target": "safe_count.first.count"
+                        },
+                        {
+                            "source": "one_const.output",
+                            "target": "safe_count.first.one"
+                        },
+                        {
+                            "source": "sum_rest.sum",
+                            "target": "rest_avg.first.total"
+                        },
+                        {
+                            "source": "safe_count.maximum",
+                            "target": "rest_avg.first.cnt"
+                        },
+                        {
+                            "source": "sum_def.sum",
+                            "target": "def_avg.first.total"
+                        },
+                        {
+                            "source": "safe_count.maximum",
+                            "target": "def_avg.first.cnt"
+                        },
+                        {
+                            "source": "rest_avg.output",
+                            "target": "safe_rest.first.rest"
+                        },
+                        {
+                            "source": ".epsilon",
+                            "target": "safe_rest.first.eps"
+                        },
+                        {
+                            "source": "rest_avg.output",
+                            "target": "edge_diff.first.rest"
+                        },
+                        {
+                            "source": "def_avg.output",
+                            "target": "edge_diff.first.deformed"
+                        },
+                        {
+                            "source": "edge_diff.output",
+                            "target": "edge_ratio.first.diff"
+                        },
+                        {
+                            "source": "safe_rest.maximum",
+                            "target": "edge_ratio.first.safe"
+                        },
+                        {
+                            "source": "edge_ratio.output",
+                            "target": "scaled.first.ratio"
+                        },
+                        {
+                            "source": ".sensitivity",
+                            "target": "scaled.first.sensitivity"
+                        },
+                        {
+                            "source": "scaled.output",
+                            "target": "tension_raw.first.value"
+                        },
+                        {
+                            "source": ".offset",
+                            "target": "tension_raw.first.off"
+                        },
+                        {
+                            "source": "tension_raw.output",
+                            "target": "tension_clamped.value"
+                        },
+                        {
+                            "source": "tension_clamped.clamped",
+                            "target": ".tension"
+                        }
+                    ],
+                    "values": [
+                        {
+                            "valueName": "tension_clamped.max",
+                            "valueType": "float",
+                            "value": "1f"
+                        }
+                    ],
+                    "reservedNodeNames": [
+                        {
+                            "name": "input"
+                        },
+                        {
+                            "name": "output"
+                        }
+                    ],
+                    "forEachCompound": {
+                        "ports": []
+                    }
+                },
+                {
+                    "name": "color_output",
+                    "metadata": [
+                        {
+                            "metaName": "io_nodes",
+                            "metadata": [
+                                {
+                                    "metaName": "io_inodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "input",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "tension_per_vertex"
+                                                        },
+                                                        {
+                                                            "metaName": "deformed_mesh"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "metaName": "io_onodes",
+                                    "metadata": [
+                                        {
+                                            "metaName": "output",
+                                            "metadata": [
+                                                {
+                                                    "metaName": "io_ports",
+                                                    "metadata": [
+                                                        {
+                                                            "metaName": "out_mesh"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "ports": [
+                        {
+                            "portName": "tension_per_vertex",
+                            "portDirection": "input"
+                        },
+                        {
+                            "portName": "deformed_mesh",
+                            "portDirection": "input",
+                            "portType": "Object"
+                        },
+                        {
+                            "portName": "out_mesh",
+                            "portDirection": "output",
+                            "portType": "Object"
+                        }
+                    ],
+                    "compoundNodes": [
+                        {
+                            "nodeName": "red_ramp",
+                            "nodeType": "Core::Math::change_range",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "89E45B7B-4986-4F6C-8AD9-BDB6991211D2"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "green_ramp",
+                            "nodeType": "Core::Math::change_range",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "5610A8B5-EAEC-45F2-8302-FA09461342ED"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "tension_color",
+                            "nodeType": "Core::Conversion::scalar_to_vector3",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "FA7B97A2-F1AB-4699-9EEA-0957BA29E37F"
+                                }
+                            ]
+                        },
+                        {
+                            "nodeName": "set_color",
+                            "nodeType": "Geometry::Properties::set_geo_property",
+                            "metadata": [
+                                {
+                                    "metaName": "UUID",
+                                    "metaType": "string",
+                                    "metaValue": "A5DE2959-9D42-406C-ACC1-DFB44C7374E3"
+                                }
+                            ]
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "source": ".tension_per_vertex",
+                            "target": "red_ramp.value"
+                        },
+                        {
+                            "source": ".tension_per_vertex",
+                            "target": "green_ramp.value"
+                        },
+                        {
+                            "source": "red_ramp.result",
+                            "target": "tension_color.x"
+                        },
+                        {
+                            "source": "green_ramp.result",
+                            "target": "tension_color.y"
+                        },
+                        {
+                            "source": ".deformed_mesh",
+                            "target": "set_color.geometry"
+                        },
+                        {
+                            "source": "tension_color.vector3",
+                            "target": "set_color.data"
+                        },
+                        {
+                            "source": "set_color.out_geometry",
+                            "target": ".out_mesh"
+                        }
+                    ],
+                    "values": [
+                        {
+                            "valueName": "red_ramp.from_start",
+                            "valueType": "float",
+                            "value": "0.5f"
+                        },
+                        {
+                            "valueName": "red_ramp.from_end",
+                            "valueType": "float",
+                            "value": "1f"
+                        },
+                        {
+                            "valueName": "red_ramp.to_start",
+                            "valueType": "float",
+                            "value": "0f"
+                        },
+                        {
+                            "valueName": "red_ramp.to_end",
+                            "valueType": "float",
+                            "value": "1f"
+                        },
+                        {
+                            "valueName": "green_ramp.from_start",
+                            "valueType": "float",
+                            "value": "0.5f"
+                        },
+                        {
+                            "valueName": "green_ramp.from_end",
+                            "valueType": "float",
+                            "value": "0f"
+                        },
+                        {
+                            "valueName": "green_ramp.to_start",
+                            "valueType": "float",
+                            "value": "0f"
+                        },
+                        {
+                            "valueName": "green_ramp.to_end",
+                            "valueType": "float",
+                            "value": "1f"
+                        },
+                        {
+                            "valueName": "set_color.property",
+                            "valueType": "string",
+                            "value": "color"
+                        }
+                    ],
+                    "reservedNodeNames": [
+                        {
+                            "name": "input"
+                        },
+                        {
+                            "name": "output"
+                        }
+                    ]
+                }
+            ],
             "compoundNodes": [
                 {
-                    "nodeName": "def_edge",
-                    "nodeType": "Core::Math::subtract",
-                    "multiInPortNames": [
-                        "next_pos",
-                        "curr_pos"
-                    ],
+                    "nodeName": "mesh_data",
+                    "nodeType": "mesh_data",
                     "metadata": [
                         {
                             "metaName": "UUID",
                             "metaType": "string",
-                            "metaValue": "81639CCE-C57F-44A7-8DE9-6F9D95550023"
+                            "metaValue": "92A4E2DF-07A2-402E-A1DE-71459344F035"
                         },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2755 223"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "48.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "def_fv_pos",
-                    "nodeType": "Core::Array::get_from_array",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "5A61384B-4816-4426-B96A-5FEDD04ABAF1"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2450 239"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "44.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "def_len",
-                    "nodeType": "Core::Math::length",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "05080D02-AF04-4890-83F5-7A6092D0145B"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "3060 368"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "49.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "def_next_pos",
-                    "nodeType": "Core::Array::get_from_array",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "D33597B6-C46C-4955-9645-94A5AEAD7076"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2450 21"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "45.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "edge_diff",
-                    "nodeType": "Core::Math::subtract",
-                    "multiInPortNames": [
-                        "rest",
-                        "deformed"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "57D6AD5F-2292-464F-8789-C5E462EA1EA2"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "3365 486"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "51.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "edge_ratio",
-                    "nodeType": "Core::Math::divide",
-                    "multiInPortNames": [
-                        "diff",
-                        "safe"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "48106E97-F0A7-4705-B43D-DF491D5246EF"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "3670 734"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "52.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "face_start",
-                    "nodeType": "Core::Math::subtract",
-                    "multiInPortNames": [
-                        "indices",
-                        "local"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "ADB4460C-7E12-4FE9-BF99-0E33EF284BE1"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "1535 10"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "37.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "fv_indices",
-                    "nodeType": "Core::Array::get_array_indices",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "B98B66CC-C593-401D-8026-2B239AA7DFFB"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "620 188"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "35.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "get_def_pos",
-                    "nodeType": "Geometry::Properties::get_point_position",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "27F35A5A-96D1-4E2C-9DFA-5942FE734137"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2145 58"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "34.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "get_rest_struct",
-                    "nodeType": "Geometry::Mesh::get_mesh_structure",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "12F1371F-BB3A-4EF7-9B92-F7A8475CE81A"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "315 347"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
                             "metaValue": "33.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "315 777"
                         }
                     ]
                 },
                 {
-                    "nodeName": "green_ramp",
-                    "nodeType": "Core::Math::change_range",
+                    "nodeName": "next_vertex",
+                    "nodeType": "next_vertex",
                     "metadata": [
                         {
                             "metaName": "UUID",
                             "metaType": "string",
-                            "metaValue": "21319D73-E80D-4B47-8D40-B3EE7404DFB1"
+                            "metaValue": "6943FE29-4B36-454D-B03F-DA84E0071643"
                         },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "4890 990"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "57.000000"
+                            "metaValue": "60.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "620 511"
                         }
                     ]
                 },
                 {
-                    "nodeName": "local_idx",
-                    "nodeType": "Core::Math::modulo",
+                    "nodeName": "edge_lengths",
+                    "nodeType": "edge_lengths",
                     "metadata": [
                         {
                             "metaName": "UUID",
                             "metaType": "string",
-                            "metaValue": "ACB7197D-0A06-4F7B-80FD-42962423134C"
+                            "metaValue": "23314903-FA26-42ED-A45F-C1A932DBAB94"
                         },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "925 156"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "36.000000"
+                            "metaValue": "35.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "925 639"
                         }
                     ]
                 },
                 {
-                    "nodeName": "local_plus1",
-                    "nodeType": "Core::Math::add",
-                    "multiInPortNames": [
-                        "local",
-                        "one"
-                    ],
+                    "nodeName": "vertex_tension",
+                    "nodeType": "vertex_tension",
                     "metadata": [
                         {
                             "metaName": "UUID",
                             "metaType": "string",
-                            "metaValue": "C434FB80-C3D9-42DD-B032-D9D62C1C715F"
+                            "metaValue": "0BCF05FB-7FA9-4D4D-B26D-5D55450D0D66"
                         },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "1230 155"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "38.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "next_fv_idx",
-                    "nodeType": "Core::Math::add",
-                    "multiInPortNames": [
-                        "fs",
-                        "nl"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "E4D60C2B-D959-4242-9DEB-B01BAB49BC12"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "1840 314"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "40.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "next_local",
-                    "nodeType": "Core::Math::modulo",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "3CA4509F-2950-42BA-90C6-A3B631AD43BC"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "1535 252"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "39.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "next_vert",
-                    "nodeType": "Core::Array::get_from_array",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "FA0843B4-CC4B-4BDC-8C21-2AE0BC2D90F7"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2145 252"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "41.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "red_ramp",
-                    "nodeType": "Core::Math::change_range",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "CC15B6A1-7D41-4350-9A42-B21C2ECD1C1E"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "4890 675"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "56.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "rest_edge",
-                    "nodeType": "Core::Math::subtract",
-                    "multiInPortNames": [
-                        "next_pos",
-                        "curr_pos"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "CC27108F-F8A5-465D-994F-EDA218E19B42"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2755 563"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "46.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "rest_fv_pos",
-                    "nodeType": "Core::Array::get_from_array",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "9BA2DAAA-707A-43C7-BB08-266B754263B3"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2450 677"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "42.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "rest_len",
-                    "nodeType": "Core::Math::length",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "C8543DE9-8621-45BF-BE3E-7AC7D04EABA0"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "3060 563"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "47.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "rest_next_pos",
-                    "nodeType": "Core::Array::get_from_array",
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "C56D95BA-CA35-440E-846B-993A541D569E"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "2450 458"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "43.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "safe_rest",
-                    "nodeType": "Core::Math::max",
-                    "multiInPortNames": [
-                        "rest_len",
-                        "epsilon"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "6190D556-6444-4F87-911D-2E00409EA3F4"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
-                        },
-                        {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "3365 729"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
                             "metaValue": "50.000000"
-                        }
-                    ]
-                },
-                {
-                    "nodeName": "scale_ratio",
-                    "nodeType": "Core::Math::multiply",
-                    "multiInPortNames": [
-                        "ratio",
-                        "sensitivity"
-                    ],
-                    "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "370B8250-2354-4467-8617-11FE43EDCC10"
-                        },
-                        {
-                            "metaName": "DisplayMode",
-                            "metaType": "string",
-                            "metaValue": "2"
                         },
                         {
                             "metaName": "LayoutPos",
                             "metaType": "string",
-                            "metaValue": "3975 888"
-                        },
-                        {
-                            "metaName": "zValue",
-                            "metaType": "string",
-                            "metaValue": "53.000000"
+                            "metaValue": "1230 1013"
                         }
                     ]
                 },
                 {
-                    "nodeName": "set_color",
-                    "nodeType": "Geometry::Properties::set_geo_property",
+                    "nodeName": "color_output",
+                    "nodeType": "color_output",
                     "metadata": [
                         {
                             "metaName": "UUID",
                             "metaType": "string",
-                            "metaValue": "6DCE0AD1-1BCC-4AB8-A9A5-A945D1404AD8"
+                            "metaValue": "4A9FB41B-DC41-4132-8280-658BB0CEC39A"
                         },
                         {
                             "metaName": "DisplayMode",
@@ -809,24 +1945,40 @@
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "61.000000"
+                            "metaValue": "37.000000"
                         },
                         {
                             "metaName": "LayoutPos",
                             "metaType": "string",
-                            "metaValue": "5503.72 885.985"
+                            "metaValue": "1535 651"
                         }
                     ]
                 },
                 {
-                    "nodeName": "tension_clamped",
-                    "nodeType": "Core::Math::clamp",
+                    "nodeName": "offset",
+                    "valueType": "float",
                     "metadata": [
                         {
-                            "metaName": "UUID",
+                            "metaName": "DisplayMode",
                             "metaType": "string",
-                            "metaValue": "DCE69430-B688-4E54-9FE4-1E0F06EBAF20"
+                            "metaValue": "2"
                         },
+                        {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "48.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "925 1042"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "epsilon",
+                    "valueType": "float",
+                    "metadata": [
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
@@ -835,324 +1987,203 @@
                         {
                             "metaName": "LayoutPos",
                             "metaType": "string",
-                            "metaValue": "4585 953"
+                            "metaValue": "925 1237"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "55.000000"
+                            "metaValue": "70.000000"
                         }
                     ]
                 },
                 {
-                    "nodeName": "tension_color",
-                    "nodeType": "Core::Conversion::scalar_to_vector3",
+                    "nodeName": "face_size",
+                    "valueType": "long",
                     "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "E77CE6F4-9F16-4527-BB30-EBCB0D561A3E"
-                        },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
                         },
                         {
-                            "metaName": "LayoutPos",
-                            "metaType": "string",
-                            "metaValue": "5195 1052"
-                        },
-                        {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "58.000000"
+                            "metaValue": "65.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "315 10"
                         }
                     ]
                 },
                 {
-                    "nodeName": "tension_raw",
-                    "nodeType": "Core::Math::add",
-                    "multiInPortNames": [
-                        "scaled",
-                        "offset"
-                    ],
+                    "nodeName": "plus_one",
+                    "valueType": "long",
                     "metadata": [
-                        {
-                            "metaName": "UUID",
-                            "metaType": "string",
-                            "metaValue": "E526D486-2E0D-4DF3-B4C0-700B70A0B1B6"
-                        },
                         {
                             "metaName": "DisplayMode",
                             "metaType": "string",
                             "metaValue": "2"
                         },
                         {
+                            "metaName": "zValue",
+                            "metaType": "string",
+                            "metaValue": "66.000000"
+                        },
+                        {
                             "metaName": "LayoutPos",
                             "metaType": "string",
-                            "metaValue": "4280 918"
+                            "metaValue": "315 205"
+                        }
+                    ]
+                },
+                {
+                    "nodeName": "face_size_minus_one",
+                    "valueType": "long",
+                    "metadata": [
+                        {
+                            "metaName": "DisplayMode",
+                            "metaType": "string",
+                            "metaValue": "2"
                         },
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "54.000000"
+                            "metaValue": "69.000000"
+                        },
+                        {
+                            "metaName": "LayoutPos",
+                            "metaType": "string",
+                            "metaValue": "315 400"
                         }
                     ]
                 }
             ],
             "connections": [
                 {
-                    "source": "def_next_pos.value",
-                    "target": "def_edge.first.next_pos"
-                },
-                {
-                    "source": "def_fv_pos.value",
-                    "target": "def_edge.first.curr_pos"
-                },
-                {
-                    "source": "def_edge.output",
-                    "target": "def_len.vector"
-                },
-                {
-                    "source": "get_def_pos.point_position",
-                    "target": "def_fv_pos.array"
-                },
-                {
-                    "source": "get_rest_struct.face_vertex",
-                    "target": "def_fv_pos.index"
-                },
-                {
-                    "source": "def_len.length",
-                    "target": "edge_diff.first.deformed"
-                },
-                {
-                    "source": "get_def_pos.point_position",
-                    "target": "def_next_pos.array"
-                },
-                {
-                    "source": "next_vert.value",
-                    "target": "def_next_pos.index"
-                },
-                {
-                    "source": "rest_len.length",
-                    "target": "edge_diff.first.rest"
-                },
-                {
-                    "source": "edge_diff.output",
-                    "target": "edge_ratio.first.diff"
-                },
-                {
-                    "source": "safe_rest.maximum",
-                    "target": "edge_ratio.first.safe"
-                },
-                {
-                    "source": "edge_ratio.output",
-                    "target": "scale_ratio.first.ratio"
-                },
-                {
-                    "source": "fv_indices.indices",
-                    "target": "face_start.first.indices"
-                },
-                {
-                    "source": "local_idx.remainder",
-                    "target": "face_start.first.local"
-                },
-                {
-                    "source": "face_start.output",
-                    "target": "next_fv_idx.first.fs"
-                },
-                {
-                    "source": "get_rest_struct.face_vertex",
-                    "target": "fv_indices.array"
-                },
-                {
-                    "source": "fv_indices.indices",
-                    "target": "local_idx.value"
+                    "source": ".rest_mesh",
+                    "target": "mesh_data.rest_mesh"
                 },
                 {
                     "source": ".deformed_mesh",
-                    "target": "get_def_pos.geometry"
+                    "target": "mesh_data.deformed_mesh"
                 },
                 {
-                    "source": ".rest_mesh",
-                    "target": "get_rest_struct.mesh"
+                    "source": "mesh_data.face_vertex",
+                    "target": "next_vertex.face_vertex"
                 },
                 {
-                    "source": "get_rest_struct.point_position",
-                    "target": "rest_fv_pos.array"
+                    "source": "mesh_data.face_vertex_count",
+                    "target": "next_vertex.face_vertex_count"
                 },
                 {
-                    "source": "get_rest_struct.point_position",
-                    "target": "rest_next_pos.array"
+                    "source": "mesh_data.rest_positions",
+                    "target": "edge_lengths.rest_positions"
                 },
                 {
-                    "source": "get_rest_struct.face_vertex",
-                    "target": "next_vert.array"
+                    "source": "mesh_data.def_positions",
+                    "target": "edge_lengths.def_positions"
                 },
                 {
-                    "source": "get_rest_struct.face_vertex",
-                    "target": "rest_fv_pos.index"
+                    "source": "mesh_data.face_vertex",
+                    "target": "edge_lengths.face_vertex"
                 },
                 {
-                    "source": "tension_clamped.clamped",
-                    "target": "green_ramp.value"
+                    "source": "next_vertex.next_vert_index",
+                    "target": "edge_lengths.next_vert_index"
                 },
                 {
-                    "source": "green_ramp.result",
-                    "target": "tension_color.y"
+                    "source": "next_vertex.prev_vert_index",
+                    "target": "edge_lengths.prev_vert_index"
                 },
                 {
-                    "source": ".face_size",
-                    "target": "local_idx.divisor"
+                    "source": "mesh_data.point_count",
+                    "target": "vertex_tension.max_iterations"
                 },
                 {
-                    "source": "local_idx.remainder",
-                    "target": "local_plus1.first.local"
+                    "source": "mesh_data.face_vertex",
+                    "target": "vertex_tension.face_vertex"
                 },
                 {
-                    "source": "local_plus1.output",
-                    "target": "next_local.value"
+                    "source": "edge_lengths.rest_len",
+                    "target": "vertex_tension.rest_fv_len"
                 },
                 {
-                    "source": "next_local.remainder",
-                    "target": "next_fv_idx.first.nl"
-                },
-                {
-                    "source": "next_fv_idx.output",
-                    "target": "next_vert.index"
-                },
-                {
-                    "source": ".face_size",
-                    "target": "next_local.divisor"
-                },
-                {
-                    "source": "next_vert.value",
-                    "target": "rest_next_pos.index"
-                },
-                {
-                    "source": "tension_clamped.clamped",
-                    "target": "red_ramp.value"
-                },
-                {
-                    "source": "red_ramp.result",
-                    "target": "tension_color.x"
-                },
-                {
-                    "source": "rest_next_pos.value",
-                    "target": "rest_edge.first.next_pos"
-                },
-                {
-                    "source": "rest_fv_pos.value",
-                    "target": "rest_edge.first.curr_pos"
-                },
-                {
-                    "source": "rest_edge.output",
-                    "target": "rest_len.vector"
-                },
-                {
-                    "source": "rest_len.length",
-                    "target": "safe_rest.first.rest_len"
+                    "source": "edge_lengths.def_len",
+                    "target": "vertex_tension.def_fv_len"
                 },
                 {
                     "source": ".sensitivity",
-                    "target": "scale_ratio.first.sensitivity"
+                    "target": "vertex_tension.sensitivity"
                 },
                 {
-                    "source": "scale_ratio.output",
-                    "target": "tension_raw.first.scaled"
+                    "source": "vertex_tension.tension",
+                    "target": "color_output.tension_per_vertex"
                 },
                 {
                     "source": ".deformed_mesh",
-                    "target": "set_color.geometry"
+                    "target": "color_output.deformed_mesh"
                 },
                 {
-                    "source": "tension_color.vector3",
-                    "target": "set_color.data"
+                    "source": "color_output.out_mesh",
+                    "target": ".out_mesh"
                 },
                 {
-                    "source": "set_color.out_geometry",
-                    "target": ".out_geometry"
-                },
-                {
-                    "source": "tension_raw.output",
-                    "target": "tension_clamped.value"
-                },
-                {
-                    "source": "tension_clamped.clamped",
+                    "source": "vertex_tension.tension",
                     "target": ".tension_weights"
+                },
+                {
+                    "source": "offset.output",
+                    "target": "vertex_tension.offset"
+                },
+                {
+                    "source": "epsilon.output",
+                    "target": "vertex_tension.epsilon"
+                },
+                {
+                    "source": "face_size.output",
+                    "target": "next_vertex.face_size"
+                },
+                {
+                    "source": "plus_one.output",
+                    "target": "next_vertex.plus_one"
+                },
+                {
+                    "source": "face_size_minus_one.output",
+                    "target": "next_vertex.face_size_minus_one"
                 }
             ],
             "values": [
                 {
-                    "valueName": "green_ramp.from_start",
+                    "valueName": "vertex_tension.max_iterations",
+                    "valueType": "long",
+                    "value": "10"
+                },
+                {
+                    "valueName": "offset.value",
                     "valueType": "float",
                     "value": "0.5f"
                 },
                 {
-                    "valueName": "green_ramp.from_end",
+                    "valueName": "epsilon.value",
                     "valueType": "float",
-                    "value": "0f"
+                    "value": "9.99999975e-05f"
                 },
                 {
-                    "valueName": "green_ramp.to_start",
-                    "valueType": "float",
-                    "value": "0f"
+                    "valueName": "face_size.value",
+                    "valueType": "long",
+                    "value": "4"
                 },
                 {
-                    "valueName": "green_ramp.to_end",
-                    "valueType": "float",
-                    "value": "1f"
+                    "valueName": "plus_one.value",
+                    "valueType": "long",
+                    "value": "1"
                 },
                 {
-                    "valueName": "green_ramp.clamp",
-                    "valueType": "bool",
-                    "value": "true"
-                },
-                {
-                    "valueName": "red_ramp.from_start",
-                    "valueType": "float",
-                    "value": "0.5f"
-                },
-                {
-                    "valueName": "red_ramp.from_end",
-                    "valueType": "float",
-                    "value": "1f"
-                },
-                {
-                    "valueName": "red_ramp.to_start",
-                    "valueType": "float",
-                    "value": "0f"
-                },
-                {
-                    "valueName": "red_ramp.to_end",
-                    "valueType": "float",
-                    "value": "1f"
-                },
-                {
-                    "valueName": "red_ramp.clamp",
-                    "valueType": "bool",
-                    "value": "true"
-                },
-                {
-                    "valueName": "set_color.property",
-                    "valueType": "string",
-                    "value": "color"
-                },
-                {
-                    "valueName": "set_color.target",
-                    "valueType": "string",
-                    "value": "face_vertex_component"
-                },
-                {
-                    "valueName": "set_color.interpolation_mode",
-                    "valueType": "Geometry::Common::DataInterpolationMode",
-                    "value": "Linear"
-                },
-                {
-                    "valueName": "tension_clamped.max",
-                    "valueType": "float",
-                    "value": "1f"
+                    "valueName": "face_size_minus_one.value",
+                    "valueType": "long",
+                    "value": "3"
                 }
             ],
             "reservedNodeNames": [
