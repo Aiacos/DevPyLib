@@ -1,0 +1,5 @@
+Collecting ruff
+  Using cached ruff-0.15.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)
+Using cached ruff-0.15.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.3 MB)
+Installing collected packages: ruff
+Successfully installed ruff-0.15.6

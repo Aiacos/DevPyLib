@@ -141,9 +141,7 @@ class TensionMapGraph(main.Graph):
         mesh_data["face_vertex_count"].connect(next_vtx["face_vertex_count"])
         tm["/input"]["face_size"].connect(next_vtx["face_size"])
         tm["/input"]["plus_one"].connect(next_vtx["plus_one"])
-        tm["/input"]["face_size_minus_one"].connect(
-            next_vtx["face_size_minus_one"]
-        )
+        tm["/input"]["face_size_minus_one"].connect(next_vtx["face_size_minus_one"])
 
         # ── Wire: edge_lengths ───────────────────────────────────────
         mesh_data["rest_positions"].connect(edge_lens["rest_positions"])
@@ -201,21 +199,15 @@ class TensionMapGraph(main.Graph):
         c["/output.def_positions"].add("input", "auto")
         c["/output.point_count"].add("input", "auto")
 
-        get_rest = c.create_node(
-            "Geometry::Mesh,get_mesh_structure", name="get_rest"
-        )
+        get_rest = c.create_node("Geometry::Mesh,get_mesh_structure", name="get_rest")
         c["/input"]["rest_mesh"].connect(get_rest["mesh"])
 
-        get_def = c.create_node(
-            "Geometry::Properties,get_point_position", name="get_def"
-        )
+        get_def = c.create_node("Geometry::Properties,get_point_position", name="get_def")
         c["/input"]["deformed_mesh"].connect(get_def["geometry"])
 
         get_rest["point_position"].connect(c["/output"]["rest_positions"])
         get_rest["face_vertex"].connect(c["/output"]["face_vertex"])
-        get_rest["face_vertex_count"].connect(
-            c["/output"]["face_vertex_count"]
-        )
+        get_rest["face_vertex_count"].connect(c["/output"]["face_vertex_count"])
         get_def["point_position"].connect(c["/output"]["def_positions"])
         get_rest["point_count"].connect(c["/output"]["point_count"])
 
@@ -251,9 +243,7 @@ class TensionMapGraph(main.Graph):
         c["/output.prev_vert_index"].add("input", "auto")
 
         # Shared: flat indices and local position within face
-        fv_indices = c.create_node(
-            "Core::Array,get_array_indices", name="fv_indices"
-        )
+        fv_indices = c.create_node("Core::Array,get_array_indices", name="fv_indices")
         c["/input"]["face_vertex"].connect(fv_indices["array"])
 
         local_idx = c.create_node("Core::Math,modulo", name="local_idx")
@@ -277,22 +267,16 @@ class TensionMapGraph(main.Graph):
         face_start["output"].connect(next_fv_idx["fs"])
         next_local["remainder"].connect(next_fv_idx["nl"])
 
-        next_idx_uint = c.create_node(
-            "Core::Math,modulo", name="next_idx_uint"
-        )
+        next_idx_uint = c.create_node("Core::Math,modulo", name="next_idx_uint")
         next_fv_idx["output"].connect(next_idx_uint["value"])
         c["/input"]["face_vertex_count"].connect(next_idx_uint["divisor"])
 
-        next_vert = c.create_node(
-            "Core::Array,get_from_array", name="next_vert"
-        )
+        next_vert = c.create_node("Core::Array,get_from_array", name="next_vert")
         c["/input"]["face_vertex"].connect(next_vert["array"])
         next_idx_uint["remainder"].connect(next_vert["index"])
 
         # PREV vertex: (local + face_size - 1) % face_size
-        local_plus_fsm1 = c.create_node(
-            "Core::Math,add", name="local_plus_fsm1"
-        )
+        local_plus_fsm1 = c.create_node("Core::Math,add", name="local_plus_fsm1")
         local_idx["remainder"].connect(local_plus_fsm1["local"])
         c["/input"]["face_size_minus_one"].connect(local_plus_fsm1["fsm1"])
 
@@ -304,15 +288,11 @@ class TensionMapGraph(main.Graph):
         face_start["output"].connect(prev_fv_idx["fs"])
         prev_local["remainder"].connect(prev_fv_idx["pl"])
 
-        prev_idx_uint = c.create_node(
-            "Core::Math,modulo", name="prev_idx_uint"
-        )
+        prev_idx_uint = c.create_node("Core::Math,modulo", name="prev_idx_uint")
         prev_fv_idx["output"].connect(prev_idx_uint["value"])
         c["/input"]["face_vertex_count"].connect(prev_idx_uint["divisor"])
 
-        prev_vert = c.create_node(
-            "Core::Array,get_from_array", name="prev_vert"
-        )
+        prev_vert = c.create_node("Core::Array,get_from_array", name="prev_vert")
         c["/input"]["face_vertex"].connect(prev_vert["array"])
         prev_idx_uint["remainder"].connect(prev_vert["index"])
 
@@ -354,39 +334,27 @@ class TensionMapGraph(main.Graph):
         c["/output.def_len"].add("input", "auto")
 
         # Position lookups
-        rest_fv = c.create_node(
-            "Core::Array,get_from_array", name="rest_fv_pos"
-        )
+        rest_fv = c.create_node("Core::Array,get_from_array", name="rest_fv_pos")
         c["/input"]["rest_positions"].connect(rest_fv["array"])
         c["/input"]["face_vertex"].connect(rest_fv["index"])
 
-        def_fv = c.create_node(
-            "Core::Array,get_from_array", name="def_fv_pos"
-        )
+        def_fv = c.create_node("Core::Array,get_from_array", name="def_fv_pos")
         c["/input"]["def_positions"].connect(def_fv["array"])
         c["/input"]["face_vertex"].connect(def_fv["index"])
 
-        rest_next = c.create_node(
-            "Core::Array,get_from_array", name="rest_next_pos"
-        )
+        rest_next = c.create_node("Core::Array,get_from_array", name="rest_next_pos")
         c["/input"]["rest_positions"].connect(rest_next["array"])
         c["/input"]["next_vert_index"].connect(rest_next["index"])
 
-        def_next = c.create_node(
-            "Core::Array,get_from_array", name="def_next_pos"
-        )
+        def_next = c.create_node("Core::Array,get_from_array", name="def_next_pos")
         c["/input"]["def_positions"].connect(def_next["array"])
         c["/input"]["next_vert_index"].connect(def_next["index"])
 
-        rest_prev = c.create_node(
-            "Core::Array,get_from_array", name="rest_prev_pos"
-        )
+        rest_prev = c.create_node("Core::Array,get_from_array", name="rest_prev_pos")
         c["/input"]["rest_positions"].connect(rest_prev["array"])
         c["/input"]["prev_vert_index"].connect(rest_prev["index"])
 
-        def_prev = c.create_node(
-            "Core::Array,get_from_array", name="def_prev_pos"
-        )
+        def_prev = c.create_node("Core::Array,get_from_array", name="def_prev_pos")
         c["/input"]["def_positions"].connect(def_prev["array"])
         c["/input"]["prev_vert_index"].connect(def_prev["index"])
 
@@ -395,9 +363,7 @@ class TensionMapGraph(main.Graph):
         rest_next["value"].connect(rest_fwd["a"])
         rest_fv["value"].connect(rest_fwd["b"])
 
-        rest_fwd_len = c.create_node(
-            "Core::Math,length", name="rest_fwd_len"
-        )
+        rest_fwd_len = c.create_node("Core::Math,length", name="rest_fwd_len")
         rest_fwd["output"].connect(rest_fwd_len["vector"])
 
         def_fwd = c.create_node("Core::Math,subtract", name="def_fwd_edge")
@@ -412,9 +378,7 @@ class TensionMapGraph(main.Graph):
         rest_prev["value"].connect(rest_bwd["a"])
         rest_fv["value"].connect(rest_bwd["b"])
 
-        rest_bwd_len = c.create_node(
-            "Core::Math,length", name="rest_bwd_len"
-        )
+        rest_bwd_len = c.create_node("Core::Math,length", name="rest_bwd_len")
         rest_bwd["output"].connect(rest_bwd_len["vector"])
 
         def_bwd = c.create_node("Core::Math,subtract", name="def_bwd_edge")
@@ -474,9 +438,7 @@ class TensionMapGraph(main.Graph):
             ``def_fv_len``, ``sensitivity``, ``offset``, ``epsilon``
             and output ``tension``.
         """
-        c = root.create_node(
-            "Core::Iterators,for_each", name="vertex_tension"
-        )
+        c = root.create_node("Core::Iterators,for_each", name="vertex_tension")
 
         # Pass-through inputs (full arrays, not iterated)
         c["/input.face_vertex"].add("output", "auto")
@@ -490,9 +452,7 @@ class TensionMapGraph(main.Graph):
         c["/output.tension"].add("input", "auto")
 
         # Step 1: type conversion so equal() can compare face_vertex with index
-        fv_to_long = c.create_node(
-            "Core::Type_Conversion,to_long", name="fv_to_long"
-        )
+        fv_to_long = c.create_node("Core::Type_Conversion,to_long", name="fv_to_long")
         c["/input"]["face_vertex"].connect(fv_to_long["from"])
 
         # Step 2: boolean mask
@@ -501,15 +461,11 @@ class TensionMapGraph(main.Graph):
         c["/input"]["current_index"].connect(make_mask["second"])
 
         # Step 3: filter edge lengths by mask
-        filter_rest = c.create_node(
-            "Core::Array,filter_array", name="filter_rest"
-        )
+        filter_rest = c.create_node("Core::Array,filter_array", name="filter_rest")
         c["/input"]["rest_fv_len"].connect(filter_rest["array"])
         make_mask["output"].connect(filter_rest["boolean_array"])
 
-        filter_def = c.create_node(
-            "Core::Array,filter_array", name="filter_def"
-        )
+        filter_def = c.create_node("Core::Array,filter_array", name="filter_def")
         c["/input"]["def_fv_len"].connect(filter_def["array"])
         make_mask["output"].connect(filter_def["boolean_array"])
 
@@ -521,20 +477,14 @@ class TensionMapGraph(main.Graph):
         filter_def["filtered_array"].connect(sum_def["array"])
 
         # Step 4b: count via array_size + convert to float
-        count_node = c.create_node(
-            "Core::Array,array_size", name="count"
-        )
+        count_node = c.create_node("Core::Array,array_size", name="count")
         filter_rest["filtered_array"].connect(count_node["array"])
 
-        count_float = c.create_node(
-            "Core::Type_Conversion,to_float", name="count_float"
-        )
+        count_float = c.create_node("Core::Type_Conversion,to_float", name="count_float")
         count_node["size"].connect(count_float["from"])
 
         # Step 5: safe_count = max(count, 1.0)
-        one_const = c.create_node(
-            "Core::Constants,float", name="one_const"
-        )
+        one_const = c.create_node("Core::Constants,float", name="one_const")
         one_const["output"].value = 1.0
 
         safe_count = c.create_node("Core::Math,max", name="safe_count")
@@ -571,9 +521,7 @@ class TensionMapGraph(main.Graph):
         scaled["output"].connect(tension_raw["value"])
         c["/input"]["offset"].connect(tension_raw["off"])
 
-        tension_clamped = c.create_node(
-            "Core::Math,clamp", name="tension_clamped"
-        )
+        tension_clamped = c.create_node("Core::Math,clamp", name="tension_clamped")
         tension_raw["output"].connect(tension_clamped["value"])
         tension_clamped["min"].value = 0
         tension_clamped["max"].value = 1
@@ -617,9 +565,7 @@ class TensionMapGraph(main.Graph):
         red_ramp["clamp"].value = True
 
         # Green: stretch (0.5->0 maps to 0->1)
-        green_ramp = c.create_node(
-            "Core::Math,change_range", name="green_ramp"
-        )
+        green_ramp = c.create_node("Core::Math,change_range", name="green_ramp")
         c["/input"]["tension_per_vertex"].connect(green_ramp["value"])
         green_ramp["from_start"].value = 0.5
         green_ramp["from_end"].value = 0.0
@@ -628,16 +574,12 @@ class TensionMapGraph(main.Graph):
         green_ramp["clamp"].value = True
 
         # Compose RGB color
-        tension_color = c.create_node(
-            "Core::Conversion,scalar_to_vector3", name="tension_color"
-        )
+        tension_color = c.create_node("Core::Conversion,scalar_to_vector3", name="tension_color")
         red_ramp["result"].connect(tension_color["x"])
         green_ramp["result"].connect(tension_color["y"])
 
         # Write per-vertex colors (point_component)
-        set_color = c.create_node(
-            "Geometry::Properties,set_geo_property", name="set_color"
-        )
+        set_color = c.create_node("Geometry::Properties,set_geo_property", name="set_color")
         c["/input"]["deformed_mesh"].connect(set_color["geometry"])
         tension_color["vector3"].connect(set_color["data"])
         set_color["property"].value = "color"
