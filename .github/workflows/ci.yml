@@ -1,11 +1,12 @@
 # GitHub Actions CI Workflow for DevPyLib
 # Runs linting and formatting checks on push/PR
+# On autoclaude branch: auto-fixes and commits ruff violations
 
 name: CI
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, master, develop, autoclaude]
   pull_request:
     branches: [main, master, develop]
   workflow_dispatch:
@@ -21,6 +22,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -30,6 +34,21 @@ jobs:
 
       - name: Install Ruff
         run: pip install ruff>=0.1.0
+
+      - name: Run Ruff auto-fix (autoclaude/develop branches)
+        if: github.ref == 'refs/heads/autoclaude' || github.ref == 'refs/heads/develop'
+        run: |
+          ruff check . --fix --unsafe-fixes
+          ruff format .
+
+      - name: Commit auto-fixes (autoclaude/develop branches)
+        if: github.ref == 'refs/heads/autoclaude' || github.ref == 'refs/heads/develop'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "style: auto-fix ruff lint and format violations"
+          git push
 
       - name: Run Ruff check (linting)
         run: ruff check . --output-format=github
@@ -49,6 +68,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
