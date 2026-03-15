@@ -75,7 +75,7 @@
                                         {
                                             "metaName": "zValue",
                                             "metaType": "string",
-                                            "metaValue": "54.000000"
+                                            "metaValue": "44.000000"
                                         },
                                         {
                                             "metaName": "io_ports",
@@ -84,7 +84,7 @@
                                                     "metaName": "out_mesh"
                                                 },
                                                 {
-                                                    "metaName": "tension_weights"
+                                                    "metaName": "color_map"
                                                 },
                                                 {
                                                     "metaName": "compression"
@@ -118,7 +118,7 @@
                 {
                     "metaName": "ViewportRect",
                     "metaType": "string",
-                    "metaValue": "625.945 187.333 1816.32 1866.6"
+                    "metaValue": "1107.99 203.283 1817.03 1867.33"
                 },
                 {
                     "metaName": "DisplayMode",
@@ -126,14 +126,14 @@
                     "metaValue": "2"
                 },
                 {
-                    "metaName": "zValue",
-                    "metaType": "string",
-                    "metaValue": "49.000000"
-                },
-                {
                     "metaName": "LayoutPos",
                     "metaType": "string",
-                    "metaValue": "-121.124 -63.4451"
+                    "metaValue": "-100.36 -101.016"
+                },
+                {
+                    "metaName": "zValue",
+                    "metaType": "string",
+                    "metaValue": "40.000000"
                 }
             ],
             "ports": [
@@ -159,7 +159,7 @@
                     "portType": "Object"
                 },
                 {
-                    "portName": "tension_weights",
+                    "portName": "color_map",
                     "portDirection": "output"
                 },
                 {
@@ -2217,7 +2217,7 @@
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "50.000000"
+                            "metaValue": "43.000000"
                         }
                     ]
                 },
@@ -2238,7 +2238,7 @@
                         {
                             "metaName": "zValue",
                             "metaType": "string",
-                            "metaValue": "44.000000"
+                            "metaValue": "42.000000"
                         }
                     ]
                 }
@@ -2313,10 +2313,6 @@
                     "target": ".out_mesh"
                 },
                 {
-                    "source": "vertex_tension.tension",
-                    "target": ".tension_weights"
-                },
-                {
                     "source": "offset.output",
                     "target": "vertex_tension.offset"
                 },
@@ -2351,6 +2347,10 @@
                 {
                     "source": "tension.y",
                     "target": ".tension"
+                },
+                {
+                    "source": "color_output.color_map",
+                    "target": ".color_map"
                 }
             ],
             "values": [
