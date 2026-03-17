@@ -147,9 +147,7 @@ def rotate(v1, angle_degrees, axis=None):
         MVector: The rotated vector.
     """
     if isinstance(axis, om2.MVector):
-        euler = om2.MEulerRotation(
-            math.radians(axis.x), math.radians(axis.y), math.radians(axis.z)
-        )
+        euler = om2.MEulerRotation(math.radians(axis.x), math.radians(axis.y), math.radians(axis.z))
         return v1.rotateBy(euler)
 
     if axis is None:
@@ -200,8 +198,7 @@ def get_pole_vector_position(
         pv = _pv_bulletproof(arm_pos, elbow_pos, wrist_pos, distance_scale)
     else:
         raise ValueError(
-            f"Unknown method {method!r}. "
-            "Choose from: midpoint, projection, studio, bulletproof."
+            f"Unknown method {method!r}. Choose from: midpoint, projection, studio, bulletproof."
         )
 
     return pv.x, pv.y, pv.z
@@ -293,9 +290,7 @@ def get_closest_normal(mesh_fn, position):
     Returns:
         om2.MVector: Unit normal at the closest surface point.
     """
-    normal = mesh_fn.getClosestNormal(
-        om2.MPoint(position), space=om2.MSpace.kWorld
-    )[0]
+    normal = mesh_fn.getClosestNormal(om2.MPoint(position), space=om2.MSpace.kWorld)[0]
     return normal.normal()
 
 
