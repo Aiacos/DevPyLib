@@ -715,7 +715,9 @@ class TensionMapNetwork:
         rest_avg_out = 0
         def_avg_out = 1
 
-        # Constants (floatdef is the correct H21.5 parameter name)
+        # Constants (floatdef is the correct H21.5 parameter name).
+        # When inside a subnet, link to subnet parms via ch("../../name").
+        # Path: constant → attribvop (../) → subnet (../../)
         sens = vop_net.createNode("constant", "sensitivity")
         _safe_parm_set(sens, "consttype", 0)
         _safe_parm_set(sens, "floatdef", self._sensitivity)
@@ -727,6 +729,12 @@ class TensionMapNetwork:
         eps = vop_net.createNode("constant", "epsilon")
         _safe_parm_set(eps, "consttype", 0)
         _safe_parm_set(eps, "floatdef", self._epsilon)
+
+        if param_prefix:
+            for node, name in [(sens, "sensitivity"), (off, "offset"), (eps, "epsilon")]:
+                parm = node.parm("floatdef")
+                if parm is not None:
+                    parm.setExpression(f'ch("../../{name}")')
 
         zero = vop_net.createNode("constant", "zero")
         _safe_parm_set(zero, "consttype", 0)
