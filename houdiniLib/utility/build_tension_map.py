@@ -336,7 +336,9 @@ class TensionMapNetwork:
         )
 
         self.blur_sop = self._create_blur_sop(
-            self.subnet, self.calc_sop, param_prefix="../",
+            self.subnet,
+            self.calc_sop,
+            param_prefix="../",
         )
 
         out = self.subnet.createNode("output", "output0")
@@ -420,8 +422,14 @@ class TensionMapNetwork:
 
     def _init_missing_attrs(self):
         """Set convenience attributes to ``None`` for unused modes."""
-        for attr in ("wrangle_sop", "vop_sop", "switch_sop",
-                     "rest_sop", "attribcopy_sop", "blur_sop"):
+        for attr in (
+            "wrangle_sop",
+            "vop_sop",
+            "switch_sop",
+            "rest_sop",
+            "attribcopy_sop",
+            "blur_sop",
+        ):
             if not hasattr(self, attr):
                 setattr(self, attr, None)
 
@@ -766,7 +774,9 @@ class TensionMapNetwork:
         bind_compress.setInput(0, compress_clamp, 0)
 
         bind_cd = self._create_bind_export(
-            vop_net, "tension_map_Cd", _PARMTYPE_VECTOR,
+            vop_net,
+            "tension_map_Cd",
+            _PARMTYPE_VECTOR,
         )
         bind_cd.setInput(0, color, 0)
 
