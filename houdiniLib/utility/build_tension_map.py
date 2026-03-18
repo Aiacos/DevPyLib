@@ -302,14 +302,13 @@ class TensionMapNetwork:
 
             # Wrangle that copies @P from input 2 as @rest on input 1
             self.attribcopy_sop = self.subnet.createNode(
-                "attribwrangle", "copy_rest_from_input2",
+                "attribwrangle",
+                "copy_rest_from_input2",
             )
             self.attribcopy_sop.setInput(0, input1)
             self.attribcopy_sop.setInput(1, input2)
             self.attribcopy_sop.parm("class").set(2)  # Run over points
-            self.attribcopy_sop.parm("snippet").set(
-                'v@rest = point(1, "P", @ptnum);\n'
-            )
+            self.attribcopy_sop.parm("snippet").set('v@rest = point(1, "P", @ptnum);\n')
             self.rest_sop = None
             calc_upstream = self.attribcopy_sop
         else:
@@ -368,8 +367,7 @@ class TensionMapNetwork:
 
     def _init_missing_attrs(self):
         """Set convenience attributes to ``None`` for unused modes."""
-        for attr in ("wrangle_sop", "vop_sop", "switch_sop",
-                     "rest_sop", "attribcopy_sop"):
+        for attr in ("wrangle_sop", "vop_sop", "switch_sop", "rest_sop", "attribcopy_sop"):
             if not hasattr(self, attr):
                 setattr(self, attr, None)
 
@@ -693,24 +691,30 @@ class TensionMapNetwork:
 
         color = vop_net.createNode("floattovec", "color_compose")
         color.setInput(0, compress_clamp, 0)  # R = compression
-        color.setInput(1, stretch_clamp, 0)   # G = stretch
-        color.setInput(2, zero_const, 0)      # B = 0
+        color.setInput(1, stretch_clamp, 0)  # G = stretch
+        color.setInput(2, zero_const, 0)  # B = 0
 
         # ── Bind exports ─────────────────────────────────────────
         output_node = vop_net.createNode("geometryvopoutput", "output")
 
         bind_tension = self._create_bind_export(
-            vop_net, "tension", _PARMTYPE_FLOAT,
+            vop_net,
+            "tension",
+            _PARMTYPE_FLOAT,
         )
         bind_tension.setInput(0, tension_clamp, 0)
 
         bind_compress = self._create_bind_export(
-            vop_net, "compression", _PARMTYPE_FLOAT,
+            vop_net,
+            "compression",
+            _PARMTYPE_FLOAT,
         )
         bind_compress.setInput(0, compress_clamp, 0)
 
         bind_cd = self._create_bind_export(
-            vop_net, "Cd", _PARMTYPE_VECTOR,
+            vop_net,
+            "Cd",
+            _PARMTYPE_VECTOR,
         )
         bind_cd.setInput(0, color, 0)
 
