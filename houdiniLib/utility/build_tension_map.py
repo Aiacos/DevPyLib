@@ -119,6 +119,7 @@ def _safe_parm_set(node, parm_name, value):
         return True
     return False
 
+
 # ── VEX snippet ─────────────────────────────────────────────────
 _TENSION_VEX = textwrap.dedent("""\
     // Tension Map — per-vertex edge-length comparison
@@ -199,9 +200,7 @@ class TensionMapNetwork:
     ):
         """Create the tension map node network inside *parent_path*."""
         if mode not in self._VALID_MODES:
-            raise ValueError(
-                f"Unknown mode {mode!r}. Choose from: {self._VALID_MODES}"
-            )
+            raise ValueError(f"Unknown mode {mode!r}. Choose from: {self._VALID_MODES}")
 
         self.parent = hou.node(parent_path)
         if self.parent is None:
@@ -245,21 +244,36 @@ class TensionMapNetwork:
 
         # Expose parameters on the subnet
         ptg = self.subnet.parmTemplateGroup()
-        ptg.append(hou.FloatParmTemplate(
-            "sensitivity", "Sensitivity", 1,
-            default_value=(self._sensitivity,),
-            min=0.0, max=10.0,
-        ))
-        ptg.append(hou.FloatParmTemplate(
-            "offset", "Offset", 1,
-            default_value=(self._offset,),
-            min=0.0, max=1.0,
-        ))
-        ptg.append(hou.FloatParmTemplate(
-            "epsilon", "Epsilon", 1,
-            default_value=(self._epsilon,),
-            min=0.0, max=0.01,
-        ))
+        ptg.append(
+            hou.FloatParmTemplate(
+                "sensitivity",
+                "Sensitivity",
+                1,
+                default_value=(self._sensitivity,),
+                min=0.0,
+                max=10.0,
+            )
+        )
+        ptg.append(
+            hou.FloatParmTemplate(
+                "offset",
+                "Offset",
+                1,
+                default_value=(self._offset,),
+                min=0.0,
+                max=1.0,
+            )
+        )
+        ptg.append(
+            hou.FloatParmTemplate(
+                "epsilon",
+                "Epsilon",
+                1,
+                default_value=(self._epsilon,),
+                min=0.0,
+                max=0.01,
+            )
+        )
         self.subnet.setParmTemplateGroup(ptg)
 
         if upstream is not None:
@@ -271,7 +285,9 @@ class TensionMapNetwork:
         self.rest_sop.setInput(0, input_node)
 
         self.calc_sop = self._create_calc_sop(
-            self.subnet, self.rest_sop, param_prefix="../../",
+            self.subnet,
+            self.rest_sop,
+            param_prefix="../../",
         )
 
         out = self.subnet.createNode("output", "output0")
@@ -290,9 +306,7 @@ class TensionMapNetwork:
         if wire_after is not None:
             node = self.parent.node(wire_after)
             if node is None:
-                raise ValueError(
-                    f"Node {wire_after!r} not found in {self.parent.path()}"
-                )
+                raise ValueError(f"Node {wire_after!r} not found in {self.parent.path()}")
             return node
 
         for child in self.parent.children():
@@ -342,12 +356,16 @@ class TensionMapNetwork:
         """
         if self._mode == "wrangle":
             self.wrangle_sop = self._create_wrangle_sop(
-                container, upstream, param_prefix,
+                container,
+                upstream,
+                param_prefix,
             )
             return self.wrangle_sop
         if self._mode == "vop":
             self.vop_sop = self._create_vop_sop(
-                container, upstream, param_prefix,
+                container,
+                upstream,
+                param_prefix,
             )
             return self.vop_sop
         # mode == "both"
@@ -378,12 +396,16 @@ class TensionMapNetwork:
             The Switch SOP node.
         """
         self.wrangle_sop = self._create_wrangle_sop(
-            container, upstream, param_prefix,
+            container,
+            upstream,
+            param_prefix,
         )
         self.wrangle_sop.setColor(hou.Color((0.4, 0.6, 0.8)))
 
         self.vop_sop = self._create_vop_sop(
-            container, upstream, param_prefix,
+            container,
+            upstream,
+            param_prefix,
         )
         self.vop_sop.setColor(hou.Color((0.8, 0.6, 0.4)))
 
@@ -398,7 +420,9 @@ class TensionMapNetwork:
         ptg.replace(
             "input",
             hou.MenuParmTemplate(
-                "input", "Method", ("0", "1"),
+                "input",
+                "Method",
+                ("0", "1"),
                 menu_labels=("Wrangle (VEX)", "VOP (Nodes)"),
                 default_value=0,
             ),
@@ -410,15 +434,20 @@ class TensionMapNetwork:
             # Add menu parm to the subnet interface
             subnet = container
             sub_ptg = subnet.parmTemplateGroup()
-            sub_ptg.append(hou.MenuParmTemplate(
-                "method", "Method", ("0", "1"),
-                menu_labels=("Wrangle (VEX)", "VOP (Nodes)"),
-                default_value=0,
-            ))
+            sub_ptg.append(
+                hou.MenuParmTemplate(
+                    "method",
+                    "Method",
+                    ("0", "1"),
+                    menu_labels=("Wrangle (VEX)", "VOP (Nodes)"),
+                    default_value=0,
+                )
+            )
             subnet.setParmTemplateGroup(sub_ptg)
 
             self.switch_sop.parm("input").setExpression(
-                f'ch("{param_prefix}method")', hou.exprLanguage.Hscript,
+                f'ch("{param_prefix}method")',
+                hou.exprLanguage.Hscript,
             )
 
         return self.switch_sop
@@ -453,21 +482,36 @@ class TensionMapNetwork:
         # Create spare parameters for chf() references
         ptg = wrangle.parmTemplateGroup()
 
-        ptg.append(hou.FloatParmTemplate(
-            "sensitivity", "Sensitivity", 1,
-            default_value=(self._sensitivity,),
-            min=0.0, max=10.0,
-        ))
-        ptg.append(hou.FloatParmTemplate(
-            "offset", "Offset", 1,
-            default_value=(self._offset,),
-            min=0.0, max=1.0,
-        ))
-        ptg.append(hou.FloatParmTemplate(
-            "epsilon", "Epsilon", 1,
-            default_value=(self._epsilon,),
-            min=0.0, max=0.01,
-        ))
+        ptg.append(
+            hou.FloatParmTemplate(
+                "sensitivity",
+                "Sensitivity",
+                1,
+                default_value=(self._sensitivity,),
+                min=0.0,
+                max=10.0,
+            )
+        )
+        ptg.append(
+            hou.FloatParmTemplate(
+                "offset",
+                "Offset",
+                1,
+                default_value=(self._offset,),
+                min=0.0,
+                max=1.0,
+            )
+        )
+        ptg.append(
+            hou.FloatParmTemplate(
+                "epsilon",
+                "Epsilon",
+                1,
+                default_value=(self._epsilon,),
+                min=0.0,
+                max=0.01,
+            )
+        )
 
         wrangle.setParmTemplateGroup(ptg)
 
@@ -475,7 +519,8 @@ class TensionMapNetwork:
         if param_prefix:
             for name in ("sensitivity", "offset", "epsilon"):
                 wrangle.parm(name).setExpression(
-                    f'ch("{param_prefix}{name}")', hou.exprLanguage.Hscript,
+                    f'ch("{param_prefix}{name}")',
+                    hou.exprLanguage.Hscript,
                 )
 
         return wrangle
@@ -514,21 +559,34 @@ class TensionMapNetwork:
         # ── Import attributes via Bind VOPs ──────────────────────
         import_p = self._create_bind_import(vop_net, "P", _PARMTYPE_VECTOR)
         import_rest = self._create_bind_import(
-            vop_net, "rest", _PARMTYPE_VECTOR,
+            vop_net,
+            "rest",
+            _PARMTYPE_VECTOR,
         )
         import_ptnum = self._create_bind_import(
-            vop_net, "ptnum", _PARMTYPE_INT,
+            vop_net,
+            "ptnum",
+            _PARMTYPE_INT,
         )
 
         # ── Parameters (sensitivity, offset, epsilon) ────────────
         sens_parm = self._create_parameter(
-            vop_net, "sensitivity", self._sensitivity, param_prefix,
+            vop_net,
+            "sensitivity",
+            self._sensitivity,
+            param_prefix,
         )
         offset_parm = self._create_parameter(
-            vop_net, "offset", self._offset, param_prefix,
+            vop_net,
+            "offset",
+            self._offset,
+            param_prefix,
         )
         eps_parm = self._create_parameter(
-            vop_net, "epsilon", self._epsilon, param_prefix,
+            vop_net,
+            "epsilon",
+            self._epsilon,
+            param_prefix,
         )
 
         # ── Inline Code: neighbor edge accumulation ──────────────
@@ -540,12 +598,12 @@ class TensionMapNetwork:
         # ── Math: tension formula (all VOP nodes) ────────────────
 
         safe_rest = vop_net.createNode("max", "safe_rest")
-        safe_rest.setInput(0, inline, 0)      # rest_avg
+        safe_rest.setInput(0, inline, 0)  # rest_avg
         safe_rest.setInput(1, eps_parm, 0)
 
         edge_diff = vop_net.createNode("subtract", "edge_diff")
-        edge_diff.setInput(0, inline, 0)      # rest_avg
-        edge_diff.setInput(1, inline, 1)      # def_avg
+        edge_diff.setInput(0, inline, 0)  # rest_avg
+        edge_diff.setInput(1, inline, 1)  # def_avg
 
         edge_ratio = vop_net.createNode("divide", "edge_ratio")
         edge_ratio.setInput(0, edge_diff, 0)
@@ -596,30 +654,38 @@ class TensionMapNetwork:
         _safe_parm_set(zero_const, "floatval", 0.0)
 
         color = vop_net.createNode("floattovec", "color_compose")
-        color.setInput(0, compress_clamp, 0)   # R = compression
-        color.setInput(1, stretch_clamp, 0)    # G = stretch
-        color.setInput(2, zero_const, 0)       # B = 0
+        color.setInput(0, compress_clamp, 0)  # R = compression
+        color.setInput(1, stretch_clamp, 0)  # G = stretch
+        color.setInput(2, zero_const, 0)  # B = 0
 
         # ── Bind exports ─────────────────────────────────────────
         output_node = vop_net.createNode("geometryvopoutput", "output")
 
         bind_tension = self._create_bind_export(
-            vop_net, "tension", _PARMTYPE_FLOAT,
+            vop_net,
+            "tension",
+            _PARMTYPE_FLOAT,
         )
         bind_tension.setInput(0, tension_clamp, 0)
 
         bind_stretch = self._create_bind_export(
-            vop_net, "stretch", _PARMTYPE_FLOAT,
+            vop_net,
+            "stretch",
+            _PARMTYPE_FLOAT,
         )
         bind_stretch.setInput(0, stretch_clamp, 0)
 
         bind_compress = self._create_bind_export(
-            vop_net, "compression", _PARMTYPE_FLOAT,
+            vop_net,
+            "compression",
+            _PARMTYPE_FLOAT,
         )
         bind_compress.setInput(0, compress_clamp, 0)
 
         bind_cd = self._create_bind_export(
-            vop_net, "Cd", _PARMTYPE_VECTOR,
+            vop_net,
+            "Cd",
+            _PARMTYPE_VECTOR,
         )
         bind_cd.setInput(0, color, 0)
 
@@ -671,22 +737,24 @@ class TensionMapNetwork:
         _safe_parm_set(inline, "outputName2", "def_avg")
         _safe_parm_set(inline, "outputType2", "float")
 
-        _safe_parm_set(inline, "code",
+        _safe_parm_set(
+            inline,
+            "code",
             "int ncount = neighbourcount(0, ptnum);\n"
             "float rest_total = 0;\n"
             "float def_total = 0;\n"
             "\n"
             "for (int i = 0; i < ncount; i++) {\n"
             "    int nb = neighbour(0, ptnum, i);\n"
-            "    vector nb_P = point(0, \"P\", nb);\n"
-            "    vector nb_rest = point(0, \"rest\", nb);\n"
+            '    vector nb_P = point(0, "P", nb);\n'
+            '    vector nb_rest = point(0, "rest", nb);\n'
             "    def_total += distance(P, nb_P);\n"
             "    rest_total += distance(rest, nb_rest);\n"
             "}\n"
             "\n"
             "float safe_count = max(float(ncount), 1.0);\n"
             "$rest_avg = rest_total / safe_count;\n"
-            "$def_avg = def_total / safe_count;\n"
+            "$def_avg = def_total / safe_count;\n",
         )
 
         return inline
