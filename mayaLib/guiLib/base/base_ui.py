@@ -241,7 +241,7 @@ class FunctionUI(QtWidgets.QWidget):
 
         # Channel parameters
         elif "channel" in param_lower or "attr" in param_lower:
-            if default_value is None or isinstance(default_value, (list, tuple)):
+            if default_value is None or isinstance(default_value, list | tuple):
                 return "Enter channels (e.g., t,r,s,v)"
             return "Enter channel name"
 
@@ -285,7 +285,7 @@ class FunctionUI(QtWidgets.QWidget):
                 return "Enter integer value"
             elif isinstance(default_value, float):
                 return "Enter float value"
-            elif isinstance(default_value, (list, tuple)):
+            elif isinstance(default_value, list | tuple):
                 return "Enter comma-separated values"
             elif isinstance(default_value, str) and default_value == "":
                 return "Enter text (optional)"

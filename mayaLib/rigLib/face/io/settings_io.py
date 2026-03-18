@@ -183,7 +183,7 @@ def validate_settings(settings_dict: dict) -> tuple[bool, list[str]]:
     for key in numeric_keys:
         if key in settings_dict:
             value = settings_dict[key]
-            if not isinstance(value, (int, float)):
+            if not isinstance(value, int | float):
                 errors.append(f"Key '{key}' must be numeric, got {type(value).__name__}")
             elif value < 0:
                 errors.append(f"Key '{key}' must be non-negative, got {value}")
@@ -202,7 +202,7 @@ def validate_settings(settings_dict: dict) -> tuple[bool, list[str]]:
     for key in bool_keys:
         if key in settings_dict:
             value = settings_dict[key]
-            if not isinstance(value, (bool, int)):
+            if not isinstance(value, bool | int):
                 errors.append(f"Key '{key}' must be boolean, got {type(value).__name__}")
 
     return len(errors) == 0, errors

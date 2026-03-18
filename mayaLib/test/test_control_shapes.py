@@ -217,7 +217,7 @@ class TestControlShapeFunctionSignatures:
         assert scale_param.default != inspect.Parameter.empty, (
             f"{shape_func_name} 'scale' parameter missing default"
         )
-        assert isinstance(scale_param.default, (int, float)), (
+        assert isinstance(scale_param.default, int | float), (
             f"{shape_func_name} 'scale' default should be numeric"
         )
 

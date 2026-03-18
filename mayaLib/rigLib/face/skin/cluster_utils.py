@@ -312,7 +312,7 @@ def add_influences(skin_cluster, joints, lock_weights=False, weight=0.0):
     if isinstance(skin_cluster, basestring):
         skin_cluster = pm.PyNode(skin_cluster)
 
-    if isinstance(joints, basestring) or not isinstance(joints, (list, tuple)):
+    if isinstance(joints, basestring) or not isinstance(joints, list | tuple):
         joints = [joints]
 
     existing_influences = get_influences(skin_cluster)
@@ -348,7 +348,7 @@ def remove_influences(skin_cluster, joints):
     if isinstance(skin_cluster, basestring):
         skin_cluster = pm.PyNode(skin_cluster)
 
-    if isinstance(joints, basestring) or not isinstance(joints, (list, tuple)):
+    if isinstance(joints, basestring) or not isinstance(joints, list | tuple):
         joints = [joints]
 
     for joint in joints:
@@ -373,7 +373,7 @@ def lock_influence_weights(skin_cluster, joints, lock=True):
     """
     import maya.cmds as cmds
 
-    if isinstance(joints, basestring) or not isinstance(joints, (list, tuple)):
+    if isinstance(joints, basestring) or not isinstance(joints, list | tuple):
         joints = [joints]
 
     skin_name = str(skin_cluster)

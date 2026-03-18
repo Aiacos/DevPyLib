@@ -71,12 +71,12 @@ import textwrap
 
 import hou
 
-# ── VOP parmtype menu indices ────────────────────────────────────
-# The Bind VOP ``parmtype`` menu uses integer indices, not strings.
-# See: https://www.sidefx.com/docs/houdini/nodes/vop/bind.html
-_PARMTYPE_INT = 0
-_PARMTYPE_FLOAT = 1
-_PARMTYPE_VECTOR = 6
+# ── VOP parmtype menu tokens ─────────────────────────────────────
+# The Bind/Parameter VOP ``parmtype`` menu accepts token strings.
+# Verified in Houdini 21.5 via parm.menuItems().
+_PARMTYPE_INT = "int"  # index 1
+_PARMTYPE_FLOAT = "float"  # index 0
+_PARMTYPE_VECTOR = "vector"  # index 7
 
 # Known parameter names for "Run Over" across Houdini versions.
 # Houdini 19.x-20.x may use different names; we try each in order.
@@ -154,6 +154,7 @@ _TENSION_VEX = textwrap.dedent("""\
     // ── Color: red=compress, green=stretch, blue=0 ──
     float stretch = clamp(fit(f@tension, 0.0, 0.5, 1.0, 0.0), 0.0, 1.0);
     v@tension_map_Cd = set(f@compression, stretch, 0.0);
+    v@Cd = v@tension_map_Cd;
 """)
 
 
@@ -403,7 +404,7 @@ class TensionMapNetwork:
         blur.setInput(0, upstream)
 
         # Configure which attributes to blur
-        _safe_parm_set(blur, "attribs", "tension compression tension_map_Cd")
+        _safe_parm_set(blur, "attributes", "tension compression tension_map_Cd Cd")
         # Blur mode: 0 = by count (iterations)
         _safe_parm_set(blur, "mode", 0)
         # Default: 0 iterations (pass-through)
@@ -622,84 +623,89 @@ class TensionMapNetwork:
         return wrangle
 
     # ══════════════════════════════════════════════════════════════
-    # MODE: vop — Attribute VOP with visual node network
+    # MODE: vop — Wrangle (neighbors) + Attribute VOP (math nodes)
     # ══════════════════════════════════════════════════════════════
 
     def _create_vop_sop(self, container, upstream, param_prefix=""):
-        """Create the Attribute VOP containing the tension calculation network.
+        """Create a Wrangle + Attribute VOP chain.
 
-        The entire tension formula is built with pure VOP nodes except for
-        the neighbor edge accumulation, which requires a single Inline Code
-        VOP (Houdini VOPs lack a topological neighbor iterator node).
+        A Wrangle computes ``rest_avg`` and ``def_avg`` (neighbor iteration
+        requires VEX).  An Attribute VOP does the tension formula, compression,
+        and color mapping with pure visual VOP nodes.
+
+        Default VOP nodes are preserved for geometry pass-through.
+        Bind Exports are NOT wired into geometryvopoutput (that would
+        overwrite P and destroy the geometry).
 
         Args:
             container: Parent node to create inside.
             upstream: Node to wire as input.
-            param_prefix (str): Prefix for channel references
-                (e.g. ``"../../"`` when inside a subnet).
+            param_prefix (str): Channel reference prefix.
 
         Returns:
-            The created Attribute VOP SOP node.
+            The Attribute VOP SOP node.
         """
-        vop = container.createNode("attribvop", "tension_calc")
-        vop.setInput(0, upstream)
-        # Run over points — parameter name varies across Houdini versions
+        # ── Wrangle: neighbor edge accumulation ──────────────────
+        avg_wrangle = container.createNode("attribwrangle", "edge_avg_calc")
+        avg_wrangle.setInput(0, upstream)
+        avg_wrangle.parm("class").set(2)
+        avg_wrangle.parm("snippet").set(
+            textwrap.dedent("""\
+            int ncount = neighbourcount(0, @ptnum);
+            float rest_total = 0, def_total = 0;
+            for (int i = 0; i < ncount; i++) {
+                int nb = neighbour(0, @ptnum, i);
+                def_total  += distance(@P,    point(0, "P",    nb));
+                rest_total += distance(@rest,  point(0, "rest", nb));
+            }
+            float safe_count = max(float(ncount), 1.0);
+            f@rest_avg = rest_total / safe_count;
+            f@def_avg  = def_total  / safe_count;
+        """)
+        )
+
+        # ── Attribute VOP: pure math nodes ───────────────────────
+        vop = container.createNode("attribvop", "tension_vop_math")
+        vop.setInput(0, avg_wrangle)
         _set_run_over_points(vop)
 
+        # KEEP default nodes (geometryvopglobal, geometryvopoutput)
         vop_net = vop
 
-        # ── Remove default nodes ─────────────────────────────────
-        for child in list(vop_net.children()):
-            child.destroy()
+        # Import rest_avg and def_avg (float attribs from wrangle)
+        import_rest_avg = vop_net.createNode("bind", "import_rest_avg")
+        _safe_parm_set(import_rest_avg, "parmname", "rest_avg")
+        _safe_parm_set(import_rest_avg, "parmtype", "float")
 
-        # ── Import attributes via Bind VOPs ──────────────────────
-        import_p = self._create_bind_import(vop_net, "P", _PARMTYPE_VECTOR)
-        import_rest = self._create_bind_import(
-            vop_net,
-            "rest",
-            _PARMTYPE_VECTOR,
-        )
-        import_ptnum = self._create_bind_import(
-            vop_net,
-            "ptnum",
-            _PARMTYPE_INT,
-        )
+        import_def_avg = vop_net.createNode("bind", "import_def_avg")
+        _safe_parm_set(import_def_avg, "parmname", "def_avg")
+        _safe_parm_set(import_def_avg, "parmtype", "float")
 
-        # ── Parameters (sensitivity, offset, epsilon) ────────────
-        sens_parm = self._create_parameter(
-            vop_net,
-            "sensitivity",
-            self._sensitivity,
-            param_prefix,
-        )
-        offset_parm = self._create_parameter(
-            vop_net,
-            "offset",
-            self._offset,
-            param_prefix,
-        )
-        eps_parm = self._create_parameter(
-            vop_net,
-            "epsilon",
-            self._epsilon,
-            param_prefix,
-        )
+        # Constants (floatdef is the correct H21.5 parameter name)
+        sens = vop_net.createNode("constant", "sensitivity")
+        _safe_parm_set(sens, "consttype", 0)
+        _safe_parm_set(sens, "floatdef", self._sensitivity)
 
-        # ── Inline Code: neighbor edge accumulation ──────────────
-        inline = self._create_edge_accumulation_vop(vop_net)
-        inline.setInput(0, import_p, 0)
-        inline.setInput(1, import_rest, 0)
-        inline.setInput(2, import_ptnum, 0)
+        off = vop_net.createNode("constant", "offset")
+        _safe_parm_set(off, "consttype", 0)
+        _safe_parm_set(off, "floatdef", self._offset)
 
-        # ── Math: tension formula (all VOP nodes) ────────────────
+        eps = vop_net.createNode("constant", "epsilon")
+        _safe_parm_set(eps, "consttype", 0)
+        _safe_parm_set(eps, "floatdef", self._epsilon)
 
+        zero = vop_net.createNode("constant", "zero")
+        _safe_parm_set(zero, "consttype", 0)
+        _safe_parm_set(zero, "floatdef", 0.0)
+
+        # ── Tension formula ──────────────────────────────────────
         safe_rest = vop_net.createNode("max", "safe_rest")
-        safe_rest.setInput(0, inline, 0)  # rest_avg
-        safe_rest.setInput(1, eps_parm, 0)
+        safe_rest.setInput(0, import_rest_avg, 0)
+        safe_rest.setInput(1, eps, 0)
 
         edge_diff = vop_net.createNode("subtract", "edge_diff")
-        edge_diff.setInput(0, inline, 0)  # rest_avg
-        edge_diff.setInput(1, inline, 1)  # def_avg
+        edge_diff.setInput(0, import_rest_avg, 0)
+        edge_diff.setInput(1, import_def_avg, 0)
 
         edge_ratio = vop_net.createNode("divide", "edge_ratio")
         edge_ratio.setInput(0, edge_diff, 0)
@@ -707,11 +713,11 @@ class TensionMapNetwork:
 
         scaled = vop_net.createNode("multiply", "scaled")
         scaled.setInput(0, edge_ratio, 0)
-        scaled.setInput(1, sens_parm, 0)
+        scaled.setInput(1, sens, 0)
 
         tension_raw = vop_net.createNode("add", "tension_raw")
         tension_raw.setInput(0, scaled, 0)
-        tension_raw.setInput(1, offset_parm, 0)
+        tension_raw.setInput(1, off, 0)
 
         tension_clamp = vop_net.createNode("clamp", "tension_clamp")
         tension_clamp.setInput(0, tension_raw, 0)
@@ -719,7 +725,6 @@ class TensionMapNetwork:
         _safe_parm_set(tension_clamp, "max", 1.0)
 
         # ── Compression ──────────────────────────────────────────
-
         compress_fit = vop_net.createNode("fit", "compress_fit")
         compress_fit.setInput(0, tension_clamp, 0)
         _safe_parm_set(compress_fit, "srcmin", 0.5)
@@ -732,8 +737,7 @@ class TensionMapNetwork:
         _safe_parm_set(compress_clamp, "min", 0.0)
         _safe_parm_set(compress_clamp, "max", 1.0)
 
-        # ── Stretch (local, for color only) ──────────────────────
-
+        # ── Stretch (for color green channel) ────────────────────
         stretch_fit = vop_net.createNode("fit", "stretch_fit")
         stretch_fit.setInput(0, tension_clamp, 0)
         _safe_parm_set(stretch_fit, "srcmin", 0.0)
@@ -746,167 +750,25 @@ class TensionMapNetwork:
         _safe_parm_set(stretch_clamp, "min", 0.0)
         _safe_parm_set(stretch_clamp, "max", 1.0)
 
-        # ── Color composition ────────────────────────────────────
-        zero_const = vop_net.createNode("constant", "zero_const")
-        _safe_parm_set(zero_const, "consttype", 0)  # 0 = float
-        _safe_parm_set(zero_const, "floatval", 0.0)
-
+        # ── Color: (R=compress, G=stretch, B=0) ──────────────────
         color = vop_net.createNode("floattovec", "color_compose")
-        color.setInput(0, compress_clamp, 0)  # R = compression
-        color.setInput(1, stretch_clamp, 0)  # G = stretch
-        color.setInput(2, zero_const, 0)  # B = 0
+        color.setInput(0, compress_clamp, 0)
+        color.setInput(1, stretch_clamp, 0)
+        color.setInput(2, zero, 0)
 
-        # ── Bind exports ─────────────────────────────────────────
-        output_node = vop_net.createNode("geometryvopoutput", "output")
-
-        bind_tension = self._create_bind_export(
-            vop_net,
-            "tension",
-            _PARMTYPE_FLOAT,
-        )
-        bind_tension.setInput(0, tension_clamp, 0)
-
-        bind_compress = self._create_bind_export(
-            vop_net,
-            "compression",
-            _PARMTYPE_FLOAT,
-        )
-        bind_compress.setInput(0, compress_clamp, 0)
-
-        bind_cd = self._create_bind_export(
-            vop_net,
-            "tension_map_Cd",
-            _PARMTYPE_VECTOR,
-        )
-        bind_cd.setInput(0, color, 0)
-
-        output_node.setInput(0, bind_tension, 0)
-        output_node.setInput(1, bind_compress, 0)
-        output_node.setInput(2, bind_cd, 0)
+        # ── Bind Exports (exportparm=1 = Always) ────────────────
+        # NOT wired into geometryvopoutput — that overwrites P!
+        for attr_name, attr_type, source in [
+            ("tension", "float", tension_clamp),
+            ("compression", "float", compress_clamp),
+            ("tension_map_Cd", "vector", color),
+            ("Cd", "vector", color),
+        ]:
+            ex = vop_net.createNode("bind", f"export_{attr_name}")
+            _safe_parm_set(ex, "parmname", attr_name)
+            _safe_parm_set(ex, "parmtype", attr_type)
+            _safe_parm_set(ex, "exportparm", 1)
+            ex.setInput(0, source, 0)
 
         vop_net.layoutChildren()
         return vop
-
-    # ── VOP node helpers ─────────────────────────────────────────
-
-    @staticmethod
-    def _create_edge_accumulation_vop(vop_net):
-        """Create an Inline Code VOP for neighbor-based edge accumulation.
-
-        This is the only node that requires VEX — Houdini VOPs do not
-        provide a built-in topological neighbor iterator node.  All other
-        math is done with pure VOP nodes.
-
-        Args:
-            vop_net: The VOP network node to create inside.
-
-        Returns:
-            The created Inline Code VOP node with outputs:
-            ``rest_avg`` (float) and ``def_avg`` (float).
-        """
-        inline = vop_net.createNode("inline", "edge_accumulation")
-
-        # Configure inputs (multiparm: inputNum → inputName#/inputType#)
-        _safe_parm_set(inline, "inputNum", 3)
-
-        _safe_parm_set(inline, "inputName1", "P")
-        _safe_parm_set(inline, "inputType1", "vector")
-
-        _safe_parm_set(inline, "inputName2", "rest")
-        _safe_parm_set(inline, "inputType2", "vector")
-
-        _safe_parm_set(inline, "inputName3", "ptnum")
-        _safe_parm_set(inline, "inputType3", "int")
-
-        # Configure outputs (multiparm: outputNum → outputName#/outputType#)
-        _safe_parm_set(inline, "outputNum", 2)
-
-        _safe_parm_set(inline, "outputName1", "rest_avg")
-        _safe_parm_set(inline, "outputType1", "float")
-
-        _safe_parm_set(inline, "outputName2", "def_avg")
-        _safe_parm_set(inline, "outputType2", "float")
-
-        _safe_parm_set(
-            inline,
-            "code",
-            "int ncount = neighbourcount(0, ptnum);\n"
-            "float rest_total = 0;\n"
-            "float def_total = 0;\n"
-            "\n"
-            "for (int i = 0; i < ncount; i++) {\n"
-            "    int nb = neighbour(0, ptnum, i);\n"
-            '    vector nb_P = point(0, "P", nb);\n'
-            '    vector nb_rest = point(0, "rest", nb);\n'
-            "    def_total += distance(P, nb_P);\n"
-            "    rest_total += distance(rest, nb_rest);\n"
-            "}\n"
-            "\n"
-            "float safe_count = max(float(ncount), 1.0);\n"
-            "$rest_avg = rest_total / safe_count;\n"
-            "$def_avg = def_total / safe_count;\n",
-        )
-
-        return inline
-
-    @staticmethod
-    def _create_bind_import(vop_net, name, parmtype):
-        """Create a Bind VOP to import a point attribute.
-
-        Args:
-            vop_net: The VOP network to create inside.
-            name (str): Attribute name to import (e.g. ``"P"``, ``"rest"``).
-            parmtype (int): Attribute type index (use module constants
-                ``_PARMTYPE_FLOAT``, ``_PARMTYPE_INT``, ``_PARMTYPE_VECTOR``).
-
-        Returns:
-            The created Bind VOP node.
-        """
-        bind = vop_net.createNode("bind", f"import_{name}")
-        _safe_parm_set(bind, "parmname", name)
-        _safe_parm_set(bind, "parmtype", parmtype)
-        return bind
-
-    @staticmethod
-    def _create_parameter(vop_net, name, default, prefix=""):
-        """Create a Parameter VOP node (channel reference or constant).
-
-        Args:
-            vop_net: The VOP network to create inside.
-            name (str): Parameter name.
-            default (float): Default value.
-            prefix (str): Channel reference prefix for subnet parameters.
-
-        Returns:
-            The created Parameter VOP node.
-        """
-        parm_node = vop_net.createNode("parameter", f"parm_{name}")
-        _safe_parm_set(parm_node, "parmname", name)
-        _safe_parm_set(parm_node, "parmlabel", name.replace("_", " ").title())
-        _safe_parm_set(parm_node, "parmtype", _PARMTYPE_FLOAT)
-        _safe_parm_set(parm_node, "floatdef", default)
-
-        if prefix:
-            _safe_parm_set(parm_node, "usealiasparm", True)
-            _safe_parm_set(parm_node, "aliasparm", f"{prefix}{name}")
-
-        return parm_node
-
-    @staticmethod
-    def _create_bind_export(vop_net, name, parmtype):
-        """Create a Bind Export VOP node to write a point attribute.
-
-        Args:
-            vop_net: The VOP network to create inside.
-            name (str): Attribute name to export (e.g. ``"tension"``).
-            parmtype (int): Attribute type index (use module constants
-                ``_PARMTYPE_FLOAT``, ``_PARMTYPE_VECTOR``).
-
-        Returns:
-            The created Bind Export VOP node.
-        """
-        bind = vop_net.createNode("bind", f"export_{name}")
-        _safe_parm_set(bind, "parmname", name)
-        _safe_parm_set(bind, "parmtype", parmtype)
-        _safe_parm_set(bind, "exportparm", 1)  # Enable export
-        return bind
