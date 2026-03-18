@@ -9,7 +9,7 @@ to produce three per-vertex outputs:
   (0.0 = full stretch, 0.5 = neutral, 1.0 = full compression).
 - **compression** (float 0-1): isolated compression amount
   (0 = neutral, 1 = max compression).
-- **Cd** (vector): color visualization
+- **tension_map_Cd** (vector): color visualization
   (green = stretch, black = neutral, red = compression).
 
 Three implementation modes are available:
@@ -30,7 +30,7 @@ Algorithm (per vertex *V*)::
     tension     = clamp((rest_avg - def_avg) / max(rest_avg, eps)
                         * sensitivity + offset, 0, 1)
     compression = fit(tension, 0.5 -> 1.0, 0.0 -> 1.0)
-    Cd          = (compression, fit(tension, 0.5 -> 0.0, 1.0 -> 0.0), 0)
+    tension_map_Cd = (compression, fit(tension, 0.5 -> 0.0, 1.0 -> 0.0), 0)
 
 Usage inside Houdini (Python Shell or Shelf Tool)::
 
@@ -122,7 +122,7 @@ def _safe_parm_set(node, parm_name, value):
 _TENSION_VEX = textwrap.dedent("""\
     // Tension Map — per-vertex edge-length comparison
     // Inputs:  @P (deformed), @rest (bind pose)
-    // Outputs: f@tension, f@compression, v@Cd
+    // Outputs: f@tension, f@compression, v@tension_map_Cd
 
     float sensitivity = chf("sensitivity");
     float offset      = chf("offset");
@@ -153,7 +153,7 @@ _TENSION_VEX = textwrap.dedent("""\
 
     // ── Color: red=compress, green=stretch, blue=0 ──
     float stretch = clamp(fit(f@tension, 0.0, 0.5, 1.0, 0.0), 0.0, 1.0);
-    v@Cd = set(f@compression, stretch, 0.0);
+    v@tension_map_Cd = set(f@compression, stretch, 0.0);
 """)
 
 
@@ -236,8 +236,9 @@ class TensionMapNetwork:
         upstream = self._resolve_upstream(wire_after)
         self.rest_sop = self._create_rest_sop(self.parent, upstream)
         self.calc_sop = self._create_calc_sop(self.parent, self.rest_sop)
-        self.calc_sop.setDisplayFlag(True)
-        self.calc_sop.setRenderFlag(True)
+        self.blur_sop = self._create_blur_sop(self.parent, self.calc_sop)
+        self.blur_sop.setDisplayFlag(True)
+        self.blur_sop.setRenderFlag(True)
         self.subnet = None
         self._init_missing_attrs()
         self.layout()
@@ -289,6 +290,16 @@ class TensionMapNetwork:
                 max=0.01,
             )
         )
+        ptg.append(
+            hou.IntParmTemplate(
+                "blur_iterations",
+                "Blur Iterations",
+                1,
+                default_value=(0,),
+                min=0,
+                max=50,
+            )
+        )
         self.subnet.setParmTemplateGroup(ptg)
 
         if upstream is not None:
@@ -324,8 +335,12 @@ class TensionMapNetwork:
             param_prefix="../../",
         )
 
+        self.blur_sop = self._create_blur_sop(
+            self.subnet, self.calc_sop, param_prefix="../",
+        )
+
         out = self.subnet.createNode("output", "output0")
-        out.setInput(0, self.calc_sop)
+        out.setInput(0, self.blur_sop)
         self.subnet.layoutChildren()
 
         self.subnet.setDisplayFlag(True)
@@ -365,9 +380,48 @@ class TensionMapNetwork:
             rest.setInput(0, upstream)
         return rest
 
+    # ── Attribute Blur SOP ────────────────────────────────────────
+
+    def _create_blur_sop(self, container, upstream, param_prefix=""):
+        """Create an Attribute Blur SOP to smooth tension results.
+
+        Blurs ``tension``, ``compression``, and ``Cd`` point attributes.
+        Default iterations is 0 (no blur / pass-through).
+
+        Args:
+            container: Parent node to create inside.
+            upstream: Node to wire as input.
+            param_prefix (str): Channel reference prefix for linking
+                to the subnet's ``blur_iterations`` parameter.
+
+        Returns:
+            The created Attribute Blur SOP node.
+        """
+        blur = container.createNode("attribblur", "tension_blur")
+        blur.setInput(0, upstream)
+
+        # Configure which attributes to blur
+        _safe_parm_set(blur, "attribs", "tension compression tension_map_Cd")
+        # Blur mode: 0 = by count (iterations)
+        _safe_parm_set(blur, "mode", 0)
+        # Default: 0 iterations (pass-through)
+        _safe_parm_set(blur, "iterations", 0)
+
+        # When inside a subnet, link iterations to the subnet parameter
+        if param_prefix:
+            parm = blur.parm("iterations")
+            if parm is not None:
+                parm.setExpression(
+                    f'ch("{param_prefix}blur_iterations")',
+                    hou.exprLanguage.Hscript,
+                )
+
+        return blur
+
     def _init_missing_attrs(self):
         """Set convenience attributes to ``None`` for unused modes."""
-        for attr in ("wrangle_sop", "vop_sop", "switch_sop", "rest_sop", "attribcopy_sop"):
+        for attr in ("wrangle_sop", "vop_sop", "switch_sop",
+                     "rest_sop", "attribcopy_sop", "blur_sop"):
             if not hasattr(self, attr):
                 setattr(self, attr, None)
 
@@ -712,9 +766,7 @@ class TensionMapNetwork:
         bind_compress.setInput(0, compress_clamp, 0)
 
         bind_cd = self._create_bind_export(
-            vop_net,
-            "Cd",
-            _PARMTYPE_VECTOR,
+            vop_net, "tension_map_Cd", _PARMTYPE_VECTOR,
         )
         bind_cd.setInput(0, color, 0)
 

@@ -8,11 +8,11 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 |-----------|------|-------|-------------|
 | `@tension` | float | 0-1 | Raw tension (0 = stretch, 0.5 = neutral, 1 = compress) |
 | `@compression` | float | 0-1 | Isolated compression (0 = neutral, 1 = max compression) |
-| `@Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
+| `@tension_map_Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
 
 > **Note**: Stretch is derivable from `@tension` when needed:
 > `stretch = clamp(fit(@tension, 0.0, 0.5, 1.0, 0.0), 0, 1)` — or simply
-> read the green channel of `@Cd`.
+> read the green channel of `@tension_map_Cd`.
 
 ## Parameters
 
@@ -22,6 +22,7 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 | Sensitivity | 1.0 | Multiplier for the tension response curve |
 | Offset | 0.5 | Neutral point — values below = stretch, above = compress |
 | Epsilon | 0.0001 | Division safety threshold to avoid zero-division |
+| Blur Iterations | 0 | Attribute blur passes (0 = no blur / pass-through) |
 
 ## Modes
 
@@ -312,7 +313,7 @@ Create each node in order and wire them into a chain:
 |---|-------------|------|------|--------|-----------|
 | 1 | `export_tension` | `tension` | Float | **On** | `tension_clamp` |
 | 2 | `export_compression` | `compression` | Float | **On** | `compress_clamp` |
-| 3 | `export_Cd` | `Cd` | Vector | **On** | `color_compose` |
+| 3 | `export_tension_map_Cd` | `tension_map_Cd` | Vector | **On** | `color_compose` |
 
 > **Key**: check the **Export Parameter** checkbox in each Bind node.
 > This is what makes the Bind write the attribute back to the geometry.
@@ -330,7 +331,7 @@ Create each node in order and wire them into a chain:
 1. Press **U** to go back up to SOP level
 2. Set the **display flag** (blue) on the Attribute VOP node
 3. Open **Geometry Spreadsheet** (top menu: Windows > Geometry Spreadsheet)
-   - You should see columns: `tension`, `compression`, `Cd`
+   - You should see columns: `tension`, `compression`, `tension_map_Cd`
 4. In the viewport, press **D** > **Markers** tab > enable **Point Colors**
    to see the color visualization
 
@@ -437,7 +438,7 @@ import_ptnum (Bind) ──────────┤
            [floattovec] ← (R=compress, G=stretch, B=0)
               │
               ▼
-           @Cd, @tension, @compression  (Bind Exports)
+           @tension_map_Cd, @tension, @compression  (Bind Exports)
 ```
 
 ### Why One Inline Code VOP?
