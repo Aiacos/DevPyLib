@@ -9,10 +9,11 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 | `@tension` | float | 0-1 | Raw tension (0 = stretch, 0.5 = neutral, 1 = compress) |
 | `@compression` | float | 0-1 | Isolated compression (0 = neutral, 1 = max compression) |
 | `@tension_map_Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
+| `@Cd` | vector3 | RGB | Same as `@tension_map_Cd` — for viewport display |
 
 > **Note**: Stretch is derivable from `@tension` when needed:
-> `stretch = clamp(fit(@tension, 0.0, 0.5, 1.0, 0.0), 0, 1)` — or simply
-> read the green channel of `@tension_map_Cd`.
+> `stretch = clamp(fit(@tension, 0.0, 0.5, 1.0, 0.0), 0, 1)` — or read
+> the green channel of `@Cd`.
 
 ## Parameters
 
@@ -56,8 +57,12 @@ snippet — compact and easy to modify directly in the parameter editor.
 
 ### `vop` mode
 
-Creates only the Attribute VOP with a visual node network (~24 VOP nodes).
-Better for learning, debugging, and non-programmers.
+Creates a single Attribute VOP containing the full algorithm as visual nodes.
+An Inline Code VOP handles the neighbor loop (the only VEX), while all math
+(tension formula, compression, stretch, color) uses pure VOP nodes
+(max, subtract, divide, fit, clamp, floattovec).
+Sensitivity, offset, epsilon are linked to the subnet parameters via
+`ch()` expressions on Constant VOPs.
 
 ## Input Modes
 
@@ -401,31 +406,35 @@ Input 2 (rest) ──────┤
                                                     1 = VOP (Nodes)
 ```
 
-### Internal VOP Network (inside `tension_vop`)
+### Internal VOP Network (inside `tension_calc`)
 
-The Attribute VOP contains the following node graph:
+The single Attribute VOP contains the full algorithm as visual nodes.
+Default `geometryvopglobal` and `geometryvopoutput` are preserved for
+geometry pass-through. Bind Exports are NOT wired into the output node
+(that would overwrite `@P` and destroy the geometry).
 
 ```
-import_P (Bind) ──────────────┐
-import_rest (Bind) ───────────┤
-import_ptnum (Bind) ──────────┤
-                               ▼
+geometryvopglobal (P, ptnum) ──┐
+import_rest (Bind: @rest) ─────┤
+                                ▼
                     ┌─────────────────────┐
-                    │  edge_accumulation   │  ← Inline Code VOP (only VEX node)
-                    │  (neighbour loop)    │
+                    │  edge_accumulation   │  ← Inline Code VOP
+                    │  int pt = int(ptnum) │     (only VEX node)
+                    │  neighbourcount/     │
+                    │  neighbour loop      │
                     └──┬──────────┬───────┘
                  rest_avg      def_avg
                     │            │
- parm_epsilon ──► [max] ◄───────┤
+ epsilon (Const) ► [max] ◄──────┤
                     │            │
                     ▼            ▼
                  [subtract] ← rest_avg - def_avg
                     │
                  [divide] ← diff / safe_rest
                     │
- parm_sensitivity ► [multiply]
+ sensitivity (Const) ► [multiply]    ← ch("../../sensitivity")
                     │
- parm_offset ────► [add]
+ offset (Const) ──► [add]           ← ch("../../offset")
                     │
                  [clamp 0..1] ← @tension
                     │
@@ -438,7 +447,8 @@ import_ptnum (Bind) ──────────┤
            [floattovec] ← (R=compress, G=stretch, B=0)
               │
               ▼
-           @tension_map_Cd, @tension, @compression  (Bind Exports)
+           Bind Exports (exportparm=Always, NOT wired to output):
+           @tension, @compression, @tension_map_Cd, @Cd
 ```
 
 ### Why One Inline Code VOP?
@@ -447,6 +457,14 @@ Houdini's VOP system lacks a topological neighbor iterator node.
 The `neighbourcount()` and `neighbour()` functions are VEX-only, so the
 edge accumulation loop must use an Inline Code VOP.  All other math
 (subtract, divide, clamp, fit, etc.) uses pure VOP nodes.
+
+**Important H21.5 details** discovered during development:
+- `ptnum` from `geometryvopglobal` is **float** — must cast with `int(ptnum)`
+- Constant VOP parameter for value is `floatdef` (not `floatval`)
+- Bind VOP `parmtype` uses **token strings** (`"float"`, `"vector"`) not indices
+- Bind Exports with `exportparm=1` export automatically — do NOT wire into
+  `geometryvopoutput` (input 0 = P, overwriting it destroys the geometry)
+- Constants link to subnet params via `ch("../../name")` expressions
 
 ## Comparison with Bifrost Version
 
@@ -469,7 +487,7 @@ edge accumulation loop must use an Inline Code VOP.  All other math
 
 ## Requirements
 
-- Houdini 20.x or later (tested targeting 20.x / 21.x)
+- Houdini 21.5+ (tested and verified on Houdini 21.5.631)
 - Input geometry must have point positions (`@P`)
 - `@rest` attribute is captured automatically by the Rest Position SOP
 - For animated meshes, ensure `@rest` is captured at bind/rest pose frame
