@@ -627,11 +627,10 @@ class TensionMapNetwork:
     # ══════════════════════════════════════════════════════════════
 
     def _create_vop_sop(self, container, upstream, param_prefix=""):
-        """Create a Wrangle + Attribute VOP chain.
+        """Create a single Attribute VOP with all nodes inside.
 
-        A Wrangle computes ``rest_avg`` and ``def_avg`` (neighbor iteration
-        requires VEX).  An Attribute VOP does the tension formula, compression,
-        and color mapping with pure visual VOP nodes.
+        Uses an Inline Code VOP for the neighbor loop (the only VEX
+        in the network) and pure VOP math nodes for everything else.
 
         Default VOP nodes are preserved for geometry pass-through.
         Bind Exports are NOT wired into geometryvopoutput (that would
@@ -645,41 +644,76 @@ class TensionMapNetwork:
         Returns:
             The Attribute VOP SOP node.
         """
-        # ── Wrangle: neighbor edge accumulation ──────────────────
-        avg_wrangle = container.createNode("attribwrangle", "edge_avg_calc")
-        avg_wrangle.setInput(0, upstream)
-        avg_wrangle.parm("class").set(2)
-        avg_wrangle.parm("snippet").set(
-            textwrap.dedent("""\
-            int ncount = neighbourcount(0, @ptnum);
-            float rest_total = 0, def_total = 0;
-            for (int i = 0; i < ncount; i++) {
-                int nb = neighbour(0, @ptnum, i);
-                def_total  += distance(@P,    point(0, "P",    nb));
-                rest_total += distance(@rest,  point(0, "rest", nb));
-            }
-            float safe_count = max(float(ncount), 1.0);
-            f@rest_avg = rest_total / safe_count;
-            f@def_avg  = def_total  / safe_count;
-        """)
-        )
-
-        # ── Attribute VOP: pure math nodes ───────────────────────
-        vop = container.createNode("attribvop", "tension_vop_math")
-        vop.setInput(0, avg_wrangle)
+        vop = container.createNode("attribvop", "tension_calc")
+        vop.setInput(0, upstream)
         _set_run_over_points(vop)
 
         # KEEP default nodes (geometryvopglobal, geometryvopoutput)
         vop_net = vop
 
-        # Import rest_avg and def_avg (float attribs from wrangle)
-        import_rest_avg = vop_net.createNode("bind", "import_rest_avg")
-        _safe_parm_set(import_rest_avg, "parmname", "rest_avg")
-        _safe_parm_set(import_rest_avg, "parmtype", "float")
+        # Find default geometryvopglobal (provides P, ptnum)
+        globals_node = None
+        for child in vop_net.children():
+            if "geometryvopglobal" in child.type().name():
+                globals_node = child
+                break
 
-        import_def_avg = vop_net.createNode("bind", "import_def_avg")
-        _safe_parm_set(import_def_avg, "parmname", "def_avg")
-        _safe_parm_set(import_def_avg, "parmtype", "float")
+        # Find ptnum output index dynamically
+        ptnum_idx = None
+        if globals_node is not None:
+            for i, name in enumerate(globals_node.outputNames()):
+                if name == "ptnum":
+                    ptnum_idx = i
+                    break
+
+        # Import @rest via Bind
+        import_rest = vop_net.createNode("bind", "import_rest")
+        _safe_parm_set(import_rest, "parmname", "rest")
+        _safe_parm_set(import_rest, "parmtype", "vector")
+
+        # ── Inline Code: neighbor edge accumulation ──────────────
+        # H21.5 params: name1..name64, outtype1..outtype32, outname1..outname32
+        inline = vop_net.createNode("inline", "edge_accumulation")
+        _safe_parm_set(inline, "name1", "P")
+        _safe_parm_set(inline, "name2", "rest")
+        _safe_parm_set(inline, "name3", "ptnum")
+        _safe_parm_set(inline, "outtype1", "float")
+        _safe_parm_set(inline, "outname1", "rest_avg")
+        _safe_parm_set(inline, "outtype2", "float")
+        _safe_parm_set(inline, "outname2", "def_avg")
+        _safe_parm_set(
+            inline,
+            "code",
+            "int pt = int(ptnum);\n"
+            "int ncount = neighbourcount(0, pt);\n"
+            "float rest_total = 0;\n"
+            "float def_total = 0;\n"
+            "\n"
+            "for (int i = 0; i < ncount; i++) {\n"
+            "    int nb = neighbour(0, pt, i);\n"
+            '    vector nb_P = point(0, "P", nb);\n'
+            '    vector nb_rest = point(0, "rest", nb);\n'
+            "    def_total += distance(P, nb_P);\n"
+            "    rest_total += distance(rest, nb_rest);\n"
+            "}\n"
+            "\n"
+            "float safe_count = max(float(ncount), 1.0);\n"
+            "$rest_avg = rest_total / safe_count;\n"
+            "$def_avg = def_total / safe_count;\n",
+        )
+
+        # Wire: P from global, rest from bind, ptnum from global
+        if globals_node is not None:
+            inline.setInput(0, globals_node, 0)  # P always output 0
+        inline.setInput(1, import_rest, 0)
+        if ptnum_idx is not None:
+            inline.setInput(2, globals_node, ptnum_idx)
+
+        # Inline outputs: 0=rest_avg, 1=def_avg
+        import_rest_avg = inline
+        import_def_avg = inline
+        rest_avg_out = 0
+        def_avg_out = 1
 
         # Constants (floatdef is the correct H21.5 parameter name)
         sens = vop_net.createNode("constant", "sensitivity")
@@ -700,12 +734,12 @@ class TensionMapNetwork:
 
         # ── Tension formula ──────────────────────────────────────
         safe_rest = vop_net.createNode("max", "safe_rest")
-        safe_rest.setInput(0, import_rest_avg, 0)
+        safe_rest.setInput(0, import_rest_avg, rest_avg_out)
         safe_rest.setInput(1, eps, 0)
 
         edge_diff = vop_net.createNode("subtract", "edge_diff")
-        edge_diff.setInput(0, import_rest_avg, 0)
-        edge_diff.setInput(1, import_def_avg, 0)
+        edge_diff.setInput(0, import_rest_avg, rest_avg_out)
+        edge_diff.setInput(1, import_def_avg, def_avg_out)
 
         edge_ratio = vop_net.createNode("divide", "edge_ratio")
         edge_ratio.setInput(0, edge_diff, 0)
