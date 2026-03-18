@@ -7,9 +7,12 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 | Attribute | Type | Range | Description |
 |-----------|------|-------|-------------|
 | `@tension` | float | 0-1 | Raw tension (0 = stretch, 0.5 = neutral, 1 = compress) |
-| `@stretch` | float | 0-1 | Isolated stretch (1 = maximum stretch) |
-| `@compression` | float | 0-1 | Isolated compression (1 = maximum compression) |
+| `@compression` | float | 0-1 | Isolated compression (0 = neutral, 1 = max compression) |
 | `@Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
+
+> **Note**: Stretch is derivable from `@tension` when needed:
+> `stretch = clamp(fit(@tension, 0.0, 0.5, 1.0, 0.0), 0, 1)` — or simply
+> read the green channel of `@Cd`.
 
 ## Parameters
 
@@ -55,6 +58,51 @@ snippet — compact and easy to modify directly in the parameter editor.
 Creates only the Attribute VOP with a visual node network (~24 VOP nodes).
 Better for learning, debugging, and non-programmers.
 
+## Input Modes
+
+The builder supports two input configurations:
+
+### Single input (default)
+
+One input — the deformed mesh. `@rest` is captured automatically via a
+Rest Position SOP (set the timeline to the bind pose frame first).
+
+```
+┌─────────────────────────────────┐
+│  Tension Map                    │
+│  Input 1: Deformed Mesh         │
+│                                 │
+│  capture_rest (Rest Position)   │
+│       ↓                         │
+│  tension_calc                   │
+└─────────────────────────────────┘
+```
+
+### Dual input (`dual_input=True`)
+
+Two inputs — deformed mesh (input 1) and rest mesh (input 2).
+An Attribute Wrangle copies `@P` from input 2 as `@rest` onto input 1.
+This matches the Bifrost version's `rest_mesh` / `deformed_mesh` setup.
+
+```
+┌──────────────────────────────────────┐
+│  Tension Map                         │
+│  Input 1: Deformed Mesh              │
+│  Input 2: Rest Mesh                  │
+│                                      │
+│  copy_rest_from_input2 (Wrangle)     │
+│    v@rest = point(1, "P", @ptnum);   │
+│       ↓                              │
+│  tension_calc                        │
+└──────────────────────────────────────┘
+```
+
+Use this when:
+- You have the rest mesh as a **separate node** (e.g. a File SOP, or the
+  mesh before any deformer)
+- Your deformation pipeline doesn't preserve `@rest` automatically
+- You want explicit control over which mesh is the reference
+
 ## Quick Start
 
 ### Option A: Python Script (creates nodes programmatically)
@@ -63,7 +111,7 @@ Better for learning, debugging, and non-programmers.
 # In Houdini Python Shell:
 from houdiniLib.utility.build_tension_map import TensionMapNetwork
 
-# Default: both modes with Switch (toggle in parameter editor)
+# Default: single input, both modes with Switch
 net = TensionMapNetwork("/obj/geo1")
 
 # Wrangle only
@@ -72,16 +120,20 @@ net = TensionMapNetwork("/obj/geo1", mode="wrangle")
 # VOP only
 net = TensionMapNetwork("/obj/geo1", mode="vop")
 
-# As HDA-ready subnet (exposes Method, Sensitivity, Offset, Epsilon)
+# As HDA-ready subnet (single input)
 net = TensionMapNetwork("/obj/geo1", as_subnet=True)
+
+# As HDA-ready subnet with 2 inputs (deformed + rest)
+net = TensionMapNetwork("/obj/geo1", as_subnet=True, dual_input=True)
 ```
 
-Then in the Attribute Editor: connect your deforming geometry **before** the
-`capture_rest` node (so `@rest` is captured at bind pose).
+**Single input**: connect deforming geometry before the `capture_rest` node.
+
+**Dual input**: connect deformed mesh to input 1, rest mesh to input 2.
 
 ### Option B: Create HDA from Subnet
 
-1. Run the script with `as_subnet=True` (uses `both` mode by default)
+1. Run the script with `as_subnet=True` (add `dual_input=True` for 2-input HDA)
 2. Right-click the `tension_map` subnet -> **Create Digital Asset...**
 3. Set name: `sop_unilo.Tension_Map.1.0`
 4. Save to: `houdiniLib/HDAs/`
@@ -259,9 +311,8 @@ Create each node in order and wire them into a chain:
 | # | TAB > `Bind` | Name | Type | Export | Wire from |
 |---|-------------|------|------|--------|-----------|
 | 1 | `export_tension` | `tension` | Float | **On** | `tension_clamp` |
-| 2 | `export_stretch` | `stretch` | Float | **On** | `stretch_clamp` |
-| 3 | `export_compression` | `compression` | Float | **On** | `compress_clamp` |
-| 4 | `export_Cd` | `Cd` | Vector | **On** | `color_compose` |
+| 2 | `export_compression` | `compression` | Float | **On** | `compress_clamp` |
+| 3 | `export_Cd` | `Cd` | Vector | **On** | `color_compose` |
 
 > **Key**: check the **Export Parameter** checkbox in each Bind node.
 > This is what makes the Bind write the attribute back to the geometry.
@@ -269,7 +320,7 @@ Create each node in order and wire them into a chain:
 ##### 2i. Output node
 
 1. TAB > `Geometry VOP Output`
-2. Wire all 4 Bind Export nodes into its inputs (order doesn't matter)
+2. Wire all 3 Bind Export nodes into its inputs (order doesn't matter)
 3. Press **L** to auto-layout the network
 
 ---
@@ -279,7 +330,7 @@ Create each node in order and wire them into a chain:
 1. Press **U** to go back up to SOP level
 2. Set the **display flag** (blue) on the Attribute VOP node
 3. Open **Geometry Spreadsheet** (top menu: Windows > Geometry Spreadsheet)
-   - You should see columns: `tension`, `stretch`, `compression`, `Cd`
+   - You should see columns: `tension`, `compression`, `Cd`
 4. In the viewport, press **D** > **Markers** tab > enable **Point Colors**
    to see the color visualization
 
@@ -299,11 +350,12 @@ Create each node in order and wire them into a chain:
 
 #### Total Node Count (per mode)
 
-| Mode | SOP nodes | VOP nodes | Total |
-|------|-----------|-----------|-------|
-| `wrangle` | 2 (Rest + Wrangle) | 0 | **2** |
-| `vop` | 2 (Rest + VOP) | 24 | **26** |
-| `both` | 4 (Rest + Wrangle + VOP + Switch) | 24 | **28** |
+| Mode | Input | SOP nodes | VOP nodes | Total |
+|------|-------|-----------|-----------|-------|
+| `wrangle` | single | 2 (Rest + Wrangle) | 0 | **2** |
+| `vop` | single | 2 (Rest + VOP) | 23 | **25** |
+| `both` | single | 4 (Rest + Wrangle + VOP + Switch) | 23 | **27** |
+| `both` | dual | 4 (AttribCopy + Wrangle + VOP + Switch) | 23 | **27** |
 
 ## Algorithm
 
@@ -322,7 +374,7 @@ For each vertex V:
 
 ## Network Diagrams
 
-### `both` mode (default) — SOP level
+### `both` mode — single input (default)
 
 ```
 capture_rest ──┬── tension_wrangle (blue)  ──┬── method_switch ──► output
@@ -330,6 +382,22 @@ capture_rest ──┬── tension_wrangle (blue)  ──┬── method_swit
                                               "Method" dropdown:
                                               0 = Wrangle (VEX)
                                               1 = VOP (Nodes)
+```
+
+### `both` mode — dual input (`dual_input=True`)
+
+```
+Input 1 (deformed) ──┐
+Input 2 (rest) ──────┤
+                     ▼
+          copy_rest_from_input2 (Wrangle)
+          v@rest = point(1, "P", @ptnum);
+                     │
+                     ├── tension_wrangle (blue)  ──┬── method_switch ──► output
+                     └── tension_vop (orange)    ──┘       │
+                                                    "Method" dropdown:
+                                                    0 = Wrangle (VEX)
+                                                    1 = VOP (Nodes)
 ```
 
 ### Internal VOP Network (inside `tension_vop`)
@@ -369,7 +437,7 @@ import_ptnum (Bind) ──────────┤
            [floattovec] ← (R=compress, G=stretch, B=0)
               │
               ▼
-           @Cd, @tension, @stretch, @compression  (Bind Exports)
+           @Cd, @tension, @compression  (Bind Exports)
 ```
 
 ### Why One Inline Code VOP?
@@ -386,7 +454,7 @@ edge accumulation loop must use an Inline Code VOP.  All other math
 | Lines of code | ~591 | ~370 |
 | Nodes in graph | ~40+ (5 sub-compounds) | ~22 (flat VOP network) |
 | Nodes with code | 0 (pure Bifrost) | 1 (Inline Code VOP) |
-| Outputs | tension + color | tension + stretch + compression + Cd |
+| Outputs | tension + color | tension + compression + Cd |
 | Neighbour iteration | for_each loop + face_vertex mask | `neighbour()` VEX function |
 | Parallelism | for_each (serial per vertex) | VEX (auto-parallel over all points) |
 

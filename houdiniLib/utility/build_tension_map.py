@@ -3,11 +3,10 @@
 Replicates the algorithm from ``mayaLib.bifrostLib.utilities.build_tension_map``
 using Houdini's native node graph.  The network compares edge lengths between a
 rest-pose mesh (captured via ``@rest`` attribute) and the current deformed state
-to produce four per-vertex outputs:
+to produce three per-vertex outputs:
 
 - **tension** (float 0-1): raw tension value
   (0.0 = full stretch, 0.5 = neutral, 1.0 = full compression).
-- **stretch** (float 0-1): isolated stretch amount (0 = neutral, 1 = max stretch).
 - **compression** (float 0-1): isolated compression amount
   (0 = neutral, 1 = max compression).
 - **Cd** (vector): color visualization
@@ -30,9 +29,8 @@ Algorithm (per vertex *V*)::
     def_avg     = mean(distance(@P[V],    @P[nb])    for nb in neighbours(V))
     tension     = clamp((rest_avg - def_avg) / max(rest_avg, eps)
                         * sensitivity + offset, 0, 1)
-    stretch     = fit(tension, 0.5 -> 0.0, 0.0 -> 1.0)
     compression = fit(tension, 0.5 -> 1.0, 0.0 -> 1.0)
-    Cd          = (compression, stretch, 0)
+    Cd          = (compression, fit(tension, 0.5 -> 0.0, 1.0 -> 0.0), 0)
 
 Usage inside Houdini (Python Shell or Shelf Tool)::
 
@@ -124,7 +122,7 @@ def _safe_parm_set(node, parm_name, value):
 _TENSION_VEX = textwrap.dedent("""\
     // Tension Map — per-vertex edge-length comparison
     // Inputs:  @P (deformed), @rest (bind pose)
-    // Outputs: f@tension, f@stretch, f@compression, v@Cd
+    // Outputs: f@tension, f@compression, v@Cd
 
     float sensitivity = chf("sensitivity");
     float offset      = chf("offset");
@@ -150,12 +148,12 @@ _TENSION_VEX = textwrap.dedent("""\
     float ratio     = (rest_avg - def_avg) / safe_rest;
     f@tension       = clamp(ratio * sensitivity + offset, 0.0, 1.0);
 
-    // ── Stretch & Compression ───────────────────────
-    f@stretch     = clamp(fit(f@tension, 0.0, 0.5, 1.0, 0.0), 0.0, 1.0);
+    // ── Compression ─────────────────────────────────
     f@compression = clamp(fit(f@tension, 0.5, 1.0, 0.0, 1.0), 0.0, 1.0);
 
     // ── Color: red=compress, green=stretch, blue=0 ──
-    v@Cd = set(f@compression, f@stretch, 0.0);
+    float stretch = clamp(fit(f@tension, 0.0, 0.5, 1.0, 0.0), 0.0, 1.0);
+    v@Cd = set(f@compression, stretch, 0.0);
 """)
 
 
@@ -170,6 +168,12 @@ class TensionMapNetwork:
             - ``"vop"``: Attribute VOP with visual node network.
         as_subnet (bool): When ``True``, wraps the network in a Subnet SOP
             suitable for promoting to an HDA.  Defaults to ``False``.
+        dual_input (bool): When ``True`` (and ``as_subnet=True``), creates
+            an HDA with **two inputs** — deformed mesh (input 1) and rest
+            mesh (input 2).  An Attribute Copy SOP transfers ``@P`` from the
+            rest mesh as ``@rest`` on the deformed mesh.  When ``False``,
+            uses a single input with a Rest Position SOP.
+            Defaults to ``False``.
         wire_after (str | None): Name of an existing SOP to wire into.
             When ``None``, connects to the display/render node.
         sensitivity (float): Default sensitivity parameter value.
@@ -178,7 +182,8 @@ class TensionMapNetwork:
 
     Attributes:
         parent: The parent ``hou.SopNode`` container.
-        rest_sop: The Rest Position SOP node.
+        rest_sop: The Rest Position SOP node (single-input mode).
+        attribcopy_sop: The Attribute Copy SOP (dual-input mode).
         calc_sop: The final output SOP node (Wrangle, VOP, or Switch).
         wrangle_sop: The Wrangle SOP (``"both"`` and ``"wrangle"`` modes).
         vop_sop: The Attribute VOP SOP (``"both"`` and ``"vop"`` modes).
@@ -193,6 +198,7 @@ class TensionMapNetwork:
         parent_path,
         mode="both",
         as_subnet=False,
+        dual_input=False,
         wire_after=None,
         sensitivity=1.0,
         offset=0.5,
@@ -207,6 +213,7 @@ class TensionMapNetwork:
             raise ValueError(f"Node not found: {parent_path!r}")
 
         self._mode = mode
+        self._dual_input = dual_input
         self._sensitivity = sensitivity
         self._offset = offset
         self._epsilon = epsilon
@@ -236,7 +243,15 @@ class TensionMapNetwork:
         self.layout()
 
     def _build_as_subnet(self, wire_after):
-        """Build nodes inside a Subnet SOP (HDA-ready)."""
+        """Build nodes inside a Subnet SOP (HDA-ready).
+
+        When ``dual_input`` is enabled, the subnet has two inputs:
+
+        - **Input 1**: Deformed mesh (current @P).
+        - **Input 2**: Rest mesh (its @P becomes @rest on the deformed mesh).
+
+        An Attribute Wrangle copies positions from input 2 as ``@rest``.
+        """
         upstream = self._resolve_upstream(wire_after)
 
         self.subnet = self.parent.createNode("subnet", "tension_map")
@@ -279,14 +294,34 @@ class TensionMapNetwork:
         if upstream is not None:
             self.subnet.setInput(0, upstream)
 
-        input_node = self.subnet.indirectInputs()[0]
+        input1 = self.subnet.indirectInputs()[0]
 
-        self.rest_sop = self._create_rest_sop(self.subnet, None)
-        self.rest_sop.setInput(0, input_node)
+        if self._dual_input:
+            # Two-input mode: deformed (input 1) + rest (input 2)
+            input2 = self.subnet.indirectInputs()[1]
+
+            # Wrangle that copies @P from input 2 as @rest on input 1
+            self.attribcopy_sop = self.subnet.createNode(
+                "attribwrangle", "copy_rest_from_input2",
+            )
+            self.attribcopy_sop.setInput(0, input1)
+            self.attribcopy_sop.setInput(1, input2)
+            self.attribcopy_sop.parm("class").set(2)  # Run over points
+            self.attribcopy_sop.parm("snippet").set(
+                'v@rest = point(1, "P", @ptnum);\n'
+            )
+            self.rest_sop = None
+            calc_upstream = self.attribcopy_sop
+        else:
+            # Single-input mode: Rest Position SOP captures @rest
+            self.attribcopy_sop = None
+            self.rest_sop = self._create_rest_sop(self.subnet, None)
+            self.rest_sop.setInput(0, input1)
+            calc_upstream = self.rest_sop
 
         self.calc_sop = self._create_calc_sop(
             self.subnet,
-            self.rest_sop,
+            calc_upstream,
             param_prefix="../../",
         )
 
@@ -333,12 +368,10 @@ class TensionMapNetwork:
 
     def _init_missing_attrs(self):
         """Set convenience attributes to ``None`` for unused modes."""
-        if not hasattr(self, "wrangle_sop"):
-            self.wrangle_sop = None
-        if not hasattr(self, "vop_sop"):
-            self.vop_sop = None
-        if not hasattr(self, "switch_sop"):
-            self.switch_sop = None
+        for attr in ("wrangle_sop", "vop_sop", "switch_sop",
+                     "rest_sop", "attribcopy_sop"):
+            if not hasattr(self, attr):
+                setattr(self, attr, None)
 
     # ── Calculation SOP (mode dispatcher) ────────────────────────
 
@@ -446,7 +479,7 @@ class TensionMapNetwork:
             subnet.setParmTemplateGroup(sub_ptg)
 
             self.switch_sop.parm("input").setExpression(
-                f'ch("{param_prefix}method")',
+                'ch("../method")',
                 hou.exprLanguage.Hscript,
             )
 
@@ -515,11 +548,14 @@ class TensionMapNetwork:
 
         wrangle.setParmTemplateGroup(ptg)
 
-        # When inside a subnet, link spare parms to the subnet interface
+        # When inside a subnet, link spare parms to the subnet interface.
+        # The wrangle is a direct child of the subnet, so the relative
+        # path to the subnet's parms is always "../" (one level up),
+        # regardless of the param_prefix passed for VOP nodes.
         if param_prefix:
             for name in ("sensitivity", "offset", "epsilon"):
                 wrangle.parm(name).setExpression(
-                    f'ch("{param_prefix}{name}")',
+                    f'ch("../{name}")',
                     hou.exprLanguage.Hscript,
                 )
 
@@ -622,19 +658,7 @@ class TensionMapNetwork:
         _safe_parm_set(tension_clamp, "min", 0.0)
         _safe_parm_set(tension_clamp, "max", 1.0)
 
-        # ── Stretch & Compression ────────────────────────────────
-
-        stretch_fit = vop_net.createNode("fit", "stretch_fit")
-        stretch_fit.setInput(0, tension_clamp, 0)
-        _safe_parm_set(stretch_fit, "srcmin", 0.0)
-        _safe_parm_set(stretch_fit, "srcmax", 0.5)
-        _safe_parm_set(stretch_fit, "destmin", 1.0)
-        _safe_parm_set(stretch_fit, "destmax", 0.0)
-
-        stretch_clamp = vop_net.createNode("clamp", "stretch_clamp")
-        stretch_clamp.setInput(0, stretch_fit, 0)
-        _safe_parm_set(stretch_clamp, "min", 0.0)
-        _safe_parm_set(stretch_clamp, "max", 1.0)
+        # ── Compression ──────────────────────────────────────────
 
         compress_fit = vop_net.createNode("fit", "compress_fit")
         compress_fit.setInput(0, tension_clamp, 0)
@@ -648,6 +672,20 @@ class TensionMapNetwork:
         _safe_parm_set(compress_clamp, "min", 0.0)
         _safe_parm_set(compress_clamp, "max", 1.0)
 
+        # ── Stretch (local, for color only) ──────────────────────
+
+        stretch_fit = vop_net.createNode("fit", "stretch_fit")
+        stretch_fit.setInput(0, tension_clamp, 0)
+        _safe_parm_set(stretch_fit, "srcmin", 0.0)
+        _safe_parm_set(stretch_fit, "srcmax", 0.5)
+        _safe_parm_set(stretch_fit, "destmin", 1.0)
+        _safe_parm_set(stretch_fit, "destmax", 0.0)
+
+        stretch_clamp = vop_net.createNode("clamp", "stretch_clamp")
+        stretch_clamp.setInput(0, stretch_fit, 0)
+        _safe_parm_set(stretch_clamp, "min", 0.0)
+        _safe_parm_set(stretch_clamp, "max", 1.0)
+
         # ── Color composition ────────────────────────────────────
         zero_const = vop_net.createNode("constant", "zero_const")
         _safe_parm_set(zero_const, "consttype", 0)  # 0 = float
@@ -655,44 +693,30 @@ class TensionMapNetwork:
 
         color = vop_net.createNode("floattovec", "color_compose")
         color.setInput(0, compress_clamp, 0)  # R = compression
-        color.setInput(1, stretch_clamp, 0)  # G = stretch
-        color.setInput(2, zero_const, 0)  # B = 0
+        color.setInput(1, stretch_clamp, 0)   # G = stretch
+        color.setInput(2, zero_const, 0)      # B = 0
 
         # ── Bind exports ─────────────────────────────────────────
         output_node = vop_net.createNode("geometryvopoutput", "output")
 
         bind_tension = self._create_bind_export(
-            vop_net,
-            "tension",
-            _PARMTYPE_FLOAT,
+            vop_net, "tension", _PARMTYPE_FLOAT,
         )
         bind_tension.setInput(0, tension_clamp, 0)
 
-        bind_stretch = self._create_bind_export(
-            vop_net,
-            "stretch",
-            _PARMTYPE_FLOAT,
-        )
-        bind_stretch.setInput(0, stretch_clamp, 0)
-
         bind_compress = self._create_bind_export(
-            vop_net,
-            "compression",
-            _PARMTYPE_FLOAT,
+            vop_net, "compression", _PARMTYPE_FLOAT,
         )
         bind_compress.setInput(0, compress_clamp, 0)
 
         bind_cd = self._create_bind_export(
-            vop_net,
-            "Cd",
-            _PARMTYPE_VECTOR,
+            vop_net, "Cd", _PARMTYPE_VECTOR,
         )
         bind_cd.setInput(0, color, 0)
 
         output_node.setInput(0, bind_tension, 0)
-        output_node.setInput(1, bind_stretch, 0)
-        output_node.setInput(2, bind_compress, 0)
-        output_node.setInput(3, bind_cd, 0)
+        output_node.setInput(1, bind_compress, 0)
+        output_node.setInput(2, bind_cd, 0)
 
         vop_net.layoutChildren()
         return vop
