@@ -7,6 +7,7 @@ helpers and Houdini environment introspection.
 from importlib import import_module
 
 _SUBMODULES = {
+    "build_tension_map",
     "lazy_loader",
 }
 
