@@ -6,14 +6,14 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 
 | Attribute | Type | Range | Description |
 |-----------|------|-------|-------------|
-| `@tension` | float | 0-1 | Raw tension (0 = stretch, 0.5 = neutral, 1 = compress) |
-| `@compression` | float | 0-1 | Isolated compression (0 = neutral, 1 = max compression) |
+| `@tension` | float | 0-1 | Deformation amount (0 = neutral, 1 = max deformation) |
+| `@compression` | float | 0-1 | Same as tension (exported for convenience) |
 | `@tension_map_Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
 | `@Cd` | vector3 | RGB | Same as `@tension_map_Cd` — for viewport display |
 
-> **Note**: Stretch is derivable from `@tension` when needed:
-> `stretch = clamp(fit(@tension, 0.0, 0.5, 1.0, 0.0), 0, 1)` — or read
-> the green channel of `@Cd`.
+> **Note**: `@tension` and `@compression` are raw deformation values (0-1)
+> without offset. The **Offset** parameter only affects the color mapping
+> (`@Cd` / `@tension_map_Cd`), not the numeric attributes.
 
 ## Parameters
 
@@ -21,7 +21,7 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 |-----------|---------|-------------|
 | Method | Wrangle (VEX) | Switch between Wrangle and VOP implementation (`both` mode only) |
 | Sensitivity | 1.0 | Multiplier for the tension response curve |
-| Offset | 0.5 | Neutral point — values below = stretch, above = compress |
+| Offset | 0.5 | Neutral point for **color mapping only** (does not affect @tension/@compression) |
 | Epsilon | 0.0001 | Division safety threshold to avoid zero-division |
 | Blur Iterations | 0 | Attribute blur passes (0 = no blur / pass-through) |
 
@@ -372,10 +372,12 @@ For each vertex V:
     1. Find all topological neighbours of V
     2. rest_avg  = mean( distance(rest[V], rest[nb]) for each nb )
     3. def_avg   = mean( distance(P[V],    P[nb])    for each nb )
-    4. tension   = clamp( (rest_avg - def_avg) / max(rest_avg, eps) * sensitivity + offset, 0, 1 )
-    5. stretch   = fit(tension, [0.5, 0.0] -> [0.0, 1.0])
-    6. compress  = fit(tension, [0.5, 1.0] -> [0.0, 1.0])
-    7. Cd        = (compress, stretch, 0)
+    4. ratio     = (rest_avg - def_avg) / max(rest_avg, eps) * sensitivity
+    5. tension   = clamp(ratio, 0, 1)                          ← exported (0=neutral, 1=max)
+    6. color_val = clamp(ratio + offset, 0, 1)                 ← internal, for color only
+    7. compress  = fit(color_val, [0.5, 1.0] -> [0.0, 1.0])
+    8. stretch   = fit(color_val, [0.5, 0.0] -> [1.0, 0.0])
+    9. Cd        = (compress, stretch, 0)
 ```
 
 ## Network Diagrams
