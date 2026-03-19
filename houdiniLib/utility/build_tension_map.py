@@ -146,17 +146,17 @@ _TENSION_VEX = textwrap.dedent("""\
     // ── Tension formula ─────────────────────────────
     float safe_rest = max(rest_avg, epsilon);
     float ratio     = (rest_avg - def_avg) / safe_rest;
-    f@tension       = clamp(ratio * sensitivity, 0.0, 1.0);
-
-    // ── Compression ─────────────────────────────────
-    f@compression = f@tension;
-
-    // ── Color: use offset for internal color mapping ──
     float color_val = clamp(ratio * sensitivity + offset, 0.0, 1.0);
+
+    // ── Color channels ──────────────────────────────
     float compress_c = clamp(fit(color_val, 0.5, 1.0, 0.0, 1.0), 0.0, 1.0);
     float stretch_c  = clamp(fit(color_val, 0.0, 0.5, 1.0, 0.0), 0.0, 1.0);
+
+    // ── Outputs ─────────────────────────────────────
+    f@compression    = compress_c;   // 0-1: how much compressed (red)
+    f@tension        = stretch_c;    // 0-1: how much stretched (green)
     v@tension_map_Cd = set(compress_c, stretch_c, 0.0);
-    v@Cd = v@tension_map_Cd;
+    v@Cd             = v@tension_map_Cd;
 """)
 
 
@@ -759,16 +759,7 @@ class TensionMapNetwork:
         scaled.setInput(0, edge_ratio, 0)
         scaled.setInput(1, sens, 0)
 
-        # tension = clamp(ratio * sensitivity, 0, 1)  — 0=neutral, 1=max
-        tension_clamp = vop_net.createNode("clamp", "tension_clamp")
-        tension_clamp.setInput(0, scaled, 0)
-        _safe_parm_set(tension_clamp, "min", 0.0)
-        _safe_parm_set(tension_clamp, "max", 1.0)
-
-        # compression = tension (same value, 0-1)
-        # (tension and compression are identical — both exported for convenience)
-
-        # ── Color mapping (uses offset internally) ───────────────
+        # ── color_val = clamp(ratio * sensitivity + offset, 0, 1) ──
         color_raw = vop_net.createNode("add", "color_raw")
         color_raw.setInput(0, scaled, 0)
         color_raw.setInput(1, off, 0)
@@ -778,6 +769,7 @@ class TensionMapNetwork:
         _safe_parm_set(color_clamp, "min", 0.0)
         _safe_parm_set(color_clamp, "max", 1.0)
 
+        # ── Compression: fit(color_val, 0.5→1.0, 0→1) ──────────
         compress_fit = vop_net.createNode("fit", "compress_fit")
         compress_fit.setInput(0, color_clamp, 0)
         _safe_parm_set(compress_fit, "srcmin", 0.5)
@@ -785,11 +777,12 @@ class TensionMapNetwork:
         _safe_parm_set(compress_fit, "destmin", 0.0)
         _safe_parm_set(compress_fit, "destmax", 1.0)
 
-        compress_color = vop_net.createNode("clamp", "compress_color")
-        compress_color.setInput(0, compress_fit, 0)
-        _safe_parm_set(compress_color, "min", 0.0)
-        _safe_parm_set(compress_color, "max", 1.0)
+        compress_clamp = vop_net.createNode("clamp", "compress_clamp")
+        compress_clamp.setInput(0, compress_fit, 0)
+        _safe_parm_set(compress_clamp, "min", 0.0)
+        _safe_parm_set(compress_clamp, "max", 1.0)
 
+        # ── Stretch: fit(color_val, 0.5→0.0, 0→1) ──────────────
         stretch_fit = vop_net.createNode("fit", "stretch_fit")
         stretch_fit.setInput(0, color_clamp, 0)
         _safe_parm_set(stretch_fit, "srcmin", 0.0)
@@ -797,22 +790,23 @@ class TensionMapNetwork:
         _safe_parm_set(stretch_fit, "destmin", 1.0)
         _safe_parm_set(stretch_fit, "destmax", 0.0)
 
-        stretch_color = vop_net.createNode("clamp", "stretch_color")
-        stretch_color.setInput(0, stretch_fit, 0)
-        _safe_parm_set(stretch_color, "min", 0.0)
-        _safe_parm_set(stretch_color, "max", 1.0)
+        stretch_clamp = vop_net.createNode("clamp", "stretch_clamp")
+        stretch_clamp.setInput(0, stretch_fit, 0)
+        _safe_parm_set(stretch_clamp, "min", 0.0)
+        _safe_parm_set(stretch_clamp, "max", 1.0)
 
         # ── Color: (R=compress, G=stretch, B=0) ──────────────────
         color = vop_net.createNode("floattovec", "color_compose")
-        color.setInput(0, compress_color, 0)
-        color.setInput(1, stretch_color, 0)
+        color.setInput(0, compress_clamp, 0)
+        color.setInput(1, stretch_clamp, 0)
         color.setInput(2, zero, 0)
 
         # ── Bind Exports (exportparm=1 = Always) ────────────────
         # NOT wired into geometryvopoutput — that overwrites P!
+        # tension = stretch (surface under tension), compression = compress
         for attr_name, attr_type, source in [
-            ("tension", "float", tension_clamp),
-            ("compression", "float", tension_clamp),
+            ("tension", "float", stretch_clamp),
+            ("compression", "float", compress_clamp),
             ("tension_map_Cd", "vector", color),
             ("Cd", "vector", color),
         ]:
