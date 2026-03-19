@@ -6,14 +6,14 @@ Per-vertex tension visualization comparing rest-pose and deformed mesh edge leng
 
 | Attribute | Type | Range | Description |
 |-----------|------|-------|-------------|
-| `@tension` | float | 0-1 | Deformation amount (0 = neutral, 1 = max deformation) |
-| `@compression` | float | 0-1 | Same as tension (exported for convenience) |
-| `@tension_map_Cd` | vector3 | RGB | Color: green = stretch, black = neutral, red = compress |
+| `@tension` | float | 0-1 | Stretch amount (0 = neutral, 1 = max stretch) = Cd green channel |
+| `@compression` | float | 0-1 | Compression amount (0 = neutral, 1 = max compression) = Cd red channel |
+| `@tension_map_Cd` | vector3 | RGB | Color: red = compression, green = stretch, blue = 0 |
 | `@Cd` | vector3 | RGB | Same as `@tension_map_Cd` — for viewport display |
 
-> **Note**: `@tension` and `@compression` are raw deformation values (0-1)
-> without offset. The **Offset** parameter only affects the color mapping
-> (`@Cd` / `@tension_map_Cd`), not the numeric attributes.
+> **Note**: `@tension` and `@compression` are **separate channels** — one
+> measures stretch (surface under tension), the other compression. They are
+> never equal except when both are 0 (neutral area).
 
 ## Parameters
 
@@ -373,11 +373,10 @@ For each vertex V:
     2. rest_avg  = mean( distance(rest[V], rest[nb]) for each nb )
     3. def_avg   = mean( distance(P[V],    P[nb])    for each nb )
     4. ratio     = (rest_avg - def_avg) / max(rest_avg, eps) * sensitivity
-    5. tension   = clamp(ratio, 0, 1)                          ← exported (0=neutral, 1=max)
-    6. color_val = clamp(ratio + offset, 0, 1)                 ← internal, for color only
-    7. compress  = fit(color_val, [0.5, 1.0] -> [0.0, 1.0])
-    8. stretch   = fit(color_val, [0.5, 0.0] -> [1.0, 0.0])
-    9. Cd        = (compress, stretch, 0)
+    5. color_val = clamp(ratio + offset, 0, 1)
+    6. compress  = fit(color_val, [0.5, 1.0] -> [0.0, 1.0])   ← @compression
+    7. stretch   = fit(color_val, [0.5, 0.0] -> [1.0, 0.0])   ← @tension
+    8. Cd        = (compress, stretch, 0)
 ```
 
 ## Network Diagrams
