@@ -9,6 +9,7 @@ from importlib import import_module
 _SUBMODULES = {
     "build_tension_map",
     "lazy_loader",
+    "node_serializer",
 }
 
 __all__ = sorted(_SUBMODULES)
