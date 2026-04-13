@@ -760,7 +760,7 @@ def _apply_parameters(node, params_data):
         else:
             try:
                 parm.set(parm_data["value"])
-            except (TypeError, hou.OperationFailed) as e:
+            except (TypeError, hou.OperationFailed, hou.PermissionError) as e:
                 logger.warning("Failed to set %s = %r: %s", parm.path(), parm_data["value"], e)
 
         # Lock state
@@ -793,7 +793,7 @@ def _apply_flags(node, flags_data):
         setter_name = flag_setters.get(flag_name)
         if setter_name is None:
             continue
-        with contextlib.suppress(AttributeError):
+        with contextlib.suppress(AttributeError, hou.PermissionError):
             getattr(node, setter_name)(value)
 
 
@@ -811,9 +811,9 @@ def _apply_flags_recursive(parent, nodes_data, name_remap):
         if node is None:
             continue
         _apply_flags(node, node_data.get("flags", {}))
-        # Recurse into children
+        # Recurse into children — skip locked HDAs
         children_data = node_data.get("children", [])
-        if children_data:
+        if children_data and not node.isLockedHDA():
             child_remap = {c.name(): c.name() for c in node.children()}
             _apply_flags_recursive(node, children_data, child_remap)
 
@@ -1035,6 +1035,14 @@ def _deserialize_node(parent, node_data, name_remap):
 
     try:
         node = parent.createNode(node_type, original_name, run_init_scripts=False)
+    except hou.PermissionError as e:
+        logger.warning(
+            "Cannot create node %r inside locked asset %r, skipping: %s",
+            original_name,
+            parent.path(),
+            e,
+        )
+        return None
     except hou.OperationFailed as e:
         logger.error("Failed to create node %r (type %s): %s", original_name, node_type, e)
         return None
@@ -1069,10 +1077,18 @@ def _deserialize_node(parent, node_data, name_remap):
     # Parameters
     _apply_parameters(node, node_data.get("parameters", {}))
 
-    # Recursive children
+    # Recursive children — skip if the node is a locked HDA (it manages its own contents)
     child_remap = {}
-    for child_data in node_data.get("children", []):
-        _deserialize_node(node, child_data, child_remap)
+    children_data = node_data.get("children", [])
+    if children_data and node.isLockedHDA():
+        logger.info(
+            "Skipping %d children of locked HDA %r (contents managed by asset definition)",
+            len(children_data),
+            node.path(),
+        )
+    else:
+        for child_data in children_data:
+            _deserialize_node(node, child_data, child_remap)
 
     # Internal connections (for subnet children)
     # Split: same-level connections now, cross-level deferred
