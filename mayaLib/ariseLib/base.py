@@ -342,7 +342,7 @@ class BaseRig:
             mult_matrix = pm.shadingNode(
                 "multMatrix", asUtility=True, name="AimEyeFollowMMStatic_M"
             )
-            pm.connectAttr("M_Head_head_FS_jnt.worldMatrix", mult_matrix.matrixIn[1], f=True)
+            pm.connectAttr(head_joint.worldMatrix, mult_matrix.matrixIn[1], f=True)
             pm.connectAttr(mult_matrix.matrixSum, "AimEyeFollowBM_M.inputMatrix", f=True)
 
             # Rebuild eye-aim follow constraint and setRange blend
@@ -356,7 +356,7 @@ class BaseRig:
             pm.connectAttr("AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True)
             pm.connectAttr(
                 "eyeAimFollowSetRange.outValue.outValueX",
-                "AimEyeFollow_M_parentConstraint1.M_Head_head_FS_jntW1",
+                f"AimEyeFollow_M_parentConstraint1.{str(head_joint.name())}W1",
                 f=True,
             )
             pm.connectAttr(
@@ -370,25 +370,25 @@ class BaseRig:
             pm.setAttr("eyeAimFollowSetRange.oldMaxX", 10)
 
             pm.connectAttr(
-                "M_Head_head_FS_jnt.worldMatrix[0]",
+                head_joint.worldMatrix[0],
                 "EyeAimFollowHeadMM_EyeAimFollowHead.matrixIn[0]",
                 f=True,
             )
 
             pm.connectAttr(
-                "M_Head_head_FS_jnt.worldMatrix[0]",
+                head_joint.worldMatrix[0],
                 "FaceMotionSystemMM_FaceMotionSystem.matrixIn[1]",
                 f=True,
             )
 
             pm.connectAttr(
-                "M_Head_head_FS_jnt.worldMatrix[0]",
+                head_joint.worldMatrix[0],
                 "LipFollowHeadMM_LipFollowHead.matrixIn[0]",
                 f=True,
             )
 
             pm.connectAttr(
-                "M_Head_head_FS_jnt.worldMatrix[0]",
+                head_joint.worldMatrix[0],
                 "FaceDeformationFollowHeadMM_FaceDeformationFollowHead.matrixIn[1]",
                 f=True,
             )
@@ -421,58 +421,59 @@ class BaseRig:
             scale_value = aim_eye_offset.scaleX.get()
 
             # Translation connections (Arise eye ctrls -> ADV AimEye targets)
-            pm.connectAttr(
-                "R_Eye_eye_aim_at_ctrl.translate",
-                multiply_translate_node_r.input1,
-                f=True,
-            )
-            pm.connectAttr(multiply_translate_node_r.output, "AimEye_R.translate", f=True)
-            pm.setAttr(multiply_translate_node_r.input2X, (1 / scale_value) * -1)
-            pm.setAttr(multiply_translate_node_r.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_r.input2Z, (1 / scale_value))
+            if pm.objExists("R_Eye_eye_aim_at_ctrl") and pm.objExists("L_Eye_eye_aim_at_ctrl"):
+                pm.connectAttr(
+                    "R_Eye_eye_aim_at_ctrl.translate",
+                    multiply_translate_node_r.input1,
+                    f=True,
+                )
+                pm.connectAttr(multiply_translate_node_r.output, "AimEye_R.translate", f=True)
+                pm.setAttr(multiply_translate_node_r.input2X, (1 / scale_value) * -1)
+                pm.setAttr(multiply_translate_node_r.input2Y, (1 / scale_value))
+                pm.setAttr(multiply_translate_node_r.input2Z, (1 / scale_value))
 
-            pm.connectAttr(
-                "M_Eyes_Aim_01_ctrl.translate",
-                multiply_translate_node_m.input1,
-                f=True,
-            )
-            pm.connectAttr(multiply_translate_node_m.output, "AimEye_M.translate", f=True)
-            pm.setAttr(multiply_translate_node_m.input2X, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_m.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_m.input2Z, (1 / scale_value))
+                pm.connectAttr(
+                    "M_Eyes_Aim_01_ctrl.translate",
+                    multiply_translate_node_m.input1,
+                    f=True,
+                )
+                pm.connectAttr(multiply_translate_node_m.output, "AimEye_M.translate", f=True)
+                pm.setAttr(multiply_translate_node_m.input2X, (1 / scale_value))
+                pm.setAttr(multiply_translate_node_m.input2Y, (1 / scale_value))
+                pm.setAttr(multiply_translate_node_m.input2Z, (1 / scale_value))
 
-            pm.connectAttr(
-                "L_Eye_eye_aim_at_ctrl.translate",
-                multiply_translate_node_l.input1,
-                f=True,
-            )
-            pm.connectAttr(multiply_translate_node_l.output, "AimEye_L.translate", f=True)
-            pm.setAttr(multiply_translate_node_l.input2X, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_l.input2Y, (1 / scale_value))
-            pm.setAttr(multiply_translate_node_l.input2Z, (1 / scale_value))
+                pm.connectAttr(
+                    "L_Eye_eye_aim_at_ctrl.translate",
+                    multiply_translate_node_l.input1,
+                    f=True,
+                )
+                pm.connectAttr(multiply_translate_node_l.output, "AimEye_L.translate", f=True)
+                pm.setAttr(multiply_translate_node_l.input2X, (1 / scale_value))
+                pm.setAttr(multiply_translate_node_l.input2Y, (1 / scale_value))
+                pm.setAttr(multiply_translate_node_l.input2Z, (1 / scale_value))
 
-            # Rotation connections
-            pm.connectAttr("L_Eye_eye_aim_at_ctrl.rotate", "AimEye_L.rotate", f=True)
-            pm.connectAttr("M_Eyes_Aim_01_ctrl.rotate", "AimEye_M.rotate", f=True)
+                # Rotation connections
+                pm.connectAttr("L_Eye_eye_aim_at_ctrl.rotate", "AimEye_L.rotate", f=True)
+                pm.connectAttr("M_Eyes_Aim_01_ctrl.rotate", "AimEye_M.rotate", f=True)
 
-            multiply_rotate_node_r = pm.shadingNode(
-                "multiplyDivide", asUtility=True, n="R_EyeRotation"
-            )
-            pm.connectAttr(
-                "R_Eye_eye_aim_at_ctrl.rotate",
-                multiply_rotate_node_r.input1,
-                f=True,
-            )
-            pm.connectAttr(multiply_rotate_node_r.output, "AimEye_R.rotate", f=True)
-            pm.setAttr(multiply_rotate_node_r.input2Z, -1)
+                multiply_rotate_node_r = pm.shadingNode(
+                    "multiplyDivide", asUtility=True, n="R_EyeRotation"
+                )
+                pm.connectAttr(
+                    "R_Eye_eye_aim_at_ctrl.rotate",
+                    multiply_rotate_node_r.input1,
+                    f=True,
+                )
+                pm.connectAttr(multiply_rotate_node_r.output, "AimEye_R.rotate", f=True)
+                pm.setAttr(multiply_rotate_node_r.input2Z, -1)
 
-            # Scale connections
-            pm.connectAttr("L_Eye_eye_aim_at_ctrl.scale", "AimEye_L.scale", f=True)
-            pm.connectAttr("M_Eyes_Aim_01_ctrl.scale", "AimEye_M.scale", f=True)
-            pm.connectAttr("R_Eye_eye_aim_at_ctrl.scale", "AimEye_R.scale", f=True)
+                # Scale connections
+                pm.connectAttr("L_Eye_eye_aim_at_ctrl.scale", "AimEye_L.scale", f=True)
+                pm.connectAttr("M_Eyes_Aim_01_ctrl.scale", "AimEye_M.scale", f=True)
+                pm.connectAttr("R_Eye_eye_aim_at_ctrl.scale", "AimEye_R.scale", f=True)
 
-            hide_ctrl_list = pm.ls("AimEye_M")
-            pm.hide(hide_ctrl_list)
+                hide_ctrl_list = pm.ls("AimEye_M")
+                pm.hide(hide_ctrl_list)
 
             # Disconnect and reset scale to 1 first, otherwise the rig collapses
             if pm.isConnected("Base_main_ctrl.scale", "MainAndHeadScaleMultiplyDivide.input1"):
