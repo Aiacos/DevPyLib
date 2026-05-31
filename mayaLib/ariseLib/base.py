@@ -328,9 +328,11 @@ class BaseRig:
             the Arise eye-aim controls (``L_Eye_eye_aim_at_ctrl``,
             ``M_Eyes_Aim_01_ctrl``, ``R_Eye_eye_aim_at_ctrl``).
         """
+        head_joint = pm.ls("C_Head_head_FS_jnt", "M_Head_head_FS_jnt")[-1]
+
         # Advanced Skeleton face connection
         if pm.objExists("FaceJoint_M"):
-            pm.parent("FaceJoint_M", "M_Head_head_FS_jnt")
+            pm.parent("FaceJoint_M", head_joint)
             pm.parent("FaceGroup", "rig_root_grp")
 
             # delete AimEyeFollowMMStatic_M if exist
@@ -348,7 +350,7 @@ class BaseRig:
                 pm.delete("eyeAimFollowSetRange")
             if pm.objExists("AimEyeFollow_M_parentConstraint1"):
                 pm.delete("AimEyeFollow_M_parentConstraint1")
-            pm.parentConstraint("EyeAimStatic", "M_Head_head_FS_jnt", "AimEyeFollow_M", mo=True)
+            pm.parentConstraint("EyeAimStatic", head_joint, "AimEyeFollow_M", mo=True)
             pm.shadingNode("setRange", asUtility=True, name="eyeAimFollowSetRange")
             pm.connectAttr("AimEye_M.follow", "eyeAimFollowSetRange.value.valueX", f=True)
             pm.connectAttr("AimEye_M.follow", "eyeAimFollowSetRange.value.valueY", f=True)
