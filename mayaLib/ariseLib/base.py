@@ -328,7 +328,7 @@ class BaseRig:
             the Arise eye-aim controls (``L_Eye_eye_aim_at_ctrl``,
             ``M_Eyes_Aim_01_ctrl``, ``R_Eye_eye_aim_at_ctrl``).
         """
-        if not pm.objExists("C_Head_head_FS_jnt") or not pm.objExists("M_Head_head_FS_jnt"):
+        if not pm.ls("C_Head_head_FS_jnt", "M_Head_head_FS_jnt"):
             return
 
         head_joint = pm.ls("C_Head_head_FS_jnt", "M_Head_head_FS_jnt")[-1]
