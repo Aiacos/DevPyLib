@@ -1,0 +1,53 @@
+<html><body style="font-family:sans-serif">
+<h2>Spring_Chain</h2>
+<p>A chain that trails behind a single <b>lead</b> ctrl with a cascading spring, for dragged ropes and
+dragon / snake bodies (after the Control Rig "dynamic chain"). Every joint is pulled by a spring towards
+where it would be if the chain was rigid from the joint before it, so the delay grows towards the tip.
+Bones keep their length.</p>
+<p><b>Needs the DevPyLib plugin</b> <i>spring_chain_solver.py</i> (folder <i>mayaLib/plugin</i>). The node
+loads it when it is built. To open a saved rig that folder must be in <i>MAYA_PLUG_IN_PATH</i>, or the
+plugin must be loaded before opening the scene.</p>
+<h3>Guides</h3>
+<ul>
+<li><b>0000 ... N</b> &ndash; aim guides, each one aims at the next. <b>0000</b> is the lead end. They share
+one side pin, which sets the twist of the whole chain.</li>
+</ul>
+<h3>Ctrls</h3>
+<ul>
+<li><b>lead</b> &ndash; drives the chain. The first two joints follow it rigidly, the others trail behind.
+Scale is uniform. Keyable attrs:
+<ul>
+<li><i>spring_weight</i> &ndash; 0 = rigid chain, 1 = spring chain.</li>
+<li><i>lag</i> &ndash; frames of delay each joint adds on top of the joint before it. 0 = rigid.</li>
+<li><i>damping</i> &ndash; 1 = settles without overshooting, lower values bounce.</li>
+</ul></li>
+</ul>
+<h3>Attributes</h3>
+<ul>
+<li><b>Ctrls Scale</b> &ndash; size of the lead ctrl.</li>
+<li><b>Joints</b> &ndash; 3 to 200. Needs a re-template.</li>
+<li><b>Skinning Joints</b> &ndash; tag the joints as skinning joints.</li>
+<li><b>Lag Per Joint</b>, <b>Damping</b> &ndash; default values of the <i>lag</i> and <i>damping</i> ctrl attrs.</li>
+<li><b>Delayed Twist</b> &ndash; the twist of the lead travels down the chain with the same delay. Unchecked,
+the twist is immediate.</li>
+<li><b>Space</b> &ndash; World delays any motion of the lead. Root Input does not delay the motion of what
+drives <i>Root Input</i>.</li>
+</ul>
+<h3>Connections</h3>
+<ul>
+<li><b>Root Input</b> &ndash; space of the lead ctrl.</li>
+<li><b>Root Output</b> &ndash; first joint.</li>
+<li><b>Tip Output</b> &ndash; last joint.</li>
+</ul>
+<h3>How the simulation behaves</h3>
+<ul>
+<li>It is a simulation with state: play it forward frame by frame. Going back, or jumping more than one
+frame, resets the chain on its rigid pose, and it is correct again once played from there.</li>
+<li>Dragging the lead on a paused frame makes the chain react.</li>
+<li>Evaluating the same frame twice does not advance the simulation, so baking gives what playback shows.</li>
+<li>Bake the joints (playing from a few frames before the shot) before sending a shot to a farm that
+renders frames out of order.</li>
+<li>No gravity, no collisions, no FK ctrls along the chain. For a rope pinned at both ends use
+Dynamic_FK_Chain.</li>
+</ul>
+</body></html>
