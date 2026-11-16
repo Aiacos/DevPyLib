@@ -88,6 +88,22 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
             fields = bridge.node_fields()
 
+        # Il fitting (punti e loop di vertici su occhi, labbra, naso, guance...)
+        # non sta negli attributi: si fa nella finestra Face del package.
+        self.add_collapsible_layout(title="Fitting", shown=True)
+        self.add_button(
+            buttons=[
+                (
+                    self.open_face_fitting,
+                    "resources/icons/guides_icon.png",
+                    "Face Fitting",
+                    "Open the face fitting window: select on the mesh the vertices and edge loops "
+                    "of eyelids, lips, nose, cheeks... The result is stored in FaceFitSkeleton.",
+                ),
+            ],
+        )
+        self.close_layout()
+
         section = None
         for field in fields:
             if field["section"] != section:
@@ -108,6 +124,16 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         self.driver_face_attr = self.add_driver_attribute(
             name="Face Output", annotation="Root of the face rig."
         )
+
+    def open_face_fitting(self):
+        """Apre la finestra di fitting del package sulla mesh del nodo."""
+        package = _facial_rig()
+        if package is None:
+            LOGGER.error("[%s] facial_rig package not found (%s)", self.name, _PACKAGE_NAMES)
+            return
+        attr = self.option_attrs.get("Face")
+        geometry = (attr.value or "").strip().rsplit("|", 1)[-1] if attr is not None else ""
+        package.show_fitting_ui(geometry)
 
     def _add_option_attr(self, field):
         """Crea l'attributo Arise adatto al tipo dell'opzione ADV."""
