@@ -14,7 +14,7 @@ rinominati secondo la convenzione di Arise.
 Prerequisito: il viso deve essere gia' fittato (nodo `FaceFitSkeleton` in
 scena, creato dalla UI di fitting del package).
 
-Stato: scheletro. Non ancora provato dentro Arise; la rinomina copre solo
+Stato: scheletro, provato dentro Arise su `chubby`; la rinomina copre solo
 mascella e denti. Vedi docs/arise-node.md nel repo adv-maya-facial-rig, che resta la sorgente
 del package e dei suoi test.
 """
@@ -43,27 +43,10 @@ LOGGER = logging.getLogger("node_rig_logger")
 # tools/deploy_arise_node.py), cosi' il nodo non dipende da altro.
 _UTILS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils")
 _PACKAGE_NAMES = ("facial_rig",)
-# (titolo nell'editor, opzione di FaceFitSkeleton)
-_GEO_ATTRS = (
-    ("Face Mesh", "Face"),
-    ("Head Joint", "HeadJoint"),
-)
-_TEXT_ATTRS = (
-    ("All Head Meshes", "AllHead"),
-    ("Right Eye", "RightEye"),
-    ("Left Eye", "LeftEye"),
-    ("Upper Teeth", "UpperTeeth"),
-    ("Lower Teeth", "LowerTeeth"),
-    ("Tongue", "Tongue"),
-)
-_BOOL_ATTRS = (
-    ("Eye Base", "EyeBase", False),
-    ("Eye Socket", "EyeSocket", False),
-    ("Long Snout", "LongSnout", False),
-    ("Phonemes", "Phonemes", True),
-    ("Emotions", "Emotions", True),
-    ("ARKit", "ARKit", False),
-)
+# opzioni scelte con il selettore di nodi di Arise
+_PICKED_OPTIONS = ("Face", "HeadJoint")
+# attributo che tagging_utils.tag_as_dont_tag aggiunge ai nodi
+_DONT_TAG_ATTR = "io_dont_tag"
 
 
 def _facial_rig():
@@ -90,29 +73,33 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         )
 
     def attributes_creation(self):
-        """Geometrie, opzioni del build e collegamenti verso gli altri nodi."""
+        """Opzioni del pannello Face di AdvancedSkeleton e collegamenti.
+
+        L'elenco dei campi viene dal package (`arise_bridge.node_fields`),
+        che e' la fonte unica delle opzioni; i default sono i valori gia'
+        salvati dal fitting, se in scena.
+        """
         self.option_attrs = {}
+        package = _facial_rig()
+        if package is None:
+            LOGGER.error("[%s] facial_rig package not found (%s)", self.name, _PACKAGE_NAMES)
+            fields = []
+        else:
+            bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
+            fields = bridge.node_fields()
 
-        self.add_collapsible_layout(title="Geometry", shown=True)
-        for title, option in _GEO_ATTRS:
-            self.option_attrs[option] = self.add_node_attribute(
-                name=title, annotation="Leave empty to keep the value stored by the face fitting."
-            )
-        for title, option in _TEXT_ATTRS:
-            self.option_attrs[option] = self.add_string_attribute(
-                name=title,
-                default_value="",
-                annotation="Space separated names. Leave empty to keep the fitted value.",
-                set_str_validator=False,
-            )
-        self.close_layout()
-
-        self.add_collapsible_layout(title="Options", shown=True)
-        for title, option, default in _BOOL_ATTRS:
-            self.option_attrs[option] = self.add_boolean_attribute(
-                name=title, default_value=default, annotation="AdvancedSkeleton face option."
-            )
-        self.close_layout()
+        section = None
+        for field in fields:
+            if field["section"] != section:
+                if section is not None:
+                    self.close_layout()
+                section = field["section"]
+                self.add_collapsible_layout(title=section, shown=section in ("Geometry", "Rig"))
+            attr = self._add_option_attr(field)
+            if attr is not None:  # Arise scarta gli attributi dal nome non valido
+                self.option_attrs[field["option"]] = attr
+        if section is not None:
+            self.close_layout()
 
         self.add_separator(title="Connections")
         self.driven_head_attr = self.add_driven_attribute(
@@ -120,6 +107,38 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         )
         self.driver_face_attr = self.add_driver_attribute(
             name="Face Output", annotation="Root of the face rig."
+        )
+
+    def _add_option_attr(self, field):
+        """Crea l'attributo Arise adatto al tipo dell'opzione ADV."""
+        note = "AdvancedSkeleton face option '{}'.".format(field["option"])
+        if not field["ported"]:
+            note += " Not supported yet by the Python port: it has no effect."
+        if field["type"] == "bool":
+            return self.add_boolean_attribute(
+                name=field["title"], default_value=bool(field["default"]), annotation=note
+            )
+        if field["type"] == "enum":
+            return self.add_drop_down_attribute(
+                name=field["title"],
+                items=field["items"],
+                default_value=field["default"],
+                annotation=note,
+            )
+        if field["type"] == "long":
+            return self.add_integer_attribute(
+                name=field["title"], default_value=int(field["default"]), annotation=note
+            )
+        if field["option"] in _PICKED_OPTIONS:
+            return self.add_node_attribute(
+                name=field["title"],
+                annotation=note + " Leave empty to keep the value stored by the face fitting.",
+            )
+        return self.add_string_attribute(
+            name=field["title"],
+            default_value=field["default"] or "",
+            annotation=note + " Space separated names for geometry lists.",
+            set_str_validator=False,
         )
 
     def guides_creation(self):
@@ -147,10 +166,33 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
                 value = value.strip()
                 if not value:
                     continue
-                if option in ("Face", "HeadJoint"):
+                if option in _PICKED_OPTIONS:
                     value = value.rsplit("|", 1)[-1]  # il picker da' il nome lungo
             options[option] = value
         return options
+
+    def on_delete_operation(self, silent=True):  # REIMPLEMENTED!
+        """Cancella il rig facciale prima della pulizia di Arise.
+
+        Arise conserva lo skin solo dei joint dichiarati in `joints_creation`
+        (li sostituisce con dei placeholder). Quelli del facciale li crea il
+        build: cancellati mentre sono ancora influenze, la mesh del viso
+        perderebbe lo skinCluster. Qui i pesi tornano prima al joint della
+        testa, come fa asDeleteAdvancedFace.
+
+        Arise chiama questo metodo a ogni pulizia, anche senza rig in scena:
+        si agisce solo se il rig presente porta il tag di questo nodo.
+        """
+        package = _facial_rig()
+        if package is None:
+            return
+        bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
+        rig_nodes = set(mc.ls(bridge.face_rig_nodes(), long=True) or [])
+        tagged = set(tagging_utils.get_maya_nodes_with_tag(self.uuid.hex) or [])
+        if not rig_nodes & tagged:
+            return  # nessun rig, oppure un rig facciale non costruito da questo nodo
+        if not bridge.delete_face() and not silent:
+            LOGGER.warning("[%s] the face rig could not be deleted", self.name)
 
     def rig_creation(self):
         """Costruisce il rig ADV, lo registra presso Arise e lo rinomina."""
@@ -169,9 +211,21 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             LOGGER.error("[%s] the face build failed, see the Maya script editor", self.name)
             return False
 
-        # i nodi del build non nascono dalle API di Arise: vanno taggati
-        # perche' la pulizia (uscita da Build, rebuild) li riconosca
-        tagging_utils.tag_nodes(bridge.face_rig_nodes(), tag=self.uuid.hex)
+        # Arise tagga da solo tutto cio' che nasce durante rig_creation():
+        # taggare qui i nodi del rig darebbe un errore di attributo doppio
+        # per ogni nodo.
+        # Il build ricrea lo skinCluster del viso (rebind): per Arise e' un nodo
+        # nuovo e lo cancellerebbe uscendo da Build. I nodi delle geometrie
+        # dell'utente vanno esclusi dai tag automatici, come fanno i nodi
+        # inclusi in Arise per cio' che deve restare (IK_Chain, HumanIK).
+        # al rebuild i nodi sopravvissuti hanno gia' il tag: ripeterlo da' un warning
+        kept = [
+            node
+            for node in bridge.geometry_nodes()
+            if not mc.attributeQuery(_DONT_TAG_ATTR, node=node, exists=True)
+        ]
+        if kept:
+            tagging_utils.tag_as_dont_tag(kept)
 
         if mc.objExists(bridge.FACE_ROOT):
             output_grp.match_transformation_to(bridge.FACE_ROOT)

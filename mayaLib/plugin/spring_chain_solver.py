@@ -198,6 +198,20 @@ class SpringChainSolver(om.MPxNode):
         for attr in inputs:
             cls.attributeAffects(attr, cls.a_out_point)
 
+    def getCacheSetup(self, eval_node, disabling_info, setup_info, monitored):  # noqa: N802
+        """Turn Cached Playback off while this node is in the scene.
+
+        The cache can be filled starting from any frame, and a chain that was not played from the
+        start of the range would be cached with the wrong state. Declaring the node as a simulation
+        ('kSimulationSupport') was tried: the joints stayed frozen on the first frame.
+        """
+        om.MPxNode.getCacheSetup(self, eval_node, disabling_info, setup_info, monitored)
+        disabling_info.setCacheDisabled(True)
+        disabling_info.setReason(
+            "springChainSolver (Spring_Chain rig) is a simulation that must be played frame by frame"
+        )
+        disabling_info.setMitigation("Bake the Spring_Chain joints to use Cached Playback")
+
     def compute(self, plug, data):
         """Solve the chain for the current frame and write 'outPoint'."""
         cls = SpringChainSolver

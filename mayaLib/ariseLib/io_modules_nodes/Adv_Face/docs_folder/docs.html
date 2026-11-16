@@ -10,10 +10,22 @@ mesh). This node has no Arise guides.</p>
 
 <h3>Attributes</h3>
 <ul>
-<li><b>Geometry</b>: face mesh, head joint, eyes, teeth, tongue. Leave a field empty to keep the
-value stored by the fitting.</li>
-<li><b>Options</b>: Eye Base, Eye Socket, Long Snout, Phonemes, Emotions, ARKit.</li>
+<li><b>Geometry</b>: face mesh, head joint, mask, all head meshes, eyes, teeth, tongue, eyebrow,
+eyelash, extras. Leave a field empty to keep the value stored by the fitting.</li>
+<li><b>Rig</b>: Rig Type, Include, Lip Ctrls, Non Symmetrical, Simpler Eye Lid, Eye Base,
+Eye Socket, Cyclops, Long Snout, Lip To Nose Vertices.</li>
+<li><b>Shapes</b>: Phonemes, Emotions, ARKit, SnapChat.</li>
+<li><b>Skinning</b>: Game Engine, Multi Skin Clusters, Use Max Influences, Max Influences,
+Roblox Head, Legacy Joint Orient.</li>
+<li><b>Scripts</b>: Pre Rebuild Script.</li>
 </ul>
+<p>These are the options of the AdvancedSkeleton Face panel. A new node starts from the values
+stored by the fitting; after that the node's values are written to the fitting at every build.
+Multi Skin Clusters and Roblox Head have no effect yet.</p>
+
+<h3>Leaving Build mode</h3>
+<p>The face rig is deleted, the skin weights of the face joints go back to the head joint and
+the fitting stays in the scene, so the node can be built again.</p>
 
 <h3>Connections</h3>
 <ul>
@@ -22,7 +34,8 @@ value stored by the fitting.</li>
 </ul>
 
 <h3>Status</h3>
-<p>Skeleton version. The rig is built with AdvancedSkeleton names and then renamed to the Arise
+<p>Skeleton version, tried in Arise 1.15 on the AdvancedSkeleton "chubby" demo. The controllers
+are created by the build, so Arise's own controller tools do not list them. The rig is built with AdvancedSkeleton names and then renamed to the Arise
 convention; for now the rename covers the jaw and teeth only.</p>
 </body>
 </html>

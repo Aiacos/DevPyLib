@@ -5,8 +5,9 @@ dragon / snake bodies (after the Control Rig "dynamic chain"). Every joint is pu
 where it would be if the chain was rigid from the joint before it, so the delay grows towards the tip.
 Bones keep their length.</p>
 <p><b>Needs the DevPyLib plugin</b> <i>spring_chain_solver.py</i> (folder <i>mayaLib/plugin</i>). The node
-loads it when it is built. To open a saved rig that folder must be in <i>MAYA_PLUG_IN_PATH</i>, or the
-plugin must be loaded before opening the scene.</p>
+loads it when it is built. <b>Load the plugin before opening a saved rig</b> (or add that folder to
+<i>MAYA_PLUG_IN_PATH</i>): if it is not loaded, the scene opens without any error, the solver nodes
+become <i>unknown</i> nodes and the chain collapses.</p>
 <h3>Guides</h3>
 <ul>
 <li><b>0000 ... N</b> &ndash; aim guides, each one aims at the next. <b>0000</b> is the lead end. They share
@@ -45,6 +46,8 @@ drives <i>Root Input</i>.</li>
 frame, resets the chain on its rigid pose, and it is correct again once played from there.</li>
 <li>Dragging the lead on a paused frame makes the chain react.</li>
 <li>Evaluating the same frame twice does not advance the simulation, so baking gives what playback shows.</li>
+<li><b>Cached Playback is turned off</b> while a Spring_Chain is in the scene (Maya shows the reason). A
+cache filled from the middle of the range would store wrong poses. Bake the joints to use it again.</li>
 <li>Bake the joints (playing from a few frames before the shot) before sending a shot to a farm that
 renders frames out of order.</li>
 <li>No gravity, no collisions, no FK ctrls along the chain. For a rope pinned at both ends use
