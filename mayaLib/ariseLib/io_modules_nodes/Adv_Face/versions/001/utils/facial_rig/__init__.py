@@ -94,6 +94,7 @@ from .core.driving_system import (
 from .core.eye_ball import face_eye_ball
 from .core.eye_lid import face_eye_lid
 from .core.face_arkit import connect_arkit
+from .core.face_bs_convert import convert_to_blend_shapes
 from .core.face_cage import face_face_cage, guess_cage_smooth
 from .core.face_cage_to_skin import (
     face_cage_to_skin,
@@ -160,6 +161,23 @@ from .core.face_snarl import face_snarl, face_snarl_finish
 from .core.face_squint import face_squint, face_squint_finish
 from .core.face_tongue import face_tongue, face_tongue_finish
 from .core.face_up_mid_lo import face_up_mid_lo
+from .core.face_wrinkle_map import (
+    wm_add_attrs,
+    wm_bake,
+    wm_edit,
+    wm_edit_apply,
+    wm_edit_cancel,
+    wm_ensure_wrinkle_map_node,
+    wm_image_path,
+    wm_longest_existing_image_path,
+    wm_open_folder,
+    wm_set_folder,
+    wm_settings,
+    wm_uv_update,
+    wm_view,
+    wrinkle_curves,
+    wrinkle_map,
+)
 from .core.fit_options import (
     FIT_OPTIONS,
     FitOption,
@@ -341,11 +359,29 @@ __all__ = [
     "delta_mush_zero_weight",
     "connect_delta_mush_scale",
     "paint_delta_mush",
+    # BlendShapes
+    "convert_to_blend_shapes",
     # HeadSquash
     "create_head_squash",
     "delete_head_squash",
     "optimize_head_squash",
     "add_to_head_squash",
+    # WrinkleMap
+    "wrinkle_curves",
+    "wrinkle_map",
+    "wm_bake",
+    "wm_edit",
+    "wm_edit_apply",
+    "wm_edit_cancel",
+    "wm_image_path",
+    "wm_longest_existing_image_path",
+    "wm_set_folder",
+    "wm_open_folder",
+    "wm_ensure_wrinkle_map_node",
+    "wm_settings",
+    "wm_view",
+    "wm_uv_update",
+    "wm_add_attrs",
     # Builder
     "FacialRigBuilder",
     "build_facial_rig",

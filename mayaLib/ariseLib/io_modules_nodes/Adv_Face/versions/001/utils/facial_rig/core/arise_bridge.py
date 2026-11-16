@@ -74,7 +74,20 @@ NOT_PORTED = ("MultiSkinClusters", "RobloxHead")
 POST_BUILD_STEPS = (
     ("Post Build", "Delta Mush", "DeltaMush", "face_delta_mush:create_delta_mush"),
     ("Post Build", "Head Squash", "HeadSquash", "face_head_squash:create_head_squash"),
+    ("Post Build", "Wrinkle Map", "WrinkleMap", "arise_bridge:create_wrinkle_map"),
 )
+
+
+def create_wrinkle_map() -> bool:
+    """Le rughe in un passo solo, per il nodo Arise: le curve-ruga nella
+    posizione di partenza (asWrinkleCurves) e subito la bump map
+    (asWrinkleMap), con le immagini nella cartella di WrinkleMap.imagePath.
+    Nel pannello ADV fra i due pulsanti l'utente sistema le curve a mano:
+    qui restano dove le mette il primo, e si correggono dalla finestra Face
+    su un rig con i nomi ADV."""
+    from .face_wrinkle_map import wrinkle_curves, wrinkle_map
+
+    return bool(wrinkle_curves()) and bool(wrinkle_map())
 
 
 def node_fields():

@@ -14,7 +14,8 @@ asSetIsHistoricallyInteresting (50074). Rinviati (cross-proc o
 interattivi, documentati): asFaceExtras (pesatura geo extra, config
 senza campo), hook Roblox (ARKit e SnapChat sono collegati qui, via
 face_arkit.connect_arkit), reorderDeformers multiSkin, asGoToBuildPose,
-asBSConvertDStoBS (RigType BlendShapes), postRebuildScript.
+postRebuildScript. Con RigType BlendShapes o Mixed chiama
+face_bs_convert.convert_to_blend_shapes (asBSConvertDStoBS).
 
 Versione: asGetScriptVersion legge l'header del MEL; qui e' la costante
 FACE_RIG_VERSION (target v6.661) usata dai gate di migrazione.
@@ -273,7 +274,17 @@ def face_finish() -> bool:
 
     set_is_historically_interesting("FaceControlSet")
 
-    # RigType BlendShapes / postRebuildScript rinviati
+    # RigType BlendShapes o Mixed: converte il driving system in blendShape
+    # (MEL 36890-36896; al rebuild il MEL lo fa in asFaceRebuildRestore).
+    # "Mixed" e' la checkbox "keep joints" del frame BlendShapes.
+    rig_type = get_fit_option("RigType")
+    if rig_type != "Joints" and not cmds.objExists("asFaceBS"):
+        from .face_bs_convert import convert_to_blend_shapes
+
+        if not convert_to_blend_shapes(keep_joints=(rig_type == "Mixed")):
+            cmds.warning("face_finish: the conversion to blendShapes failed")
+
+    # postRebuildScript rinviato
 
     try:
         cmds.cycleCheck(evaluation=True)

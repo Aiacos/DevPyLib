@@ -20,12 +20,17 @@ Eye Socket, Cyclops, Long Snout, Lip To Nose Vertices.</li>
 <li><b>Skinning</b>: Game Engine, Multi Skin Clusters, Use Max Influences, Max Influences,
 Roblox Head, Legacy Joint Orient.</li>
 <li><b>Scripts</b>: Pre Rebuild Script.</li>
-<li><b>Post Build</b>: Delta Mush (smoothing deformer on the face) and Head Squash (squash and
-stretch controllers for the whole head). Off by default; they are rebuilt with the rig.</li>
+<li><b>Post Build</b>: Delta Mush (smoothing deformer on the face), Head Squash (squash and
+stretch controllers for the whole head) and Wrinkle Map (wrinkle curves in their starting
+place plus the bump map driven by the controllers; the images are written to the
+<i>images/WrinkleMaps</i> folder of the Maya project). Off by default; they are rebuilt with
+the rig.</li>
 </ul>
 <p>These are the options of the AdvancedSkeleton Face panel. A new node starts from the values
 stored by the fitting; after that the node's values are written to the fitting at every build.
-Multi Skin Clusters and Roblox Head have no effect yet.</p>
+Multi Skin Clusters and Roblox Head have no effect yet. <b>Rig Type</b> BlendShapes or Mixed
+converts the joint-driven face to blendShapes at the end of the build (Mixed keeps the
+joints).</p>
 
 <h3>Several faces in one scene</h3>
 <p>Each Adv_Face node is one face. Everything the build creates is renamed with the node name

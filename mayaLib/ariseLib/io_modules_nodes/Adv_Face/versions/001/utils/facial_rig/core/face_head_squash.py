@@ -398,7 +398,9 @@ def _update_build_pose():
 
 def _new_nodes(uuids_before, with_sets):
     """I nodi nati dopo lo snapshot `uuids_before` (nomi lunghi)."""
-    new_uuids = [uuid for uuid in cmds.ls(uuid=True) if uuid not in uuids_before]
+    new_uuids = [
+        uuid for uuid in cmds.ls(cmds.ls(long=True), uuid=True) if uuid not in uuids_before
+    ]
     nodes = cmds.ls(new_uuids, long=True) if new_uuids else []
     if with_sets:
         return nodes
@@ -458,7 +460,7 @@ def create_head_squash():
         cmds.setToolTo("selectSuperContext")
     except RuntimeError:
         pass  # nessun tool context in batch
-    uuids_before = set(cmds.ls(uuid=True))
+    uuids_before = set(cmds.ls(cmds.ls(long=True), uuid=True))
     try:
         _build_head_squash(head_joint, all_face_geo, uuids_before)
     except RuntimeError as exc:

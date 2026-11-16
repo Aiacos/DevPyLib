@@ -49,14 +49,22 @@ FIT_PREFIX_ATTR = "arisePrefix"
 FIT_ROOT = "FaceGroup"
 
 
+def _all_uuids():
+    # `cmds.ls(uuid=True)` senza nomi ritorna nomi, non uuid (Maya 2025)
+    nodes = cmds.ls(long=True) or []
+    return cmds.ls(nodes, uuid=True) if nodes else []
+
+
 def scene_uuids():
-    """Gli uuid di tutti i nodi della scena: da prendere prima del build."""
-    return set(cmds.ls(uuid=True) or [])
+    """Gli uuid di tutti i nodi della scena: da prendere prima del build.
+    Si confrontano uuid e non nomi perche' il build puo' ricreare un nodo
+    con lo stesso nome (lo skinCluster del viso, dopo il rebind)."""
+    return set(_all_uuids())
 
 
 def new_nodes(before):
     """I nodi nati dopo `scene_uuids()` (nomi lunghi dove servono)."""
-    uuids = [uuid for uuid in cmds.ls(uuid=True) or [] if uuid not in before]
+    uuids = [uuid for uuid in _all_uuids() if uuid not in before]
     return cmds.ls(uuids, long=True) if uuids else []
 
 
