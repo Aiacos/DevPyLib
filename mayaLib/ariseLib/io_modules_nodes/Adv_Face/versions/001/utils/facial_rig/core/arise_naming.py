@@ -19,9 +19,13 @@ rinominati a build finito, con una mappa deterministica:
 Esempi (nodo `face`): `Jaw_M` -> `face_M_jaw_ctrl`, `JawJoint_M` ->
 `face_M_jaw_jnt`, `SDKupperLipA_R` -> `face_R_upper_lip_a_sdk_grp`.
 
-Stato: la rinomina e' applicata a un sottoinsieme (mascella e denti, vedi
-JAW_SUBSET) per validare lo schema dentro Arise; il resto del rig tiene per
-ora i nomi ADV. Vedi docs/arise-node.md.
+I nodi che non sono transform (set, shading, nodi non-DAG) non hanno
+suffisso: `FaceAllSet` -> `face_face_all_set`.
+
+`rename_to_arise` rinomina un elenco di nodi (in origine mascella e denti,
+JAW_SUBSET, per validare lo schema); la rinomina di tutto il rig, con il
+proprietario di ogni nodo, e' in core/arise_faces.py. Vedi
+docs/arise-node.md.
 """
 
 import re
@@ -59,7 +63,8 @@ def arise_base_name(adv_name, kind):
 
     Args:
         adv_name: nome ADV corto (senza path).
-        kind: "ctrl", "jnt" o "grp".
+        kind: "ctrl", "jnt", "grp", oppure "" per i nodi senza suffisso
+            (set, nodi non-DAG): `FaceAllSet` -> `face_all_set`.
     """
     base, side = split_adv_name(adv_name)
     role = ""
@@ -74,17 +79,20 @@ def arise_base_name(adv_name, kind):
     parts.append(_snake(base))
     if role:
         parts.append(role)
-    parts.append(kind)
+    if kind:
+        parts.append(kind)
     return "_".join(parts)
 
 
 def node_kind(node):
-    """ "ctrl" (membro di FaceControlSet), "jnt" o "grp"."""
+    """ "ctrl" (membro di FaceControlSet), "jnt", "grp" per gli altri
+    transform, "" per tutto il resto (shape, set, nodi non-DAG)."""
     if cmds.objExists("FaceControlSet") and cmds.sets(node, isMember="FaceControlSet"):
         return "ctrl"
-    if cmds.nodeType(node) == "joint":
+    node_type = cmds.nodeType(node)
+    if node_type == "joint":
         return "jnt"
-    return "grp"
+    return "grp" if node_type == "transform" else ""
 
 
 def arise_name(node, prefix):

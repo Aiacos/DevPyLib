@@ -69,6 +69,14 @@ NODE_FIELDS = (
 NOT_PORTED = ("MultiSkinClusters", "RobloxHead")
 
 
+# Passi facoltativi dopo il build (frame del pannello Face sotto "Build"):
+# (sezione, titolo, chiave, funzione "modulo:nome" da chiamare a build finito)
+POST_BUILD_STEPS = (
+    ("Post Build", "Delta Mush", "DeltaMush", "face_delta_mush:create_delta_mush"),
+    ("Post Build", "Head Squash", "HeadSquash", "face_head_squash:create_head_squash"),
+)
+
+
 def node_fields():
     """I campi da creare sul nodo Arise, come lista di dict con chiavi
     section, title, option, type ("string" | "bool" | "enum" | "long"),
@@ -98,6 +106,18 @@ def node_fields():
                 "ported": name not in NOT_PORTED,
             }
         )
+    for section, title, key, _function in POST_BUILD_STEPS:
+        fields.append(
+            {
+                "section": section,
+                "title": title,
+                "option": key,
+                "type": "bool",
+                "default": False,
+                "items": [],
+                "ported": True,
+            }
+        )
     return fields
 
 
@@ -110,15 +130,31 @@ def apply_options(options):
         return False
     ok = True
     for name, value in (options or {}).items():
-        if value is None:
+        if value is None or name not in FIT_OPTIONS:  # i passi post-build non sono opzioni
             continue
         ok = set_fit_option(name, value) and ok
     return ok
 
 
+def run_post_build(options) -> bool:
+    """Esegue i passi di POST_BUILD_STEPS attivi in `options`. Ritorna False
+    se uno fallisce (gli altri vengono comunque eseguiti)."""
+    import importlib
+
+    ok = True
+    for _section, _title, key, function in POST_BUILD_STEPS:
+        if not (options or {}).get(key):
+            continue
+        module_name, function_name = function.split(":")
+        module = importlib.import_module("." + module_name, __package__)
+        ok = bool(getattr(module, function_name)()) and ok
+    return ok
+
+
 def build_face(options=None) -> bool:
     """Costruisce il rig facciale (i 30 step) leggendo il fitting dalla
-    scena. `options` passa da `apply_options` prima del build."""
+    scena. `options` passa da `apply_options` prima del build; le chiavi di
+    POST_BUILD_STEPS attive vengono eseguite a build riuscito."""
     from ..builder import FacialRigBuilder
     from .ui.build_frame import config_from_scene
 
@@ -127,7 +163,50 @@ def build_face(options=None) -> bool:
     if not cmds.objExists(FIT_SKELETON):
         cmds.warning("build_face: FaceFitSkeleton not found (fit the face first)")
         return False
-    return bool(FacialRigBuilder(config_from_scene()).build())
+    if not FacialRigBuilder(config_from_scene()).build():
+        return False
+    return run_post_build(options)
+
+
+def build_owned_face(owner, prefix, options=None):
+    """Il build come lo fa il nodo Arise: attiva il fitting del volto
+    `owner`, costruisce, e rinomina col `prefix` del nodo tutto cio' che il
+    build ha creato (core/arise_faces), cosi' piu' volti stanno nella stessa
+    scena.
+
+    Returns:
+        (ok, kept): `kept` sono i nodi delle geometrie da proteggere dalla
+        pulizia di Arise (`geometry_nodes()`), validi anche se il build
+        fallisce a meta'.
+    """
+    from . import arise_faces
+
+    if not arise_faces.activate_fitting(owner, prefix):
+        return False, []
+    before = arise_faces.scene_uuids()
+    ok = build_face(options)
+    kept = geometry_nodes(before)
+    kept_uuids = set(cmds.ls(kept, uuid=True)) if kept else set()
+    created = [
+        node
+        for node in arise_faces.new_nodes(before)
+        if cmds.ls(node, uuid=True)[0] not in kept_uuids
+    ]
+    arise_faces.rename_face(prefix, owner, created)
+    return ok, kept
+
+
+def open_fitting(owner, prefix, geometry=""):
+    """Apre la finestra di fitting sul volto `owner`: attiva il suo fitting
+    (mettendo da parte quello di un altro volto) o prepara la scena per
+    crearne uno."""
+    from . import arise_faces
+    from .ui.face_window import show_fitting_ui
+
+    if not arise_faces.activate_fitting(owner, prefix, allow_missing=True):
+        return False
+    show_fitting_ui(geometry)
+    return True
 
 
 def face_rig_nodes():
@@ -158,10 +237,20 @@ GEOMETRY_OPTIONS = (
 )  # fmt: skip
 
 
-def geometry_nodes():
+# deformer che il build ricrea al posto di quelli dell'utente (rebind)
+_REBUILT_DEFORMERS = ("skinCluster", "tweak")
+
+
+def geometry_nodes(before=None):
     """I nodi che appartengono alle geometrie dell'utente e non al rig:
     le shape (comprese le Orig), i deformer con i loro set, groupId,
     groupParts e bindPose, esclusi i membri di FaceAllSet.
+
+    Args:
+        before: `arise_faces.scene_uuids()` preso prima del build. Con
+            questo, un deformer nato durante il build resta fra i nodi del
+            rig (DeltaMush, il lattice di HeadSquash: si cancellano col rig)
+            a meno che sia uno skinCluster o un tweak, che il build ricrea.
 
     Il Prep ricrea lo skinCluster del viso (rebind): il nodo ha lo stesso
     nome ma e' nuovo, e Arise, che considera suo tutto cio' che nasce
@@ -178,11 +267,23 @@ def geometry_nodes():
             # referenziata con shape "Deformed" separata non trova nulla
             history = cmds.listHistory(geometry, pruneDagObjects=True) or []
             deformers = cmds.ls(history, type="geometryFilter") or []
+            if before is not None:
+                deformers = [
+                    d
+                    for d in deformers
+                    if cmds.nodeType(d) in _REBUILT_DEFORMERS or cmds.ls(d, uuid=True)[0] in before
+                ]
             found += deformers
             for deformer in deformers:
                 # cancellare il set di un deformer cancella il deformer
-                for kind in ("dagPose", "objectSet", "groupId", "groupParts"):
+                for kind in ("dagPose", "groupId", "groupParts"):
                     found += cmds.listConnections(deformer, type=kind) or []
+                # solo il set del deformer (usedBy), non i set di cui il
+                # deformer e' membro, come FaceAllSet
+                for deformer_set in cmds.listConnections(deformer, type="objectSet") or []:
+                    users = cmds.listConnections(deformer_set + ".usedBy") or []
+                    if deformer in users:
+                        found.append(deformer_set)
     nodes = []
     for node in found:
         if node not in built and node not in nodes:
@@ -195,7 +296,7 @@ def _skinned_geometry(skin):
     return (cmds.skinCluster(skin, query=True, geometry=True) or [""])[0]
 
 
-def _release_skin_influences(nodes):
+def _release_skin_influences(nodes, fit_node=FIT_SKELETON):
     """Toglie i joint del rig dagli skinCluster che li usano, restituendo
     il loro peso al joint della testa (asDeleteAdvancedFace, MEL
     27686-27721): blocca tutte le influenze tranne HeadJoint, rimuove quelle
@@ -205,9 +306,9 @@ def _release_skin_influences(nodes):
     Divergenza dal MEL: il MEL lo fa sul solo skinCluster del viso, qui su
     ogni skinCluster non creato dal build che usa joint del rig (le
     geometrie di occhi, denti e lingua hanno il proprio)."""
-    head_joint = get_fit_option("HeadJoint") or ""
+    head_joint = get_fit_option("HeadJoint", fit_node) or ""
     rig_joints = set(cmds.ls(nodes, type="joint"))
-    built = set(nodes)
+    built = set(cmds.ls(nodes))
     for skin in cmds.ls(type="skinCluster"):
         if skin in built:  # skinCluster creato dal build: se ne va col rig
             continue
@@ -244,17 +345,35 @@ def _normalize_skin_clusters():
             pass
 
 
-def delete_face() -> bool:
+def delete_face(owner=None) -> bool:
     """Cancella il rig facciale lasciando il fitting e i pesi sul joint
     della testa. Il nodo Arise la chiama da `on_delete_operation()`, prima
     della pulizia di Arise: i joint del build non sono dichiarati ad Arise,
-    che li cancellerebbe mentre sono ancora influenze. Ritorna True se
-    c'era qualcosa da cancellare."""
-    nodes = face_rig_nodes()
+    che li cancellerebbe mentre sono ancora influenze.
+
+    Args:
+        owner: il volto da cancellare quando il rig e' stato rinominato da
+            `arise_faces.rename_face` (piu' volti in scena). Senza, si
+            cancella il rig con i nomi ADV (membri di FaceAllSet).
+
+    Returns:
+        True se c'era qualcosa da cancellare.
+    """
+    fit_node = FIT_SKELETON
+    if owner:
+        from . import arise_faces
+
+        nodes = arise_faces.face_nodes(owner, arise_faces.ROLE_RIG)
+        fit_node = arise_faces.fit_skeleton(owner) or FIT_SKELETON
+    else:
+        nodes = face_rig_nodes()
     if not nodes:
         return False
-    _release_skin_influences(nodes)
-    for node in nodes:
+    _release_skin_influences(nodes, fit_node)
+    # i curveInfo per primi, come asDeleteHeadSquash (MEL 44683): senza la
+    # loro curva Maya segnala "No valid NURBS curve"
+    info_nodes = set(cmds.ls(nodes, type="curveInfo", long=True) or [])
+    for node in sorted(nodes, key=lambda n: n not in info_nodes):
         if cmds.objExists(node):  # un padre cancellato porta via i figli
             try:
                 cmds.delete(node)

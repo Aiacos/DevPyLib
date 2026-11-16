@@ -7,15 +7,14 @@ https://ariserigging.com/docs/) con una deroga dichiarata: la
 documentazione chiede di dichiarare joint e controller in `joints_creation`
 / `ctrls_creation` e di non crearli in `rig_creation`, ma nel rig ADV il
 loro numero dipende dalla mesh e dal fitting. Qui li crea il build del
-package; i nodi risultanti sono registrati presso Arise con
-`tagging_utils.tag_nodes` (come fa CA_Mouth per i suoi nodi extra) e
-rinominati secondo la convenzione di Arise.
+package; i nodi risultanti sono rinominati secondo la
+convenzione di Arise con il nome del nodo come prefisso, cosi' piu' nodi
+Adv_Face (piu' volti) convivono nella stessa scena.
 
 Prerequisito: il viso deve essere gia' fittato (nodo `FaceFitSkeleton` in
 scena, creato dalla UI di fitting del package).
 
-Stato: scheletro, provato dentro Arise su `chubby`; la rinomina copre solo
-mascella e denti. Vedi docs/arise-node.md nel repo adv-maya-facial-rig, che resta la sorgente
+Stato: provato dentro Arise su `chubby`. Vedi docs/arise-node.md nel repo adv-maya-facial-rig, che resta la sorgente
 del package e dei suoi test.
 """
 
@@ -131,9 +130,12 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         if package is None:
             LOGGER.error("[%s] facial_rig package not found (%s)", self.name, _PACKAGE_NAMES)
             return
+        bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
         attr = self.option_attrs.get("Face")
         geometry = (attr.value or "").strip().rsplit("|", 1)[-1] if attr is not None else ""
-        package.show_fitting_ui(geometry)
+        # con piu' volti in scena: attiva il fitting di questo nodo e mette
+        # da parte quello degli altri
+        bridge.open_fitting(self.uuid.hex, self.name, geometry)
 
     def _add_option_attr(self, field):
         """Crea l'attributo Arise adatto al tipo dell'opzione ADV."""
@@ -198,62 +200,54 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         return options
 
     def on_delete_operation(self, silent=True):  # REIMPLEMENTED!
-        """Cancella il rig facciale prima della pulizia di Arise.
+        """Cancella il rig facciale di questo nodo prima della pulizia di Arise.
 
         Arise conserva lo skin solo dei joint dichiarati in `joints_creation`
         (li sostituisce con dei placeholder). Quelli del facciale li crea il
         build: cancellati mentre sono ancora influenze, la mesh del viso
-        perderebbe lo skinCluster. Qui i pesi tornano prima al joint della
-        testa, come fa asDeleteAdvancedFace.
+        perderebbe quei pesi. Qui tornano prima al joint della testa, come fa
+        asDeleteAdvancedFace.
 
-        Arise chiama questo metodo a ogni pulizia, anche senza rig in scena:
-        si agisce solo se il rig presente porta il tag di questo nodo.
+        Arise chiama questo metodo a ogni pulizia, anche senza rig in scena;
+        il rig si riconosce dal proprietario scritto sui suoi nodi, quindi i
+        volti degli altri nodi non vengono toccati.
         """
         package = _facial_rig()
         if package is None:
             return
         bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
-        rig_nodes = set(mc.ls(bridge.face_rig_nodes(), long=True) or [])
-        tagged = set(tagging_utils.get_maya_nodes_with_tag(self.uuid.hex) or [])
-        if not rig_nodes & tagged:
-            return  # nessun rig, oppure un rig facciale non costruito da questo nodo
-        if not bridge.delete_face() and not silent:
-            LOGGER.warning("[%s] the face rig could not be deleted", self.name)
+        bridge.delete_face(self.uuid.hex)
 
     def rig_creation(self):
-        """Costruisce il rig ADV, lo registra presso Arise e lo rinomina."""
+        """Costruisce il rig ADV e lo rinomina col nome di questo nodo."""
         package = _facial_rig()
         if package is None:
             LOGGER.error("[%s] facial_rig package not found (%s)", self.name, _PACKAGE_NAMES)
             return False
         bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
-        naming = importlib.import_module(package.__name__ + ".core.arise_naming")
 
         input_grp, output_grp = create_grps(self, ["input_grp", "output_grp"])
         self.driven_head_attr.set_maya_object(input_grp)
         self.driver_face_attr.set_maya_object(output_grp)
 
-        if not bridge.build_face(self._options()):
-            LOGGER.error("[%s] the face build failed, see the Maya script editor", self.name)
-            return False
+        # Il build gira con i nomi di AdvancedSkeleton; a build finito tutto
+        # cio' che ha creato prende il nome di questo nodo come prefisso,
+        # cosi' piu' nodi Adv_Face (piu' volti) convivono nella stessa scena.
+        # Arise tagga poi da solo i nodi nati qui dentro.
+        is_built, kept = bridge.build_owned_face(self.uuid.hex, self.name, self._options())
 
-        # Arise tagga da solo tutto cio' che nasce durante rig_creation():
-        # taggare qui i nodi del rig darebbe un errore di attributo doppio
-        # per ogni nodo.
         # Il build ricrea lo skinCluster del viso (rebind): per Arise e' un nodo
         # nuovo e lo cancellerebbe uscendo da Build. I nodi delle geometrie
         # dell'utente vanno esclusi dai tag automatici, come fanno i nodi
-        # inclusi in Arise per cio' che deve restare (IK_Chain, HumanIK).
-        # al rebuild i nodi sopravvissuti hanno gia' il tag: ripeterlo da' un warning
-        kept = [
-            node
-            for node in bridge.geometry_nodes()
-            if not mc.attributeQuery(_DONT_TAG_ATTR, node=node, exists=True)
-        ]
+        # inclusi in Arise per cio' che deve restare (IK_Chain, HumanIK). Al
+        # rebuild i sopravvissuti hanno gia' il tag: ripeterlo da' un warning.
+        kept = [n for n in kept if not mc.attributeQuery(_DONT_TAG_ATTR, node=n, exists=True)]
         if kept:
             tagging_utils.tag_as_dont_tag(kept)
 
+        if not is_built:
+            LOGGER.error("[%s] the face build failed, see the Maya script editor", self.name)
+            return False
         if mc.objExists(bridge.FACE_ROOT):
             output_grp.match_transformation_to(bridge.FACE_ROOT)
-        naming.rename_to_arise(self.name)
         return True

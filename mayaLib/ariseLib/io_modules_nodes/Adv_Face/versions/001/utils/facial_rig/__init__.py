@@ -129,6 +129,12 @@ from .core.face_frown_pull import (
     face_narrow_smile_and_frown,
     face_smile_pull_controller,
 )
+from .core.face_head_squash import (
+    add_to_head_squash,
+    create_head_squash,
+    delete_head_squash,
+    optimize_head_squash,
+)
 from .core.face_jaw_open import face_jaw_open, face_jaw_open_finish
 from .core.face_lip_down import face_lip_down, face_lip_down_finish
 from .core.face_lip_falloff import face_lip_falloff
@@ -335,6 +341,11 @@ __all__ = [
     "delta_mush_zero_weight",
     "connect_delta_mush_scale",
     "paint_delta_mush",
+    # HeadSquash
+    "create_head_squash",
+    "delete_head_squash",
+    "optimize_head_squash",
+    "add_to_head_squash",
     # Builder
     "FacialRigBuilder",
     "build_facial_rig",
