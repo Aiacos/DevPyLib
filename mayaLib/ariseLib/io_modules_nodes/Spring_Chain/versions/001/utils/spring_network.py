@@ -212,17 +212,23 @@ def build_spring_chain(
                 else OpenMaya.MVector(0, 1, 0)
             )
             secondary_axis = ((primary_axis ^ helper) ^ primary_axis).normal()
-            world_side = secondary_axis * rest_matrices[index]
-            previous_side = (world_side * rest_matrices[index - 1].inverse()).normal()
+            # the previous solved matrix, moved by the live offset between the two rest points: the
+            # rotation of an FK ctrl above this joint is kept, on top of the solved chain.
+            relative = _node("multMatrix", f"{bone}_twist_multMatrix")
+            mc.connectAttr(f"{rest_points[index]}.worldMatrix[0]", f"{relative}.matrixIn[0]")
+            mc.connectAttr(
+                f"{rest_points[index - 1]}.worldInverseMatrix[0]", f"{relative}.matrixIn[1]"
+            )
+            mc.connectAttr(previous_matrix, f"{relative}.matrixIn[2]")
             mc.setAttr(f"{aim}.secondaryMode", 2)
             mc.setAttr(
                 f"{aim}.secondaryTargetVector",
-                previous_side.x,
-                previous_side.y,
-                previous_side.z,
+                secondary_axis.x,
+                secondary_axis.y,
+                secondary_axis.z,
                 type="double3",
             )
-            mc.connectAttr(previous_matrix, f"{aim}.secondaryTargetMatrix")
+            mc.connectAttr(f"{relative}.matrixSum", f"{aim}.secondaryTargetMatrix")
 
         mc.setAttr(
             f"{aim}.secondaryInputAxis",
@@ -251,10 +257,11 @@ def build_spring_chain(
 
         pivot = _combine(f"{bone}_pivot_plusMinusAverage", 1, pivot, _outputs(step, "output"))
 
-    # the tip has no target to aim at: it keeps its rest offset from the joint before it.
+    # the tip has no target to aim at: it keeps the live offset of its rest point from the one
+    # before it (so an FK ctrl on the tip still rotates it).
     tip = f"{prefix}_{count - 1}"
-    tip_offset = rest_matrices[-1] * rest_matrices[-2].inverse()
     tip_matrix = _node("multMatrix", f"{tip}_tip_multMatrix")
-    mc.setAttr(f"{tip_matrix}.matrixIn[0]", list(tip_offset), type="matrix")
-    mc.connectAttr(previous_matrix, f"{tip_matrix}.matrixIn[1]")
+    mc.connectAttr(f"{rest_points[-1]}.worldMatrix[0]", f"{tip_matrix}.matrixIn[0]")
+    mc.connectAttr(f"{rest_points[-2]}.worldInverseMatrix[0]", f"{tip_matrix}.matrixIn[1]")
+    mc.connectAttr(previous_matrix, f"{tip_matrix}.matrixIn[2]")
     _drive_joint(tip, joints[-1], f"{tip_matrix}.matrixSum")

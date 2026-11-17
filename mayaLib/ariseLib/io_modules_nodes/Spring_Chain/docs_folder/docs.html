@@ -22,12 +22,17 @@ Scale is uniform. Keyable attrs:
 <li><i>lag</i> &ndash; frames of delay each joint adds on top of the joint before it. 0 = rigid.</li>
 <li><i>damping</i> &ndash; 1 = settles without overshooting, lower values bounce.</li>
 </ul></li>
+<li><b>fk_1 ... fk_N</b> &ndash; one FK ctrl on every joint after the first, in a hierarchy under
+<b>lead</b> (rotation only). They pose the chain, and the spring trails that pose: rotating one makes the
+chain below it swing and settle on the new pose. With <i>spring_weight</i> at 0 the node is a plain FK
+chain.</li>
 </ul>
 <h3>Attributes</h3>
 <ul>
 <li><b>Ctrls Scale</b> &ndash; size of the lead ctrl.</li>
 <li><b>Joints</b> &ndash; 3 to 200. Needs a re-template.</li>
 <li><b>Skinning Joints</b> &ndash; tag the joints as skinning joints.</li>
+<li><b>FK Ctrls</b> &ndash; add the <b>fk</b> ctrls (on by default). Unchecked, only <b>lead</b> is created.</li>
 <li><b>Lag Per Joint</b>, <b>Damping</b> &ndash; default values of the <i>lag</i> and <i>damping</i> ctrl attrs.</li>
 <li><b>Delayed Twist</b> &ndash; the twist of the lead travels down the chain with the same delay. Unchecked,
 the twist is immediate.</li>
@@ -50,7 +55,7 @@ frame, resets the chain on its rigid pose, and it is correct again once played f
 cache filled from the middle of the range would store wrong poses. Bake the joints to use it again.</li>
 <li>Bake the joints (playing from a few frames before the shot) before sending a shot to a farm that
 renders frames out of order.</li>
-<li>No gravity, no collisions, no FK ctrls along the chain. For a rope pinned at both ends use
+<li>No gravity, no collisions. For a rope pinned at both ends use
 Dynamic_FK_Chain.</li>
 </ul>
 </body></html>

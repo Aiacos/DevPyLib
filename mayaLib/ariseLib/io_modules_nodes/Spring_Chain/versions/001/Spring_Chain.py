@@ -34,6 +34,14 @@ SPACE_ITEMS = ["World", "Root Input"]
 GUIDES_OFFSET = 5.0
 MAX_LAG = 100
 MIN_DAMPING = 0.05
+FK_LOCKED_ATTRS = [
+    "translateX",
+    "translateY",
+    "translateZ",
+    "scaleX",
+    "scaleY",
+    "scaleZ",
+]
 # .../mayaLib/ariseLib/io_modules_nodes/Spring_Chain/versions/001/Spring_Chain.py -> .../mayaLib/plugin
 SOLVER_PLUGIN = Path(__file__).resolve().parents[5] / "plugin" / "spring_chain_solver.py"
 
@@ -86,6 +94,15 @@ class Spring_Chain(node_data.NodeData):  # noqa: N801 (Arise: class, module and 
             name="Skinning Joints",
             default_value=True,
             annotation="Tag the chain joints as skinning joints.",
+        )
+        self.fk_ctrls_attr = self.add_boolean_attribute(
+            name="FK Ctrls",
+            default_value=True,
+            annotation=(
+                "Add an FK ctrl on every joint after the first, in a hierarchy under the 'lead' ctrl. "
+                "They pose the chain, and the spring trails that pose. With 'spring_weight' at 0 the "
+                "node is a plain FK chain."
+            ),
         )
         self.close_layout()
 
@@ -177,12 +194,25 @@ class Spring_Chain(node_data.NodeData):  # noqa: N801 (Arise: class, module and 
             parent = joint
 
     def ctrls_creation(self):
-        """Declare the single 'lead' ctrl."""
+        """Declare the 'lead' ctrl and, optionally, an FK ctrl for every joint after the first."""
         self.lead_ctrl = self.add_ctrl(
             name="lead", shape="circle", up_orient="+Y", size=3.0 * self.ctrls_scale_attr.value
         )
         for attr in ["scaleY", "scaleZ"]:
             self.lead_ctrl.add_locked_hidden_attr(attr)
+
+        self.fk_ctrls = []
+        if self.fk_ctrls_attr.value:
+            for index in range(1, self.joint_count_attr.value):
+                ctrl = self.add_ctrl(
+                    name=f"fk_{index}",
+                    shape="circle",
+                    up_orient="+Y",
+                    size=2.0 * self.ctrls_scale_attr.value,
+                )
+                for attr in FK_LOCKED_ATTRS:
+                    ctrl.add_locked_hidden_attr(attr)
+                self.fk_ctrls.append(ctrl)
 
     def maya_attrs_creation(self):
         """Declare the spring attrs so 'AttributesSettings' can set them (Arise 1.09+)."""
@@ -247,10 +277,19 @@ class Spring_Chain(node_data.NodeData):  # noqa: N801 (Arise: class, module and 
             for index in range(len(positions) - 1)
         ]
         up_offset = sum(lengths) / len(lengths)
+        # FK ctrls hierarchy under the lead: each rest point follows the ctrl of its joint.
+        owners = [lead]
+        for index, ctrl_info in enumerate(self.fk_ctrls, start=1):
+            ctrl = ctrl_info.pointer
+            ctrl.offset_grp.parent_relative(owners[-1])
+            ctrl.offset_grp.set_matrix(matrices[index])
+            ctrl.offset_grp.set_scale([1, 1, 1])
+            owners.append(ctrl)
+
         rest_points, up_points = [], []
         for index, matrix in enumerate(matrices):
             rest = IoTransform(f"{self.name}_rest_{index}_grp")
-            rest.parent_relative(lead)
+            rest.parent_relative(owners[index] if self.fk_ctrls else lead)
             rest.set_matrix(matrix)
             rest.set_scale([1, 1, 1])
             rest_points.append(rest)

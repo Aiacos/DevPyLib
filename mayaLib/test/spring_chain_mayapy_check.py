@@ -83,11 +83,11 @@ def play(start, end):
         advance(frame)
 
 
-def build_scene(joint_count, delayed_twist, animate_space=False, mirrored=False, tag=""):
+def build_scene(joint_count, delayed_twist, animate_space=False, mirrored=False, tag="", fk=False):
     """Create a lead with a zig-zag chain under it and build the spring network on it.
 
     Returns:
-        dict: with 'lead', 'space', 'rest' (list), 'joints' (list).
+        dict: with 'lead', 'space', 'rest' (list), 'joints' (list), 'fk' (list, FK transforms).
     """
     space = cmds.group(empty=True, name=f"{tag}space_grp")
     if mirrored:
@@ -117,6 +117,19 @@ def build_scene(joint_count, delayed_twist, animate_space=False, mirrored=False,
         up = cmds.parent(cmds.group(empty=True, name=f"{tag}up_{index}"), node)[0]
         cmds.xform(up, objectSpace=True, matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1])
         ups.append(up)
+
+    # FK transforms: a hierarchy under the lead, each one carrying the rest point of its joint.
+    fk_nodes = []
+    if fk:
+        parent = lead
+        for index in range(1, joint_count):
+            node = cmds.group(empty=True, name=f"{tag}fk_{index}")
+            cmds.xform(node, worldSpace=True, matrix=list(world_matrix(rest[index])))
+            node = cmds.parent(node, parent)[0]
+            rest[index] = cmds.parent(rest[index], node)[0]
+            fk_nodes.append(node)
+            parent = node
+        ups = [cmds.ls(f"{tag}up_{index}", long=True)[0] for index in range(joint_count)]
 
     joints = []
     for index in range(joint_count):
@@ -148,7 +161,7 @@ def build_scene(joint_count, delayed_twist, animate_space=False, mirrored=False,
         cmds.setKeyframe(space, attribute="translateZ", time=40, value=30.0)
         cmds.keyTangent(space, inTangentType="linear", outTangentType="linear")
 
-    return {"lead": lead, "space": space, "rest": rest, "joints": joints}
+    return {"lead": lead, "space": space, "rest": rest, "joints": joints, "fk": fk_nodes}
 
 
 def new_scene():
@@ -262,6 +275,41 @@ def run_checks(mode, joint_count, delayed_twist, mirrored=False):
             )
 
 
+def run_fk_check(mode, delayed_twist, mirrored):
+    """FK transforms pose the rigid chain: the spring chain rests on that pose and trails it."""
+    label = f"{mode} fk twist={delayed_twist} mirrored={mirrored}"
+    new_scene()
+    scene = build_scene(8, delayed_twist, animate_space=None, mirrored=mirrored, fk=True)
+    joints, rest, fk = scene["joints"], scene["rest"], scene["fk"]
+    cmds.setAttr(fk[1] + ".rotateZ", 40)
+    cmds.setAttr(fk[2] + ".rotateY", 35)  # twist around the bone
+    cmds.setAttr(fk[3] + ".rotateX", 30)
+    cmds.setAttr(fk[-1] + ".rotateZ", -25)
+
+    cmds.currentTime(400)
+    for joint, point in zip(joints, rest):
+        error = matrix_error(joint, point)
+        check(label, "fk_pose_matches", error < 1e-3, f"{joint} error {error:.5f}")
+
+    advance(1)
+    play(2, 20)
+    for index, length in enumerate(rest_lengths(scene)):
+        current = (position(joints[index + 1]) - position(joints[index])).length()
+        check(label, "fk_lengths", abs(current - length) < 1e-3, f"bone {index}")
+    offset = (position(joints[-1]) - position(rest[-1])).length()
+    check(label, "fk_lag_exists", offset > 0.5, f"tip offset {offset:.4f}")
+
+    # rotating an FK transform on a paused frame: the chain below it reacts and lags.
+    play(21, 260)
+    cmds.setAttr(fk[1] + ".rotateZ", -30)
+    offset = (position(joints[-1]) - position(rest[-1])).length()
+    check(label, "fk_drag_reacts", offset > 0.5, f"tip offset {offset:.4f}")
+    play(261, 420)
+    for joint, point in zip(joints, rest):
+        error = matrix_error(joint, point)
+        check(label, "fk_settles_on_pose", error < 2e-3, f"{joint} error {error:.5f}")
+
+
 def run_edit_check(mode):
     """After a key is set on a frame that was already played, replaying shows the new animation."""
     label = f"{mode} edit"
@@ -342,6 +390,9 @@ def main():
             for delayed_twist in (True, False):
                 run_checks(actual, joint_count, delayed_twist)
                 run_checks(actual, joint_count, delayed_twist, mirrored=True)
+        for delayed_twist in (True, False):
+            for mirrored in (False, True):
+                run_fk_check(actual, delayed_twist, mirrored)
         run_edit_check(actual)
         run_space_check(actual)
         run_two_chains_check(actual)
