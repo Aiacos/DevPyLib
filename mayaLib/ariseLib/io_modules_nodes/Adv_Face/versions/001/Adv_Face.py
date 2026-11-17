@@ -26,6 +26,7 @@ import sys
 import maya.cmds as mc
 from arise.data_types import node_data
 from arise.utils import tagging_utils
+from arise.utils.matrix_utils import matrix_constraint
 from arise.utils.modules_utils import create_grps
 
 MAYA_VERSION = 2022  # the version of maya from which this module supports.
@@ -124,7 +125,10 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             name="Head Input", annotation="The head the face follows."
         )
         self.driver_face_attr = self.add_driver_attribute(
-            name="Face Output", annotation="Root of the face rig."
+            name="Face Output", annotation="Follows the root joint of the face."
+        )
+        self.driver_jaw_attr = self.add_driver_attribute(
+            name="Jaw Output", annotation="Follows the jaw joint (not with Rig Type BlendShapes)."
         )
 
     def open_face_fitting(self):
@@ -217,7 +221,11 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         if package is None:
             return
         bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
-        bridge.delete_face(self.uuid.hex)
+        keep_attr = self.option_attrs.get("KeepSkinWeights")
+        keep_weights = bool(keep_attr.value) if keep_attr is not None else True
+        # prima salva i pesi del viso (le correzioni dipinte a mano tornano
+        # al rebuild), poi cancella il rig di questo nodo
+        bridge.delete_owned_face(self.uuid.hex, self.name, keep_weights)
 
     def rig_creation(self):
         """Costruisce il rig ADV e lo rinomina col nome di questo nodo."""
@@ -227,9 +235,12 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             return False
         bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
 
-        input_grp, output_grp = create_grps(self, ["input_grp", "output_grp"])
+        input_grp, output_grp, jaw_output_grp, rig_grp = create_grps(
+            self, ["input_grp", "output_grp", "jaw_output_grp", "rig_grp"]
+        )
         self.driven_head_attr.set_maya_object(input_grp)
         self.driver_face_attr.set_maya_object(output_grp)
+        self.driver_jaw_attr.set_maya_object(jaw_output_grp)
 
         # Il build gira con i nomi di AdvancedSkeleton; a build finito tutto
         # cio' che ha creato prende il nome di questo nodo come prefisso,
@@ -246,9 +257,27 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         if kept:
             tagging_utils.tag_as_dont_tag(kept)
 
+        owner = self.uuid.hex
+        # Il rig sta nel gruppo del modulo, come quello degli altri nodi
+        # Arise; in FaceGroup resta solo il fitting.
+        tops = bridge.face_top_nodes(owner)
+        if tops:
+            mc.parent(tops, rig_grp)
+        # Controller e joint di skinning li crea il build, non le API di
+        # Arise: con questi tag gli strumenti di Arise (selezione dei
+        # controller del nodo, bind pose, joint di skinning) li riconoscono.
+        for ctrl in bridge.face_controllers(owner):
+            tagging_utils.tag_as_ctrl(ctrl)
+        for joint in bridge.face_skinning_joints(owner):
+            tagging_utils.tag_as_skinning_joint(joint)
+
         if not is_built:
             LOGGER.error("[%s] the face build failed, see the Maya script editor", self.name)
             return False
-        if mc.objExists(bridge.FACE_ROOT):
-            output_grp.match_transformation_to(bridge.FACE_ROOT)
+        faces = importlib.import_module(package.__name__ + ".core.arise_faces")
+        # le uscite seguono la testa e la mascella del rig
+        for adv_name, grp in (("FaceJoint_M", output_grp), ("JawJoint_M", jaw_output_grp)):
+            driver = faces.find_face_node(owner, adv_name)
+            if driver:
+                matrix_constraint(driver, grp, maintain_offset=False)
         return True

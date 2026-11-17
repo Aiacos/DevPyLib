@@ -44,13 +44,23 @@ the fitting stays in the scene, so the node can be built again.</p>
 
 <h3>Connections</h3>
 <ul>
-<li><b>Head Input</b> (driven): the head the face follows.</li>
-<li><b>Face Output</b> (driver): root of the face rig.</li>
+<li><b>Face Output</b> (driver): follows the root joint of the face, that is the head.</li>
+<li><b>Jaw Output</b> (driver): follows the jaw joint (not available with Rig Type BlendShapes).</li>
+<li><b>Head Input</b> (driven): no effect yet, the face follows the joint set in Head Joint.</li>
 </ul>
+
+<h3>Inside Arise</h3>
+<p>The controllers and the skinning joints of the face are tagged like Arise's own, so
+"select the controllers of this node" and the skinning joints selection include them. The rig
+lives under the group of this node in <i>rig_root_grp</i>; only the fitting stays in
+<i>FaceGroup</i>. With <b>Keep Skin Weights</b> (Skinning section, on by default) the skin
+weights of the face are stored when leaving Build mode and applied again at the next build, so
+hand-painted corrections are kept. They are dropped if the mesh or the face joints changed.</p>
 
 <h3>Status</h3>
 <p>Skeleton version, tried in Arise 1.15 on the AdvancedSkeleton "chubby" demo. The controllers
-are created by the build, so Arise's own controller tools do not list them. The rig is built with AdvancedSkeleton names and then renamed to the Arise
+are created by the build, so Arise's shape, scale and colour tools for declared controllers do
+not apply to them. The rig is built with AdvancedSkeleton names and then renamed to the Arise
 convention with the node name as prefix. AdvancedSkeleton's own tools (selector, picker) do not
 recognise the renamed rig.</p>
 </body>

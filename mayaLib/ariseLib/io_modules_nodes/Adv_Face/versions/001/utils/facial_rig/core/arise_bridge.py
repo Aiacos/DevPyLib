@@ -69,6 +69,11 @@ NODE_FIELDS = (
 NOT_PORTED = ("MultiSkinClusters", "RobloxHead")
 
 
+# Interruttori del nodo che non sono ne' opzioni del fitting ne' passi dopo
+# il build: (sezione, titolo, chiave, default)
+KEEP_WEIGHTS = "KeepSkinWeights"
+NODE_SWITCHES = (("Skinning", "Keep Skin Weights", KEEP_WEIGHTS, True),)
+
 # Passi facoltativi dopo il build (frame del pannello Face sotto "Build"):
 # (sezione, titolo, chiave, funzione "modulo:nome" da chiamare a build finito)
 POST_BUILD_STEPS = (
@@ -119,6 +124,18 @@ def node_fields():
                 "ported": name not in NOT_PORTED,
             }
         )
+    for section, title, key, default in NODE_SWITCHES:
+        fields.append(
+            {
+                "section": section,
+                "title": title,
+                "option": key,
+                "type": "bool",
+                "default": default,
+                "items": [],
+                "ported": True,
+            }
+        )
     for section, title, key, _function in POST_BUILD_STEPS:
         fields.append(
             {
@@ -131,6 +148,12 @@ def node_fields():
                 "ported": True,
             }
         )
+    # una sezione sola per titolo, nell'ordine di prima comparsa
+    order = []
+    for field in fields:
+        if field["section"] not in order:
+            order.append(field["section"])
+    fields.sort(key=lambda field: order.index(field["section"]))
     return fields
 
 
@@ -144,6 +167,7 @@ def changed_options(values, defaults):
     Un campo non toccato lascia quindi il valore del fitting. I passi dopo il
     build (POST_BUILD_STEPS) passano sempre: non stanno nel fitting."""
     post = {key for _section, _title, key, _function in POST_BUILD_STEPS}
+    post |= {key for _section, _title, key, _default in NODE_SWITCHES}
     changed = {}
     for name, value in (values or {}).items():
         if isinstance(value, str):
@@ -207,19 +231,22 @@ def build_owned_face(owner, prefix, options=None):
     """Il build come lo fa il nodo Arise: attiva il fitting del volto
     `owner`, costruisce, e rinomina col `prefix` del nodo tutto cio' che il
     build ha creato (core/arise_faces), cosi' piu' volti stanno nella stessa
-    scena.
+    scena. Con l'opzione KeepSkinWeights riapplica i pesi salvati alla
+    cancellazione precedente (core/arise_skin_store).
 
     Returns:
         (ok, kept): `kept` sono i nodi delle geometrie da proteggere dalla
         pulizia di Arise (`geometry_nodes()`), validi anche se il build
         fallisce a meta'.
     """
-    from . import arise_faces
+    from . import arise_faces, arise_skin_store
 
     if not arise_faces.activate_fitting(owner, prefix):
         return False, []
     before = arise_faces.scene_uuids()
     ok = build_face(options)
+    if ok and (options or {}).get(KEEP_WEIGHTS, True):
+        arise_skin_store.restore_face_weights(owner)  # con i nomi ADV, prima della rinomina
     kept = geometry_nodes(before)
     kept_uuids = set(cmds.ls(kept, uuid=True)) if kept else set()
     created = [
@@ -229,6 +256,72 @@ def build_owned_face(owner, prefix, options=None):
     ]
     arise_faces.rename_face(prefix, owner, created)
     return ok, kept
+
+
+def delete_owned_face(owner, prefix="", keep_weights=True) -> bool:
+    """La cancellazione come la fa il nodo Arise: salva i pesi del viso (se
+    richiesto) e cancella il rig del volto `owner`. Ripetibile: senza rig non
+    fa nulla e non tocca i pesi gia' salvati."""
+    from . import arise_skin_store
+
+    if keep_weights:
+        arise_skin_store.save_face_weights(owner, prefix)
+    else:
+        arise_skin_store.discard_face_weights(owner)
+    return delete_face(owner)
+
+
+def face_controllers(owner):
+    """I controller del volto `owner` (nomi lunghi): i transform membri del
+    suo FaceControlSet. Il nodo Arise li marca con `tagging_utils.tag_as_ctrl`,
+    cosi' gli strumenti di Arise (selezione dei controller del nodo, bind
+    pose) li riconoscono anche se non nascono da `ctrls_creation()`."""
+    from . import arise_faces
+
+    control_set = arise_faces.find_face_node(owner, "FaceControlSet")
+    if not control_set:
+        return []
+    members = cmds.sets(control_set, query=True) or []
+    return cmds.ls(members, type="transform", long=True) or []
+
+
+def face_skinning_joints(owner):
+    """I joint del volto `owner` che deformano le geometrie dell'utente
+    (nomi lunghi): le influenze degli skinCluster non creati dal build. Il
+    nodo Arise li marca con `tagging_utils.tag_as_skinning_joint`."""
+    from . import arise_faces
+
+    rig = arise_faces.face_nodes(owner, arise_faces.ROLE_RIG)
+    rig_joints = set(cmds.ls(rig, type="joint", long=True) or [])
+    built_skins = set(cmds.ls(rig, type="skinCluster") or [])
+    found = []
+    for skin in cmds.ls(type="skinCluster") or []:
+        if skin in built_skins:
+            continue
+        influences = cmds.skinCluster(skin, query=True, influence=True) or []
+        for joint in cmds.ls(influences, long=True) or []:
+            if joint in rig_joints and joint not in found:
+                found.append(joint)
+    return found
+
+
+def face_top_nodes(owner):
+    """I gruppi in cima al rig del volto `owner` (nomi lunghi): quelli che
+    il build mette in FaceGroup accanto al fitting (FaceMotionSystem,
+    FaceDeformationSystem...). Il nodo Arise li sposta sotto il gruppo del
+    proprio modulo, e in FaceGroup resta solo il fitting.
+
+    Non comprende i nodi che il build aggancia allo scheletro dell'utente,
+    come FaceJoint_M, figlio del joint della testa: spostarli staccherebbe
+    il viso dalla testa."""
+    from . import arise_faces
+
+    root = arise_faces.fit_root(owner)
+    if not root:
+        return []
+    rig = set(arise_faces.face_nodes(owner, arise_faces.ROLE_RIG))
+    children = cmds.listRelatives(root, children=True, type="transform", fullPath=True) or []
+    return [node for node in children if node in rig]
 
 
 def open_fitting(owner, prefix, geometry=""):

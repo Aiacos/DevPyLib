@@ -185,6 +185,16 @@ def fit_skeleton(owner):
     return find_face_node(owner, FIT_SKELETON)
 
 
+def fit_root(owner):
+    """Il gruppo che contiene il fitting del volto `owner` (FaceGroup, col
+    nome ADV o messo da parte); "" se non c'e'. Nome lungo."""
+    skeleton = fit_skeleton(owner)
+    if not skeleton:
+        return ""
+    parent = cmds.listRelatives(skeleton, parent=True, fullPath=True) or []
+    return parent[0] if parent else ""
+
+
 def _fit_nodes():
     """I nodi del fitting attivo: FaceGroup e cio' che contiene, esclusi i
     nodi gia' assegnati a un volto (il rig rinominato sta nello stesso
