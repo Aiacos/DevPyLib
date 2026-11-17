@@ -101,6 +101,13 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
                     "Open the face fitting window: select on the mesh the vertices and edge loops "
                     "of eyelids, lips, nose, cheeks... The result is stored in FaceFitSkeleton.",
                 ),
+                (
+                    self.reload_from_fitting,
+                    "resources/icons/select_in_maya.png",
+                    "Reload From Fitting",
+                    "Set the fields of this node to the values stored in its face fitting "
+                    "(they are otherwise the values read when the node was created).",
+                ),
             ],
         )
         self.close_layout()
@@ -115,6 +122,8 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             attr = self._add_option_attr(field)
             if attr is not None:  # Arise scarta gli attributi dal nome non valido
                 self.option_attrs[field["option"]] = attr
+                if not field["ported"]:
+                    attr.set_disabled(True)  # opzione non ancora realizzata dal port
                 picked = field["option"] in _PICKED_OPTIONS  # il selettore nasce vuoto
                 self.option_defaults[field["option"]] = "" if picked else field["default"]
         if section is not None:
@@ -143,6 +152,23 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         # con piu' volti in scena: attiva il fitting di questo nodo e mette
         # da parte quello degli altri
         bridge.open_fitting(self.uuid.hex, self.name, geometry)
+
+    def reload_from_fitting(self):
+        """Riallinea i campi del nodo ai valori del fitting del suo volto."""
+        package = _facial_rig()
+        if package is None:
+            return
+        bridge = importlib.import_module(package.__name__ + ".core.arise_bridge")
+        values = bridge.fitting_values(self.uuid.hex)
+        if not values:
+            LOGGER.warning("[%s] no face fitting found for this node", self.name)
+            return
+        for option, attr in self.option_attrs.items():
+            if option not in values or option in _PICKED_OPTIONS:
+                continue
+            attr.set_value_with_undo(values[option])
+            self.option_defaults[option] = values[option]
+        LOGGER.info("[%s] fields reloaded from the face fitting", self.name)
 
     def _add_option_attr(self, field):
         """Crea l'attributo Arise adatto al tipo dell'opzione ADV."""

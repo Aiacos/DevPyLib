@@ -324,13 +324,40 @@ def face_top_nodes(owner):
     return [node for node in children if node in rig]
 
 
+def fitting_values(owner):
+    """I valori delle opzioni salvati nel fitting del volto `owner`
+    ({opzione: valore}, le sole opzioni di NODE_FIELDS), letti anche se il
+    fitting e' messo da parte. Dict vuoto se il volto non ha un fitting, o se
+    il fitting attivo e' di un altro volto.
+
+    Il nodo Arise li usa per riallineare i propri campi ("Reload From
+    Fitting"): i campi mostrano altrimenti la fotografia presa alla creazione
+    del nodo."""
+    from . import arise_faces
+
+    fit_node = arise_faces.fit_skeleton(owner)
+    if not fit_node and arise_faces.active_fit_owner() == "":
+        fit_node = FIT_SKELETON  # fitting attivo e libero: e' di chi lo usa
+    if not fit_node:
+        return {}
+    return {name: get_fit_option(name, fit_node) for _section, _title, name in NODE_FIELDS}
+
+
 def open_fitting(owner, prefix, geometry=""):
     """Apre la finestra di fitting sul volto `owner`: attiva il suo fitting
     (mettendo da parte quello di un altro volto) o prepara la scena per
-    crearne uno."""
+    crearne uno. Con il rig del volto costruito non apre nulla: il fitting
+    si modifica in Template, e il rig rinominato non e' leggibile dalla
+    finestra."""
     from . import arise_faces
     from .ui.face_window import show_fitting_ui
 
+    if arise_faces.face_nodes(owner, arise_faces.ROLE_RIG):
+        cmds.warning(
+            "open_fitting: the face rig of '{}' is built, switch the node to Template "
+            "before editing its fitting".format(prefix)
+        )
+        return False
     if not arise_faces.activate_fitting(owner, prefix, allow_missing=True):
         return False
     show_fitting_ui(geometry)
