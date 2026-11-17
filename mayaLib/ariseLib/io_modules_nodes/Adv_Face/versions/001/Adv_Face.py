@@ -79,6 +79,7 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         salvati dal fitting, se in scena.
         """
         self.option_attrs = {}
+        self.option_defaults = {}
         package = _facial_rig()
         if package is None:
             LOGGER.error("[%s] facial_rig package not found (%s)", self.name, _PACKAGE_NAMES)
@@ -113,6 +114,8 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
             attr = self._add_option_attr(field)
             if attr is not None:  # Arise scarta gli attributi dal nome non valido
                 self.option_attrs[field["option"]] = attr
+                picked = field["option"] in _PICKED_OPTIONS  # il selettore nasce vuoto
+                self.option_defaults[field["option"]] = "" if picked else field["default"]
         if section is not None:
             self.close_layout()
 
@@ -182,22 +185,20 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
     def ctrls_creation(self):
         """Nessun controller dichiarato: li crea il build."""
 
-    def _options(self):
-        """Ritorna {opzione: valore} dagli attributi del nodo.
+    def _options(self, bridge):
+        """Ritorna {opzione: valore} dei soli campi cambiati dall'utente.
 
-        Le stringhe vuote lasciano il valore gia' salvato dal fitting.
+        I default del nodo sono una fotografia del fitting attivo alla
+        creazione: un campo non toccato lascia il valore del fitting di
+        questo volto (vedi `arise_bridge.changed_options`).
         """
-        options = {}
+        values = {}
         for option, attr in self.option_attrs.items():
             value = attr.value
-            if isinstance(value, str):
-                value = value.strip()
-                if not value:
-                    continue
-                if option in _PICKED_OPTIONS:
-                    value = value.rsplit("|", 1)[-1]  # il picker da' il nome lungo
-            options[option] = value
-        return options
+            if isinstance(value, str) and option in _PICKED_OPTIONS:
+                value = value.strip().rsplit("|", 1)[-1]  # il picker da' il nome lungo
+            values[option] = value
+        return bridge.changed_options(values, self.option_defaults)
 
     def on_delete_operation(self, silent=True):  # REIMPLEMENTED!
         """Cancella il rig facciale di questo nodo prima della pulizia di Arise.
@@ -234,7 +235,7 @@ class Adv_Face(node_data.NodeData):  # noqa: N801 (Arise: classe = nome cartella
         # cio' che ha creato prende il nome di questo nodo come prefisso,
         # cosi' piu' nodi Adv_Face (piu' volti) convivono nella stessa scena.
         # Arise tagga poi da solo i nodi nati qui dentro.
-        is_built, kept = bridge.build_owned_face(self.uuid.hex, self.name, self._options())
+        is_built, kept = bridge.build_owned_face(self.uuid.hex, self.name, self._options(bridge))
 
         # Il build ricrea lo skinCluster del viso (rebind): per Arise e' un nodo
         # nuovo e lo cancellerebbe uscendo da Build. I nodi delle geometrie

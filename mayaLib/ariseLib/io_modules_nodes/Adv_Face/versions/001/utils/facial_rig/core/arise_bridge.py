@@ -134,6 +134,28 @@ def node_fields():
     return fields
 
 
+def changed_options(values, defaults):
+    """Le sole opzioni che l'utente ha cambiato nel nodo rispetto ai default
+    mostrati alla creazione ({opzione: valore}).
+
+    I default di un nodo sono una fotografia del fitting attivo quando il
+    nodo e' nato: se nel frattempo e' attivo un altro volto, riscriverli
+    tutti porterebbe su questo fitting le geometrie e le opzioni dell'altro.
+    Un campo non toccato lascia quindi il valore del fitting. I passi dopo il
+    build (POST_BUILD_STEPS) passano sempre: non stanno nel fitting."""
+    post = {key for _section, _title, key, _function in POST_BUILD_STEPS}
+    changed = {}
+    for name, value in (values or {}).items():
+        if isinstance(value, str):
+            value = value.strip()
+        default = (defaults or {}).get(name)
+        if isinstance(default, str):
+            default = default.strip()
+        if name in post or value != default:
+            changed[name] = value
+    return changed
+
+
 def apply_options(options):
     """Scrive su FaceFitSkeleton le opzioni date ({nome opzione: valore},
     es. {"Face": "head_geo", "ARKit": True}). I valori None sono ignorati.
